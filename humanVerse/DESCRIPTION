@@ -1,0 +1,17 @@
+Package: humanVerse
+Type: Package
+Title: Saving Human-Life Hours with "human-verse" forms of R functions
+Version: 3.1.4.1
+Authors@R: person( "Monte J. Shaffer", email = "monte.shaffer@gmail.com",
+  role = c("aut", "cre")  )
+Description: Manipulating dataframes, "git r done" ...
+License: MIT + file LICENSE
+URL: https://github.com/MonteShaffer/humanVerse/humanVerse
+BugReports: https://github.com/MonteShaffer/humanVerse/issues
+Encoding: UTF-8
+LazyData: true
+Imports:
+  stats,
+  utils,
+  xml2
+RoxygenNote: 7.1.1
