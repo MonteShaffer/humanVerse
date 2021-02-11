@@ -1,0 +1,343 @@
+is.substring = function(string, search)
+  {
+  grepl(search, string, fixed = TRUE);
+  }
+
+
+#' charAt
+#'
+#' Get the character of a string at position [idx]
+#'
+#' @param str String
+#' @param idx position to get character
+#'
+#' @return single character
+#' @export
+#'
+#' @examples
+#'
+#' charAt("Alex", 2);
+#' charAt(c("Hello","there","Alex"), 2);
+#' charAt("Alex", 8);
+#' charAt("Alexander", 8);
+#'
+charAt = function(str,idx)
+  {
+  substr(str,idx,idx);
+  }
+
+
+#' charCodeAt
+#'
+#' Get the ASCII character code of a string at position [idx]
+#'
+#' @param str String
+#' @param idx position to get character
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#'
+#' charCodeAt("Alex", 2);
+#' charCodeAt(c("Hello","there","Alex"), 2);
+#' charCodeAt("Alex", 8);
+#' charCodeAt("Alexander", 8);
+#'
+charCodeAt = function(str,idx)
+  {
+  charCode ( charAt(str,idx) ); #  as.numeric( iconv( charAt(str,idx), from="ASCII", to="unicodeFFFE", toRaw=TRUE)[[1]][2] );
+  }
+
+
+#' charCode
+#'
+#' @param svec A vector of characters
+#'
+#' @return ASCII character code for each character
+#' @export
+#'
+#' @examples
+#'
+#' s = "Alexander"; svec = strsplit(s,"",fixed=TRUE)[[1]];
+#' charCode(svec);
+#'
+charCode = function(svec)
+  {
+  # s = "monte";
+  # svec = strsplit(s,"",fixed=TRUE)[[1]];
+  r = c();
+  for(s in svec)
+    {
+    r = c(r, as.numeric( iconv( s, from="ASCII", to="unicodeFFFE", toRaw=TRUE)[[1]][2] ) );
+    }
+  r;
+  }
+
+#
+#' trimMe
+#'
+#'
+#' library(stringi);
+#'
+#' @param str character string to be "trimmed"
+#'
+#' @return updated trimmed string
+#' @export
+#'
+#' @examples
+#'
+#' trimMe( c(" Monte", " is ", "Alexander's ", "  daddy!") );
+#'
+#' trimMe("    four   scores    and  seven      years     ");
+#' trimMe("    four   scores    and  seven      years     ", "left");
+#' trimMe("    four   scores    and  seven      years     ", "riGht");
+#' trimMe("    four   scores    and  seven      years     ", "both");
+#' trimMe("    four   scores    and  seven      years     ", "albjdskj")
+#'
+#' trimMe("\r\n    four   scores    and  seven      years   \t\t  ");
+#'
+trimMe = function(str, side="both", method="stringi")
+  {
+  # sides = c("both", "left", "right")
+  side = tolower(side);
+  # stringr::str_trim(str);
+  # if(!is.element(side,sides)) { stop("option for 'side' must be one of:  both, left, right"); }
+  # set default to both
+
+  # dump stringr and go to stringi
+  # dump tidyverse altogether
+  # review httr and build appropriate functions
+  # use base whenever possible, then the best packages whenever possible
+  # define best by "least associated with new grammar tactics"
+  # new grammar is arbitrary and not c-based
+  # human-readable functions with variadic inputs is not new grammar
+# lsf.str("package:stringi")
+# ls("package:stringi")
+
+  if( isTRUE(requireNamespace("stringi", quietly = TRUE)) && method=="stringi" )
+    {
+    switch(side,
+          "left"  = stringi::stri_trim_left(str),
+          "right" = stringi::stri_trim_right(str),
+          "both"  = stringi::stri_trim_both(str),
+          stringi::stri_trim_both(str)
+          );
+    } else {
+            switch(side,
+                  "left"  = gsub("^\\s+", "", str),
+                  "right" = gsub("\\s+$", "", str),
+                  "both"  = gsub("^\\s+|\\s+$", "", str),
+                  gsub("^\\s+|\\s+$", "", str)
+                  );
+            }
+  }
+
+
+#' explodeMe
+#'
+#' Similar to javascript.split and php.explode
+#'
+#' @param delimiter character(s) to delimit the split
+#' @param str a character string to be split
+#'
+#' @return a character vector
+#' @export
+#'
+#' @examples
+#' str = removeWhiteSpace("    four   scores    and  seven      years     ", "[s]");
+#' strvec = explodeMe("[s]", str);
+#' strvec[3];
+explodeMe = function(delimiter=" ",str="hello friend")
+  {
+  strsplit(str, delimiter, fixed=TRUE)[[1]];
+  }
+
+
+
+#' implodeMe
+#'
+#' Similar to javascript.join and php.implode
+#'
+#' @param delimiter character(s) to unsplit with
+#' @param strvec a character string to be unsplit
+#'
+#' @return a character string
+#' @export
+#'
+#' @examples
+#' implodeMe();
+#'
+#'
+#' str = removeWhiteSpace("    four   scores    and  seven      years     ", "[s]");
+#' strvec = explodeMe("[s]", str);
+#' implodeMe(",", strvec);
+#'
+implodeMe = function(delimiter=" ", strvec = c("hello","friend") )
+  {
+  paste0(strvec, collapse = delimiter);
+  }
+
+
+
+#' removeWhiteSpace
+#'
+#' @param str character string to be adjusted
+#' @param replace what will we replace the white space with
+#' @param n number of spaces to find and replace
+#' @param pre.trim if TRUE, trims the string before removing white space within
+#' @param post.trim if TRUE, trims the string after removing white space within
+#'
+#' @return updated adjusted string
+#' @export
+#'
+#' @examples
+#' removeWhiteSpace("    four   scores    and  seven      years     ");
+#' removeWhiteSpace("\r\n    four   scores    and  seven      years   \t\t  ");
+#'
+#' removeWhiteSpace("    four   scores    and  seven      years     ", "");
+#' removeWhiteSpace("    four   scores    and  seven      years     ", "[s]");
+#'
+#' removeWhiteSpace("The quick brown fox jumps over the lazy dog", ""); # default is 2
+#' removeWhiteSpace("The quick brown fox jumps over the lazy dog", "", n=1);
+removeWhiteSpace = function( str, replace=" ", n = 2,
+                              pre.trim = TRUE, post.trim = TRUE, trim.method = "stringi" )
+  {
+  # ?regex
+  # $string = preg_replace('/\s+/', '', $string);
+  if(pre.trim) { str = trimMe(str, method = trim.method); }
+    regex.s = paste0("[[:space:]]{",n,",}");
+  str = gsub( regex.s, replace, str );
+  # str = gsub("[[:space:]]", remain, str); # ... call it twice ?
+  if(post.trim) { str = trimMe(str, method = trim.method); }
+  str;
+  }
+
+
+
+#' strPadLeft
+#'
+#' When caching pages of content, useful for organization.
+#'  (e.g., page1.html becomes page_001.html)
+#'
+#' @param str The 'string' (can be a number)
+#' @param final.str.len How long the final str is to be
+#' @param padding Fill with, default is "0" (zero)
+#'
+#' @return string
+#' @export
+#'
+#' @aliases numberPadLeft
+#'
+#' @examples
+#' strPadLeft(33,1);
+#' strPadLeft(33,2);
+#' strPadLeft(33,3);
+#' strPadLeft(33,4);
+strPadLeft = function(str, final.str.len, padding="0", method="stringi")
+  {
+  if( isTRUE(requireNamespace("stringi", quietly = TRUE)) && method=="stringi" )
+    {
+    stringi::stri_pad_left(string, final.str.len, pad = padding);
+    } else {
+            n = strlen(str);
+            r = final.str.len - n;
+            if(r < 0) { stop("strPadLeft is too short!"); }
+            paste0(paste(rep(padding,r),collapse=""),str);
+
+            }
+  }
+
+#' strPadRight
+#'
+#'
+#'
+#' @param str The 'string' (can be a number)
+#' @param final.str.len How long the final str is to be
+#' @param padding Fill with, default is "0" (zero)
+#'
+#' @return string
+#' @export
+#'
+#' @aliases numberPadRight
+#'
+#' @examples
+#' strPadRight("33.01",5);
+#' strPadRight("33.01",6);
+#' strPadRight("33.01",7);
+#' strPadRight("33.01",8);
+strPadRight = function(str, final.str.len, padding="0", method="stringi")
+  {
+  if( isTRUE(requireNamespace("stringi", quietly = TRUE)) && method=="stringi" )
+    {
+    stringi::stri_pad_right(string, final.str.len, pad = padding);
+    } else {
+            n = strlen(str);
+            r = final.str.len - n;
+            if(r < 0) { stop("strPadRight is too short!"); }
+            paste0(str, paste(rep(padding,r),collapse=""));
+            }
+  }
+
+
+#' strlen
+#'
+#' @param str the character string
+#'
+#' @return the numeric length of said string
+#' @export
+#'
+#' @examples
+#' strlen("3.1415926535897932384626");
+#' strlen( pi );
+#' strvec = c("hi","how","are","you"); strlen(strvec);
+strlen = function(str)
+  {
+  # history :: # https://en.cppreference.com/w/c/string/byte/strlen
+  # http://www.cplusplus.com/reference/cstring/
+  # https://en.wikipedia.org/wiki/C99
+  # https://www.programiz.com/c-programming/library-function/string.h/strlen
+  # vectorized ... already
+  nchar( as.character(str), type="chars");
+  }
+
+
+
+
+
+str_replace = function(str, find, replace, method="stringi")
+  {
+  # if find/replace are longer ... if one is length one, repeat the other one
+  n.find = length(find);
+  n.replace = length(replace);
+  n.max = max(n.find, n.replace);
+
+  if(n.find == 1 && n.replace == 1)
+    {
+    if(n.find == 1)
+      {
+      find = rep(find, n.replace);
+      } else {
+              if(n.replace == 1)
+                {
+                find = rep(replace, n.find);
+                } else {
+                        stop("find and replace mismatch");
+                        }
+              }
+    }
+  ### let's loop and replace ...
+  for(i in 1:n.max)
+    {
+    if( isTRUE(requireNamespace("stringi", quietly = TRUE)) && method=="stringi" )
+      {
+      str = stringi::stri_replace_first_fixed(str, find[i], replace[i]);
+      } else {
+              str = gsub(find[i], replace[i], str, fixed=TRUE);
+              }
+    }
+  str;
+  }
+
+
+

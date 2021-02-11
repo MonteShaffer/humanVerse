@@ -1,6 +1,6 @@
 # "personality-raw" data set
 
-This data is owned by the `humanVerseWSU` author.  
+This data is owned by the `humanVerse` author.  
 
 It is a good use case of data cleansing (hence `-raw`).
 
