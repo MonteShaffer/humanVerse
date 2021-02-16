@@ -274,25 +274,56 @@ removeAllColumnsBut = function(df,mycols)
   # which is automatically treated as a vector of length 1.
 	for(mycol in mycols)
 		{
-		ndf[mycol] = df[mycol];
+		ndf[[mycol]] = df[[mycol]];
 		}
 	as.data.frame(ndf);
   }
 
 
-removeNAsFromDataFrame = function(df,mycols=NULL)
+#' removeNAsFromDataFrame
+#'
+#' @param df data.frame to cleanse
+#' @param mycols cols to check for NA, by default NULL is all columns
+#'
+#' @return dataframe, updated
+#' @export
+#'
+#' @examples
+#' library(datasets);
+#' data(iris);
+#'
+#' df = iris;
+#' df[1,1] = NA; df[2,2] = NA; df[3,3] = NA; df[4,4] = NA; df[5,5] = NA;
+#'
+#' head(df);
+#' dim(df);
+#'
+#' ndf = removeNAsFromDataFrame(df, c("Petal.Length","Petal.Width","Species"));
+#' head(ndf);
+#' dim(ndf);
+#'
+#'
+#' ndf = removeNAsFromDataFrame(df);
+#' head(ndf);
+#' dim(ndf);
+removeNAsFromDataFrame = function(df, mycols =NULL)
   {
-  # MORE TODO HERE
-  # if the given column is NA, we remove the row
-  # this enables us to build a balanced df
-  # if NULL, it will loop over all columsn and do a full cleanse by column ... very conservative approach
-  # imdb ... has-millions?
-  # nrows = dim(df)[1];
-  # ncols = dim(df)[2];
-  # https://stackoverflow.com/questions/4862178/remove-rows-with-all-or-some-nas-missing-values-in-data-frame
-  # complete.cases?
-  stats::na.omit(df);
-}
+  if(is.null(mycols))
+    {
+    ndf = stats::na.omit(df);
+    } else {
+            # keep row indexes to remove
+            idxs = c();
+            for(mycol in mycols)  # mycols could be just a single string, which is automatically treated as a vector of length 1.
+            		{
+            		row = df[[mycol]];
+            		idx = whichValue( row, NA, method="NA" );
+            		idxs = unique( c(idxs, idx) );
+                }
+            ndf = df[-c(idxs), ];
+            }
+  ndf;
+  }
 
 
 

@@ -87,6 +87,7 @@ includeLocalFiles = function(files, ...)
     }
   }
 
+# includeRemoteDirectoryGithub
 # includeRemoteFiles("https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/misc/functions-md5.R");
 includeRemoteFiles = function(urls, verbose=FALSE, ...)
   {
@@ -153,7 +154,8 @@ downloadFile = function(remote, myfile, n=999999, quiet = TRUE, ...)
     {
     download.file(remote, myfile, quiet = quiet, ...);
     } else {
-            raw.binary = readBin(remote, "raw", n)
+            raw.binary = readBin(remote, "raw", n);
+            # what if I don't have stringi ???   ... encoding = "UTF-8"
             url.encoding = stringi::stri_enc_detect(raw.binary)[[1]]$Encoding[1];
             raw.out = iconv(readBin(content, character()), from = encoding, to = "UTF-8");
             writeChar(raw.out, myfile);
