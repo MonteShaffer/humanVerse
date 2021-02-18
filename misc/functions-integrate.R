@@ -1,4 +1,5 @@
 
+# monte says hi
 
 # source("C:/_git_/github/MonteShaffer/humanVerse/misc/functions-integrate.R");
 
@@ -197,6 +198,7 @@ buildNumericalDataForIntegral = function(fprep="normal: -1, 1",
     stop("Something is wrong, fprep is not a list");
     }
   
+  xp           = fprep$fparams;
   fkey.3       = fprep$fkey.3;
   fdomain.x    = fprep$fdomain.x;
   eval(parse(text = xp)); # maybe will update here as well 
@@ -206,7 +208,7 @@ buildNumericalDataForIntegral = function(fprep="normal: -1, 1",
   
   if(is.null(i.lim)) { i.lim = fdomain.x; } # default for i.lim
   
-  xp           = fprep$fparams;
+  # xp           = fprep$fparams;
   rev.x = FALSE; # by default ... 
   
 ###############  CASE :: normal  ###############  
