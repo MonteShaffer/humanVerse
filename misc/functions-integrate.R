@@ -1,6 +1,6 @@
 
 
-
+# source("C:/_git_/github/MonteShaffer/humanVerse/misc/functions-integrate.R");
 
 computeXiFromResolution = function(x.domain, i.lim = c(0,1), 
                                     dxi = 0.01, forceEven = TRUE, oxi = 10)
@@ -103,13 +103,17 @@ computeXiFromResolution = function(x.domain, i.lim = c(0,1),
 
 parseNumericalFunctionString = function(fstr="normal: -1, 1")
   {
-  ostr = fstr; # original
+  
   fstr = trimMe(fstr);
+  
+  ostr = fstr; # original
+  
   ########### normal   -3.5 , 3.5
   #s = str_split( fstr ,":")[[1]];
   s = strsplit( fstr ,":", fixed=TRUE)[[1]];
   
-    fkey = tolower( trimMe(s[1]) );
+    fkey.original = ( trimMe(s[1]) );
+	fkey = tolower(fkey.original);
     fkey.3 = substr(fkey,1,3);
   #ss = str_split( trimMe(s[2]),">")[[1]];
   ss = strsplit( trimMe(s[2]),">", fixed=TRUE)[[1]];
@@ -121,13 +125,66 @@ parseNumericalFunctionString = function(fstr="normal: -1, 1")
     
   xp = trimMe(ss[2]);  
   
-  list( "fkey.3"  = fkey.3, "fkey" = fkey, "fstr" = ostr,
-        "fparams" = xp,     "fdomain.x" = fdomain.x);
+  # let's build as function if appropriate ...
+  vals = parseTextToListOfValues(xp);
+  myFunction = xd;
+  for(j in 1:length(vals))
+	{
+	key = names(vals)[j];
+	val = vals[[key]];
+	# print(key); print(val);
+	if(length(val) == 1)
+		{
+		myFunction = gsub(key, val, myFunction, fixed=TRUE);
+		}
+	if(key == "x.domain" && length(val) == 2)
+		{
+		fdomain.x = val;
+		}
+	}
+	
+  
+  list( "fkey.3"  = fkey.3, "fkey" = fkey, "fstr" = ostr, "FUN.s" = xd,
+        "FUN.n" = myFunction, "fparams" = xp,     "fdomain.x" = fdomain.x);
   }
 
 
+
+parseTextToListOfValues = function(xp)
+	{
+	# eval(parse(text = xp));
+	res = list();
+		tmp = strsplit(xp, ";", fixed=TRUE)[[1]];
+		n.tmp = length(tmp);
+	for(i in 1:n.tmp)
+		{
+		tmp2 = trimMe(strsplit(tmp[i], "=", fixed=TRUE)[[1]]);
+		# print(tmp2);
+		key = trimMe(tmp2[1]);
+		val = trimMe(tmp2[2]);
+
+		res[[key]] = eval( parse(text = val ) );
+		}
+		
+	# let's sort by length, longest first, so find/replace will work correctly
+	# https://stackoverflow.com/questions/22325719/
+	v = names(res);
+	rv = rev(v[order(nchar(v), v)])
+	
+	nres = list();
+	for(r in rv)
+		{
+		nres[[r]] = res[[r]];
+		}
+	
+		
+	nres;
+	}
+
+
+
 buildNumericalDataForIntegral = function(fprep="normal: -1, 1", 
-                                         i.lim = NULL, dxi = 0.01, forceEven = TRUE)
+                                         i.lim = NULL, x.domain = c(-10,10), dxi = 0.01, forceEven = TRUE)
   {
   if(is.character(fprep))
     {
@@ -142,9 +199,15 @@ buildNumericalDataForIntegral = function(fprep="normal: -1, 1",
   
   fkey.3       = fprep$fkey.3;
   fdomain.x    = fprep$fdomain.x;
+  eval(parse(text = xp)); # maybe will update here as well 
+  if(anyNA(fdomain.x)) { fdomain.x = x.domain; } # default 
+  
+ # print(fdomain.x);
+  
   if(is.null(i.lim)) { i.lim = fdomain.x; } # default for i.lim
   
   xp           = fprep$fparams;
+  rev.x = FALSE; # by default ... 
   
 ###############  CASE :: normal  ###############  
   if(fkey.3 == "nor")
@@ -596,11 +659,11 @@ buildNumericalDataForIntegral = function(fprep="normal: -1, 1",
     # y = ax + b ... let's allow any values, no defaults?
   
   ###############  CASE :: function  ###############     
-  if(fkey.3 == "fun" )
+  if(fkey.3 == "fun" || fkey.3 == "f(x" ||  fkey.3 == "g(x")
   {
     ### default domain ### 
     x.domain = c(-5, 5);
-    if(length(fdomain.x) == 2) { x.domain = fdomain.x;}
+    # if(length(fdomain.x) == 2) { x.domain = fdomain.x;}
     # figure out resolution with dxi and forceEven, given x domain  
     # xi = computeLengthFromResolution(x.domain, dxi = dxi, forceEven=forceEven); 
     i.xi = computeXiFromResolution(x.domain, i.lim = i.lim, dxi = dxi, forceEven=forceEven); 
@@ -614,6 +677,17 @@ buildNumericalDataForIntegral = function(fprep="normal: -1, 1",
     # eval(parse(text = xp));
     # 
     # yi = height*(1-abs(xi));
+	# polynomial = as.function( poly_calc(xs, ys) );
+	# y = polynomial(x);
+	# eval(parse(text = xp));
+	# print(fprep);
+	#print(x); print(xi);
+		# as.function(alist(a = , b = 2, a+b))
+		# myFunction = as.function(
+		# FUN.n = gsub(" x", " xi", fprep$FUN.n, fixed=TRUE);
+	# yi = eval(parse(text = FUN.n ) );
+		myF = function(x) { eval(parse(text = fprep$FUN.n)); }
+	yi = myF(xi);
     
     if(rev.x == TRUE) { xi = rev(xi); } # switches skew-left to skew-right
     # plot(xi,yi);
@@ -637,11 +711,12 @@ differentSigns = function(a,b)
   }
 
 computeNumericalIntegration = function(info,
-    method="support",
+    method="string",
     FUN="yi*1",
     tol= (.Machine$double.eps ^ 0.25),
     skip.signs = FALSE,
     fparams=NULL,
+    start=NULL, # just added ... 
     stop=NULL,
     verbose=FALSE,
     animatePolygons = NULL, # if not null, this is Sys.sleep(3)
@@ -767,11 +842,25 @@ computeNumericalIntegration = function(info,
     {
     x = final.x[i];
     
-    if(!is.null(stop))
+    if(!is.null(start))
       {
-      if(stop < x) { break; }
+      if(start > x) 
+        { 
+        next; 
+        } else {
+               if(verbose){ print(paste0("start: ",start, " ... x: ", x));}
+                }
       }
     
+    if(!is.null(stop))
+      {
+      if(stop < x) 
+        { 
+        if(verbose){ print(paste0("stop: ",stop, " ... x: ", x)); }
+        break; 
+        }
+      }
+     
     xn = final.x[i+1]; # next
     
     
@@ -804,14 +893,17 @@ computeNumericalIntegration = function(info,
     # if(is.na(eps)){eps=0}
     result$total = result$total + eps;
     result$absolute = result$absolute + abs(eps);
+    mycol =  polygon.col.pos; which.col = "pos";
     if(Re(eps) > 0)
       {
       mycol = polygon.col.pos;
+      which.col = "pos";
       result$positive = result$positive + eps;
       }
     if(Re(eps) < 0)
       {
       mycol = polygon.col.neg;
+      which.col = "neg";
       result$negative = result$negative + eps;
       }
     
@@ -822,7 +914,12 @@ computeNumericalIntegration = function(info,
      
       if(showPolygons)
         {
+        
         polygon(px, py, col=mycol, border=polygon.border, lty=1, lwd=polygon.lwd);
+        if(length(animatePolygons) != 0)
+          {
+           # Sys.sleep(animatePolygons); 
+          }
         }
 
 
@@ -832,12 +929,12 @@ computeNumericalIntegration = function(info,
     }
     
     
-    polygons[[i]] = list("x" = px, "y" = py);
+    polygons[[i]] = list("x" = px, "y" = py, "col" = which.col);
     
 #### end stop ??? ####      
     
       }
-     
+      
 
   result$sign.changes = sign.changes;
   result$eps = eps.a;
@@ -853,5 +950,5 @@ computeNumericalIntegration = function(info,
   
   if(return=="all") { return(list("result"=result,"polygons"=polygons)); }
   
-  
+   
   }
