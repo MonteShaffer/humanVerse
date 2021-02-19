@@ -86,7 +86,7 @@ initSeedMemory = function(purge.memory = FALSE)
     }
   }
 
-setSeed = function(seed = NULL, force.new = TRUE, key = "last", ..., args.set = list() )
+setSeed = function(seed = NULL, force.new = FALSE, key = "last", ..., args.set = list() )
   {
   # can I have two ellipses in a single function?
     # one for initSeed
