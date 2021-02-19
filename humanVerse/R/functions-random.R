@@ -77,16 +77,20 @@ initSeed = function(...)
 #'
 #' @examples
 #' initSeedMemory();
-#' setSeed(); getSeed(); initSeedMemory(TRUE); getSeed();
-initSeedMemory = function(purge.memory = FALSE)
+#' setSeed(); getSeed(); initSeedMemory(purge.memory = TRUE); getSeed();
+initSeedMemory = function(purge.memory = FALSE, verbose = TRUE)
   {
   if(!exists(".random.seed.memory") || purge.memory)
     {
+    if(verbose)
+      {
+      cat("initSeedMemory :: initializing list '.random.seed.memory'", "\n");
+      }
     .GlobalEnv$.random.seed.memory = list();
     }
   }
 
-setSeed = function(seed = NULL, force.new = FALSE, key = "last", ..., args.set = list() )
+setSeed = function(seed, force.new = FALSE, key = "last", ..., args.set = list(), verbose = TRUE )
   {
   # can I have two ellipses in a single function?
     # one for initSeed
@@ -95,19 +99,35 @@ setSeed = function(seed = NULL, force.new = FALSE, key = "last", ..., args.set =
   if(is.null(seed) || force.new == TRUE)
     {
     seed = initSeed(...);
+    if(verbose)
+      {
+      cat("setSeed :: generating new integer seed ... ", "\t", seed, "\n");
+      }
+    initSeedMemory();
     }
   .GlobalEnv$.random.seed.memory[[key]] = seed;
+  if(verbose)
+      {
+      cat("setSeed :: global value stored [key] = ",key," ... [seed] = ",seed, "\n");
+      }
   if( !exists("kind", args.set) )         { kind = NULL; }
   if( !exists("normal.kind", args.set) )  { normal.kind = NULL; }
   if( !exists("sample.kind", args.set) )  { sample.kind = NULL; }
+  if(verbose)
+      {
+      cat("setSeed :: calling base::set.seed with seed ... ", seed, "\n");
+      }
   set.seed(seed, kind=kind, normal.kind=normal.kind, sample.kind=sample.kind);
   }
 
 # I could create a "keyed" list of memory, not just last ...
-getSeed = function(key = "last")
+getSeed = function(key, verbose = TRUE)
   {
+  if( missing(key) ) { key = "last"; }
+  if(verbose) { cat("getSeed :: looking up key ... ", "\t", key); }
   if(exists(key, .random.seed.memory))
     {
+    if(verbose) { cat("\n\t ... found with value: ", "\t", .GlobalEnv$.random.seed.memory[[key]], "\n"); }
     .GlobalEnv$.random.seed.memory[[key]];
     } else { FALSE; }
   }
