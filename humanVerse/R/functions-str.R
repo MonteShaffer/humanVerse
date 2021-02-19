@@ -304,7 +304,7 @@ strlen = function(str)
 
 
 
-
+# this is "fixed" find and replace
 str_replace = function(str, find, replace, method="stringi")
   {
   # if find/replace are longer ... if one is length one, repeat the other one
@@ -341,3 +341,33 @@ str_replace = function(str, find, replace, method="stringi")
 
 
 
+#' castStringAsFunction
+#'
+#' @param fstr The RHS (right hand side) of a function in string form.
+#' @param ... The elements in RHS that are parameters (e.g., x)
+#' @param envir The scope of the environment for the function
+#'
+#' @return A function
+#' @export
+#'
+#' @examples
+#' x = -3:3;
+#' FUN = "exp( 3 * x^2 + 2 * x + 1)";
+#' myFunction = castStringAsFunction (  FUN, x );
+#' myFunction;
+#' myFunction(x);
+#'
+castStringAsFunction = function(fstr, ..., envir = parent.frame() )
+  {
+  # https://stackoverflow.com/questions/66266860/
+  dots            = match.call(expand.dots = FALSE)$... ;
+  form_ls         = rep(list(bquote()), length(dots));
+  names(form_ls)  = as.character(dots);
+
+  f = function(){};
+    formals(f)      = form_ls;
+    body(f)         = str2lang(fstr);
+    environment(f)  = envir;
+
+  f;
+  }
