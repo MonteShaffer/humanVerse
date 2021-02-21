@@ -26,6 +26,12 @@ rand = function(min = -1*as.integer(Sys.time()), max = as.integer(Sys.time()), n
     # pracma::primes ... maybe seed with primes, using sieve attributed to Erasthostenes
     if(!is.null(seed)) { setSeed(seed); }
     me = substr( trimMe( tolower(method) ), 1, 2);
+	n = as.integer ( n );
+	if(is.na(n) || n < 1)
+		{
+		warning( paste0('Bad value for n "', n, '" in function [rand]', "\n", "Setting n=1") );
+		n = 1;
+		}
     if(me == "hi")  # high-low method
       {
       return( as.integer(( (max + 1) - min) * runif(n) + min) );
