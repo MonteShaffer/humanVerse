@@ -90,13 +90,14 @@ initSeedMemory = function(purge.memory = FALSE, verbose = TRUE)
     }
   }
 
-setSeed = function(seed, force.new = FALSE, key = "last", ..., args.set = list(), verbose = TRUE )
+setSeed = function(seed, key, ..., args.set = list(), verbose = TRUE )
   {
   # can I have two ellipses in a single function?
     # one for initSeed
     # one for set.seed
     # nope, argslist
-  if(is.null(seed) || force.new == TRUE)
+  if( missing(key) ) { key = "last"; }
+  if(is.null(seed))
     {
     seed = initSeed(...);
     if(verbose)

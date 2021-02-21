@@ -14,6 +14,8 @@
 #'
 doStatsSummary = function(x)
 	{
+	# getAttribute("na.action", xx)
+	# getAttribute("class", getAttribute("na.action", xx) )
 	result = list();
 		result$length = length(x);
 	xx = stats::na.omit(x);
@@ -27,8 +29,16 @@ doStatsSummary = function(x)
 	result$MAD = stats::mad(xx);
 	result$IQR = stats::IQR(xx);
 	result$quartiles = stats::quantile(xx, prob=c(.25,.5,.75), type=1); # tries to use actual data, not averages ...
-	result$deciles = stats::quantile(xx, prob=seq(0.1,0.9,by=0.1), type=1 );
-	result$centiles = stats::quantile(xx, prob=seq(0.01,0.99,by=0.01), type=1 );
+	# https://stats.stackexchange.com/questions/430391/are-there-99-percentiles-or-100-percentiles-and-are-they-groups-of-numbers-or
+	# https://math.stackexchange.com/questions/1419609/are-there-3-or-4-quartiles-99-or-100-percentiles
+		probs.deciles = seq(0.1,0.9,by=0.1);
+		#probs.deciles = seq(0.1,1.0,by=0.1);
+	result$deciles = stats::quantile(xx, prob=probs.deciles, type=1 );
+	result$decile.members = cutMe(xx, probs.deciles, lower.equal = TRUE);
+	result$centiles = stats::quantile(xx, prob=probs.centiles, type=1 );
+	# ?cut   cut(xx, 10) ... will be usefull for a histogram-ish device ... 
+	# https://stackoverflow.com/questions/11728419/using-cut-and-quartile-to-generate-breaks-in-r-function
+	
 
 	result$median.weighted = matrixStats::weightedMad(xx);
 	result$MAD.weighted = matrixStats::weightedMedian(xx);
@@ -54,6 +64,9 @@ doStatsSummary = function(x)
 
 	result$sd = stats::sd(xx);
 	result$var = stats::var(xx);
+	
+	result$se.mean = result$sd / sqrt(result$length.good);
+	result$IDR.3 = doIDR(xx, 1/3);
 
 	result$var.naive = doSampleVariance(x,"naive");
 	result$var.2step = doSampleVariance(x,"2step");
@@ -66,9 +79,70 @@ doStatsSummary = function(x)
 	result$outliers.z = findOutliersUsingZscores(x);
 	result$outliers.IQR = findOutliersUsingIQR(x);
 
-	#result$z = calculateZscores(x);
+	# result$z = calculateZscores(x); # works same as scale ... 
+	# append "attributes" ... 
 
 	result;
+	}
+
+
+
+	
+	
+# # create a 2 by 5 matrix
+# x <- 1:10
+# attr(x,"dim") <- c(2, 5)
+# https://stackoverflow.com/questions/27546901/how-to-set-attributes-for-a-variable-in-r
+cutMe = function(x, qs, type=1, lower.equal=TRUE)
+	{
+	# xx = na.omit(x);
+	xx = x;
+	df = as.data.frame(xx);
+		df$yy = 0 * xx;
+	nx = length(xx);
+	q.cuts = getQuantiles(xx, qs, type);
+		# attributes(df)[["cuts"]] = q.cuts;
+		df = setAttribute("cuts", q.cuts, df);  # set KEY to VAL in OBJ
+		# getAttribute("cuts", df);
+	
+	# buckets = length(qs) + 1;
+	# yy = list();
+	for(b in 1:length(qs) )
+		{
+		idxb = which(xx <= q.cuts[b]);
+		df$yy[idxb] = b;
+		xx[idxb] = NA;
+		# yy[[b]] = idxb;		
+		}
+		idxb = which(!is.na(xx)); # leftovers
+	# yy[[b+1]] = idxb;
+		df$yy[idxb] = b+1;
+	colnames(df) = c("x", "member");
+	df;
+	
+	}
+
+
+
+# quantile(data, probs = c(.37, .53, .87))
+getQuantiles = function(x, qs, type=1)
+	{
+	xx = na.omit(x);
+	as.numeric(stats::quantile(xx, prob=qs, type=type));	
+	}
+	
+	
+doIDR = function(x, lower = 0.25, upper = 1 - lower, type=1)
+	{
+	xx = na.omit(x);
+	q.lower = getQuantiles(xx, lower, type);
+	q.upper = getQuantiles(xx, upper, type);
+	q.lim = c(q.lower, q.upper);
+	q.range = abs(q.upper - q.lower); # in case they enter them backwards
+	
+	list("call" = list("lower" = lower, "upper" = upper, "type" = type),
+		"IDR" = list("lower" = q.lower, "upper" = q.upper, "xlim" = q.lim, "range" = q.range)
+		);	
 	}
 
 #' doSampleVariance
