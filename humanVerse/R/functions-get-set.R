@@ -1,37 +1,37 @@
 
 # save memory ... restoreState ... pdf 
-setPar = function(key, val)
-	{
-	# par(mar=c(0.25, 0.25, 0.25, 0.25)
+# par(mar=c(0.25, 0.25, 0.25, 0.25)
 	# R.O. indicates read-only arguments: These may only be used in queries and cannot be set. ("cin", "cra", "csi", "cxy", "din" and "page" are always read-only.)
 	# https://www.rdocumentation.org/packages/graphics/versions/3.6.2/topics/par
+setParKey = function(myKey, myValue)
+	{	
 	pnames = names( par(no.readonly = TRUE) );
-	if(is.element(key, pnames))
+	if(is.element(myKey, pnames))
 		{
-		# par()[[key]] = val;
-		par(setNames(list(val), key))
+		# par()[[myKey]] = myValue;
+		par(setNames(list(myValue), myKey))
 		}
 	}
 	
-getPar = function(key)
+getParKey = function(myKey)
 	{	
 	pnames = names( par(no.readonly = FALSE) );
-	if(is.element(key, pnames))
+	if(is.element(myKey, pnames))
 		{
-		# par()[[key]];	
-		par(key);
+		# par()[[myKey]];	
+		par(myKey);
 		}
 	}
 
-getAttribute = function(key, obj)
+getAttribute = function(myAttribute, myObj)
 	{
-	attributes(obj)[[key]];	
+	attributes(myObj)[[myAttribute]];	
 	}
 	
-setAttribute = function(key, value, obj)
+setAttribute = function(myAttribute, myValue, myObj)
 	{
-	attributes(obj)[[key]] = value;	
-	obj;  # no object referencing, so I must return
+	attributes(myObj)[[myAttribute]] = myValue;	
+	myObj;  # no object referencing, so I must return
 	}
 
 

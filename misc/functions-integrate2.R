@@ -124,29 +124,36 @@ parseNumericalFunctionString = function(fstr="normal: -1, 1")
   xd = trimMe(xd);
     fdomain.x = suppressWarnings( as.numeric(xd) );
     
+print(xd);
   xp = trimMe(ss[2]);  
   
+  myFunction = "";
+print(xp);  
   # let's build as function if appropriate ...
-  vals = parseTextToListOfValues(xp);
-  myFunction = xd;
-  for(j in 1:length(vals))
+  if(!is.na(xp))
 	{
-	key = names(vals)[j];
-	val = vals[[key]];
-	# print(key); print(val);
-	if(length(val) == 1)
+	  vals = parseTextToListOfValues(xp);
+	  myFunction = xd;
+	  for(j in 1:length(vals))
 		{
-		myFunction = gsub(key, val, myFunction, fixed=TRUE);
-		}
-	if(key == "x.domain" && length(val) == 2)
-		{
-		fdomain.x = val;
+		key = names(vals)[j];
+		val = vals[[key]];
+		print(key); print(val);
+		if(length(val) == 1)
+			{
+			myFunction = gsub(key, val, myFunction, fixed=TRUE);
+			}
+		if(key == "x.domain" && length(val) == 2)
+			{
+			fdomain.x = val;
+			}
 		}
 	}
-	
   
-  list( "fkey.3"  = fkey.3, "fkey" = fkey, "fstr" = ostr, "FUN.s" = xd,
+  res =  list( "fkey.3"  = fkey.3, "fkey" = fkey, "fstr" = ostr, "FUN.s" = xd,
         "FUN.n" = myFunction, "fparams" = xp,     "fdomain.x" = fdomain.x);
+	print(res);
+res;
   }
 
 
@@ -182,10 +189,19 @@ parseTextToListOfValues = function(xp)
 	nres;
 	}
 
+getAttribute = function(myAttribute, myObj)
+    {
+    attributes(myObj)[[myAttribute]];  
+    }
 
+setAttribute = function(myAttribute, myValue, myObj)
+    {
+    attributes(myObj)[[myAttribute]] = myValue;
+    myObj;  # no object referencing, so I must return
+    }
 
 buildNumericalDataForIntegral = function(fprep="normal: -1, 1", 
-                                         i.lim = NULL, x.domain = c(-10,10), dxi = 0.01, forceEven = TRUE)
+                                         i.lim = c(NA,NA), x.domain = c(-10,10), dxi = 0.01, forceEven = TRUE)
   {
   if(is.character(fprep))
     {
@@ -198,18 +214,32 @@ buildNumericalDataForIntegral = function(fprep="normal: -1, 1",
     stop("Something is wrong, fprep is not a list");
     }
   
+  print(x.domain);
   xp           = fprep$fparams;
   fkey.3       = fprep$fkey.3;
   fdomain.x    = fprep$fdomain.x;
+  print(fdomain.x);
   eval(parse(text = xp)); # maybe will update here as well 
   if(anyNA(fdomain.x)) { fdomain.x = x.domain; } # default 
   
  # print(fdomain.x);
+ x.domain = fdomain.x;
   
-  if(is.null(i.lim)) { i.lim = fdomain.x; } # default for i.lim
+  # print(i.lim);
+  # if(is.null(i.lim)) { i.lim = fdomain.x; } # default for i.lim
+  if(is.na(i.lim[1])) { i.lim[1] = fdomain.x[1]; }
+  if(is.na(i.lim[2])) { i.lim[2] = fdomain.x[2]; }
   
   # xp           = fprep$fparams;
   rev.x = FALSE; # by default ... 
+  
+  result = list();
+	
+	result = setAttribute("fprep", fprep, result);
+	result = setAttribute("i.lim", i.lim, result);
+	result = setAttribute("x.domain", x.domain, result);
+	result = setAttribute("dxi", dxi, result);
+	result = setAttribute("forceEven", forceEven, result);
   
 ###############  CASE :: normal  ###############  
   if(fkey.3 == "nor")
@@ -231,7 +261,10 @@ buildNumericalDataForIntegral = function(fprep="normal: -1, 1",
     
     yi = dnorm(xi, mean=mean, sd=sd);
      # plot(xi,yi);
-    return ( list("x" = xi, "y" = yi) );
+	result$x = xi;
+	result$y = yi;
+	
+    return ( result );
     }
 
 ###############  CASE :: t  ###############  
@@ -253,7 +286,10 @@ buildNumericalDataForIntegral = function(fprep="normal: -1, 1",
     
     yi = dt(xi, df=df);
      # plot(xi,yi);
-    return ( list("x" = xi, "y" = yi) );
+    result$x = xi;
+	result$y = yi;
+	
+    return ( result );
   }
 
 ###############  CASE :: Hotelling's T2 distribution  ###############  
@@ -280,7 +316,10 @@ buildNumericalDataForIntegral = function(fprep="normal: -1, 1",
     yi = df(xi, df1=df1, df2=df2);
     if(rev.x == TRUE) { xi = rev(xi); } # switches skew-left to skew-right
      # plot(xi,yi);
-    return ( list("x" = xi, "y" = yi) );
+    result$x = xi;
+	result$y = yi;
+	
+    return ( result );
   }  
   
 ###############  CASE :: f  ###############  
@@ -307,7 +346,10 @@ buildNumericalDataForIntegral = function(fprep="normal: -1, 1",
     if(rev.x == TRUE) { xi = rev(xi); } # switches skew-left to skew-right
     # if(rev.x == TRUE) { xi = rev(xi); yi = rev(yi); }
     # plot(xi,yi);
-    return ( list("x" = xi, "y" = yi) );
+    result$x = xi;
+	result$y = yi;
+	
+    return ( result );
   }    
   
 ###############  CASE :: chisq  ###############     
@@ -333,7 +375,10 @@ buildNumericalDataForIntegral = function(fprep="normal: -1, 1",
     
     if(rev.x == TRUE) { xi = rev(xi); } # switches skew-left to skew-right
     # plot(xi,yi);
-    return ( list("x" = xi, "y" = yi) );
+    result$x = xi;
+	result$y = yi;
+	
+    return ( result );
     }
  
 ###############  CASE :: gamma  ###############     
@@ -360,7 +405,10 @@ buildNumericalDataForIntegral = function(fprep="normal: -1, 1",
     
     if(rev.x == TRUE) { xi = rev(xi); } # switches skew-left to skew-right
     # plot(xi,yi);
-    return ( list("x" = xi, "y" = yi) );
+    result$x = xi;
+	result$y = yi;
+	
+    return ( result );
     }
 
 ###############  CASE :: quadratic  ###############     
@@ -387,7 +435,10 @@ buildNumericalDataForIntegral = function(fprep="normal: -1, 1",
     
     if(rev.x == TRUE) { xi = rev(xi); } # switches skew-left to skew-right
     # plot(xi,yi);
-    return ( list("x" = xi, "y" = yi) );
+    result$x = xi;
+	result$y = yi;
+	
+    return ( result );
     }  
 
 ###############  CASE :: exponential  ###############     
@@ -415,7 +466,10 @@ buildNumericalDataForIntegral = function(fprep="normal: -1, 1",
     
     if(rev.x == TRUE) { xi = rev(xi); } # switches skew-left to skew-right
     # plot(xi,yi);
-    return ( list("x" = xi, "y" = yi) );
+    result$x = xi;
+	result$y = yi;
+	
+    return ( result );
     }    
     
   
@@ -447,7 +501,10 @@ buildNumericalDataForIntegral = function(fprep="normal: -1, 1",
       
       if(rev.x == TRUE) { xi = rev(xi); } # switches skew-left to skew-right
       # plot(xi,yi);
-      return ( list("x" = xi, "y" = yi) );
+    result$x = xi;
+	result$y = yi;
+	
+    return ( result );
     }    
     
   }
@@ -478,7 +535,10 @@ buildNumericalDataForIntegral = function(fprep="normal: -1, 1",
       
       if(rev.x == TRUE) { xi = rev(xi); } # switches skew-left to skew-right
       # plot(xi,yi);
-      return ( list("x" = xi, "y" = yi) );
+    result$x = xi;
+	result$y = yi;
+	
+    return ( result );
     }    
     
   }
@@ -508,7 +568,10 @@ buildNumericalDataForIntegral = function(fprep="normal: -1, 1",
       
       if(rev.x == TRUE) { xi = rev(xi); } # switches skew-left to skew-right
       # plot(xi,yi);
-      return ( list("x" = xi, "y" = yi) );
+    result$x = xi;
+	result$y = yi;
+	
+    return ( result );
     }    
     
   }
@@ -539,7 +602,10 @@ buildNumericalDataForIntegral = function(fprep="normal: -1, 1",
       
       if(rev.x == TRUE) { xi = rev(xi); } # switches skew-left to skew-right
       # plot(xi,yi);
-      return ( list("x" = xi, "y" = yi) );
+    result$x = xi;
+	result$y = yi;
+	
+    return ( result );
     }    
     
   }
@@ -575,7 +641,10 @@ buildNumericalDataForIntegral = function(fprep="normal: -1, 1",
       
       if(rev.x == TRUE) { xi = rev(xi); } # switches skew-left to skew-right
       # plot(xi,yi);
-      return ( list("x" = xi, "y" = yi) );
+    result$x = xi;
+	result$y = yi;
+	
+    return ( result );
     }    
     
   }
@@ -606,7 +675,10 @@ buildNumericalDataForIntegral = function(fprep="normal: -1, 1",
       
       if(rev.x == TRUE) { xi = rev(xi); } # switches skew-left to skew-right
       # plot(xi,yi);
-      return ( list("x" = xi, "y" = yi) );
+    result$x = xi;
+	result$y = yi;
+	
+    return ( result );
     }    
     
   }
@@ -628,7 +700,10 @@ buildNumericalDataForIntegral = function(fprep="normal: -1, 1",
     eval(parse(text = xp));
     yi = 0*xi + height;
     #plot(xi,yi);
-    return ( list("x" = xi, "y" = yi) );
+    result$x = xi;
+	result$y = yi;
+	
+    return ( result );
     }
   
   ###############  CASE :: triangle  ###############     
@@ -653,7 +728,10 @@ buildNumericalDataForIntegral = function(fprep="normal: -1, 1",
     
     if(rev.x == TRUE) { xi = rev(xi); } # switches skew-left to skew-right
     # plot(xi,yi);
-    return ( list("x" = xi, "y" = yi) );
+	result$x = xi;
+	result$y = yi;
+	
+    return ( result );
   }  
   
 
@@ -693,7 +771,10 @@ buildNumericalDataForIntegral = function(fprep="normal: -1, 1",
     
     if(rev.x == TRUE) { xi = rev(xi); } # switches skew-left to skew-right
     # plot(xi,yi);
-    return ( list("x" = xi, "y" = yi) );
+    result$x = xi;
+	result$y = yi;
+	
+    return ( result );
   }  
   
 ##### END OF THE ROAD #####    
@@ -712,6 +793,144 @@ differentSigns = function(a,b)
   return(FALSE);
   }
 
+
+# computeXiFromResolution = function(x.domain, i.lim = c(0,1), dxi = 0.01, forceEven = TRUE, oxi = 10)
+
+
+computeNumericalIntegrationString = function(fstr,    
+    start=NULL, # just added ... 
+    stop=NULL,
+    verbose=FALSE,
+	plotMe = TRUE,
+	parNew = FALSE,
+    showPolygons = TRUE, # requires an active plot
+	..., # pass parameters into plot ... 
+    polygon.lwd = 1,
+	dxi = 0.01,
+	x.domain = c(-10,10), # this is overwritten in fstr
+	forceEven = TRUE,
+    polygon.border = NA,  # set color for each polygon border
+    polygon.col.pos = "#4DBF4D", # "green", # positive-area color
+    polygon.col.neg = "#BF4D4D" # "red", # negative-area color
+    )
+	{
+	ilim = c(NA, NA);	
+	if(!is.null(start))
+      {
+	  ilim[1] = start;
+	  }
+	if(!is.null(stop))
+      {
+	  ilim[2] = stop;
+	  }
+
+# print(ilim);	
+	info = buildNumericalDataForIntegral(fstr, i.lim = ilim, x.domain = x.domain, dxi = dxi, forceEven = forceEven);  # ox = 10 is hidden, for values out of bounds ... 
+	
+	
+	xdomain = info$x;
+    yfinal = info$y;
+	
+	#print( range(xdomain) );
+	#print( range(yfinal) );
+	
+	xlen = length(xdomain);
+	
+	# if everything above worked, this should be exact ...
+	which.start = 1;
+	if(!is.null(start))
+      {
+	  my.which = which(xdomain == start);
+	  if(length(my.which) > 0) { which.start = my.which[1]; }
+	  }
+	which.stop = xlen;
+	if(!is.null(stop))
+      {
+	  my.which = which(xdomain == stop);
+	  if(length(my.which) > 0) { which.stop = my.which[1]; }
+	  }
+	
+	
+	
+	xdomain = xdomain[which.start:which.stop];
+	yfinal = yfinal[which.start:which.stop];
+	  
+	#print( range(xdomain) );
+	#print( range(yfinal) );
+	
+	if(plotMe)
+		{
+		if(parNew) 
+			{ 
+			par(new=TRUE); 
+			plot(info, type="l", lwd=3, xlab="", ylab="", axes=FALSE, xlim=range(info$x), ...);
+			} else {
+					plot(info, type="l", lwd=4, xlab="x", ylab="y", bty="n", xlim=range(info$x), ...);
+					abline(h = 0, col="#888888");
+					}
+		
+		
+		}
+	
+	result = list();
+		result$info = info;
+		result$positive = result$negative = result$absolute = result$total = 0;
+	polygons = list();
+	
+	xlen = length(xdomain);
+	# cat("xlen: ", xlen);
+	eps.a = c();
+	for(i in 1:(xlen-1))
+		{
+		x = xdomain[i];
+			xn = xdomain[i+1]; # next
+		y = yfinal[i];
+			yn = yfinal[i+1]; # next
+			
+		# x,y are already built?
+		# why do I need getY ... only on support ?
+		
+		# TRAPEZOID
+		eps = abs(xn - x) * (y + yn) / 2;
+		eps.a = c(eps.a, eps);
+		
+		result$total = result$total + eps;
+		result$absolute = result$absolute + abs(eps);
+		
+		# POLYGONS (and plus / minus)
+		mycol =  polygon.col.pos; which.col = "pos";
+		
+		
+		if(Re(eps) > 0)
+		  {
+		  mycol = polygon.col.pos;
+		  which.col = "pos";
+		  result$positive = result$positive + eps;
+		  }
+		if(Re(eps) < 0)
+		  {
+		  mycol = polygon.col.neg;
+		  which.col = "neg";
+		  result$negative = result$negative + eps;
+		  }
+    
+		px = c(x, x, xn, xn);
+		py = c(0, y, yn,  0);
+     
+		  if(showPolygons)
+			{        
+			polygon(px, py, col=mycol, border=polygon.border, lty=1, lwd=polygon.lwd);
+			}
+		polygons[[i]] = list("x" = px, "y" = py, "col" = which.col);		
+		}
+	# cat("eps.a: ", length(eps.a));
+	
+	return(list("result"=result, "eps" = eps.a, "polygons"=polygons));	
+	}
+
+
+
+
 computeNumericalIntegration = function(info,
     method="string",
     FUN="yi*1",
@@ -725,8 +944,8 @@ computeNumericalIntegration = function(info,
     showPolygons = FALSE, # requires an active plot
     polygon.lwd = 1,
     polygon.border = NA,  # set color for each polygon border
-    polygon.col.pos = "green", # positive-area color
-    polygon.col.neg = "red", # negative-area color
+    polygon.col.pos = "#4DBF4D", # "green", # positive-area color
+    polygon.col.neg = "#BF4D4D", # "red", # negative-area color
     return="result"
     )
   {
@@ -750,6 +969,31 @@ computeNumericalIntegration = function(info,
       xdomain = rev(info$x);
       yfinal = rev(info$y);
       }
+	# if we have start and stop ... let's truncate the area ...
+	# under - estimate ???
+	# alertStart = FALSE; #   alertStop = FALSE;
+	which.start = 1;
+	if(!is.null(start))
+      {
+	  my.which = which(xdomain < start);
+	  if(length(my.which) > 0) { which.start = 1 + max(my.which); }
+	  }
+	which.stop = xdomain[xlen];
+	if(!is.null(stop))
+      {
+	  my.which = which(xdomain > stop);
+	  if(length(my.which) > 0) { which.stop = min(my.which) - 1; }
+	  }
+	
+	xdomain = xdomain[which.start:which.stop];
+	yfinal = yfinal[which.start:which.stop];
+	  
+	#print(xdomain);
+	#print(yfinal);
+	
+	
+	
+	
     }
   
   sign.changes = 0;
@@ -840,6 +1084,8 @@ computeNumericalIntegration = function(info,
   result = list();
   result$positive = result$negative = result$absolute = result$total = 0;
   polygons = list();
+  alertStart = FALSE;
+  alertStop = FALSE;
   for(i in 1:(xlen-1))
     {
     x = final.x[i];
@@ -850,7 +1096,13 @@ computeNumericalIntegration = function(info,
         { 
         next; 
         } else {
-               if(verbose){ print(paste0("start: ",start, " ... x: ", x));}
+				if(!alertStart)
+					{
+					if(verbose){ print(paste0("start: ",start, " ... x: ", x));}
+					# return (FALSE);
+					}
+					
+				alertStart = TRUE;
                 }
       }
     
@@ -858,7 +1110,12 @@ computeNumericalIntegration = function(info,
       {
       if(stop < x) 
         { 
-        if(verbose){ print(paste0("stop: ",stop, " ... x: ", x)); }
+		if(!alertStop)
+			{
+			if(verbose){ print(paste0("stop: ",stop, " ... x: ", x)); }
+			# return (FALSE);
+			}
+		alertStop = TRUE;
         break; 
         }
       }
