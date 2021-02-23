@@ -144,3 +144,20 @@ standardizeFromOneRangeToAnother = function(x, another, onerange=range(x) )
 
 	tmin + (tmax-tmin) * (x - rmin) / (rmax - rmin);
 	}
+
+
+standardizeFromOldRangeToNew = function(x, oldrange=range(x), newrange)
+	{
+	if(length(newrange) < 2)  { return (NULL); }
+	if(length(oldrange) < 2) { return (NULL); }
+
+	rmin = oldrange[1]; # min
+	rmax = oldrange[2]; # max
+
+	tmin = newrange[1]; # min
+	tmax = newrange[2]; # max
+
+	# if (rmax-rmin) == 0 ... will return INF or -INF (NaN)
+
+	tmin + (tmax-tmin) * (x - rmin) / (rmax - rmin);
+  }
