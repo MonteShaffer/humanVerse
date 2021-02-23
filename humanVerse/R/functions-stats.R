@@ -35,6 +35,7 @@ doStatsSummary = function(x)
 		#probs.deciles = seq(0.1,1.0,by=0.1);
 	result$deciles = stats::quantile(xx, prob=probs.deciles, type=1 );
 	result$decile.members = cutMe(xx, probs.deciles, lower.equal = TRUE);
+	  probs.centiles = seq(0.01,0.99,by=0.1);
 	result$centiles = stats::quantile(xx, prob=probs.centiles, type=1 );
 	# ?cut   cut(xx, 10) ... will be usefull for a histogram-ish device ...
 	# https://stackoverflow.com/questions/11728419/using-cut-and-quartile-to-generate-breaks-in-r-function
