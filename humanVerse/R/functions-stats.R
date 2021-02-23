@@ -59,7 +59,7 @@ doStatsSummary = function(x)
 	result$mode = result$freq.max = doMode(x);  # elements with highest frequency
 	result$which.min.freq = doModeOpposite(x);
 
-	result$ylim = c( freqMin(xx), freqMax(xx) );
+	result$ylim = c( findFrequencyMinimumInVector(xx), findFrequencyMaximumInVector(xx) );
 
 	# you could later get indexes of each mode(freq.max)/freq.min using findAllIndexesWithValueInVector
 
