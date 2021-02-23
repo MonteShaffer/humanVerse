@@ -23,6 +23,12 @@ getParKey = function(myKey)
 		}
 	}
 
+
+getAttributes = function(myObj)  # maybe getAllAttributes
+	{
+	attributes(myObj);
+	}
+
 getAttribute = function(myAttribute, myObj)
 	{
 	attributes(myObj)[[myAttribute]];	

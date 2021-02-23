@@ -87,6 +87,108 @@ doStatsSummary = function(x)
 
 
 
+zCutOverlay = function(z.table, steps.z = 1/2, verbose = FALSE, myColor = "blue", ...)
+	{
+	# z = calculateZscores(x);
+	  # range.z = c(-3,3);
+	  # steps.z = 1/2;
+	# z.cut = cutZ(z, range.z, steps.z, verbose=TRUE);
+	# z.table = table(z.cut$member);
+	
+	# how to deal with -Inf, +Inf ... put them one step above/below the range.z values ... maybe two steps ...
+	# currently, I think they will grpah, just at Inf
+	
+	keys = as.numeric(names(z.table));
+	vals = as.numeric(z.table); # these are the counts as height 
+	
+	xleft = keys ;
+	xright = keys + steps.z;
+	ybottom = 0 * keys;
+		vals.sum = standardizeToSum(vals);
+		vals.max = standardizeToMax(vals.sum);	
+		vals.normmax = standardizeToFactor(vals.max, 0.4);
+	ytop = vals.normmax
+	
+	rect(xleft, ybottom, xright, ytop, col=myColor);	
+	}
+	
+cutZ = function(z, range.z = c(-3,3), steps.z = 1/2, verbose = FALSE)
+	{
+	# allows overlay of rectangles on normal graph 	
+	zz = z;
+	nz = length(zz);
+	
+	zmin = range.z[1];
+	zmax = range.z[2];
+	
+	df = as.data.frame(zz);
+		df$member = 0 * zz;
+	
+	i = 1;
+	buckets = c();	
+	breaks = c();
+		which.z = which(zz < zmin);
+			buckets[[i]] = length(which.z);	
+			breaks[[i]] = -Inf;	
+		if(length(which.z) > 0) 
+			{ 
+			df$member[which.z] = -Inf; 
+			zz[which.z] = NA; # set to NA so won't count any more
+			}
+		
+	i = i + 1;
+	
+	
+	
+	zlower = zmin;	
+		if(verbose)
+			{
+			cat("\n", "zmin: ", zmin, "  ...  ", "zmax: ", zmax, "\n");
+			}
+	while(zlower < zmax)
+		{
+		if(verbose)
+			{
+			cat("\n", " == WHILE == ", "zlower: ", zlower, "  <  ", "zmax: ", zmax, "\n");
+			}
+			
+		zupper = zlower +  steps.z;
+		
+		which.z = which(zz < zupper);
+			buckets[[i]] = length(which.z);	
+			breaks[[i]] = zlower;	
+		if(length(which.z) > 0) 
+			{ 
+			df$member[which.z] = zlower;
+			zz[which.z] = NA; # set to NA so won't count any more
+			}
+			
+		i = i + 1;
+		zlower = zupper;
+		}
+		
+	which.z = which(!is.na(zz));
+		buckets[[i]] = length(which.z);	
+		breaks[[i]] = Inf;	
+	if(length(which.z) > 0) 
+			{ 
+			df$member[which.z] = Inf;
+			}
+
+	df;
+	}
+
+
+
+	
+	# freq.df = as.data.frame( cbind( breaks, buckets ) );
+	#	colnames(freq.df) = c("break", "count");
+	
+	# df = setAttribute("cuts", q.cuts, df);  # set KEY to VAL in OBJ
+	
+	# I can get freq.df by just calling table(df)
+	colnames(df) = c("z", "member");
+
 	
 	
 # # create a 2 by 5 matrix
