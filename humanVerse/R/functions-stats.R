@@ -36,9 +36,9 @@ doStatsSummary = function(x)
 	result$deciles = stats::quantile(xx, prob=probs.deciles, type=1 );
 	result$decile.members = cutMe(xx, probs.deciles, lower.equal = TRUE);
 	result$centiles = stats::quantile(xx, prob=probs.centiles, type=1 );
-	# ?cut   cut(xx, 10) ... will be usefull for a histogram-ish device ... 
+	# ?cut   cut(xx, 10) ... will be usefull for a histogram-ish device ...
 	# https://stackoverflow.com/questions/11728419/using-cut-and-quartile-to-generate-breaks-in-r-function
-	
+
 
 	result$median.weighted = matrixStats::weightedMad(xx);
 	result$MAD.weighted = matrixStats::weightedMedian(xx);
@@ -64,7 +64,7 @@ doStatsSummary = function(x)
 
 	result$sd = stats::sd(xx);
 	result$var = stats::var(xx);
-	
+
 	result$se.mean = result$sd / sqrt(result$length.good);
 	result$IDR.3 = doIDR(xx, 1/3);
 
@@ -79,8 +79,8 @@ doStatsSummary = function(x)
 	result$outliers.z = findOutliersUsingZscores(x);
 	result$outliers.IQR = findOutliersUsingIQR(x);
 
-	# result$z = calculateZscores(x); # works same as scale ... 
-	# append "attributes" ... 
+	# result$z = calculateZscores(x); # works same as scale ...
+	# append "attributes" ...
 
 	result;
 	}
@@ -94,53 +94,53 @@ zCutOverlay = function(z.table, steps.z = 1/2, verbose = FALSE, myColor = "blue"
 	  # steps.z = 1/2;
 	# z.cut = cutZ(z, range.z, steps.z, verbose=TRUE);
 	# z.table = table(z.cut$member);
-	
+
 	# how to deal with -Inf, +Inf ... put them one step above/below the range.z values ... maybe two steps ...
 	# currently, I think they will grpah, just at Inf
-	
+
 	keys = as.numeric(names(z.table));
-	vals = as.numeric(z.table); # these are the counts as height 
-	
+	vals = as.numeric(z.table); # these are the counts as height
+
 	xleft = keys ;
 	xright = keys + steps.z;
 	ybottom = 0 * keys;
 		vals.sum = standardizeToSum(vals);
-		vals.max = standardizeToMax(vals.sum);	
+		vals.max = standardizeToMax(vals.sum);
 		vals.normmax = standardizeToFactor(vals.max, 0.4);
 	ytop = vals.normmax
-	
-	rect(xleft, ybottom, xright, ytop, col=myColor);	
+
+	rect(xleft, ybottom, xright, ytop, col=myColor);
 	}
-	
+
 cutZ = function(z, range.z = c(-3,3), steps.z = 1/2, verbose = FALSE)
 	{
-	# allows overlay of rectangles on normal graph 	
+	# allows overlay of rectangles on normal graph
 	zz = z;
 	nz = length(zz);
-	
+
 	zmin = range.z[1];
 	zmax = range.z[2];
-	
+
 	df = as.data.frame(zz);
 		df$member = 0 * zz;
-	
+
 	i = 1;
-	buckets = c();	
+	buckets = c();
 	breaks = c();
 		which.z = which(zz < zmin);
-			buckets[[i]] = length(which.z);	
-			breaks[[i]] = -Inf;	
-		if(length(which.z) > 0) 
-			{ 
-			df$member[which.z] = -Inf; 
+			buckets[[i]] = length(which.z);
+			breaks[[i]] = -Inf;
+		if(length(which.z) > 0)
+			{
+			df$member[which.z] = -Inf;
 			zz[which.z] = NA; # set to NA so won't count any more
 			}
-		
+
 	i = i + 1;
-	
-	
-	
-	zlower = zmin;	
+
+
+
+	zlower = zmin;
 		if(verbose)
 			{
 			cat("\n", "zmin: ", zmin, "  ...  ", "zmax: ", zmax, "\n");
@@ -151,27 +151,27 @@ cutZ = function(z, range.z = c(-3,3), steps.z = 1/2, verbose = FALSE)
 			{
 			cat("\n", " == WHILE == ", "zlower: ", zlower, "  <  ", "zmax: ", zmax, "\n");
 			}
-			
+
 		zupper = zlower +  steps.z;
-		
+
 		which.z = which(zz < zupper);
-			buckets[[i]] = length(which.z);	
-			breaks[[i]] = zlower;	
-		if(length(which.z) > 0) 
-			{ 
+			buckets[[i]] = length(which.z);
+			breaks[[i]] = zlower;
+		if(length(which.z) > 0)
+			{
 			df$member[which.z] = zlower;
 			zz[which.z] = NA; # set to NA so won't count any more
 			}
-			
+
 		i = i + 1;
 		zlower = zupper;
 		}
-		
+
 	which.z = which(!is.na(zz));
-		buckets[[i]] = length(which.z);	
-		breaks[[i]] = Inf;	
-	if(length(which.z) > 0) 
-			{ 
+		buckets[[i]] = length(which.z);
+		breaks[[i]] = Inf;
+	if(length(which.z) > 0)
+			{
 			df$member[which.z] = Inf;
 			}
 
@@ -180,17 +180,17 @@ cutZ = function(z, range.z = c(-3,3), steps.z = 1/2, verbose = FALSE)
 
 
 
-	
+
 	# freq.df = as.data.frame( cbind( breaks, buckets ) );
 	#	colnames(freq.df) = c("break", "count");
-	
-	# df = setAttribute("cuts", q.cuts, df);  # set KEY to VAL in OBJ
-	
-	# I can get freq.df by just calling table(df)
-	colnames(df) = c("z", "member");
 
-	
-	
+	# df = setAttribute("cuts", q.cuts, df);  # set KEY to VAL in OBJ
+
+	# I can get freq.df by just calling table(df)
+	# colnames(df) = c("z", "member");
+
+
+
 # # create a 2 by 5 matrix
 # x <- 1:10
 # attr(x,"dim") <- c(2, 5)
@@ -206,7 +206,7 @@ cutMe = function(x, qs, type=1, lower.equal=TRUE)
 		# attributes(df)[["cuts"]] = q.cuts;
 		df = setAttribute("cuts", q.cuts, df);  # set KEY to VAL in OBJ
 		# getAttribute("cuts", df);
-	
+
 	# buckets = length(qs) + 1;
 	# yy = list();
 	for(b in 1:length(qs) )
@@ -214,14 +214,14 @@ cutMe = function(x, qs, type=1, lower.equal=TRUE)
 		idxb = which(xx <= q.cuts[b]);
 		df$yy[idxb] = b;
 		xx[idxb] = NA;
-		# yy[[b]] = idxb;		
+		# yy[[b]] = idxb;
 		}
 		idxb = which(!is.na(xx)); # leftovers
 	# yy[[b+1]] = idxb;
 		df$yy[idxb] = b+1;
 	colnames(df) = c("x", "member");
 	df;
-	
+
 	}
 
 
@@ -230,10 +230,10 @@ cutMe = function(x, qs, type=1, lower.equal=TRUE)
 getQuantiles = function(x, qs, type=1)
 	{
 	xx = na.omit(x);
-	as.numeric(stats::quantile(xx, prob=qs, type=type));	
+	as.numeric(stats::quantile(xx, prob=qs, type=type));
 	}
-	
-	
+
+
 doIDR = function(x, lower = 0.25, upper = 1 - lower, type=1)
 	{
 	xx = na.omit(x);
@@ -241,10 +241,10 @@ doIDR = function(x, lower = 0.25, upper = 1 - lower, type=1)
 	q.upper = getQuantiles(xx, upper, type);
 	q.lim = c(q.lower, q.upper);
 	q.range = abs(q.upper - q.lower); # in case they enter them backwards
-	
+
 	list("call" = list("lower" = lower, "upper" = upper, "type" = type),
 		"IDR" = list("lower" = q.lower, "upper" = q.upper, "xlim" = q.lim, "range" = q.range)
-		);	
+		);
 	}
 
 #' doSampleVariance
