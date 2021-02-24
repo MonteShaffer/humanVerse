@@ -17,7 +17,8 @@ source(include.me); # includeGithubFolder
 source(include.me); # trimMe
 	include.me = paste0(github.monte, "humanVerse/main/humanVerse/R/functions-parse.R");  
 source(include.me); # folderizeURL ... 
-
+	include.me = paste0(github.monte, "humanVerse/main/humanVerse/R/functions-get-set.R");  
+source(include.me); # grabFunctionParameters ... 
 
 
 
