@@ -1,7 +1,7 @@
 # slice and dice
 
 
-function sliceDiceContent($str, $start="<h2>",$end="</h2>", $strip=TRUE, $direction="end")
+sliceDiceContent = function ($str, $start="<h2>",$end="</h2>", $strip=TRUE, $direction="end")
 		{		
 		if($direction == "end")
 			{
