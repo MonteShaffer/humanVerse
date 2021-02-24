@@ -249,7 +249,7 @@ getRemoteAndCache = function(remote, local.file = NULL,
     }
   if(!file.exists(myfile))
     {
-    downloadFile(remote, myfile);
+    downloadFile(remote, myfile, cacheOK = !force.download);
     }
   myfile;
   }
