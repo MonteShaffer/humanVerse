@@ -243,7 +243,7 @@ downloadFile = function(remote, myfile, n=(2^31 - 1), quiet = TRUE, ...)  # n co
             raw.binary = readBin(remote, "raw", n);
             # what if I don't have stringi ???   ... encoding = "UTF-8"
             url.encoding = "UTF-8";
-			if( isTRUE(requireNamespace("stringi", quietly = TRUE))
+			if( isTRUE(requireNamespace("stringi", quietly = TRUE)) )
 				{
 				url.encoding = stringi::stri_enc_detect(raw.binary)[[1]]$Encoding[1];
 				}
