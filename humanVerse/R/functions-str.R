@@ -1,8 +1,3 @@
-is.substring = function(string, search)
-  {
-  grepl(search, string, fixed = TRUE);
-  }
-
 
 #' charAt
 #'
@@ -302,7 +297,27 @@ strlen = function(str)
   }
 
 
+# https://stackoverflow.com/questions/2681786/how-to-get-the-last-char-of-a-string-in-php
+# .substr = function(str,  # maybe write a PHP wrapper
 
+substr.neg = function(str, n = -1)
+	{
+	str.len = strlen(str);
+	substr(str, start= (str.len + 1 + n), stop = str.len );
+	}
+
+
+# splits a string into a vector ...
+char.vec = function(str, sep="")
+	{
+	strsplit(str, sep, fixed=TRUE)[[1]];	
+	}
+
+
+is.substring = function(string, search)
+  {
+  grepl(search, string, fixed = TRUE);
+  }
 
 # this is "fixed" find and replace
 str_replace = function(str, find, replace, method="stringi")

@@ -68,10 +68,10 @@ readFromPipe = function(file, header=TRUE, quote="", sep="|")
   }
 
 
-includeLocalDirectory = function(directory, verbose=TRUE, ...)
+includeLocalDirectory = function(directory, verbose=TRUE, pattern = "[.][RrSsQq]$", ...)
   {
   # ?source
-  for (nm in list.files(path, pattern = "[.][RrSsQq]$"))
+  for (nm in list.files(path, pattern = pattern))
     {
     if(verbose) { cat(nm,":"); }
     source(file.path(path, nm), ...);
@@ -87,7 +87,7 @@ includeLocalFiles = function(files, ...)
     }
   }
 
-includeGithubFolder = function(url, ...)
+includeGithubFolder = function(url, pattern = "[.][RrSsQq]$", ...)
 	{
 	html = getRemoteAndCache(url, ...);
 	
@@ -114,6 +114,7 @@ getRemoteAndCache = function(remote, local.file = NULL,
     md5.hash = FALSE)
   {
   useTEMP = FALSE;
+  trailingSlash = (substr.neg(remote) == "/");
   if(!is.null(local.file))
     {
     localpath = dirname(local.file);
@@ -123,8 +124,9 @@ getRemoteAndCache = function(remote, local.file = NULL,
 
   if(useTEMP)
     {
-    subfolder = folderizeURL( dirname(remote));
-    filestem = basename(remote);
+	subfolder = if(trailingSlash) {  folderizeURL(remote); } else { folderizeURL(dirname(remote)); }
+	filestem  = if(trailingSlash) {  "index.html" } else { basename(remote); }
+
     if(md5.hash) { filestem = md5(filestem); }
 
     tmp = gsub("\\","/",Sys.getenv("TMP"), fixed=TRUE); # windoze?
