@@ -1,0 +1,29 @@
+---
+title: "R Notebook: Hello Friend"
+output: html_notebook
+---
+
+# Hello Friend
+This notebook will do a basic walkthrough on how to get up-and-running on the humanVerse.
+
+## Welcome to R::humanVerse
+The `humanVerse` is `R-base` friendly, very few dependencies here.  The objective is to make `R` more accessible by evolving its language to align with `C-based` standards.  I program in several C-based languages, and I want to minimize my `cognitive load` while maximizing my efficiency.  A few wrapper functions will make that so.
+
+## include-setup.R
+
+This one file has all the basic functions we need to load more functions or (of course) you can load the library.  
+
+There are `misc` functions outside the library that run content-specific activities that do not belong in the main library as they include a lot of extraneous libraries.  For example, `functions-nlp.R` is well worth your time, please check it out.
+
+
+```{r}
+
+
+
+```
+
+
+
+
+
+
