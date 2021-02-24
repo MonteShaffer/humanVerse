@@ -84,9 +84,9 @@ md5 = function(strvec, times=1)
         }
     return( nstrvec );
     } else {
-            if (requireNamespace("digest", quietly = TRUE))
+            if (requireNamespace("digest", quietly = TRUE)) 
               {
-              return( _md5(strvec,times) );
+              # return( _md5(strvec,times) );
               } else {
                       # do .md5 from external functions
                       }
