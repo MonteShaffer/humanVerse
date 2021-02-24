@@ -1,4 +1,32 @@
 
+# s = "Alexander"; svec = strsplit(s,"",fixed=TRUE)[[1]];
+charVector = function(strvec, sep="")
+	{
+	n = length(strvec);
+	res = list();
+	for(i in 1:n)
+		{
+		res[[i]] = strsplit(strvec[i], sep ,fixed=TRUE)[[1]];
+		}
+	if(n == 1)
+		{
+		res[[i]];
+		} else 	{
+				res;
+				}
+	}
+
+strtolower = function(str)
+	{
+	tolower(str);
+	}
+	
+strtoupper = function(str)
+	{
+	toupper(str);
+	}
+	
+
 #' charAt
 #'
 #' Get the character of a string at position [idx]
@@ -233,7 +261,7 @@ strPadLeft = function(str, final.str.len, padding="0", method="stringi")
   {
   if( isTRUE(requireNamespace("stringi", quietly = TRUE)) && method=="stringi" )
     {
-    stringi::stri_pad_left(string, final.str.len, pad = padding);
+    stringi::stri_pad_left(str, final.str.len, pad = padding);
     } else {
             n = strlen(str);
             r = final.str.len - n;
@@ -265,7 +293,7 @@ strPadRight = function(str, final.str.len, padding="0", method="stringi")
   {
   if( isTRUE(requireNamespace("stringi", quietly = TRUE)) && method=="stringi" )
     {
-    stringi::stri_pad_right(string, final.str.len, pad = padding);
+    stringi::stri_pad_right(str, final.str.len, pad = padding);
     } else {
             n = strlen(str);
             r = final.str.len - n;
@@ -319,8 +347,8 @@ is.substring = function(string, search)
   grepl(search, string, fixed = TRUE);
   }
 
-# this is "fixed" find and replace
-str_replace = function(str, find, replace, method="stringi")
+# this is "fixed" find and replace # str = gsub(find[i], replace[i], str, fixed=TRUE);
+str_replace = function(find, replace, str, method="stringi")
   {
   # if find/replace are longer ... if one is length one, repeat the other one
   n.find = length(find);

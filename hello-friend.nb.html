@@ -265,13 +265,231 @@ source(include.setup);</code></pre>
 <h3>source humanVerse</h3>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2l0aHViLm1vbnRlLmh0dHAgPSBcImh0dHBzOi8vZ2l0aHViLmNvbS9Nb250ZVNoYWZmZXIvXCI7XG5cbmdpdGh1Yi5tb250ZS5odW1hblZlcnNlID0gcGFzdGUwKGdpdGh1Yi5tb250ZS5odHRwLCBcImh1bWFuVmVyc2UvdHJlZS9tYWluL2h1bWFuVmVyc2UvUi9cIik7ICMgd2Ugd2lsbCBwYXJzZSB0aGlzIHBhZ2UgdG8gZ2V0IGEgbGlzdCBvZiB0aGUgLlIgZnVuY3Rpb25zIHRvIGluY2x1ZGUgXG5cbiMgaW5jbHVkZUdpdGh1YkZvbGRlcihnaXRodWIubW9udGUuaHVtYW5WZXJzZSk7ICMgeW91IGNhbiBwYXNzIGZsYWcgYGZvcmNlLmRvd25sb2FkID0gVFJVRWAgaWYgeW91IHdhbnQgdG8gbWFrZSBjZXJ0YWluIGl0IGlzIG5vdCBjb21pbmcgZnJvbSBjYWNoZVxuYGBgIn0= -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2l0aHViLm1vbnRlLmh0dHAgPSBcImh0dHBzOi8vZ2l0aHViLmNvbS9Nb250ZVNoYWZmZXIvXCI7XG5cbmdpdGh1Yi5tb250ZS5odW1hblZlcnNlID0gcGFzdGUwKGdpdGh1Yi5tb250ZS5odHRwLCBcImh1bWFuVmVyc2UvdHJlZS9tYWluL2h1bWFuVmVyc2UvUi9cIik7ICMgd2Ugd2lsbCBwYXJzZSB0aGlzIHBhZ2UgdG8gZ2V0IGEgbGlzdCBvZiB0aGUgLlIgZnVuY3Rpb25zIHRvIGluY2x1ZGUgXG5cbmluY2x1ZGVHaXRodWJGb2xkZXIoZ2l0aHViLm1vbnRlLmh1bWFuVmVyc2UpOyAjIHlvdSBjYW4gcGFzcyBmbGFnIGBmb3JjZS5kb3dubG9hZCA9IFRSVUVgIGlmIHlvdSB3YW50IHRvIG1ha2UgY2VydGFpbiBpdCBpcyBub3QgY29taW5nIGZyb20gY2FjaGVcbmBgYCJ9 -->
 <pre class="r"><code>github.monte.http = &quot;https://github.com/MonteShaffer/&quot;;
 
 github.monte.humanVerse = paste0(github.monte.http, &quot;humanVerse/tree/main/humanVerse/R/&quot;); # we will parse this page to get a list of the .R functions to include 
 
-# includeGithubFolder(github.monte.humanVerse); # you can pass flag `force.download = TRUE` if you want to make certain it is not coming from cache</code></pre>
+includeGithubFolder(github.monte.humanVerse); # you can pass flag `force.download = TRUE` if you want to make certain it is not coming from cache</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiXG4gZm9yY2UuY2FjaGUgLi4uICBGQUxTRSBcblxuXG4gcmVtb3RlIC4uLiAgaHR0cHM6Ly9naXRodWIuY29tL01vbnRlU2hhZmZlci9odW1hblZlcnNlL3RyZWUvbWFpbi9odW1hblZlcnNlL1IvIFxuXG5cbiBmb3JjZS5kb3dubG9hZCAuLi4gIEZBTFNFIFxuXG5cbiBteWZpbGUgLi4uICBDOi9Vc2Vycy9BTEVYQU5+MS9BcHBEYXRhL0xvY2FsL1RlbXAvaHVtYW5WZXJzZS9jYWNoZS9naXRodWJeY29tLU1vbnRlU2hhZmZlci1odW1hblZlcnNlLXRyZWUtbWFpbi1odW1hblZlcnNlLVItL2luZGV4Lmh0bWwgXG5cblxuID09PT09PT09PT09PSBHUkFCQklORyBGUk9NIENBQ0hFID09PT09PT09PT09PSBcbiBJTkNMVURJTkc6IFxuID09PT09PT09PSBcblxuIHJlbW90ZSAuLi4gIGh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9Nb250ZVNoYWZmZXIvaHVtYW5WZXJzZS9tYWluL2h1bWFuVmVyc2UvUi9mdW5jdGlvbnMtY29sb3JzLlIgXG5cblxuIGZvcmNlLmRvd25sb2FkIC4uLiAgRkFMU0UgXG5cblxuIG15ZmlsZSAuLi4gIEM6L1VzZXJzL0FMRVhBTn4xL0FwcERhdGEvTG9jYWwvVGVtcC9odW1hblZlcnNlL2NhY2hlL3Jhd15naXRodWJ1c2VyY29udGVudF5jb20tTW9udGVTaGFmZmVyLWh1bWFuVmVyc2UtbWFpbi1odW1hblZlcnNlLVIvZnVuY3Rpb25zLWNvbG9ycy5SIFxuXG5cdCAuLi4gIGZ1bmN0aW9ucy1jb2xvcnMuUiBcblxuIHJlbW90ZSAuLi4gIGh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9Nb250ZVNoYWZmZXIvaHVtYW5WZXJzZS9tYWluL2h1bWFuVmVyc2UvUi9mdW5jdGlvbnMtZGF0YWZyYW1lLlIgXG5cblxuIGZvcmNlLmRvd25sb2FkIC4uLiAgRkFMU0UgXG5cblxuIG15ZmlsZSAuLi4gIEM6L1VzZXJzL0FMRVhBTn4xL0FwcERhdGEvTG9jYWwvVGVtcC9odW1hblZlcnNlL2NhY2hlL3Jhd15naXRodWJ1c2VyY29udGVudF5jb20tTW9udGVTaGFmZmVyLWh1bWFuVmVyc2UtbWFpbi1odW1hblZlcnNlLVIvZnVuY3Rpb25zLWRhdGFmcmFtZS5SIFxuXG5cdCAuLi4gIGZ1bmN0aW9ucy1kYXRhZnJhbWUuUiBcblxuIHJlbW90ZSAuLi4gIGh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9Nb250ZVNoYWZmZXIvaHVtYW5WZXJzZS9tYWluL2h1bWFuVmVyc2UvUi9mdW5jdGlvbnMtZGF0ZS5SIFxuXG5cbiBmb3JjZS5kb3dubG9hZCAuLi4gIEZBTFNFIFxuXG5cbiBteWZpbGUgLi4uICBDOi9Vc2Vycy9BTEVYQU5+MS9BcHBEYXRhL0xvY2FsL1RlbXAvaHVtYW5WZXJzZS9jYWNoZS9yYXdeZ2l0aHVidXNlcmNvbnRlbnReY29tLU1vbnRlU2hhZmZlci1odW1hblZlcnNlLW1haW4taHVtYW5WZXJzZS1SL2Z1bmN0aW9ucy1kYXRlLlIgXG5cblx0IC4uLiAgZnVuY3Rpb25zLWRhdGUuUiBcblxuIHJlbW90ZSAuLi4gIGh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9Nb250ZVNoYWZmZXIvaHVtYW5WZXJzZS9tYWluL2h1bWFuVmVyc2UvUi9mdW5jdGlvbnMtZW5jcnlwdGlvbi5SIFxuXG5cbiBmb3JjZS5kb3dubG9hZCAuLi4gIEZBTFNFIFxuXG5cbiBteWZpbGUgLi4uICBDOi9Vc2Vycy9BTEVYQU5+MS9BcHBEYXRhL0xvY2FsL1RlbXAvaHVtYW5WZXJzZS9jYWNoZS9yYXdeZ2l0aHVidXNlcmNvbnRlbnReY29tLU1vbnRlU2hhZmZlci1odW1hblZlcnNlLW1haW4taHVtYW5WZXJzZS1SL2Z1bmN0aW9ucy1lbmNyeXB0aW9uLlIgXG5cblx0IC4uLiAgZnVuY3Rpb25zLWVuY3J5cHRpb24uUiBcblxuIHJlbW90ZSAuLi4gIGh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9Nb250ZVNoYWZmZXIvaHVtYW5WZXJzZS9tYWluL2h1bWFuVmVyc2UvUi9mdW5jdGlvbnMtZmlsZS5SIFxuXG5cbiBmb3JjZS5kb3dubG9hZCAuLi4gIEZBTFNFIFxuXG5cbiBteWZpbGUgLi4uICBDOi9Vc2Vycy9BTEVYQU5+MS9BcHBEYXRhL0xvY2FsL1RlbXAvaHVtYW5WZXJzZS9jYWNoZS9yYXdeZ2l0aHVidXNlcmNvbnRlbnReY29tLU1vbnRlU2hhZmZlci1odW1hblZlcnNlLW1haW4taHVtYW5WZXJzZS1SL2Z1bmN0aW9ucy1maWxlLlIgXG5cblx0IC4uLiAgZnVuY3Rpb25zLWZpbGUuUiBcblxuIHJlbW90ZSAuLi4gIGh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9Nb250ZVNoYWZmZXIvaHVtYW5WZXJzZS9tYWluL2h1bWFuVmVyc2UvUi9mdW5jdGlvbnMtZ2V0LXNldC5SIFxuXG5cbiBmb3JjZS5kb3dubG9hZCAuLi4gIEZBTFNFIFxuXG5cbiBteWZpbGUgLi4uICBDOi9Vc2Vycy9BTEVYQU5+MS9BcHBEYXRhL0xvY2FsL1RlbXAvaHVtYW5WZXJzZS9jYWNoZS9yYXdeZ2l0aHVidXNlcmNvbnRlbnReY29tLU1vbnRlU2hhZmZlci1odW1hblZlcnNlLW1haW4taHVtYW5WZXJzZS1SL2Z1bmN0aW9ucy1nZXQtc2V0LlIgXG5cblx0IC4uLiAgZnVuY3Rpb25zLWdldC1zZXQuUiBcblxuIHJlbW90ZSAuLi4gIGh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9Nb250ZVNoYWZmZXIvaHVtYW5WZXJzZS9tYWluL2h1bWFuVmVyc2UvUi9mdW5jdGlvbnMtZ2l0aHViLlIgXG5cblxuIGZvcmNlLmRvd25sb2FkIC4uLiAgRkFMU0UgXG5cblxuIG15ZmlsZSAuLi4gIEM6L1VzZXJzL0FMRVhBTn4xL0FwcERhdGEvTG9jYWwvVGVtcC9odW1hblZlcnNlL2NhY2hlL3Jhd15naXRodWJ1c2VyY29udGVudF5jb20tTW9udGVTaGFmZmVyLWh1bWFuVmVyc2UtbWFpbi1odW1hblZlcnNlLVIvZnVuY3Rpb25zLWdpdGh1Yi5SIFxuXG5cdCAuLi4gIGZ1bmN0aW9ucy1naXRodWIuUiBcblxuIHJlbW90ZSAuLi4gIGh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9Nb250ZVNoYWZmZXIvaHVtYW5WZXJzZS9tYWluL2h1bWFuVmVyc2UvUi9mdW5jdGlvbnMtbWF0cml4LlIgXG5cblxuIGZvcmNlLmRvd25sb2FkIC4uLiAgRkFMU0UgXG5cblxuIG15ZmlsZSAuLi4gIEM6L1VzZXJzL0FMRVhBTn4xL0FwcERhdGEvTG9jYWwvVGVtcC9odW1hblZlcnNlL2NhY2hlL3Jhd15naXRodWJ1c2VyY29udGVudF5jb20tTW9udGVTaGFmZmVyLWh1bWFuVmVyc2UtbWFpbi1odW1hblZlcnNlLVIvZnVuY3Rpb25zLW1hdHJpeC5SIFxuXG5cdCAuLi4gIGZ1bmN0aW9ucy1tYXRyaXguUiBcblxuIHJlbW90ZSAuLi4gIGh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9Nb250ZVNoYWZmZXIvaHVtYW5WZXJzZS9tYWluL2h1bWFuVmVyc2UvUi9mdW5jdGlvbnMtbnVtYmVyLlIgXG5cblxuIGZvcmNlLmRvd25sb2FkIC4uLiAgRkFMU0UgXG5cblxuIG15ZmlsZSAuLi4gIEM6L1VzZXJzL0FMRVhBTn4xL0FwcERhdGEvTG9jYWwvVGVtcC9odW1hblZlcnNlL2NhY2hlL3Jhd15naXRodWJ1c2VyY29udGVudF5jb20tTW9udGVTaGFmZmVyLWh1bWFuVmVyc2UtbWFpbi1odW1hblZlcnNlLVIvZnVuY3Rpb25zLW51bWJlci5SIFxuXG5cdCAuLi4gIGZ1bmN0aW9ucy1udW1iZXIuUiBcblxuIHJlbW90ZSAuLi4gIGh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9Nb250ZVNoYWZmZXIvaHVtYW5WZXJzZS9tYWluL2h1bWFuVmVyc2UvUi9mdW5jdGlvbnMtcGFyc2UuUiBcblxuXG4gZm9yY2UuZG93bmxvYWQgLi4uICBGQUxTRSBcblxuXG4gbXlmaWxlIC4uLiAgQzovVXNlcnMvQUxFWEFOfjEvQXBwRGF0YS9Mb2NhbC9UZW1wL2h1bWFuVmVyc2UvY2FjaGUvcmF3XmdpdGh1YnVzZXJjb250ZW50XmNvbS1Nb250ZVNoYWZmZXItaHVtYW5WZXJzZS1tYWluLWh1bWFuVmVyc2UtUi9mdW5jdGlvbnMtcGFyc2UuUiBcblxuXHQgLi4uICBmdW5jdGlvbnMtcGFyc2UuUiBcblxuIHJlbW90ZSAuLi4gIGh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9Nb250ZVNoYWZmZXIvaHVtYW5WZXJzZS9tYWluL2h1bWFuVmVyc2UvUi9mdW5jdGlvbnMtcHJpbnQuUiBcblxuXG4gZm9yY2UuZG93bmxvYWQgLi4uICBGQUxTRSBcblxuXG4gbXlmaWxlIC4uLiAgQzovVXNlcnMvQUxFWEFOfjEvQXBwRGF0YS9Mb2NhbC9UZW1wL2h1bWFuVmVyc2UvY2FjaGUvcmF3XmdpdGh1YnVzZXJjb250ZW50XmNvbS1Nb250ZVNoYWZmZXItaHVtYW5WZXJzZS1tYWluLWh1bWFuVmVyc2UtUi9mdW5jdGlvbnMtcHJpbnQuUiBcblxuXHQgLi4uICBmdW5jdGlvbnMtcHJpbnQuUiBcblxuIHJlbW90ZSAuLi4gIGh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9Nb250ZVNoYWZmZXIvaHVtYW5WZXJzZS9tYWluL2h1bWFuVmVyc2UvUi9mdW5jdGlvbnMtcmFuZG9tLlIgXG5cblxuIGZvcmNlLmRvd25sb2FkIC4uLiAgRkFMU0UgXG5cblxuIG15ZmlsZSAuLi4gIEM6L1VzZXJzL0FMRVhBTn4xL0FwcERhdGEvTG9jYWwvVGVtcC9odW1hblZlcnNlL2NhY2hlL3Jhd15naXRodWJ1c2VyY29udGVudF5jb20tTW9udGVTaGFmZmVyLWh1bWFuVmVyc2UtbWFpbi1odW1hblZlcnNlLVIvZnVuY3Rpb25zLXJhbmRvbS5SIFxuXG5cdCAuLi4gIGZ1bmN0aW9ucy1yYW5kb20uUiBcblxuIHJlbW90ZSAuLi4gIGh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9Nb250ZVNoYWZmZXIvaHVtYW5WZXJzZS9tYWluL2h1bWFuVmVyc2UvUi9mdW5jdGlvbnMtc2VhcmNoLlIgXG5cblxuIGZvcmNlLmRvd25sb2FkIC4uLiAgRkFMU0UgXG5cblxuIG15ZmlsZSAuLi4gIEM6L1VzZXJzL0FMRVhBTn4xL0FwcERhdGEvTG9jYWwvVGVtcC9odW1hblZlcnNlL2NhY2hlL3Jhd15naXRodWJ1c2VyY29udGVudF5jb20tTW9udGVTaGFmZmVyLWh1bWFuVmVyc2UtbWFpbi1odW1hblZlcnNlLVIvZnVuY3Rpb25zLXNlYXJjaC5SIFxuXG5cdCAuLi4gIGZ1bmN0aW9ucy1zZWFyY2guUiBcblxuIHJlbW90ZSAuLi4gIGh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9Nb250ZVNoYWZmZXIvaHVtYW5WZXJzZS9tYWluL2h1bWFuVmVyc2UvUi9mdW5jdGlvbnMtc3RhbmRhcmRpemUuUiBcblxuXG4gZm9yY2UuZG93bmxvYWQgLi4uICBGQUxTRSBcblxuXG4gbXlmaWxlIC4uLiAgQzovVXNlcnMvQUxFWEFOfjEvQXBwRGF0YS9Mb2NhbC9UZW1wL2h1bWFuVmVyc2UvY2FjaGUvcmF3XmdpdGh1YnVzZXJjb250ZW50XmNvbS1Nb250ZVNoYWZmZXItaHVtYW5WZXJzZS1tYWluLWh1bWFuVmVyc2UtUi9mdW5jdGlvbnMtc3RhbmRhcmRpemUuUiBcblxuXHQgLi4uICBmdW5jdGlvbnMtc3RhbmRhcmRpemUuUiBcblxuIHJlbW90ZSAuLi4gIGh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9Nb250ZVNoYWZmZXIvaHVtYW5WZXJzZS9tYWluL2h1bWFuVmVyc2UvUi9mdW5jdGlvbnMtc3RhdHMuUiBcblxuXG4gZm9yY2UuZG93bmxvYWQgLi4uICBGQUxTRSBcblxuXG4gbXlmaWxlIC4uLiAgQzovVXNlcnMvQUxFWEFOfjEvQXBwRGF0YS9Mb2NhbC9UZW1wL2h1bWFuVmVyc2UvY2FjaGUvcmF3XmdpdGh1YnVzZXJjb250ZW50XmNvbS1Nb250ZVNoYWZmZXItaHVtYW5WZXJzZS1tYWluLWh1bWFuVmVyc2UtUi9mdW5jdGlvbnMtc3RhdHMuUiBcblxuXHQgLi4uICBmdW5jdGlvbnMtc3RhdHMuUiBcblxuIHJlbW90ZSAuLi4gIGh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9Nb250ZVNoYWZmZXIvaHVtYW5WZXJzZS9tYWluL2h1bWFuVmVyc2UvUi9mdW5jdGlvbnMtc3RyLlIgXG5cblxuIGZvcmNlLmRvd25sb2FkIC4uLiAgRkFMU0UgXG5cblxuIG15ZmlsZSAuLi4gIEM6L1VzZXJzL0FMRVhBTn4xL0FwcERhdGEvTG9jYWwvVGVtcC9odW1hblZlcnNlL2NhY2hlL3Jhd15naXRodWJ1c2VyY29udGVudF5jb20tTW9udGVTaGFmZmVyLWh1bWFuVmVyc2UtbWFpbi1odW1hblZlcnNlLVIvZnVuY3Rpb25zLXN0ci5SIFxuXG5cdCAuLi4gIGZ1bmN0aW9ucy1zdHIuUiBcblxuIHJlbW90ZSAuLi4gIGh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9Nb250ZVNoYWZmZXIvaHVtYW5WZXJzZS9tYWluL2h1bWFuVmVyc2UvUi9mdW5jdGlvbnMtc3lzdGVtLlIgXG5cblxuIGZvcmNlLmRvd25sb2FkIC4uLiAgRkFMU0UgXG5cblxuIG15ZmlsZSAuLi4gIEM6L1VzZXJzL0FMRVhBTn4xL0FwcERhdGEvTG9jYWwvVGVtcC9odW1hblZlcnNlL2NhY2hlL3Jhd15naXRodWJ1c2VyY29udGVudF5jb20tTW9udGVTaGFmZmVyLWh1bWFuVmVyc2UtbWFpbi1odW1hblZlcnNlLVIvZnVuY3Rpb25zLXN5c3RlbS5SIFxuXG5cdCAuLi4gIGZ1bmN0aW9ucy1zeXN0ZW0uUiBcblxuIHJlbW90ZSAuLi4gIGh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9Nb250ZVNoYWZmZXIvaHVtYW5WZXJzZS9tYWluL2h1bWFuVmVyc2UvUi9mdW5jdGlvbnMtdmVjdG9yLlIgXG5cblxuIGZvcmNlLmRvd25sb2FkIC4uLiAgRkFMU0UgXG5cblxuIG15ZmlsZSAuLi4gIEM6L1VzZXJzL0FMRVhBTn4xL0FwcERhdGEvTG9jYWwvVGVtcC9odW1hblZlcnNlL2NhY2hlL3Jhd15naXRodWJ1c2VyY29udGVudF5jb20tTW9udGVTaGFmZmVyLWh1bWFuVmVyc2UtbWFpbi1odW1hblZlcnNlLVIvZnVuY3Rpb25zLXZlY3Rvci5SIFxuXG5cdCAuLi4gIGZ1bmN0aW9ucy12ZWN0b3IuUiBcblxuIHJlbW90ZSAuLi4gIGh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9Nb250ZVNoYWZmZXIvaHVtYW5WZXJzZS9tYWluL2h1bWFuVmVyc2UvUi9nbG9iYWxzLlIgXG5cblxuIGZvcmNlLmRvd25sb2FkIC4uLiAgRkFMU0UgXG5cblxuIG15ZmlsZSAuLi4gIEM6L1VzZXJzL0FMRVhBTn4xL0FwcERhdGEvTG9jYWwvVGVtcC9odW1hblZlcnNlL2NhY2hlL3Jhd15naXRodWJ1c2VyY29udGVudF5jb20tTW9udGVTaGFmZmVyLWh1bWFuVmVyc2UtbWFpbi1odW1hblZlcnNlLVIvZ2xvYmFscy5SIFxuXG5cdCAuLi4gIGdsb2JhbHMuUiBcblxuIHJlbW90ZSAuLi4gIGh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9Nb250ZVNoYWZmZXIvaHVtYW5WZXJzZS9tYWluL2h1bWFuVmVyc2UvUi9oZWxsby5SIFxuXG5cbiBmb3JjZS5kb3dubG9hZCAuLi4gIEZBTFNFIFxuXG5cbiBteWZpbGUgLi4uICBDOi9Vc2Vycy9BTEVYQU5+MS9BcHBEYXRhL0xvY2FsL1RlbXAvaHVtYW5WZXJzZS9jYWNoZS9yYXdeZ2l0aHVidXNlcmNvbnRlbnReY29tLU1vbnRlU2hhZmZlci1odW1hblZlcnNlLW1haW4taHVtYW5WZXJzZS1SL2hlbGxvLlIgXG5cblx0IC4uLiAgaGVsbG8uUiBcbiJ9 -->
+<pre><code>
+ force.cache ...  FALSE 
+
+
+ remote ...  https://github.com/MonteShaffer/humanVerse/tree/main/humanVerse/R/ 
+
+
+ force.download ...  FALSE 
+
+
+ myfile ...  C:/Users/ALEXAN~1/AppData/Local/Temp/humanVerse/cache/github^com-MonteShaffer-humanVerse-tree-main-humanVerse-R-/index.html 
+
+
+ ============ GRABBING FROM CACHE ============ 
+ INCLUDING: 
+ ========= 
+
+ remote ...  https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/humanVerse/R/functions-colors.R 
+
+
+ force.download ...  FALSE 
+
+
+ myfile ...  C:/Users/ALEXAN~1/AppData/Local/Temp/humanVerse/cache/raw^githubusercontent^com-MonteShaffer-humanVerse-main-humanVerse-R/functions-colors.R 
+
+     ...  functions-colors.R 
+
+ remote ...  https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/humanVerse/R/functions-dataframe.R 
+
+
+ force.download ...  FALSE 
+
+
+ myfile ...  C:/Users/ALEXAN~1/AppData/Local/Temp/humanVerse/cache/raw^githubusercontent^com-MonteShaffer-humanVerse-main-humanVerse-R/functions-dataframe.R 
+
+     ...  functions-dataframe.R 
+
+ remote ...  https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/humanVerse/R/functions-date.R 
+
+
+ force.download ...  FALSE 
+
+
+ myfile ...  C:/Users/ALEXAN~1/AppData/Local/Temp/humanVerse/cache/raw^githubusercontent^com-MonteShaffer-humanVerse-main-humanVerse-R/functions-date.R 
+
+     ...  functions-date.R 
+
+ remote ...  https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/humanVerse/R/functions-encryption.R 
+
+
+ force.download ...  FALSE 
+
+
+ myfile ...  C:/Users/ALEXAN~1/AppData/Local/Temp/humanVerse/cache/raw^githubusercontent^com-MonteShaffer-humanVerse-main-humanVerse-R/functions-encryption.R 
+
+     ...  functions-encryption.R 
+
+ remote ...  https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/humanVerse/R/functions-file.R 
+
+
+ force.download ...  FALSE 
+
+
+ myfile ...  C:/Users/ALEXAN~1/AppData/Local/Temp/humanVerse/cache/raw^githubusercontent^com-MonteShaffer-humanVerse-main-humanVerse-R/functions-file.R 
+
+     ...  functions-file.R 
+
+ remote ...  https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/humanVerse/R/functions-get-set.R 
+
+
+ force.download ...  FALSE 
+
+
+ myfile ...  C:/Users/ALEXAN~1/AppData/Local/Temp/humanVerse/cache/raw^githubusercontent^com-MonteShaffer-humanVerse-main-humanVerse-R/functions-get-set.R 
+
+     ...  functions-get-set.R 
+
+ remote ...  https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/humanVerse/R/functions-github.R 
+
+
+ force.download ...  FALSE 
+
+
+ myfile ...  C:/Users/ALEXAN~1/AppData/Local/Temp/humanVerse/cache/raw^githubusercontent^com-MonteShaffer-humanVerse-main-humanVerse-R/functions-github.R 
+
+     ...  functions-github.R 
+
+ remote ...  https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/humanVerse/R/functions-matrix.R 
+
+
+ force.download ...  FALSE 
+
+
+ myfile ...  C:/Users/ALEXAN~1/AppData/Local/Temp/humanVerse/cache/raw^githubusercontent^com-MonteShaffer-humanVerse-main-humanVerse-R/functions-matrix.R 
+
+     ...  functions-matrix.R 
+
+ remote ...  https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/humanVerse/R/functions-number.R 
+
+
+ force.download ...  FALSE 
+
+
+ myfile ...  C:/Users/ALEXAN~1/AppData/Local/Temp/humanVerse/cache/raw^githubusercontent^com-MonteShaffer-humanVerse-main-humanVerse-R/functions-number.R 
+
+     ...  functions-number.R 
+
+ remote ...  https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/humanVerse/R/functions-parse.R 
+
+
+ force.download ...  FALSE 
+
+
+ myfile ...  C:/Users/ALEXAN~1/AppData/Local/Temp/humanVerse/cache/raw^githubusercontent^com-MonteShaffer-humanVerse-main-humanVerse-R/functions-parse.R 
+
+     ...  functions-parse.R 
+
+ remote ...  https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/humanVerse/R/functions-print.R 
+
+
+ force.download ...  FALSE 
+
+
+ myfile ...  C:/Users/ALEXAN~1/AppData/Local/Temp/humanVerse/cache/raw^githubusercontent^com-MonteShaffer-humanVerse-main-humanVerse-R/functions-print.R 
+
+     ...  functions-print.R 
+
+ remote ...  https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/humanVerse/R/functions-random.R 
+
+
+ force.download ...  FALSE 
+
+
+ myfile ...  C:/Users/ALEXAN~1/AppData/Local/Temp/humanVerse/cache/raw^githubusercontent^com-MonteShaffer-humanVerse-main-humanVerse-R/functions-random.R 
+
+     ...  functions-random.R 
+
+ remote ...  https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/humanVerse/R/functions-search.R 
+
+
+ force.download ...  FALSE 
+
+
+ myfile ...  C:/Users/ALEXAN~1/AppData/Local/Temp/humanVerse/cache/raw^githubusercontent^com-MonteShaffer-humanVerse-main-humanVerse-R/functions-search.R 
+
+     ...  functions-search.R 
+
+ remote ...  https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/humanVerse/R/functions-standardize.R 
+
+
+ force.download ...  FALSE 
+
+
+ myfile ...  C:/Users/ALEXAN~1/AppData/Local/Temp/humanVerse/cache/raw^githubusercontent^com-MonteShaffer-humanVerse-main-humanVerse-R/functions-standardize.R 
+
+     ...  functions-standardize.R 
+
+ remote ...  https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/humanVerse/R/functions-stats.R 
+
+
+ force.download ...  FALSE 
+
+
+ myfile ...  C:/Users/ALEXAN~1/AppData/Local/Temp/humanVerse/cache/raw^githubusercontent^com-MonteShaffer-humanVerse-main-humanVerse-R/functions-stats.R 
+
+     ...  functions-stats.R 
+
+ remote ...  https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/humanVerse/R/functions-str.R 
+
+
+ force.download ...  FALSE 
+
+
+ myfile ...  C:/Users/ALEXAN~1/AppData/Local/Temp/humanVerse/cache/raw^githubusercontent^com-MonteShaffer-humanVerse-main-humanVerse-R/functions-str.R 
+
+     ...  functions-str.R 
+
+ remote ...  https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/humanVerse/R/functions-system.R 
+
+
+ force.download ...  FALSE 
+
+
+ myfile ...  C:/Users/ALEXAN~1/AppData/Local/Temp/humanVerse/cache/raw^githubusercontent^com-MonteShaffer-humanVerse-main-humanVerse-R/functions-system.R 
+
+     ...  functions-system.R 
+
+ remote ...  https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/humanVerse/R/functions-vector.R 
+
+
+ force.download ...  FALSE 
+
+
+ myfile ...  C:/Users/ALEXAN~1/AppData/Local/Temp/humanVerse/cache/raw^githubusercontent^com-MonteShaffer-humanVerse-main-humanVerse-R/functions-vector.R 
+
+     ...  functions-vector.R 
+
+ remote ...  https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/humanVerse/R/globals.R 
+
+
+ force.download ...  FALSE 
+
+
+ myfile ...  C:/Users/ALEXAN~1/AppData/Local/Temp/humanVerse/cache/raw^githubusercontent^com-MonteShaffer-humanVerse-main-humanVerse-R/globals.R 
+
+     ...  globals.R 
+
+ remote ...  https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/humanVerse/R/hello.R 
+
+
+ force.download ...  FALSE 
+
+
+ myfile ...  C:/Users/ALEXAN~1/AppData/Local/Temp/humanVerse/cache/raw^githubusercontent^com-MonteShaffer-humanVerse-main-humanVerse-R/hello.R 
+
+     ...  hello.R </code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -279,32 +497,181 @@ github.monte.humanVerse = paste0(github.monte.http, &quot;humanVerse/tree/main/h
 <h3>source misc</h3>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2l0aHViLm1vbnRlLm1pc2MgPSBwYXN0ZTAoZ2l0aHViLm1vbnRlLmh0dHAsIFwiaHVtYW5WZXJzZS90cmVlL21haW4vbWlzYy9cIik7ICAjIHdlIHdpbGwgcGFyc2UgdGhpcyBwYWdlIHRvIGdldCBhIGxpc3Qgb2YgdGhlIC5SIGZ1bmN0aW9ucyB0byBpbmNsdWRlIFxuXG4jIGluY2x1ZGVHaXRodWJGb2xkZXIoZ2l0aHViLm1vbnRlLm1pc2MpOyAjIHlvdSBjYW4gcGFzcyBmbGFnIGBmb3JjZS5kb3dubG9hZCA9IFRSVUVgIGlmIHlvdSB3YW50IHRvIG1ha2UgY2VydGFpbiBpdCBpcyBub3QgY29taW5nIGZyb20gY2FjaGVcbmBgYCJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2l0aHViLm1vbnRlLm1pc2MgPSBwYXN0ZTAoZ2l0aHViLm1vbnRlLmh0dHAsIFwiaHVtYW5WZXJzZS90cmVlL21haW4vbWlzYy9cIik7ICAjIHdlIHdpbGwgcGFyc2UgdGhpcyBwYWdlIHRvIGdldCBhIGxpc3Qgb2YgdGhlIC5SIGZ1bmN0aW9ucyB0byBpbmNsdWRlIFxuXG5pbmNsdWRlR2l0aHViRm9sZGVyKGdpdGh1Yi5tb250ZS5taXNjKTsgIyB5b3UgY2FuIHBhc3MgZmxhZyBgZm9yY2UuZG93bmxvYWQgPSBUUlVFYCBpZiB5b3Ugd2FudCB0byBtYWtlIGNlcnRhaW4gaXQgaXMgbm90IGNvbWluZyBmcm9tIGNhY2hlXG5gYGAifQ== -->
 <pre class="r"><code>github.monte.misc = paste0(github.monte.http, &quot;humanVerse/tree/main/misc/&quot;);  # we will parse this page to get a list of the .R functions to include 
 
-# includeGithubFolder(github.monte.misc); # you can pass flag `force.download = TRUE` if you want to make certain it is not coming from cache</code></pre>
+includeGithubFolder(github.monte.misc); # you can pass flag `force.download = TRUE` if you want to make certain it is not coming from cache</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc291cmNlKCdDOi9fZ2l0Xy9naXRodWIvTW9udGVTaGFmZmVyL2h1bWFuVmVyc2UvaW5jbHVkZS5zZXR1cC5SJyk7XG5gYGAifQ== -->
-<pre class="r"><code>source(&#39;C:/_git_/github/MonteShaffer/humanVerse/include.setup.R&#39;);</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaW5jbHVkZUdpdGh1YkZvbGRlcihnaXRodWIubW9udGUuaHVtYW5WZXJzZSk7XG5gYGAifQ== -->
-<pre class="r"><code>includeGithubFolder(github.monte.humanVerse);</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaW5jbHVkZUdpdGh1YkZvbGRlcihnaXRodWIubW9udGUubWlzYyk7IFxuYGBgIn0= -->
-<pre class="r"><code>includeGithubFolder(github.monte.misc); </code></pre>
-<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiXG4gZm9yY2UuY2FjaGUgLi4uICBGQUxTRSBcblxuXG4gcmVtb3RlIC4uLiAgaHR0cHM6Ly9naXRodWIuY29tL01vbnRlU2hhZmZlci9odW1hblZlcnNlL3RyZWUvbWFpbi9taXNjLyBcblxuXG4gZm9yY2UuZG93bmxvYWQgLi4uICBGQUxTRSBcblxuXG4gbXlmaWxlIC4uLiAgQzovVXNlcnMvQUxFWEFOfjEvQXBwRGF0YS9Mb2NhbC9UZW1wL2h1bWFuVmVyc2UvY2FjaGUvZ2l0aHViXmNvbS1Nb250ZVNoYWZmZXItaHVtYW5WZXJzZS10cmVlLW1haW4tbWlzYy0vaW5kZXguaHRtbCBcblxuIElOQ0xVRElORzogXG4gPT09PT09PT09IFxuXG4gcmVtb3RlIC4uLiAgaHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL01vbnRlU2hhZmZlci9odW1hblZlcnNlL21haW4vbWlzYy9mdW5jdGlvbnMtY29tcGFyZS5SIFxuXG5cbiBmb3JjZS5kb3dubG9hZCAuLi4gIEZBTFNFIFxuXG5cbiBteWZpbGUgLi4uICBDOi9Vc2Vycy9BTEVYQU5+MS9BcHBEYXRhL0xvY2FsL1RlbXAvaHVtYW5WZXJzZS9jYWNoZS9yYXdeZ2l0aHVidXNlcmNvbnRlbnReY29tLU1vbnRlU2hhZmZlci1odW1hblZlcnNlLW1haW4tbWlzYy9mdW5jdGlvbnMtY29tcGFyZS5SIFxuXG5cdCAuLi4gIGZ1bmN0aW9ucy1jb21wYXJlLlIgXG5cbiByZW1vdGUgLi4uICBodHRwczovL3Jhdy5naXRodWJ1c2VyY29udGVudC5jb20vTW9udGVTaGFmZmVyL2h1bWFuVmVyc2UvbWFpbi9taXNjL2Z1bmN0aW9ucy1kaWZmLlIgXG5cblxuIGZvcmNlLmRvd25sb2FkIC4uLiAgRkFMU0UgXG5cblxuIG15ZmlsZSAuLi4gIEM6L1VzZXJzL0FMRVhBTn4xL0FwcERhdGEvTG9jYWwvVGVtcC9odW1hblZlcnNlL2NhY2hlL3Jhd15naXRodWJ1c2VyY29udGVudF5jb20tTW9udGVTaGFmZmVyLWh1bWFuVmVyc2UtbWFpbi1taXNjL2Z1bmN0aW9ucy1kaWZmLlIgXG5cblx0IC4uLiAgZnVuY3Rpb25zLWRpZmYuUiBcblxuIHJlbW90ZSAuLi4gIGh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9Nb250ZVNoYWZmZXIvaHVtYW5WZXJzZS9tYWluL21pc2MvZnVuY3Rpb25zLWh0bWwuUiBcblxuXG4gZm9yY2UuZG93bmxvYWQgLi4uICBGQUxTRSBcblxuXG4gbXlmaWxlIC4uLiAgQzovVXNlcnMvQUxFWEFOfjEvQXBwRGF0YS9Mb2NhbC9UZW1wL2h1bWFuVmVyc2UvY2FjaGUvcmF3XmdpdGh1YnVzZXJjb250ZW50XmNvbS1Nb250ZVNoYWZmZXItaHVtYW5WZXJzZS1tYWluLW1pc2MvZnVuY3Rpb25zLWh0bWwuUiBcblxuXHQgLi4uICBmdW5jdGlvbnMtaHRtbC5SIFxuXG4gcmVtb3RlIC4uLiAgaHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL01vbnRlU2hhZmZlci9odW1hblZlcnNlL21haW4vbWlzYy9mdW5jdGlvbnMtaW50ZWdyYXRlLlIgXG5cblxuIGZvcmNlLmRvd25sb2FkIC4uLiAgRkFMU0UgXG5cblxuIG15ZmlsZSAuLi4gIEM6L1VzZXJzL0FMRVhBTn4xL0FwcERhdGEvTG9jYWwvVGVtcC9odW1hblZlcnNlL2NhY2hlL3Jhd15naXRodWJ1c2VyY29udGVudF5jb20tTW9udGVTaGFmZmVyLWh1bWFuVmVyc2UtbWFpbi1taXNjL2Z1bmN0aW9ucy1pbnRlZ3JhdGUuUiBcblxuXHQgLi4uICBmdW5jdGlvbnMtaW50ZWdyYXRlLlIgXG5cbiByZW1vdGUgLi4uICBodHRwczovL3Jhdy5naXRodWJ1c2VyY29udGVudC5jb20vTW9udGVTaGFmZmVyL2h1bWFuVmVyc2UvbWFpbi9taXNjL2Z1bmN0aW9ucy1pbnRlZ3JhdGUyLlIgXG5cblxuIGZvcmNlLmRvd25sb2FkIC4uLiAgRkFMU0UgXG5cblxuIG15ZmlsZSAuLi4gIEM6L1VzZXJzL0FMRVhBTn4xL0FwcERhdGEvTG9jYWwvVGVtcC9odW1hblZlcnNlL2NhY2hlL3Jhd15naXRodWJ1c2VyY29udGVudF5jb20tTW9udGVTaGFmZmVyLWh1bWFuVmVyc2UtbWFpbi1taXNjL2Z1bmN0aW9ucy1pbnRlZ3JhdGUyLlIgXG5cblx0IC4uLiAgZnVuY3Rpb25zLWludGVncmF0ZTIuUiBcblxuIHJlbW90ZSAuLi4gIGh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9Nb250ZVNoYWZmZXIvaHVtYW5WZXJzZS9tYWluL21pc2MvZnVuY3Rpb25zLWtsbS5SIFxuXG5cbiBmb3JjZS5kb3dubG9hZCAuLi4gIEZBTFNFIFxuXG5cbiBteWZpbGUgLi4uICBDOi9Vc2Vycy9BTEVYQU5+MS9BcHBEYXRhL0xvY2FsL1RlbXAvaHVtYW5WZXJzZS9jYWNoZS9yYXdeZ2l0aHVidXNlcmNvbnRlbnReY29tLU1vbnRlU2hhZmZlci1odW1hblZlcnNlLW1haW4tbWlzYy9mdW5jdGlvbnMta2xtLlIgXG5cblx0IC4uLiAgZnVuY3Rpb25zLWtsbS5SIFxuXG4gcmVtb3RlIC4uLiAgaHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL01vbnRlU2hhZmZlci9odW1hblZlcnNlL21haW4vbWlzYy9mdW5jdGlvbnMtbGF0ZXguUiBcblxuXG4gZm9yY2UuZG93bmxvYWQgLi4uICBGQUxTRSBcblxuXG4gbXlmaWxlIC4uLiAgQzovVXNlcnMvQUxFWEFOfjEvQXBwRGF0YS9Mb2NhbC9UZW1wL2h1bWFuVmVyc2UvY2FjaGUvcmF3XmdpdGh1YnVzZXJjb250ZW50XmNvbS1Nb250ZVNoYWZmZXItaHVtYW5WZXJzZS1tYWluLW1pc2MvZnVuY3Rpb25zLWxhdGV4LlIgXG5cblx0IC4uLiAgZnVuY3Rpb25zLWxhdGV4LlIgXG5cbiByZW1vdGUgLi4uICBodHRwczovL3Jhdy5naXRodWJ1c2VyY29udGVudC5jb20vTW9udGVTaGFmZmVyL2h1bWFuVmVyc2UvbWFpbi9taXNjL2Z1bmN0aW9ucy1tZDUuUiBcblxuXG4gZm9yY2UuZG93bmxvYWQgLi4uICBGQUxTRSBcblxuXG4gbXlmaWxlIC4uLiAgQzovVXNlcnMvQUxFWEFOfjEvQXBwRGF0YS9Mb2NhbC9UZW1wL2h1bWFuVmVyc2UvY2FjaGUvcmF3XmdpdGh1YnVzZXJjb250ZW50XmNvbS1Nb250ZVNoYWZmZXItaHVtYW5WZXJzZS1tYWluLW1pc2MvZnVuY3Rpb25zLW1kNS5SIFxuXG5cdCAuLi4gIGZ1bmN0aW9ucy1tZDUuUiBcblxuIHJlbW90ZSAuLi4gIGh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9Nb250ZVNoYWZmZXIvaHVtYW5WZXJzZS9tYWluL21pc2MvZnVuY3Rpb25zLW1uaXN0LlIgXG5cblxuIGZvcmNlLmRvd25sb2FkIC4uLiAgRkFMU0UgXG5cblxuIG15ZmlsZSAuLi4gIEM6L1VzZXJzL0FMRVhBTn4xL0FwcERhdGEvTG9jYWwvVGVtcC9odW1hblZlcnNlL2NhY2hlL3Jhd15naXRodWJ1c2VyY29udGVudF5jb20tTW9udGVTaGFmZmVyLWh1bWFuVmVyc2UtbWFpbi1taXNjL2Z1bmN0aW9ucy1tbmlzdC5SIFxuXG5cdCAuLi4gIGZ1bmN0aW9ucy1tbmlzdC5SIFxuXG4gcmVtb3RlIC4uLiAgaHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL01vbnRlU2hhZmZlci9odW1hblZlcnNlL21haW4vbWlzYy9mdW5jdGlvbnMtbXVsdGl2YXJpYXRlLlIgXG5cblxuIGZvcmNlLmRvd25sb2FkIC4uLiAgRkFMU0UgXG5cblxuIG15ZmlsZSAuLi4gIEM6L1VzZXJzL0FMRVhBTn4xL0FwcERhdGEvTG9jYWwvVGVtcC9odW1hblZlcnNlL2NhY2hlL3Jhd15naXRodWJ1c2VyY29udGVudF5jb20tTW9udGVTaGFmZmVyLWh1bWFuVmVyc2UtbWFpbi1taXNjL2Z1bmN0aW9ucy1tdWx0aXZhcmlhdGUuUiBcblxuXHQgLi4uICBmdW5jdGlvbnMtbXVsdGl2YXJpYXRlLlIgXG5cbiByZW1vdGUgLi4uICBodHRwczovL3Jhdy5naXRodWJ1c2VyY29udGVudC5jb20vTW9udGVTaGFmZmVyL2h1bWFuVmVyc2UvbWFpbi9taXNjL2Z1bmN0aW9ucy1teXNxbC5SIFxuXG5cbiBmb3JjZS5kb3dubG9hZCAuLi4gIEZBTFNFIFxuXG5cbiBteWZpbGUgLi4uICBDOi9Vc2Vycy9BTEVYQU5+MS9BcHBEYXRhL0xvY2FsL1RlbXAvaHVtYW5WZXJzZS9jYWNoZS9yYXdeZ2l0aHVidXNlcmNvbnRlbnReY29tLU1vbnRlU2hhZmZlci1odW1hblZlcnNlLW1haW4tbWlzYy9mdW5jdGlvbnMtbXlzcWwuUiBcblxuXHQgLi4uICBmdW5jdGlvbnMtbXlzcWwuUiBcblxuIHJlbW90ZSAuLi4gIGh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9Nb250ZVNoYWZmZXIvaHVtYW5WZXJzZS9tYWluL21pc2MvZnVuY3Rpb25zLW5scC5SIFxuXG5cbiBmb3JjZS5kb3dubG9hZCAuLi4gIEZBTFNFIFxuXG5cbiBteWZpbGUgLi4uICBDOi9Vc2Vycy9BTEVYQU5+MS9BcHBEYXRhL0xvY2FsL1RlbXAvaHVtYW5WZXJzZS9jYWNoZS9yYXdeZ2l0aHVidXNlcmNvbnRlbnReY29tLU1vbnRlU2hhZmZlci1odW1hblZlcnNlLW1haW4tbWlzYy9mdW5jdGlvbnMtbmxwLlIgXG5cblx0IC4uLiAgZnVuY3Rpb25zLW5scC5SIFxuXG4gcmVtb3RlIC4uLiAgaHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL01vbnRlU2hhZmZlci9odW1hblZlcnNlL21haW4vbWlzYy9mdW5jdGlvbnMtc29ydC5SIFxuXG5cbiBmb3JjZS5kb3dubG9hZCAuLi4gIEZBTFNFIFxuXG5cbiBteWZpbGUgLi4uICBDOi9Vc2Vycy9BTEVYQU5+MS9BcHBEYXRhL0xvY2FsL1RlbXAvaHVtYW5WZXJzZS9jYWNoZS9yYXdeZ2l0aHVidXNlcmNvbnRlbnReY29tLU1vbnRlU2hhZmZlci1odW1hblZlcnNlLW1haW4tbWlzYy9mdW5jdGlvbnMtc29ydC5SIFxuXG5cdCAuLi4gIGZ1bmN0aW9ucy1zb3J0LlIgXG5cbiByZW1vdGUgLi4uICBodHRwczovL3Jhdy5naXRodWJ1c2VyY29udGVudC5jb20vTW9udGVTaGFmZmVyL2h1bWFuVmVyc2UvbWFpbi9taXNjL2Z1bmN0aW9ucy10ZXN0cy5SIFxuXG5cbiBmb3JjZS5kb3dubG9hZCAuLi4gIEZBTFNFIFxuXG5cbiBteWZpbGUgLi4uICBDOi9Vc2Vycy9BTEVYQU5+MS9BcHBEYXRhL0xvY2FsL1RlbXAvaHVtYW5WZXJzZS9jYWNoZS9yYXdeZ2l0aHVidXNlcmNvbnRlbnReY29tLU1vbnRlU2hhZmZlci1odW1hblZlcnNlLW1haW4tbWlzYy9mdW5jdGlvbnMtdGVzdHMuUiBcblxuXHQgLi4uICBmdW5jdGlvbnMtdGVzdHMuUiBcblxuIHJlbW90ZSAuLi4gIGh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9Nb250ZVNoYWZmZXIvaHVtYW5WZXJzZS9tYWluL21pc2MvZnVuY3Rpb25zLXdpa2lwZWRpYS5SIFxuXG5cbiBmb3JjZS5kb3dubG9hZCAuLi4gIEZBTFNFIFxuXG5cbiBteWZpbGUgLi4uICBDOi9Vc2Vycy9BTEVYQU5+MS9BcHBEYXRhL0xvY2FsL1RlbXAvaHVtYW5WZXJzZS9jYWNoZS9yYXdeZ2l0aHVidXNlcmNvbnRlbnReY29tLU1vbnRlU2hhZmZlci1odW1hblZlcnNlLW1haW4tbWlzYy9mdW5jdGlvbnMtd2lraXBlZGlhLlIgXG4ifQ== -->
+<pre><code>
+ force.cache ...  FALSE 
+
+
+ remote ...  https://github.com/MonteShaffer/humanVerse/tree/main/misc/ 
+
+
+ force.download ...  FALSE 
+
+
+ myfile ...  C:/Users/ALEXAN~1/AppData/Local/Temp/humanVerse/cache/github^com-MonteShaffer-humanVerse-tree-main-misc-/index.html 
+
+ INCLUDING: 
+ ========= 
+
+ remote ...  https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/misc/functions-compare.R 
+
+
+ force.download ...  FALSE 
+
+
+ myfile ...  C:/Users/ALEXAN~1/AppData/Local/Temp/humanVerse/cache/raw^githubusercontent^com-MonteShaffer-humanVerse-main-misc/functions-compare.R 
+
+     ...  functions-compare.R 
+
+ remote ...  https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/misc/functions-diff.R 
+
+
+ force.download ...  FALSE 
+
+
+ myfile ...  C:/Users/ALEXAN~1/AppData/Local/Temp/humanVerse/cache/raw^githubusercontent^com-MonteShaffer-humanVerse-main-misc/functions-diff.R 
+
+     ...  functions-diff.R 
+
+ remote ...  https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/misc/functions-html.R 
+
+
+ force.download ...  FALSE 
+
+
+ myfile ...  C:/Users/ALEXAN~1/AppData/Local/Temp/humanVerse/cache/raw^githubusercontent^com-MonteShaffer-humanVerse-main-misc/functions-html.R 
+
+     ...  functions-html.R 
+
+ remote ...  https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/misc/functions-integrate.R 
+
+
+ force.download ...  FALSE 
+
+
+ myfile ...  C:/Users/ALEXAN~1/AppData/Local/Temp/humanVerse/cache/raw^githubusercontent^com-MonteShaffer-humanVerse-main-misc/functions-integrate.R 
+
+     ...  functions-integrate.R 
+
+ remote ...  https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/misc/functions-integrate2.R 
+
+
+ force.download ...  FALSE 
+
+
+ myfile ...  C:/Users/ALEXAN~1/AppData/Local/Temp/humanVerse/cache/raw^githubusercontent^com-MonteShaffer-humanVerse-main-misc/functions-integrate2.R 
+
+     ...  functions-integrate2.R 
+
+ remote ...  https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/misc/functions-klm.R 
+
+
+ force.download ...  FALSE 
+
+
+ myfile ...  C:/Users/ALEXAN~1/AppData/Local/Temp/humanVerse/cache/raw^githubusercontent^com-MonteShaffer-humanVerse-main-misc/functions-klm.R 
+
+     ...  functions-klm.R 
+
+ remote ...  https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/misc/functions-latex.R 
+
+
+ force.download ...  FALSE 
+
+
+ myfile ...  C:/Users/ALEXAN~1/AppData/Local/Temp/humanVerse/cache/raw^githubusercontent^com-MonteShaffer-humanVerse-main-misc/functions-latex.R 
+
+     ...  functions-latex.R 
+
+ remote ...  https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/misc/functions-md5.R 
+
+
+ force.download ...  FALSE 
+
+
+ myfile ...  C:/Users/ALEXAN~1/AppData/Local/Temp/humanVerse/cache/raw^githubusercontent^com-MonteShaffer-humanVerse-main-misc/functions-md5.R 
+
+     ...  functions-md5.R 
+
+ remote ...  https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/misc/functions-mnist.R 
+
+
+ force.download ...  FALSE 
+
+
+ myfile ...  C:/Users/ALEXAN~1/AppData/Local/Temp/humanVerse/cache/raw^githubusercontent^com-MonteShaffer-humanVerse-main-misc/functions-mnist.R 
+
+     ...  functions-mnist.R 
+
+ remote ...  https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/misc/functions-multivariate.R 
+
+
+ force.download ...  FALSE 
+
+
+ myfile ...  C:/Users/ALEXAN~1/AppData/Local/Temp/humanVerse/cache/raw^githubusercontent^com-MonteShaffer-humanVerse-main-misc/functions-multivariate.R 
+
+     ...  functions-multivariate.R 
+
+ remote ...  https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/misc/functions-mysql.R 
+
+
+ force.download ...  FALSE 
+
+
+ myfile ...  C:/Users/ALEXAN~1/AppData/Local/Temp/humanVerse/cache/raw^githubusercontent^com-MonteShaffer-humanVerse-main-misc/functions-mysql.R 
+
+     ...  functions-mysql.R 
+
+ remote ...  https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/misc/functions-nlp.R 
+
+
+ force.download ...  FALSE 
+
+
+ myfile ...  C:/Users/ALEXAN~1/AppData/Local/Temp/humanVerse/cache/raw^githubusercontent^com-MonteShaffer-humanVerse-main-misc/functions-nlp.R 
+
+     ...  functions-nlp.R 
+
+ remote ...  https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/misc/functions-sort.R 
+
+
+ force.download ...  FALSE 
+
+
+ myfile ...  C:/Users/ALEXAN~1/AppData/Local/Temp/humanVerse/cache/raw^githubusercontent^com-MonteShaffer-humanVerse-main-misc/functions-sort.R 
+
+     ...  functions-sort.R 
+
+ remote ...  https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/misc/functions-tests.R 
+
+
+ force.download ...  FALSE 
+
+
+ myfile ...  C:/Users/ALEXAN~1/AppData/Local/Temp/humanVerse/cache/raw^githubusercontent^com-MonteShaffer-humanVerse-main-misc/functions-tests.R 
+
+     ...  functions-tests.R 
+
+ remote ...  https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/misc/functions-wikipedia.R 
+
+
+ force.download ...  FALSE 
+
+
+ myfile ...  C:/Users/ALEXAN~1/AppData/Local/Temp/humanVerse/cache/raw^githubusercontent^com-MonteShaffer-humanVerse-main-misc/functions-wikipedia.R </code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiTG9hZGluZyByZXF1aXJlZCBwYWNrYWdlOiB4bWwyXG4ifQ== -->
+<pre><code>Loading required package: xml2</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiXHQgLi4uICBmdW5jdGlvbnMtd2lraXBlZGlhLlIgXG4ifQ== -->
+<pre><code>     ...  functions-wikipedia.R </code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
@@ -312,7 +679,7 @@ github.monte.humanVerse = paste0(github.monte.http, &quot;humanVerse/tree/main/h
 </div>
 </div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2s6IEhlbGxvIEZyaWVuZCINCm91dHB1dDogaHRtbF9ub3RlYm9vaw0KLS0tDQoNCiMgSGVsbG8gRnJpZW5kDQpUaGlzIG5vdGVib29rIHdpbGwgZG8gYSBiYXNpYyB3YWxrdGhyb3VnaCBvbiBob3cgdG8gZ2V0IHVwLWFuZC1ydW5uaW5nIG9uIHRoZSBodW1hblZlcnNlLg0KDQojIyBXZWxjb21lIHRvIFI6Omh1bWFuVmVyc2UNClRoZSBgaHVtYW5WZXJzZWAgaXMgYFItYmFzZWAgZnJpZW5kbHksIHZlcnkgZmV3IGRlcGVuZGVuY2llcyBoZXJlLiAgVGhlIG9iamVjdGl2ZSBpcyB0byBtYWtlIGBSYCBtb3JlIGFjY2Vzc2libGUgYnkgZXZvbHZpbmcgaXRzIGxhbmd1YWdlIHRvIGFsaWduIHdpdGggYEMtYmFzZWRgIHN0YW5kYXJkcy4gIEkgcHJvZ3JhbSBpbiBzZXZlcmFsIEMtYmFzZWQgbGFuZ3VhZ2VzLCBhbmQgSSB3YW50IHRvIG1pbmltaXplIG15IGBjb2duaXRpdmUgbG9hZGAgd2hpbGUgbWF4aW1pemluZyBteSBlZmZpY2llbmN5LiAgQSBmZXcgd3JhcHBlciBmdW5jdGlvbnMgd2lsbCBtYWtlIHRoYXQgc28uDQoNCiMjIGluY2x1ZGUtc2V0dXAuUg0KDQpUaGlzIG9uZSBmaWxlIGhhcyBhbGwgdGhlIGJhc2ljIGZ1bmN0aW9ucyB3ZSBuZWVkIHRvIGxvYWQgbW9yZSBmdW5jdGlvbnMgb3IgKG9mIGNvdXJzZSkgeW91IGNhbiBsb2FkIHRoZSBsaWJyYXJ5LiAgDQoNClRoZXJlIGFyZSBgbWlzY2AgZnVuY3Rpb25zIG91dHNpZGUgdGhlIGxpYnJhcnkgdGhhdCBydW4gY29udGVudC1zcGVjaWZpYyBhY3Rpdml0aWVzIHRoYXQgZG8gbm90IGJlbG9uZyBpbiB0aGUgbWFpbiBsaWJyYXJ5IGFzIHRoZXkgaW5jbHVkZSBhIGxvdCBvZiBleHRyYW5lb3VzIGxpYnJhcmllcy4gIEZvciBleGFtcGxlLCBgZnVuY3Rpb25zLW5scC5SYCBpcyB3ZWxsIHdvcnRoIHlvdXIgdGltZSwgcGxlYXNlIGNoZWNrIGl0IG91dC4NCg0KIyMjIHNvdXJjZSBzZXR1cA0KYGBge3J9DQpnaXRodWIubW9udGUucmF3ID0gImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9Nb250ZVNoYWZmZXIvIjsNCmluY2x1ZGUuc2V0dXAgPSBwYXN0ZTAoZ2l0aHViLm1vbnRlLnJhdywgImh1bWFuVmVyc2UvbWFpbi9pbmNsdWRlLnNldHVwLlIiKTsNCnNvdXJjZShpbmNsdWRlLnNldHVwKTsNCmBgYA0KDQojIyMgc291cmNlIGh1bWFuVmVyc2UNCmBgYHtyfQ0KZ2l0aHViLm1vbnRlLmh0dHAgPSAiaHR0cHM6Ly9naXRodWIuY29tL01vbnRlU2hhZmZlci8iOw0KDQpnaXRodWIubW9udGUuaHVtYW5WZXJzZSA9IHBhc3RlMChnaXRodWIubW9udGUuaHR0cCwgImh1bWFuVmVyc2UvdHJlZS9tYWluL2h1bWFuVmVyc2UvUi8iKTsgIyB3ZSB3aWxsIHBhcnNlIHRoaXMgcGFnZSB0byBnZXQgYSBsaXN0IG9mIHRoZSAuUiBmdW5jdGlvbnMgdG8gaW5jbHVkZSANCg0KIyBpbmNsdWRlR2l0aHViRm9sZGVyKGdpdGh1Yi5tb250ZS5odW1hblZlcnNlKTsgIyB5b3UgY2FuIHBhc3MgZmxhZyBgZm9yY2UuZG93bmxvYWQgPSBUUlVFYCBpZiB5b3Ugd2FudCB0byBtYWtlIGNlcnRhaW4gaXQgaXMgbm90IGNvbWluZyBmcm9tIGNhY2hlDQpgYGANCg0KIyMjIHNvdXJjZSBtaXNjDQpgYGB7cn0NCmdpdGh1Yi5tb250ZS5taXNjID0gcGFzdGUwKGdpdGh1Yi5tb250ZS5odHRwLCAiaHVtYW5WZXJzZS90cmVlL21haW4vbWlzYy8iKTsgICMgd2Ugd2lsbCBwYXJzZSB0aGlzIHBhZ2UgdG8gZ2V0IGEgbGlzdCBvZiB0aGUgLlIgZnVuY3Rpb25zIHRvIGluY2x1ZGUgDQoNCiMgaW5jbHVkZUdpdGh1YkZvbGRlcihnaXRodWIubW9udGUubWlzYyk7ICMgeW91IGNhbiBwYXNzIGZsYWcgYGZvcmNlLmRvd25sb2FkID0gVFJVRWAgaWYgeW91IHdhbnQgdG8gbWFrZSBjZXJ0YWluIGl0IGlzIG5vdCBjb21pbmcgZnJvbSBjYWNoZQ0KYGBgDQoNCg0KYGBge3J9DQpzb3VyY2UoJ0M6L19naXRfL2dpdGh1Yi9Nb250ZVNoYWZmZXIvaHVtYW5WZXJzZS9pbmNsdWRlLnNldHVwLlInKTsNCmBgYA0KDQpgYGB7cn0NCmluY2x1ZGVHaXRodWJGb2xkZXIoZ2l0aHViLm1vbnRlLmh1bWFuVmVyc2UpOw0KYGBgDQoNCmBgYHtyfQ0KaW5jbHVkZUdpdGh1YkZvbGRlcihnaXRodWIubW9udGUubWlzYyk7IA0KYGBgDQoNCg0KDQo=</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2s6IEhlbGxvIEZyaWVuZCINCm91dHB1dDogaHRtbF9ub3RlYm9vaw0KLS0tDQoNCiMgSGVsbG8gRnJpZW5kDQpUaGlzIG5vdGVib29rIHdpbGwgZG8gYSBiYXNpYyB3YWxrdGhyb3VnaCBvbiBob3cgdG8gZ2V0IHVwLWFuZC1ydW5uaW5nIG9uIHRoZSBodW1hblZlcnNlLg0KDQojIyBXZWxjb21lIHRvIFI6Omh1bWFuVmVyc2UNClRoZSBgaHVtYW5WZXJzZWAgaXMgYFItYmFzZWAgZnJpZW5kbHksIHZlcnkgZmV3IGRlcGVuZGVuY2llcyBoZXJlLiAgVGhlIG9iamVjdGl2ZSBpcyB0byBtYWtlIGBSYCBtb3JlIGFjY2Vzc2libGUgYnkgZXZvbHZpbmcgaXRzIGxhbmd1YWdlIHRvIGFsaWduIHdpdGggYEMtYmFzZWRgIHN0YW5kYXJkcy4gIEkgcHJvZ3JhbSBpbiBzZXZlcmFsIEMtYmFzZWQgbGFuZ3VhZ2VzLCBhbmQgSSB3YW50IHRvIG1pbmltaXplIG15IGBjb2duaXRpdmUgbG9hZGAgd2hpbGUgbWF4aW1pemluZyBteSBlZmZpY2llbmN5LiAgQSBmZXcgd3JhcHBlciBmdW5jdGlvbnMgd2lsbCBtYWtlIHRoYXQgc28uDQoNCiMjIGluY2x1ZGUtc2V0dXAuUg0KDQpUaGlzIG9uZSBmaWxlIGhhcyBhbGwgdGhlIGJhc2ljIGZ1bmN0aW9ucyB3ZSBuZWVkIHRvIGxvYWQgbW9yZSBmdW5jdGlvbnMgb3IgKG9mIGNvdXJzZSkgeW91IGNhbiBsb2FkIHRoZSBsaWJyYXJ5LiAgDQoNClRoZXJlIGFyZSBgbWlzY2AgZnVuY3Rpb25zIG91dHNpZGUgdGhlIGxpYnJhcnkgdGhhdCBydW4gY29udGVudC1zcGVjaWZpYyBhY3Rpdml0aWVzIHRoYXQgZG8gbm90IGJlbG9uZyBpbiB0aGUgbWFpbiBsaWJyYXJ5IGFzIHRoZXkgaW5jbHVkZSBhIGxvdCBvZiBleHRyYW5lb3VzIGxpYnJhcmllcy4gIEZvciBleGFtcGxlLCBgZnVuY3Rpb25zLW5scC5SYCBpcyB3ZWxsIHdvcnRoIHlvdXIgdGltZSwgcGxlYXNlIGNoZWNrIGl0IG91dC4NCg0KIyMjIHNvdXJjZSBzZXR1cA0KYGBge3J9DQpnaXRodWIubW9udGUucmF3ID0gImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9Nb250ZVNoYWZmZXIvIjsNCmluY2x1ZGUuc2V0dXAgPSBwYXN0ZTAoZ2l0aHViLm1vbnRlLnJhdywgImh1bWFuVmVyc2UvbWFpbi9pbmNsdWRlLnNldHVwLlIiKTsNCnNvdXJjZShpbmNsdWRlLnNldHVwKTsNCmBgYA0KDQojIyMgc291cmNlIGh1bWFuVmVyc2UNCmBgYHtyfQ0KZ2l0aHViLm1vbnRlLmh0dHAgPSAiaHR0cHM6Ly9naXRodWIuY29tL01vbnRlU2hhZmZlci8iOw0KDQpnaXRodWIubW9udGUuaHVtYW5WZXJzZSA9IHBhc3RlMChnaXRodWIubW9udGUuaHR0cCwgImh1bWFuVmVyc2UvdHJlZS9tYWluL2h1bWFuVmVyc2UvUi8iKTsgIyB3ZSB3aWxsIHBhcnNlIHRoaXMgcGFnZSB0byBnZXQgYSBsaXN0IG9mIHRoZSAuUiBmdW5jdGlvbnMgdG8gaW5jbHVkZSANCg0KaW5jbHVkZUdpdGh1YkZvbGRlcihnaXRodWIubW9udGUuaHVtYW5WZXJzZSk7ICMgeW91IGNhbiBwYXNzIGZsYWcgYGZvcmNlLmRvd25sb2FkID0gVFJVRWAgaWYgeW91IHdhbnQgdG8gbWFrZSBjZXJ0YWluIGl0IGlzIG5vdCBjb21pbmcgZnJvbSBjYWNoZQ0KYGBgDQoNCiMjIyBzb3VyY2UgbWlzYw0KYGBge3J9DQpnaXRodWIubW9udGUubWlzYyA9IHBhc3RlMChnaXRodWIubW9udGUuaHR0cCwgImh1bWFuVmVyc2UvdHJlZS9tYWluL21pc2MvIik7ICAjIHdlIHdpbGwgcGFyc2UgdGhpcyBwYWdlIHRvIGdldCBhIGxpc3Qgb2YgdGhlIC5SIGZ1bmN0aW9ucyB0byBpbmNsdWRlIA0KDQppbmNsdWRlR2l0aHViRm9sZGVyKGdpdGh1Yi5tb250ZS5taXNjKTsgIyB5b3UgY2FuIHBhc3MgZmxhZyBgZm9yY2UuZG93bmxvYWQgPSBUUlVFYCBpZiB5b3Ugd2FudCB0byBtYWtlIGNlcnRhaW4gaXQgaXMgbm90IGNvbWluZyBmcm9tIGNhY2hlDQpgYGANCg0KDQoNCg0K</div>
 
 
 

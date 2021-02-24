@@ -105,7 +105,49 @@ includeRemoteFiles = function(urls, verbose=FALSE, ...)
     }
   }
   
+
+installGithubLibrary = function()
+	{
+	
+	#
+	# {
+  # "id": 294247360,
+  # "node_id": "MDEwOlJlcG9zaXRvcnkyOTQyNDczNjA=",
+  # "name": "humanVerseWSU",
+  # "full_name": "MonteShaffer/humanVerseWSU",
+  # "private": false,
   
+  
+	# https://api.github.com/
+	# "repository_url": "https://api.github.com/repos/{owner}/{repo}",
+	# "repository_url": "https://api.github.com/repos/MonteShaffer/humanVerseWSU",
+	
+	# check out remotes ... 
+	
+	# remote_download.github_remote <- function(x, quiet = FALSE) {
+  # if (!quiet) {
+    # message("Downloading GitHub repo ", x$username, "/", x$repo, "@", x$ref)
+  # }
+
+  # dest <- tempfile(fileext = paste0(".tar.gz"))
+  # src_root <- build_url(x$host, "repos", x$username, x$repo)
+  # src <- paste0(src_root, "/tarball/", utils::URLencode(x$ref, reserved = TRUE))
+
+  # download(dest, src, auth_token = x$auth_token)
+  
+  
+  
+  
+  
+  # github_remote <- function(repo, ref = "HEAD", subdir = NULL,
+                       # auth_token = github_pat(), sha = NULL,
+                       # host = "api.github.com", ...) {
+
+  # meta <- parse_git_repo(repo)
+  # meta <- github_resolve_ref(meta$ref %||% ref, meta, host = host, auth_token = auth_token)
+	
+	}
+ 
 includeGithubFolder = function(url, ...)  # pattern = "[.][RrSsQq]$",
 	{
 	# args = grabFunctionParameters();
@@ -120,12 +162,12 @@ includeGithubFolder = function(url, ...)  # pattern = "[.][RrSsQq]$",
 		# may live in ... as force.download ... 
 		if(exists("args"))
 			{
-			if(exists(".dot.keys.", where=args))
+			if(exists(".dots.keys.", where=args))
 				{
-				if(is.element("force.download", args$.dot.keys.))
+				if(is.element("force.download", args$.dots.keys.))
 					{
-					# idx = which(args$.dot.keys. == "force.download");
-					force.cache = args$.dot.vals.$force.download;
+					# idx = which(args$.dots.keys. == "force.download");
+					force.cache = args$.dots.vals.$force.download;
 					}
 				}
 			}
