@@ -15,13 +15,28 @@ This one file has all the basic functions we need to load more functions or (of 
 
 There are `misc` functions outside the library that run content-specific activities that do not belong in the main library as they include a lot of extraneous libraries.  For example, `functions-nlp.R` is well worth your time, please check it out.
 
-
+### source setup
 ```{r}
-
-
-
+github.monte.raw = "https://raw.githubusercontent.com/MonteShaffer/";
+include.setup = paste0(github.monte.raw, "humanVerse/main/include.setup.R");
+source(include.setup);
 ```
 
+### source humanVerse
+```{r}
+github.monte.http = "https://github.com/MonteShaffer/";
+
+github.monte.humanVerse = paste0(github.monte.http, "humanVerse/tree/main/humanVerse/R/"); # we will parse this page to get a list of the .R functions to include 
+
+includeGithubFolder(github.monte.humanVerse); # you can pass flag `force.download = TRUE` if you want to make certain it is not coming from cache
+```
+
+### source misc
+```{r}
+github.monte.misc = paste0(github.monte.http, "humanVerse/tree/main/misc/");  # we will parse this page to get a list of the .R functions to include 
+
+includeGithubFolder(github.monte.misc); # you can pass flag `force.download = TRUE` if you want to make certain it is not coming from cache
+```
 
 
 

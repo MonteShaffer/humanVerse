@@ -249,15 +249,49 @@ summary {
 <h2>include-setup.R</h2>
 <p>This one file has all the basic functions we need to load more functions or (of course) you can load the library.</p>
 <p>There are <code>misc</code> functions outside the library that run content-specific activities that do not belong in the main library as they include a lot of extraneous libraries. For example, <code>functions-nlp.R</code> is well worth your time, please check it out.</p>
+<div id="source-setup" class="section level3">
+<h3>source setup</h3>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2l0aHViLm1vbnRlLnJhdyA9IFwiaHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL01vbnRlU2hhZmZlci9cIlxuaW5jbHVkZS5zZXR1cCA9IHBhc3RlMChnaXRodWIubW9udGUucmF3LCBcImh1bWFuVmVyc2UvbWFpbi9pbmNsdWRlLnNldHVwLlJcIik7XG5zb3VyY2UoaW5jbHVkZS5zZXR1cCk7XG5gYGAifQ== -->
+<pre class="r"><code>github.monte.raw = &quot;https://raw.githubusercontent.com/MonteShaffer/&quot;
+include.setup = paste0(github.monte.raw, &quot;humanVerse/main/include.setup.R&quot;);
+source(include.setup);</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="source-humanverse" class="section level3">
+<h3>source humanVerse</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2l0aHViLm1vbnRlLmh0dHAgPSBcImh0dHBzOi8vZ2l0aHViLmNvbS9Nb250ZVNoYWZmZXIvXCI7XG5cbmdpdGh1Yi5tb250ZS5odW1hblZlcnNlID0gcGFzdGUwKGdpdGh1Yi5tb250ZS5odHRwLCBcImh1bWFuVmVyc2UvdHJlZS9tYWluL2h1bWFuVmVyc2UvUi9cIik7ICMgd2Ugd2lsbCBwYXJzZSB0aGlzIHBhZ2UgdG8gZ2V0IGEgbGlzdCBvZiB0aGUgLlIgZnVuY3Rpb25zIHRvIGluY2x1ZGUgXG5cbmluY2x1ZGVHaXRodWJGb2xkZXIoZ2l0aHViLm1vbnRlLmh1bWFuVmVyc2UpOyAjIHlvdSBjYW4gcGFzcyBmbGFnIGBmb3JjZS5kb3dubG9hZCA9IFRSVUVgIGlmIHlvdSB3YW50IHRvIG1ha2UgY2VydGFpbiBpdCBpcyBub3QgY29taW5nIGZyb20gY2FjaGVcbmBgYCJ9 -->
+<pre class="r"><code>github.monte.http = &quot;https://github.com/MonteShaffer/&quot;;
+
+github.monte.humanVerse = paste0(github.monte.http, &quot;humanVerse/tree/main/humanVerse/R/&quot;); # we will parse this page to get a list of the .R functions to include 
+
+includeGithubFolder(github.monte.humanVerse); # you can pass flag `force.download = TRUE` if you want to make certain it is not coming from cache</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="source-misc" class="section level3">
+<h3>source misc</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2l0aHViLm1vbnRlLm1pc2MgPSBwYXN0ZTAoZ2l0aHViLm1vbnRlLmh0dHAsIFwiaHVtYW5WZXJzZS90cmVlL21haW4vbWlzYy9cIik7ICAjIHdlIHdpbGwgcGFyc2UgdGhpcyBwYWdlIHRvIGdldCBhIGxpc3Qgb2YgdGhlIC5SIGZ1bmN0aW9ucyB0byBpbmNsdWRlIFxuXG5pbmNsdWRlR2l0aHViRm9sZGVyKGdpdGh1Yi5tb250ZS5taXNjKTsgIyB5b3UgY2FuIHBhc3MgZmxhZyBgZm9yY2UuZG93bmxvYWQgPSBUUlVFYCBpZiB5b3Ugd2FudCB0byBtYWtlIGNlcnRhaW4gaXQgaXMgbm90IGNvbWluZyBmcm9tIGNhY2hlXG5gYGAifQ== -->
+<pre class="r"><code>github.monte.misc = paste0(github.monte.http, &quot;humanVerse/tree/main/misc/&quot;);  # we will parse this page to get a list of the .R functions to include 
+
+includeGithubFolder(github.monte.misc); # you can pass flag `force.download = TRUE` if you want to make certain it is not coming from cache</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 </div>
 </div>
+</div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2s6IEhlbGxvIEZyaWVuZCINCm91dHB1dDogaHRtbF9ub3RlYm9vaw0KLS0tDQoNCiMgSGVsbG8gRnJpZW5kDQpUaGlzIG5vdGVib29rIHdpbGwgZG8gYSBiYXNpYyB3YWxrdGhyb3VnaCBvbiBob3cgdG8gZ2V0IHVwLWFuZC1ydW5uaW5nIG9uIHRoZSBodW1hblZlcnNlLg0KDQojIyBXZWxjb21lIHRvIFI6Omh1bWFuVmVyc2UNClRoZSBgaHVtYW5WZXJzZWAgaXMgYFItYmFzZWAgZnJpZW5kbHksIHZlcnkgZmV3IGRlcGVuZGVuY2llcyBoZXJlLiAgVGhlIG9iamVjdGl2ZSBpcyB0byBtYWtlIGBSYCBtb3JlIGFjY2Vzc2libGUgYnkgZXZvbHZpbmcgaXRzIGxhbmd1YWdlIHRvIGFsaWduIHdpdGggYEMtYmFzZWRgIHN0YW5kYXJkcy4gIEkgcHJvZ3JhbSBpbiBzZXZlcmFsIEMtYmFzZWQgbGFuZ3VhZ2VzLCBhbmQgSSB3YW50IHRvIG1pbmltaXplIG15IGBjb2duaXRpdmUgbG9hZGAgd2hpbGUgbWF4aW1pemluZyBteSBlZmZpY2llbmN5LiAgQSBmZXcgd3JhcHBlciBmdW5jdGlvbnMgd2lsbCBtYWtlIHRoYXQgc28uDQoNCiMjIGluY2x1ZGUtc2V0dXAuUg0KDQpUaGlzIG9uZSBmaWxlIGhhcyBhbGwgdGhlIGJhc2ljIGZ1bmN0aW9ucyB3ZSBuZWVkIHRvIGxvYWQgbW9yZSBmdW5jdGlvbnMgb3IgKG9mIGNvdXJzZSkgeW91IGNhbiBsb2FkIHRoZSBsaWJyYXJ5LiAgDQoNClRoZXJlIGFyZSBgbWlzY2AgZnVuY3Rpb25zIG91dHNpZGUgdGhlIGxpYnJhcnkgdGhhdCBydW4gY29udGVudC1zcGVjaWZpYyBhY3Rpdml0aWVzIHRoYXQgZG8gbm90IGJlbG9uZyBpbiB0aGUgbWFpbiBsaWJyYXJ5IGFzIHRoZXkgaW5jbHVkZSBhIGxvdCBvZiBleHRyYW5lb3VzIGxpYnJhcmllcy4gIEZvciBleGFtcGxlLCBgZnVuY3Rpb25zLW5scC5SYCBpcyB3ZWxsIHdvcnRoIHlvdXIgdGltZSwgcGxlYXNlIGNoZWNrIGl0IG91dC4NCg0KDQpgYGB7cn0NCg0KDQoNCmBgYA0KDQoNCg0KDQoNCg0K</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2s6IEhlbGxvIEZyaWVuZCINCm91dHB1dDogaHRtbF9ub3RlYm9vaw0KLS0tDQoNCiMgSGVsbG8gRnJpZW5kDQpUaGlzIG5vdGVib29rIHdpbGwgZG8gYSBiYXNpYyB3YWxrdGhyb3VnaCBvbiBob3cgdG8gZ2V0IHVwLWFuZC1ydW5uaW5nIG9uIHRoZSBodW1hblZlcnNlLg0KDQojIyBXZWxjb21lIHRvIFI6Omh1bWFuVmVyc2UNClRoZSBgaHVtYW5WZXJzZWAgaXMgYFItYmFzZWAgZnJpZW5kbHksIHZlcnkgZmV3IGRlcGVuZGVuY2llcyBoZXJlLiAgVGhlIG9iamVjdGl2ZSBpcyB0byBtYWtlIGBSYCBtb3JlIGFjY2Vzc2libGUgYnkgZXZvbHZpbmcgaXRzIGxhbmd1YWdlIHRvIGFsaWduIHdpdGggYEMtYmFzZWRgIHN0YW5kYXJkcy4gIEkgcHJvZ3JhbSBpbiBzZXZlcmFsIEMtYmFzZWQgbGFuZ3VhZ2VzLCBhbmQgSSB3YW50IHRvIG1pbmltaXplIG15IGBjb2duaXRpdmUgbG9hZGAgd2hpbGUgbWF4aW1pemluZyBteSBlZmZpY2llbmN5LiAgQSBmZXcgd3JhcHBlciBmdW5jdGlvbnMgd2lsbCBtYWtlIHRoYXQgc28uDQoNCiMjIGluY2x1ZGUtc2V0dXAuUg0KDQpUaGlzIG9uZSBmaWxlIGhhcyBhbGwgdGhlIGJhc2ljIGZ1bmN0aW9ucyB3ZSBuZWVkIHRvIGxvYWQgbW9yZSBmdW5jdGlvbnMgb3IgKG9mIGNvdXJzZSkgeW91IGNhbiBsb2FkIHRoZSBsaWJyYXJ5LiAgDQoNClRoZXJlIGFyZSBgbWlzY2AgZnVuY3Rpb25zIG91dHNpZGUgdGhlIGxpYnJhcnkgdGhhdCBydW4gY29udGVudC1zcGVjaWZpYyBhY3Rpdml0aWVzIHRoYXQgZG8gbm90IGJlbG9uZyBpbiB0aGUgbWFpbiBsaWJyYXJ5IGFzIHRoZXkgaW5jbHVkZSBhIGxvdCBvZiBleHRyYW5lb3VzIGxpYnJhcmllcy4gIEZvciBleGFtcGxlLCBgZnVuY3Rpb25zLW5scC5SYCBpcyB3ZWxsIHdvcnRoIHlvdXIgdGltZSwgcGxlYXNlIGNoZWNrIGl0IG91dC4NCg0KIyMjIHNvdXJjZSBzZXR1cA0KYGBge3J9DQpnaXRodWIubW9udGUucmF3ID0gImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9Nb250ZVNoYWZmZXIvIjsNCmluY2x1ZGUuc2V0dXAgPSBwYXN0ZTAoZ2l0aHViLm1vbnRlLnJhdywgImh1bWFuVmVyc2UvbWFpbi9pbmNsdWRlLnNldHVwLlIiKTsNCnNvdXJjZShpbmNsdWRlLnNldHVwKTsNCmBgYA0KDQojIyMgc291cmNlIGh1bWFuVmVyc2UNCmBgYHtyfQ0KZ2l0aHViLm1vbnRlLmh0dHAgPSAiaHR0cHM6Ly9naXRodWIuY29tL01vbnRlU2hhZmZlci8iOw0KDQpnaXRodWIubW9udGUuaHVtYW5WZXJzZSA9IHBhc3RlMChnaXRodWIubW9udGUuaHR0cCwgImh1bWFuVmVyc2UvdHJlZS9tYWluL2h1bWFuVmVyc2UvUi8iKTsgIyB3ZSB3aWxsIHBhcnNlIHRoaXMgcGFnZSB0byBnZXQgYSBsaXN0IG9mIHRoZSAuUiBmdW5jdGlvbnMgdG8gaW5jbHVkZSANCg0KaW5jbHVkZUdpdGh1YkZvbGRlcihnaXRodWIubW9udGUuaHVtYW5WZXJzZSk7ICMgeW91IGNhbiBwYXNzIGZsYWcgYGZvcmNlLmRvd25sb2FkID0gVFJVRWAgaWYgeW91IHdhbnQgdG8gbWFrZSBjZXJ0YWluIGl0IGlzIG5vdCBjb21pbmcgZnJvbSBjYWNoZQ0KYGBgDQoNCiMjIyBzb3VyY2UgbWlzYw0KYGBge3J9DQpnaXRodWIubW9udGUubWlzYyA9IHBhc3RlMChnaXRodWIubW9udGUuaHR0cCwgImh1bWFuVmVyc2UvdHJlZS9tYWluL21pc2MvIik7ICAjIHdlIHdpbGwgcGFyc2UgdGhpcyBwYWdlIHRvIGdldCBhIGxpc3Qgb2YgdGhlIC5SIGZ1bmN0aW9ucyB0byBpbmNsdWRlIA0KDQppbmNsdWRlR2l0aHViRm9sZGVyKGdpdGh1Yi5tb250ZS5taXNjKTsgIyB5b3UgY2FuIHBhc3MgZmxhZyBgZm9yY2UuZG93bmxvYWQgPSBUUlVFYCBpZiB5b3Ugd2FudCB0byBtYWtlIGNlcnRhaW4gaXQgaXMgbm90IGNvbWluZyBmcm9tIGNhY2hlDQpgYGANCg0KDQoNCg0KDQo=</div>
 
 
 

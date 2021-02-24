@@ -87,6 +87,12 @@ includeLocalFiles = function(files, ...)
     }
   }
 
+includeGithubFolder = function(url, ...)
+	{
+	html = getRemoteAndCache(url, ...);
+	
+	}
+
 # # includeGithubFolder ...
 # includeRemoteDirectoryGithub
 # includeRemoteFiles("https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/misc/functions-md5.R");
@@ -121,7 +127,7 @@ getRemoteAndCache = function(remote, local.file = NULL,
     filestem = basename(remote);
     if(md5.hash) { filestem = md5(filestem); }
 
-    tmp = gsub("\\","/",Sys.getenv("TMP"), fixed=TRUE);
+    tmp = gsub("\\","/",Sys.getenv("TMP"), fixed=TRUE); # windoze?
     mypath = paste0(tmp, tmp.folder, subfolder);
     createDirectoryRecursive(mypath);
     myfile = paste0(mypath,"/",filestem);
