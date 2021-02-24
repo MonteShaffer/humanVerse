@@ -1,24 +1,25 @@
 # slice and dice
 
 
-sliceDiceContent = function ($str, $start="<h2>",$end="</h2>", $strip=TRUE, $direction="end")
-		{		
-		if($direction == "end")
-			{
-			$tmp = explode($end,$str);
-				$tmp1 = explode($start,$tmp[0]);
-				if(!isset($tmp1[1])) { $tmp1[1] = ""; }
-			$str = $tmp1[1];
-			} else { # start ....
-					$tmp = explode($start,$str);
-					if(!isset($tmp[1])) { $tmp[1] = ""; }
-						$tmp1 = explode($end,$tmp[1]);
-					$str = $tmp1[0];
-					}
+# sliceDiceContent = function (str, start="<h2>",end="</h2>", strip=TRUE, direction="end")
+		# {
+		# d = substr(tolower(trimMe(direction)), 1,1);
+		# if(direction == "end")
+			# {
+			# tmp = explode(end,str);
+				# tmp1 = explode(start,tmp[0]);
+				# if(!isset(tmp1[1])) { tmp1[1] = ""; }
+			# str = tmp1[1];
+			# } else { # start ....
+					# tmp = explode(start,str);
+					# if(!isset(tmp[1])) { tmp[1] = ""; }
+						# tmp1 = explode(end,tmp[1]);
+					# str = tmp1[0];
+					# }
 
-			if($strip) { $str = trim(strip_tags($str)); }
-		return $str;
-		}
+			# if(strip) { str = trim(strip_tags(str)); }
+		# return str;
+		# }
 
 
 
