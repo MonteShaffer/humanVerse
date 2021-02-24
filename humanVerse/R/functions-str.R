@@ -356,6 +356,11 @@ str_replace = function(str, find, replace, method="stringi")
 
 
 
+
+
+
+
+
 #' castStringAsFunction
 #'
 #' @param fstr The RHS (right hand side) of a function in string form.
@@ -386,3 +391,16 @@ castStringAsFunction = function(fstr, ..., envir = parent.frame() )
 
   f;
   }
+
+
+
+
+
+# R> library(fortunes)
+# R> fortune("parse")
+
+# If the answer is parse() you should usually rethink the question.
+   # -- Thomas Lumley
+      # R-help (February 2005)
+
+# R>

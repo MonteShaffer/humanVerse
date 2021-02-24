@@ -75,7 +75,7 @@ includeLocalDirectory = function(directory, verbose=TRUE, pattern = "[.][RrSsQq]
     {
     if(verbose) { cat(nm,":"); }
     source(file.path(path, nm), ...);
-    if(verbose) {cat("\n"); }
+    if(verbose) { cat("\n"); }
     }
   }
 
@@ -86,12 +86,6 @@ includeLocalFiles = function(files, ...)
     source(file, ...);
     }
   }
-
-includeGithubFolder = function(url, pattern = "[.][RrSsQq]$", ...)
-	{
-	html = getRemoteAndCache(url, ...);
-	
-	}
 
 # # includeGithubFolder ...
 # includeRemoteDirectoryGithub
@@ -107,6 +101,89 @@ includeRemoteFiles = function(urls, verbose=FALSE, ...)
     if(verbose) { cat("\t ... ",myfile); } else { cat("\t ... ",basename(myfile),"\n"); }
     }
   }
+  
+  
+includeGithubFolder = function(url, force.cache = FALSE, ...)  # pattern = "[.][RrSsQq]$",
+	{
+	args = grabFunctionParameters();
+	# args = .GlobalEnv$.args = grabFunctionParameters();
+	# print(args);
+	
+	# stop("monte");
+	
+	# force.cache = FALSE;
+	if(!force.cache)
+		{
+		# may live in ... as force.download ... 
+		if(is.element("force.download", args$.dot.keys.))
+			{
+			# idx = which(args$.dot.keys. == "force.download");
+			force.cache = args$.dot.vals.$force.download;
+			}
+		}
+	
+	html.local = getRemoteAndCache(url, ...);
+	html.cache = gsub(".html", ".cache", html.local);
+	
+	if(file.exists(html.cache) && !force.cache)
+		{
+		links = as.character( unlist( readFromPipe(html.cache, header=FALSE) ) );		
+		} else {	
+				html.str = readStringFromFile(html.local);
+				
+				github.base = "https://github.com/";
+				github.raw = "https://raw.githubusercontent.com/";
+				
+				# MonteShaffer/humanVerse/tree/main/humanVerse/R/
+				# MonteShaffer/humanVerse/blob/main/humanVerse/R/functions-colors.R
+				
+				
+				# https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/humanVerse/R/globals.R
+				
+				
+				html.search = gsub(github.base, "", url, fixed = TRUE);
+				html.search = gsub("/tree/", "/blob/", html.search, fixed = TRUE);
+				
+				html.keys = explodeMe(html.search, html.str);
+				n = length(html.keys)
+				
+				html.raw = paste0(github.raw, gsub("/blob/", "/", html.search, fixed = TRUE) );
+				
+				links = c();
+				for(i in 2:n)
+					{
+					str = html.keys[i];
+						link = paste0(html.raw, explodeMe("\"",str)[1]);
+					links = c(links, link);
+					}	
+				storeToPipe(as.data.frame(links), html.cache, header=FALSE);
+				}
+				
+	includeRemoteFiles(links, verbose=TRUE);	
+	}
+
+
+
+readStringFromFile = function(myFile, n = NULL, method ="readChar", source = "local")
+	{
+	# methods are "readChar" or "readLines"
+	# readChar is one long string; readLines is a vector broken on "\n"
+	if(source == "remote")
+		{
+		if(is.null(n)) { n = if(method == "readLines") { n = -1; } else { n = (2^31 - 1); } }
+		} else {
+				if(is.null(n)) { n = if(method == "readLines") { n = -1; } else { n = file.info(myFile)$size; } }
+				}
+	
+	if(method == "readLines")
+		{
+		readLines(myFile, n);
+		} else 	{
+				readChar(myFile, n);	
+				}
+	}
+
+
 
 
 getRemoteAndCache = function(remote, local.file = NULL,
@@ -152,22 +229,25 @@ getRemoteAndCache = function(remote, local.file = NULL,
     {
     downloadFile(remote, myfile);
     }
-  # if(return) { return (content); }
   myfile;
   }
 
 
-downloadFile = function(remote, myfile, n=999999, quiet = TRUE, ...)
+downloadFile = function(remote, myfile, n=(2^31 - 1), quiet = TRUE, ...)  # n could be 2^31 - 1 
   {
   if(capabilities("libcurl"))
     {
     download.file(remote, myfile, quiet = quiet, ...);
     } else {
+			# this approach is not working ... maybe readChar
             raw.binary = readBin(remote, "raw", n);
             # what if I don't have stringi ???   ... encoding = "UTF-8"
             url.encoding = "UTF-8";
-            url.encoding = stringi::stri_enc_detect(raw.binary)[[1]]$Encoding[1];
-            raw.out = iconv(readBin(content, character()), from = url.encoding, to = "UTF-8");
+			if( isTRUE(requireNamespace("stringi", quietly = TRUE))
+				{
+				url.encoding = stringi::stri_enc_detect(raw.binary)[[1]]$Encoding[1];
+				}
+            raw.out = iconv( readBin(raw.binary, character()), from = url.encoding, to = "UTF-8");
             writeChar(raw.out, myfile);
             }
   }

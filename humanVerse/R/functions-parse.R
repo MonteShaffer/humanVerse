@@ -1,29 +1,31 @@
 # slice and dice
+sliceDiceContent = function (str, start="<h2>",end="</h2>", strip=FALSE, direction="end")
+		{
+		d = substr(tolower(trimMe(direction)), 1,1);
+		
+		if(d == "e")  # starting at the end on the first cut ...
+			{
+			tmp = explodeMe(end,str);
+				tmp1 = explodeMe(start,tmp[1]);
+				if(length(tmp1) < 2 ) { tmp1[2] = ""; }
+			str = tmp1[2];
+			} else { # start .... beginning, whatever 
+					tmp = explodeMe(start,str);
+					if(length(tmp) < 2 ) { tmp[2] = ""; }
+						tmp1 = explodeMe(end,tmp[2]);
+					str = tmp1[1];
+					}
 
-
-# sliceDiceContent = function (str, start="<h2>",end="</h2>", strip=TRUE, direction="end")
-		# {
-		# d = substr(tolower(trimMe(direction)), 1,1);
-		# if(direction == "end")
-			# {
-			# tmp = explode(end,str);
-				# tmp1 = explode(start,tmp[0]);
-				# if(!isset(tmp1[1])) { tmp1[1] = ""; }
-			# str = tmp1[1];
-			# } else { # start ....
-					# tmp = explode(start,str);
-					# if(!isset(tmp[1])) { tmp[1] = ""; }
-						# tmp1 = explode(end,tmp[1]);
-					# str = tmp1[0];
-					# }
-
-			# if(strip) { str = trim(strip_tags(str)); }
-		# return str;
-		# }
-
+			if(strip) { str = trimMe(strip_tags(str)); }
+		str;
+		}
 
 
 
+strip_tags <- function(htmlString) 
+	{
+	return(gsub("<.*?>", "", htmlString))
+	}
 
 
 
