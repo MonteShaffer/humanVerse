@@ -74,7 +74,8 @@ includeLocalDirectory = function(directory, verbose=TRUE, pattern = "[.][RrSsQq]
   for (nm in list.files(path, pattern = pattern))
     {
     if(verbose) { cat(nm,":"); }
-    source(file.path(path, nm), ...);
+    # source(file.path(path, nm), ...);
+	source(file.path(path, nm));
     if(verbose) { cat("\n"); }
     }
   }
@@ -83,7 +84,8 @@ includeLocalFiles = function(files, ...)
   {
   for(file in files)
     {
-    source(file, ...);
+    # source(file, ...);
+	source(file);
     }
   }
 
@@ -97,36 +99,46 @@ includeRemoteFiles = function(urls, verbose=FALSE, ...)
     {
     myfile = getRemoteAndCache(url, ...);
     if(verbose) { cat("\t", url, " ===> \n"); }
-    source(myfile, ...);
+    # source(myfile, ...);
+	source(myfile);
     if(verbose) { cat("\t ... ",myfile); } else { cat("\t ... ",basename(myfile),"\n"); }
     }
   }
   
   
-includeGithubFolder = function(url, force.cache = FALSE, ...)  # pattern = "[.][RrSsQq]$",
+includeGithubFolder = function(url, ...)  # pattern = "[.][RrSsQq]$",
 	{
-	args = grabFunctionParameters();
-	# args = .GlobalEnv$.args = grabFunctionParameters();
+	# args = grabFunctionParameters();
+	args = .GlobalEnv$.args = grabFunctionParameters();
 	# print(args);
 	
 	# stop("monte");
 	
-	# force.cache = FALSE;
+	force.cache = FALSE;  # maybe move as a parameter ???
 	if(!force.cache)
 		{
 		# may live in ... as force.download ... 
-		if(is.element("force.download", args$.dot.keys.))
+		if(exists("args"))
 			{
-			# idx = which(args$.dot.keys. == "force.download");
-			force.cache = args$.dot.vals.$force.download;
+			if(exists(".dot.keys.", where=args))
+				{
+				if(is.element("force.download", args$.dot.keys.))
+					{
+					# idx = which(args$.dot.keys. == "force.download");
+					force.cache = args$.dot.vals.$force.download;
+					}
+				}
 			}
 		}
+	
+	cat("\n", "force.cache ... ", force.cache, "\n\n");
 	
 	html.local = getRemoteAndCache(url, ...);
 	html.cache = gsub(".html", ".cache", html.local);
 	
 	if(file.exists(html.cache) && !force.cache)
 		{
+		cat("\n", "============", "GRABBING FROM CACHE", "============", "\n");
 		links = as.character( unlist( readFromPipe(html.cache, header=FALSE) ) );		
 		} else {	
 				html.str = readStringFromFile(html.local);
@@ -159,7 +171,7 @@ includeGithubFolder = function(url, force.cache = FALSE, ...)  # pattern = "[.][
 				storeToPipe(as.data.frame(links), html.cache, header=FALSE);
 				}
 				
-	includeRemoteFiles(links, verbose=TRUE);	
+	includeRemoteFiles(links, ...);	
 	}
 
 
@@ -192,6 +204,8 @@ getRemoteAndCache = function(remote, local.file = NULL,
   {
   useTEMP = FALSE;
   trailingSlash = (substr.neg(remote) == "/");
+  cat("\n", "remote ... ", remote, "\n\n");
+  cat("\n", "force.download ... ", force.download, "\n\n");
   if(!is.null(local.file))
     {
     localpath = dirname(local.file);
@@ -218,11 +232,19 @@ getRemoteAndCache = function(remote, local.file = NULL,
             myfile = paste0(mypath,"/",filestem);
             }
 
+  cat("\n", "myfile ... ", myfile, "\n\n");
+   
   if(force.download)
     {
     if(file.exists(myfile))
       {
-      file.copy(myfile, paste0(myfile,"-",as.numeric(Sys.time())));
+	  mypath.b = paste0(mypath, "/.backup/");  createDirectoryRecursive(mypath.b);
+	  myfile.b = paste0(mypath.b, "/", filestem, "-", as.integer(Sys.time()) );
+	  
+      # file.copy(myfile, myfile.b);  # this is not file.move, doesn't exist	  
+	  # unlink(myfile);
+	  
+	  moveFile(myfile, myfile.b);
       }
     }
   if(!file.exists(myfile))
@@ -233,9 +255,16 @@ getRemoteAndCache = function(remote, local.file = NULL,
   }
 
 
+moveFile = function(src, dest, unlink=TRUE)
+	{
+	file.copy(src, dest);  # there is no file.move ???	  
+	unlink(src);
+	}
+
+
 downloadFile = function(remote, myfile, n=(2^31 - 1), quiet = TRUE, ...)  # n could be 2^31 - 1 
   {
-  if(capabilities("libcurl"))
+  if(isTRUE(capabilities("libcurl")))
     {
     download.file(remote, myfile, quiet = quiet, ...);
     } else {

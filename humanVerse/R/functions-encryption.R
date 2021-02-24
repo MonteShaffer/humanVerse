@@ -27,7 +27,7 @@
 #' ## DEPRECATED
 # _md5 = function(strvec, times=1, serialize=FALSE)
   # {
-  digest is not vector driven ... # `apply` could work ...
+  ######################## digest is not vector driven ... # `apply` could work ...
   # n = length(strvec);
   # nvec = c();
   # for(i in 1:n)

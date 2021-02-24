@@ -1,5 +1,9 @@
 
 
+
+
+
+
 #' list.element.exists
 #'
 #' Traps error in tryCatch for non-existent list which `exists` rejects
