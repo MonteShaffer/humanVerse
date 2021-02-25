@@ -55,6 +55,7 @@ dechex = function(intdec, n=NULL)
 hex2rgb = function(hex)
 	{
 	hex = checkHEX(hex);
+	  if(is.null(hex)) { return (NULL); }
 
 	hex = str_replace("#", "", trimMe(toupper(hex)));
 		hexV = charVector(hex);
@@ -93,7 +94,11 @@ checkHEX = function(hex)
 			hex = rgb2hex( col.rgb );
 			hasFound = TRUE;
 			}
-		if(!hasFound) { stop( paste0(" Bad input in function [hex2rgb] : ", hex) ); }
+		if(!hasFound)
+		    {
+		    warning( paste0(" Bad input in function [hex2rgb] : ", hex, "\n") );
+		    return (NULL);
+		    }
 		}
 
 	toupper( paste0("#", hex) );
@@ -433,6 +438,7 @@ rgb2cmyk = function(rgb)
 color.findNearestName = function(hex, how.many = 1, scale.me = TRUE, how="distance", ...)
 	{
 	hex = checkHEX(hex);
+	  if(is.null(hex)) { return (NULL); }
 
 	df = color.buildTable();
 #################  SEE if HEX is in the TABLE  #################

@@ -214,7 +214,7 @@ cat("\n", "===============", "\n\n");
 unlist ( hsv2rgb( hsv ) );
 ```
 
-## "Helper functions"
+## = Helper functions =
 Above are the "engine functions" to make the color functions operate.  One layer up are "helper functions" to enable you to do stuff.  If you have other ideas for a "helper function", please share.
 
 Remember it is about "git R done!"
@@ -237,6 +237,8 @@ RGB has a relationship to RGBa where the (a)lpha represents an opacity of the co
 ```{r}
 ###### R::humanVerse #####
 wsu.crimson.50 = color.setOpacity(wsu.crimson, 50);
+  # this function assumes we have a well-formed HEX vector
+
 
 # This RGBa format (HEX form): #981e3280  
 #   ... is about equal to HEX: #cb8e98
