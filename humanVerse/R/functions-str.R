@@ -20,12 +20,12 @@ strtolower = function(str)
 	{
 	tolower(str);
 	}
-	
+
 strtoupper = function(str)
 	{
 	toupper(str);
 	}
-	
+
 
 #' charAt
 #'
@@ -338,7 +338,7 @@ substr.neg = function(str, n = -1)
 # splits a string into a vector ...
 char.vec = function(str, sep="")
 	{
-	strsplit(str, sep, fixed=TRUE)[[1]];	
+	strsplit(str, sep, fixed=TRUE)[[1]];
 	}
 
 
@@ -348,7 +348,9 @@ is.substring = function(string, search)
   }
 
 # this is "fixed" find and replace # str = gsub(find[i], replace[i], str, fixed=TRUE);
-str_replace = function(find, replace, str, method="stringi")
+# method = base, method = stringi
+# stringi is not performing well on this:  "{wsu.crimson}" with fixed
+str_replace = function(find, replace, str, method="base")
   {
   # if find/replace are longer ... if one is length one, repeat the other one
   n.find = length(find);
@@ -374,6 +376,7 @@ str_replace = function(find, replace, str, method="stringi")
     {
     if( isTRUE(requireNamespace("stringi", quietly = TRUE)) && method=="stringi" )
       {
+      # I need to verify this is the correct function ...
       str = stringi::stri_replace_first_fixed(str, find[i], replace[i]);
       } else {
               str = gsub(find[i], replace[i], str, fixed=TRUE);
@@ -389,7 +392,7 @@ str_replace = function(find, replace, str, method="stringi")
 castStringAsHTML = function(str)
 	{
 	str = setAttribute("html", TRUE, str);
-	
+
 	class(str) = c("html", "character");
 	str;
 	}
