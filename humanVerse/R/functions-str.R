@@ -386,7 +386,13 @@ str_replace = function(find, replace, str, method="stringi")
 
 
 
-
+castStringAsHTML = function(str)
+	{
+	str = setAttribute("html", TRUE, str);
+	
+	class(str) = c("html", "character");
+	str;
+	}
 
 
 #' castStringAsFunction

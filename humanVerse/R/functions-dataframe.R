@@ -15,6 +15,35 @@ callOrderFunctionWithMatrixInput = function(mat)
 	do.call(order, split(mat, (seq(mat) - 1) %/% nrow(mat)));
 	}
 
+
+
+
+
+
+
+
+assignColumnsTypeInDataFrame = function(cols, type, df)
+	{
+	type = trimMe(tolower(type));
+	if(type == "numeric")
+		{
+		for(col in cols)
+			{
+			df[[col]] = as.numeric( df[[col]] );
+			}
+		}
+	df;
+	}
+
+
+
+
+
+
+
+
+
+
 ## TODO
 #     trim(col) before searching for it ... maybe extra white space ...
 
