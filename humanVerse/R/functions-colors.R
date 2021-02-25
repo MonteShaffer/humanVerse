@@ -547,6 +547,8 @@ color.findNearestName = function(hex, how.many = 1, scale.me = TRUE, how="distan
 
 		#one = X.cos[,1]; names(one) = df$color;
 
+
+		## similarity is closeness, distance is farness
 		one = 1 - vCosine$cosine.similarity;  names(one) = df$color;
 		one = one[-c(1)];   # first is "self"
 

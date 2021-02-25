@@ -240,6 +240,10 @@ readStringFromFile = function(myFile, n = NULL, method ="readChar", source = "lo
 	}
 
 
+deleteLocalCacheFolder = function(folder)
+  {
+
+  }
 
 
 getRemoteAndCache = function(remote, local.file = NULL,
@@ -278,6 +282,8 @@ getRemoteAndCache = function(remote, local.file = NULL,
             createDirectoryRecursive(mypath);
             myfile = paste0(mypath,"/",filestem);
             }
+    myfile = setAttribute("path", mypath, myfile);
+    myfile = setAttribute("filestem", filestem, myfile);
 
   if(verbose)
     {
