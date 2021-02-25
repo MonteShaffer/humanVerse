@@ -700,6 +700,8 @@ colors.list[["monte_shaffer@wsu.edu"]][["yellow-accent"]] = "#ffb81c";
 mycolors = unlist(colors.list$`monte_shaffer@wsu.edu`);
 color.displayColorOptions(mycolors, showHEX=TRUE, ncol=2);
 ```
+
+
 ## TODO list
 
 - Build some palette manager with a memory to make the visualization process more meaningful.
