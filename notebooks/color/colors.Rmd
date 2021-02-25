@@ -387,7 +387,7 @@ wsu.crimson;
 cat("\n", "===============", "\n\n");
 (rgb = unlist ( hex2rgb( wsu.crimson ) ) );
 cat("\n", "===============", "\n\n");
-(wsu.wheel = color.wheel(rgb) );
+(wsu.wheel = color.buildWheel(rgb) );
 ```
 There is a complement, split-complement, split, triad, square, rectangle, and so on.  There are just in reference to the focal color on the wheel.
 
@@ -624,6 +624,8 @@ colors.cm.colors = cm.colors(40, alpha=0.5);
 ## More Palettes (`hcl.colors`)
 
 ```{r}
+plotPalettes = FALSE;   # set TRUE to build graphics
+                        # Rendered with TRUE, is 48 MB [Knit to HTML]
 ###### R::base #####
 hcl.palette.list = hcl.pals();
 
@@ -635,13 +637,24 @@ for(i in 1:length(hcl.palette.list))
   colors.hcl.colors = hcl.colors(40, palette=hcl);
   
   print(paste0("Palette: ", hcl));
+  
+###### R::humanVerse #####
+  if(plotPalettes)
+    {
     color.displayColorOptions(colors.hcl.colors, ncol=4);
+    }
   print(paste0("   ---> alpha: ", 0.5));
   colors.hcl.colors = hcl.colors(40, palette=hcl,
                                         alpha=0.5);
-  ###### R::humanVerse #####
+###### R::humanVerse #####
+  if(plotPalettes)
+    {
     color.displayColorOptions(colors.hcl.colors, ncol=4);
+    }
   }
+
+
+
 ```
 
 # Conclusion

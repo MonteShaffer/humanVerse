@@ -602,7 +602,7 @@ color.chromatics = function(rgb, n = 12) # mono steps of monochronic ... half on
 # we need to cache this in "last" memory
 # accessor can get elements without having to rebuild
 # - complement, split, split-complement, triad, square, rectangle, and so on ...
-color.wheel = function(rgb, wheel.steps = 12, find.names=FALSE)  # wheel steps needs to be divisible by 360?
+color.buildWheel = function(rgb, wheel.steps = 12, find.names=FALSE)  # wheel steps needs to be divisible by 360?
 	{
 	if(length(rgb) == 1) { rgb = hex2rgb(rgb); } # they can pass in "hex"
 	hex = rgb2hex(rgb);
@@ -769,7 +769,7 @@ color.roundHEX = function(rgb, n=3, full=FALSE)
 	}
 
 
-color.plotWheel = function(df = color.wheel("red"), harmony="all")
+color.plotWheel = function(df = color.buildWheel("red"), harmony="all")
   {
   df = assignColumnsTypeInDataFrame(c("degrees","wheel"), "numeric", df);
   # subset df based on elements that fit with harmony value
