@@ -440,6 +440,7 @@ color.findNearestName = function(hex, how.many = 1, scale.me = TRUE, how="distan
 	hex = checkHEX(hex);
 	  if(is.null(hex)) { return (NULL); }
 
+	# we need a caching mechanism on this ...
 	df = color.buildTable();
 #################  SEE if HEX is in the TABLE  #################
 	## let's just look for it ...
@@ -496,8 +497,8 @@ color.findNearestName = function(hex, how.many = 1, scale.me = TRUE, how="distan
 			colnames(X.df) = rownames(X.df) = df$color;
 
 		one = X.df[,1]; names(one) = df$color;
+		one = one[-c(1)];  # first is "self"
 		one = sort(one);
-		one = one[-c(1)];
 
 		res = one[1:how.many];
 		x = names(res);
@@ -508,27 +509,48 @@ color.findNearestName = function(hex, how.many = 1, scale.me = TRUE, how="distan
 		}
 	if(how == "cosine")
 		{
+	  vsearch = Xs[1,];       names(vsearch) = df$color[1];
+		vcolors = Xs[-c(1),];   names(vcolors) = df$color[-c(1)];
+
+		vCosine = computeCosineSimilarity(vsearch, vcolors);
+		  vCosine$color = df$color;
+		  rownames(vCosine) = df$color;
+		vCosine = assignColumnsTypeInDataFrame(c("cosine.similarity"), "numeric", vCosine);
+
 		# vsearch = Xs[1,];
 		# vcolors = Xs[-c(1),];
+
+	  # https://stackoverflow.com/questions/1746501/
+	  # a = c(2,1,0,2,0,1,1,1)
+	  # b = c(2,1,1,1,1,0,1,1)
+	  # d = (a %*% b) / (sqrt(sum(a^2)) * sqrt(sum(b^2)))
+
+	  ## OR
+
+	  # e = crossprod(a, b) / (sqrt(crossprod(a, a)) * sqrt(crossprod(b, b)))
+
 
 		# v.cos = cosine(vsearch, vcolors); # raw no distance or SVD
 
 		# https://stackoverflow.com/questions/18946966/
-		X.d = stats::dist( Xs, method="euclidean");
-		X.m = round( as.matrix(X.d), 2);
-		X.df = as.data.frame( X.m );
-			colnames(X.df) = rownames(X.df) = df$color;
+		# X.d = stats::dist( Xs, method="euclidean");
+		# X.m = round( as.matrix(X.d), 2);
+		# X.df = as.data.frame( X.m );
+		# 	colnames(X.df) = rownames(X.df) = df$color;
 
 
 
 
 		## library(lsa); # very slow, replace
-		X.cos = as.data.frame( 1 - round( cosine(X.m),4 ) );
-			colnames(X.df) = rownames(X.df) = df$color;
+		#X.cos = as.data.frame( 1 - round( cosine(X.m),4 ) );
+		#	colnames(X.df) = rownames(X.df) = df$color;
 
-		one = X.cos[,1]; names(one) = df$color;
-		one = sort(one);
-		one = one[-c(1)];
+		#one = X.cos[,1]; names(one) = df$color;
+
+		one = 1 - vCosine$cosine.similarity;  names(one) = df$color;
+		one = one[-c(1)];   # first is "self"
+
+		one = sort(one);  # what if I have negative values ?
 
 		res = one[1:how.many];
 		x = names(res);
