@@ -443,7 +443,7 @@ color.buildTable(unique.colors);
 ## Search by color name (wildcard)
 
 ```{r}
-color.nameSearch("*aqua*");
+color.nameSearch("*teal*");
 ```
 
 
