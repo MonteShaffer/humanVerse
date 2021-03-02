@@ -384,7 +384,7 @@ There are traditionally 12 colors on the color wheel, every 30 degrees of the ci
 ```{r}
 library(plotrix);
 ###### R::humanVerse #####
-color.plotWheel();
+color.plotWheel();  # pass in a flag to include "nearest name"
 ```
 
 
@@ -404,7 +404,7 @@ color.displayColorOptions(wsu.wheel$hex.color);
 ```
 ```{r}
 ###### R::humanVerse #####
-color.plotWheel(wsu.wheel);
+color.plotWheel(wsu.wheel);  # pass in a flag to include "nearest name"
 ```
 
 # Color Features (R::base)
