@@ -3,7 +3,7 @@
 # color "search" by wildcard
 # cache color tables (such as wheels)
 
-color.nameSearch = function(skey, colors.df = NULL, col.name="color")
+color.nameSearch = function(skey, colors.df = NULL, col.name="color", ...)
 	{
 	if(is.null(colors.df))
 		{
