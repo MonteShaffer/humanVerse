@@ -1,7 +1,24 @@
 
 
+# No warning is generated if the variable does not exist. That means empty() is essentially the concise equivalent to !isset($var) || $var == false.
+# https://www.php.net/manual/en/function.empty.php
+is.empty = function(x)
+  {
+  if(is.null(x)) { return (TRUE); }
+  if(length(x) == 0 ) { return (TRUE); }
+  if(is.na(x)) { return (TRUE); }
+  if(trimMe(x) == "") { return (TRUE); } # nothing inside (except maybe white space)
 
 
+  return (FALSE);
+  }
+
+
+# https://www.php.net/manual/en/function.isset.php
+is.set = function(x)
+  {
+
+  }
 
 
 #' list.element.exists

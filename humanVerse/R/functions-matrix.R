@@ -174,6 +174,45 @@ rotateMatrixAngle = function(x, a=0, clockwise=TRUE)
 
 
 
+matrix.setNumbersToMatrixNames = function (ss.idx, A, pre="P.", post="")
+  {
+  # row/col names store the adjacency indexing as "(P)oint.NNN"
+  rnames = paste0(pre, ss.idx, post);
+  rownames(A) = colnames(A) = rnames;
+  A;
+  }
 
+matrix.getNumbersFromMatrixNames = function (rnames, pre="P.", post="")
+  {
+    if(pre  != "") { rnames = str_replace(pre, "", rnames);  }
+    if(post != "") { rnames = str_replace(post, "", rnames); }
+  as.numeric( rnames );
+  }
+
+matrix.sortAdjacency = function(A, decreasing=TRUE)
+  {
+
+  }
+
+
+matrix.rowNormalize = function(A)
+  {
+
+  }
+
+# what = "add", or "remove" ... (a)ppend or (r)emove ...
+matrix.superNode = function(A, what = "add", where = "b,r")  # t/b, l/r
+  {
+  what = substr( trimMe(tolower(what)), 1, 1);
+  if(what != "a") { what = "r"; } # anything that doesn't start with a
+
+  tmp = explodeMe(",", trimMe(tolower(where)) );
+    v = substr(tmp[1], 1, 1); if(v != "b") { v = "t"; } # (t)op
+    h = substr(tmp[2], 1, 1); if(h != "r") { h = "l"; } # (l)eft
+
+
+
+
+  }
 
 

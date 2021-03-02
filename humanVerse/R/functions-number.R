@@ -1,3 +1,20 @@
+# https://stackoverflow.com/questions/17220837/counting-the-number-of-times-a-value-change-signs-with-r
+# Note that sign does not operate on complex vectors.
+
+count.sign.changes = function(x, na.rm=TRUE, part="Re")
+  {
+  if(part == "Im") { x = Im(x); } else { x = Re(x); }
+  if(na.rm) { x = na.omit(x); }
+  sum(diff(sign(x)) != 0);
+  }
+
+which.sign.changes = function(x, na.rm=TRUE, part="Re")
+  {
+  if(part == "Im") { x = Im(x); } else { x = Re(x); }
+  if(na.rm) { x = na.omit(x); }
+  which( diff(sign(x)) != 0 )
+  }
+
 #' is.whole.number
 #'
 #' `is.integer` doesn't operate as you would expect, this does

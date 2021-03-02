@@ -13,13 +13,16 @@
   # cat("\n\n ==================== COSINE SIMILARITY (a,b) ========== \n\n");
   # cat("\n", " ===  a === "); print(a); cat("\n");
   # cat("\n", " ===  b === "); print(a); cat("\n");
+
+  # maybe perform some non-zero vector "checks"
+  # sum(a); sum(b);  if "fails", return NA ... with warning()
   if(method == "crossprod")
     {
     theta = crossprod(a, b) / (sqrt(crossprod(a, a)) * sqrt(crossprod(b, b)));
     } else  {
             theta = (a %*% b) / (sqrt(sum(a^2)) * sqrt(sum(b^2)));
             }
-  # maybe perform some non-zero vector "checks"
+
   as.numeric(theta);
   }
 
@@ -56,4 +59,13 @@ computeCosineSimilarity = function(a, bs)
 
 # compute eigenRank here using the Romani / Del Corsi approach
 # append super node to end, use inverse "solve" or ginv
+
+
+# source multiply.cpp from library  ... inst/cpp"
+# ? system.file
+# lives in "inst/extdata"
+# idf = readRDS( system.file("extdata", "inflation.rds", package="humanVerseWSU") );
+  #assign("inflation.df",idf);
+# .GlobalEnv$inflation.df = idf;
+
 

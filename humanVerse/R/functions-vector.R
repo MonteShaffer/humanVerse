@@ -1,3 +1,33 @@
+## project "adebo"
+getNearestIndex = function(el, set, n=1)
+	{
+	myDeviation = abs(set-el);
+	if(is.null(n))
+		{
+		whichMin(myDeviation);
+		} else {
+				whichMin(myDeviation)[1:n];
+				}
+	}
+getNearestValue = function(el, set, n=1)
+	{
+	idx = getNearestIndex(el, set, n);
+	set[ idx ];  # value from data
+  }
+
+whichNearestValue = function(x, value, ...)
+	{
+	findAllIndexesWithNearestValueInVector(x, value, ...);
+  }
+
+findAllIndexesWithNearestValueInVector = function(x, search)
+	{
+  result = findAllIndexesWithValueInVector(x,search);
+  if(!is.na(result)) { return (result); } # found directly
+  # assuming numeric
+  deviationFrom = abs(x-search);
+  whichMin(deviationFrom);
+  }
 
 #' findAllIndexesWithValueInVector
 #'

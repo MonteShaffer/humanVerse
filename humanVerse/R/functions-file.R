@@ -46,7 +46,6 @@ writeLine = function(str, file, append=TRUE, end="\n")
 #'
 #' @param str The string to store
 #' @param file The file to store the string (it will override).
-#' @param encoding by default UTF-8 ... Windows is ANSI_X3.4-1986 or RStudio default is ISO-8859-1
 #'
 #' @return
 #' @export
@@ -56,6 +55,20 @@ storeToFile = function (str, file)
 	}
 
 
+#' storeToPipe
+#'
+#' @param df dataframe to be stored
+#' @param file filename and path
+#' @param header whether or not to add a header
+#' @param quote whether or not to add quotes
+#' @param sep "pipe" means sep="|" but you could change
+#' @param row.names whether or not to include row names
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#'
 storeToPipe = function(df, file, header=TRUE, quote="", sep="|", row.names=FALSE)
   {
   if(quote == "") { quote = FALSE; }
@@ -68,6 +81,17 @@ readFromPipe = function(file, header=TRUE, quote="", sep="|")
   }
 
 
+#' includeLocalDirectory
+#'
+#' @param directory The local directory you will scan
+#' @param verbose Display details regarding includes
+#' @param pattern This is the extension of files to be sourced ( .R )
+#' @param ... Pass extra parameters to the source function
+#'
+#' @return
+#' @export
+#'
+#' @examples
 includeLocalDirectory = function(directory, verbose=TRUE, pattern = "[.][RrSsQq]$", ...)
   {
   # ?source
@@ -75,17 +99,30 @@ includeLocalDirectory = function(directory, verbose=TRUE, pattern = "[.][RrSsQq]
     {
     if(verbose) { cat(nm,":"); }
     # source(file.path(path, nm), ...);
-	source(file.path(path, nm));
+	  source(file.path(path, nm));
     if(verbose) { cat("\n"); }
     }
   }
 
+
+
+#' includeLocalFiles
+#'
+#' This loops through an "array" of files and sources them.
+#'
+#' @param files Vector of full file paths
+#' @param ...  Pass extra parameters to the source function
+#'
+#' @return
+#' @export
+#'
+#' @examples
 includeLocalFiles = function(files, ...)
   {
   for(file in files)
     {
     # source(file, ...);
-	source(file);
+	  source(file);
     }
   }
 
@@ -100,7 +137,7 @@ includeRemoteFiles = function(urls, verbose=FALSE, ...)
     myfile = getRemoteAndCache(url, ...);
     if(verbose) { cat("\t", url, " ===> \n"); }
     # source(myfile, ...);
-	source(myfile);
+	  source(myfile);
     if(verbose) { cat("\t ... ",myfile); } else { cat("\t ... ",basename(myfile),"\n"); }
     }
   }
@@ -176,6 +213,13 @@ includeGithubFolder = function(url, ...)  # pattern = "[.][RrSsQq]$",
 
 	cat("\n", "force.cache ... ", force.cache, "\n\n");
 
+
+	### Could we do API/JSON instead of HTML CACHING?
+
+	### github.api = "https://api.github.com/";
+	## https://api.github.com/repos/MonteShaffer/humanVerse/git/trees/main
+	##  ==> https://api.github.com/repos/MonteShaffer/humanVerse/git/trees/75741912434181b468b761303eaa3ec312998e1d
+	### if(type == "blob") AND extension = ".R" ... include ...
 	html.local = getRemoteAndCache(url, ...);
 	html.cache = gsub(".html", ".cache", html.local);
 
@@ -210,6 +254,7 @@ includeGithubFolder = function(url, ...)  # pattern = "[.][RrSsQq]$",
 					{
 					str = html.keys[i];
 						link = paste0(html.raw, explodeMe("\"",str)[1]);
+						# do a check that it has the write extension ... # pattern = "[.][RrSsQq]$",
 					links = c(links, link);
 					}
 				storeToPipe(as.data.frame(links), html.cache, header=FALSE);
@@ -245,6 +290,12 @@ deleteLocalCacheFolder = function(folder)
 
   }
 
+getSourceLocation = function(tmp.folder = "/humanVerse/cache/")
+  {
+  tmp = gsub("\\","/",Sys.getenv("TMP"), fixed=TRUE); # windoze?
+  mypath = paste0(tmp, tmp.folder);
+  mypath;
+  }
 
 getRemoteAndCache = function(remote, local.file = NULL,
     tmp.folder = "/humanVerse/cache/", force.download = FALSE,
@@ -289,6 +340,8 @@ getRemoteAndCache = function(remote, local.file = NULL,
     {
     cat("\n", "myfile ... ", myfile, "\n\n");
     }
+
+  # cat("\n", "mypath ... ", mypath, "\n\n");
 
   if(force.download)
     {

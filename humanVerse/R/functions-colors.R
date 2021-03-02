@@ -1,5 +1,19 @@
 
 
+# color "search" by wildcard
+# cache color tables (such as wheels)
+
+color.nameSearch = function(skey, colors.df = NULL, col.name="color")
+	{
+	if(is.null(colors.df))
+		{
+		colors.df = color.buildTable();
+		}
+	res = wildcardSearch(skey, col.name, ..., df=colors.df);
+	res;
+	}
+
+
 
 # as.hexmode(333)
 # base::strtoi
@@ -564,6 +578,15 @@ color.findNearestName = function(hex, how.many = 1, scale.me = TRUE, how="distan
 	}
 
 
+# maybe write generic color "function", FUN = mean
+.color.average = function(a.hex, b.hex)
+  {
+  a.rgb = checkRGB(a.hex);
+  b.rgb = checkRGB(b.hex);
+
+  n.rgb = (a.rgb + b.rgb) / 2 ;
+  rgb2hex(n.rgb);
+  }
 
 # we need to cache this in "last" memory
 color.buildTable = function(cvec = colors(TRUE))

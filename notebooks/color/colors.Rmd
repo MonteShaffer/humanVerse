@@ -23,7 +23,14 @@ include.setup = paste0(github.monte.raw, "humanVerse/main/include.setup.R");
 source(include.setup);
 ```
 
-### source (humanVerse/R)
+### Custom Sourcing
+
+#### TEMP folder
+```{r}
+getSourceLocation();
+```
+
+#### source (humanVerse/R)
 ```{r}
 github.monte.http = "https://github.com/MonteShaffer/";
 ######## we will parse this page to get a list of the .R functions to include ########
@@ -32,10 +39,10 @@ github.monte.humanVerse = paste0(github.monte.http, "humanVerse/tree/main/humanV
 ######## you can pass flag `force.download = TRUE` if you want to make certain it is not coming from cache ########
 
 ###### R::humanVerse #####
-includeGithubFolder(github.monte.humanVerse); 
+includeGithubFolder(github.monte.humanVerse, force.download = FALSE); 
 ```
 
-### source (humanVerse/misc)
+#### source (humanVerse/misc)
 ```{r}
 ######## we will parse this page to get a list of the .R functions to include ########
 github.monte.misc = paste0(github.monte.http, "humanVerse/tree/main/misc/"); 
@@ -43,7 +50,7 @@ github.monte.misc = paste0(github.monte.http, "humanVerse/tree/main/misc/");
 ######## you can pass flag `force.download = TRUE` if you want to make certain it is not coming from cache ########
 
 ###### R::humanVerse #####
-includeGithubFolder(github.monte.misc);
+includeGithubFolder(github.monte.misc, force.download = FALSE);
 ```
 
 
@@ -432,6 +439,13 @@ color.buildTable(unique.colors);
 # Wouldn't that EASTER EGG above be a nice way to display this 
 #   as a reference!
 ```
+
+## Search by color name (wildcard)
+
+```{r}
+color.nameSearch("*aqua*");
+```
+
 
 ## Find color from HEX
 Using some multivariate statistics, I can compute the nearest name(s) of a color by inputing its hex.
