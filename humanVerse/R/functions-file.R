@@ -290,6 +290,29 @@ deleteLocalCacheFolder = function(folder)
 
   }
 
+
+initPathMemory = function(purge.memory = FALSE, verbose = FALSE)
+	{
+	if(!exists("path", .GlobalEnv$.humanVerse) || purge.memory)
+		{
+		if(verbose)
+		  {
+		  cat("humanVerse::initSeedMemory ... initializing list '.humanVerse[[\"path\"]]'", "\n");
+		  }
+		.GlobalEnv$.humanVerse[["path"]] = list(
+												"TMP" = getSourceLocation(),
+												"TEMP" = getSourceLocation(),
+												"github" = list( "main" = "https://github.com/MonteShaffer/humanVerse/",
+																 "raw"  = "https://raw.githubusercontent.com/MonteShaffer/humanVerse/"
+																 )
+												);
+		}
+	}
+
+# https://github.com/MonteShaffer/humanVerse
+# https://github.com/MonteShaffer/humanVerse/blob/main/humanVerse/R/functions-algebra.R
+# https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/humanVerse/R/functions-algebra.R
+
 getSourceLocation = function(tmp.folder = "/humanVerse/cache/")
   {
   tmp = gsub("\\","/",Sys.getenv("TMP"), fixed=TRUE); # windoze?

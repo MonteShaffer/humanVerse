@@ -327,12 +327,69 @@ strlen = function(str)
 
 # https://stackoverflow.com/questions/2681786/how-to-get-the-last-char-of-a-string-in-php
 # .substr = function(str,  # maybe write a PHP wrapper
-
-substr.neg = function(str, n = -1)
+# by default, this will return the last character of a string ...
+# .substr("abcdef", 4, -4);  // returns false ... returns EMPTY ""
+## earlier called 'substr.neg'
+# PHP wrapper ... https://www.php.net/manual/en/function.substr.php
+.substr = function(str, n = -1, length=NULL, PHP.offset=TRUE)
 	{
+	n = as.integer(n); 
+		if(!PHP.offset) { n = n - 1; } # PHP indexes at "0"
+	
+	if(!is.null(length)) 
+		{ 
+		length = as.integer(length); 
+		if(!PHP.offset) { length = length - 1; } # PHP indexes at "0"
+		}
+	
 	str.len = strlen(str);
-	substr(str, start= (str.len + 1 + n), stop = str.len );
+		if(is.negative(n))
+			{	
+			str.tmp = substr(str, start=1+(str.len + n), stop=str.len );
+				if(is.null(length)) { return (str.tmp); }
+				if(length == 0) 	{ return (str.tmp); }
+			if(is.positive(length))
+				{
+				str.final = substr(str.tmp, start=1, stop = length);
+				} else {
+						str.len.tmp = strlen(str.tmp);
+						str.final = substr(str.tmp, start=1, stop = str.len.tmp + length);
+						}
+			return ( str.final );	
+			} else {	
+					# PHP allows n = 0 ... first element ...
+					str.tmp = substr(str, start=1+n, stop=str.len );
+						if(is.null(length)) { return (str.tmp); }
+						if(length == 0) 	{ return (str.tmp); }
+					
+					
+					if(is.positive(length))
+						{
+						str.final = substr(str.tmp, start=1, stop = length);
+						} else {
+								str.len.tmp = strlen(str.tmp);
+								str.final = substr(str.tmp, start=1, stop = str.len.tmp + length);
+								}
+					return ( str.final );	
+					}
+	stop("humanVerse::.substr ... how did you get here?!?");
 	}
+# this is a vectorized form of .substr ... not analagous to base::substring at all?
+# x <- c("asfef", "qwerty", "yuiop[", "b", "stuff.blah.yech")
+# ? substr
+# .substring(x, 2, 5, FALSE) ... is equivalent to ... substr(x, 2, 5) ... but why?  If you want the PHP negative offsetting, just use its indexing.
+.substring = function(strvec, n = -1, length=NULL, PHP.offset=TRUE)
+	{
+	m = length(strvec);
+	res = character(m);
+	for(i in 1:m)
+		{
+		str = strvec[i];
+		res[i] = .substr(strvec[i], n=n, length=length, PHP.offset=PHP.offset);
+		}
+	res;
+	}
+
 
 
 # splits a string into a vector ...

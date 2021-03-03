@@ -24,7 +24,7 @@
 rand = function(min = -1*as.integer(Sys.time()), max = as.integer(Sys.time()), n = 1, method = "high-low", sample.replace = TRUE, seed = NULL)
     {
     # pracma::primes ... maybe seed with primes, using sieve attributed to Erasthostenes
-    if(!is.null(seed)) { setSeed(seed); }
+	# if(is.null(seed)) { setSeed(NULL, "rand"); my.seed = getSeed("rand"); } else { my.seed = seed; }
     me = substr( trimMe( tolower(method) ), 1, 2);
 	n = as.integer ( n );
 	if(is.na(n) || n < 1)
@@ -34,10 +34,12 @@ rand = function(min = -1*as.integer(Sys.time()), max = as.integer(Sys.time()), n
 		}
     if(me == "hi")  # high-low method
       {
+	  if(!is.null(seed)) { set.seed(seed); }
       return( as.integer(( (max + 1) - min) * runif(n) + min) );
       }
     if(me == "fl")  # floor method
       {
+	  if(!is.null(seed)) { set.seed(seed); }
       return( as.integer( floor( runif(n, min = min, max = (max + 1) ) ) ) );
       }
     if(me == "sa")  # sample method
@@ -51,6 +53,7 @@ rand = function(min = -1*as.integer(Sys.time()), max = as.integer(Sys.time()), n
           sample.replace = TRUE;
           }
         }
+	  if(!is.null(seed)) { set.seed(seed); }
       return( sample(min:max, n, replace = sample.replace) );
       }
     stop( paste0('Unknown method "', method, '" in function [rand]') );
@@ -84,19 +87,21 @@ initSeed = function(...)
 #' @examples
 #' initSeedMemory();
 #' setSeed(); getSeed(); initSeedMemory(purge.memory = TRUE); getSeed();
-initSeedMemory = function(purge.memory = FALSE, verbose = TRUE)
+initSeedMemory = function(purge.memory = FALSE, verbose = FALSE)
   {
-  if(!exists(".random.seed.memory") || purge.memory)
+  initMemory();  
+  
+  if(!exists("seed", .GlobalEnv$.humanVerse) || purge.memory)
     {
     if(verbose)
       {
-      cat("initSeedMemory :: initializing list '.random.seed.memory'", "\n");
+	  cat("humanVerse::initSeedMemory ... initializing list '.humanVerse[[\"seed\"]]'", "\n");
       }
-    .GlobalEnv$.random.seed.memory = list();
+    .GlobalEnv$.humanVerse[["seed"]] = list();
     }
   }
 
-setSeed = function(seed, key, ..., args.set = list(), verbose = TRUE )
+setSeed = function(seed, key, ..., args.set = list(), verbose = FALSE )
   {
   # can I have two ellipses in a single function?
     # one for initSeed
@@ -112,7 +117,7 @@ setSeed = function(seed, key, ..., args.set = list(), verbose = TRUE )
       }
     initSeedMemory();
     }
-  .GlobalEnv$.random.seed.memory[[key]] = seed;
+  .GlobalEnv$.humanVerse[["seed"]][[key]] = seed;
   if(verbose)
       {
       cat("setSeed :: global value stored [key] = ",key," ... [seed] = ",seed, "\n");
@@ -128,13 +133,14 @@ setSeed = function(seed, key, ..., args.set = list(), verbose = TRUE )
   }
 
 # I could create a "keyed" list of memory, not just last ...
-getSeed = function(key, verbose = TRUE)
+getSeed = function(key, verbose = FALSE)
   {
   if( missing(key) ) { key = "last"; }
   if(verbose) { cat("getSeed :: looking up key ... ", "\t", key); }
-  if(exists(key, .random.seed.memory))
+  if(exists(key, .GlobalEnv$.humanVerse[["seed"]]))
     {
-    if(verbose) { cat("\n\t ... found with value: ", "\t", .GlobalEnv$.random.seed.memory[[key]], "\n"); }
-    .GlobalEnv$.random.seed.memory[[key]];
+    if(verbose) { cat("\n\t ... found with value: ", "\t", .GlobalEnv$.humanVerse[["seed"]][[key]], "\n"); }
+    .GlobalEnv$.humanVerse[["seed"]][[key]];
     } else { FALSE; }
   }
+

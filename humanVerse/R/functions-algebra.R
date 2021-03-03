@@ -3,7 +3,7 @@
 	  # b = c(2,1,1,1,1,0,1,1)
 	  # d = (a %*% b) / (sqrt(sum(a^2)) * sqrt(sum(b^2)))
 
-	  ## OR
+	  ## OR 
 
 	  # e = crossprod(a, b) / (sqrt(crossprod(a, a)) * sqrt(crossprod(b, b)))
 

@@ -91,8 +91,13 @@ dechex(204.33);
 It works for any size, I just use a 2-digit as that is what we need for colors.
 ```{r}
 ###### R::humanVerse #####
-dechex(123456789);
+dechex(123456789, 1234);
 ```
+```{r}
+###### R::humanVerse #####
+dechex(c(123456789, 1234));
+```
+
 
 Here is the entire range.
 ```{r}
@@ -193,13 +198,13 @@ Notice, we may get some "rounding" error.  Or it could be a bug.
 ###### R::humanVerse #####
 (rgb = unlist ( hex2rgb( wsu.crimson ) ) );
 cat("\n", "===============", "\n\n");
-(cmyk = unlist(rgb2cmyk(rgb) ) );
+(cmyk = unlist( rgb2cmyk(rgb) ) );
 cat("\n", "===============", "\n\n");
 unlist ( cmyk2rgb( cmyk ) );
 ```
 
 ### HSL:  rgb2hsl and hsl2rgb
-Notice, we may get some "rounding" error.  Or it could be a bug.
+Notice, we may get some "rounding" error.  Or it could be a bug.  This one seems to be a "rounding" error.
 ```{r}
 ###### R::humanVerse #####
 (rgb = unlist ( hex2rgb( wsu.crimson ) ) );
@@ -211,7 +216,7 @@ unlist ( hsl2rgb( hsl ) );
 
 ### HSV:  rgb2hsv and hsv2rgb
 Notice, we may get some "rounding" error.  Or it could be a bug.
-HSV and HSL are very similar.  They will create slightly different results, as two lines of code are different in the formulas.
+HSV and HSL are very similar.  They will create slightly different results, as two lines of code are different in the formulas.  This one seems to be a "bug" (TODO).
 ```{r}
 ###### R::humanVerse #####
 (rgb = unlist ( hex2rgb( wsu.crimson ) ) );
@@ -229,15 +234,32 @@ Remember it is about "git R done!"
 ### Random Color
 ```{r}
 ###### R::humanVerse #####
-# set.seed(12222015);
 (rgb = unlist ( color.randomRGB() ) );
 ```
 
 ```{r}
 ###### R::humanVerse #####
-# set.seed(31415926);
+(rgb = unlist ( color.randomRGB(key="key.to.remember.seed") ) );
+```
+
+
+```{r}
+###### R::humanVerse #####
 (hex = color.randomHEX() ) ;
 ```
+
+```{r}
+###### R::humanVerse #####
+(hex = color.randomHEX(3, key="another.memory") ) ;
+```
+To access the "remembered" seeds, use the following:
+
+```{r}
+key = "another.memory";
+.humanVerse[["colors"]][["random"]][[key]];
+```
+We generated 3 rgb colors and need 3 seeds for each: r,g,b ... so we had to store 9 different seeds.
+
 ### Opacity
 RGB has a relationship to RGBa where the (a)lpha represents an opacity of the color based on some background (default: white).  So I wrote a function `color.setOpacity` where opacity is [0,100].  100% would be its full color capability.  It is anchored to `R::base` so it is using "hexadecimal" as its input.  It will render internally well on graphics.
 
@@ -286,7 +308,7 @@ cat(str);
 castStringAsHTML(str);
 ```
 
-
+ 
 ### Web-safe
 "In my day", the web had 216 colors, so we had to round colors down to these choices.
 ```{r}
@@ -308,12 +330,13 @@ color.webSafeHEX(rgb);
 
 Based on that property, I wrote a generic `color.roundHEX` that will help prettify results, such as my rounding error in the section above.  It is a work in progress, which means "definitely buggy" ... `color.roundHEX ( hsl2rgb( hsl ), 1 );`
 
-### Chromatics
+### Color Chromatics
 Chromatics means shades of white, black and gray.  It is a gradient of the input color to white AND black respectively.  I did not port my old `C-based` code, but rather am plugging into `R::base` to make this simple.
 
 
 ```{r}
 ###### R::humanVerse #####
+###### humanVerse::color.chromatics
 wsu.crimson;
 cat("\n", "===============", "\n\n");
 (rgb = unlist ( hex2rgb( wsu.crimson ) ) );
@@ -337,30 +360,26 @@ I can print as a static image, but that is not as cool (and you can't copy/paste
 
 ```{r}
 ###### R::humanVerse #####
+###### humanVerse::color.displayColorOptions
 color.displayColorOptions(wsu.chromatics.6$hex.color);
 ```
 
-### Color Gradient
+### Colors in Gradient
+
 `R::base` has a nice color gradient feature with some quirky syntax, so I cleaned it up a bit.
+
+#### (rgb2col)
+
 
 `R::base` has a nice function `col2rgb` ... yet does not have the inverse function `rgb2col` (ARGH!); the `col` represents a COLOR (name), a HEX (RGB) or a HEX (RGBa).  
 
-```{r}
-###### R::base #####
-###### R::humanVerse #####
-(wsu.gradient = color.colorsInGradient(10, 
-                    c( rgb2hex( col2rgb(wsu.crimson) ),
-                       rgb2hex( col2rgb(wsu.gray)  ) ) ) );
-color.displayColorOptions(wsu.gradient);
-```
-
-#### (rgb2col)
 It is bad software design to not have an obvious inverse function, so I wrote one.  It is included in my `functions-colors.R` file.
 
 ```{r}
+###### R::humanVerse #####
 rgb2col = function(x)
   {
-  # reverses col2rgb function
+  # reverses col2rgb function in ###### R::base #####
   x.n = dim(x)[1];
   if(x.n == 4)
     {
@@ -375,6 +394,49 @@ rgb2col = function(x)
             grDevices::rgb( x.rgb, names=rownames(x.rgb) );
             }
   }
+```
+
+
+```{r}
+###### R::base #####
+###### R::humanVerse #####
+###### humanVerse::color.colorsInGradient
+(wsu.gradient = color.colorsInGradient(10, 
+                    c( wsu.crimson,wsu.gray)  ) );
+
+
+color.displayColorOptions(wsu.gradient);
+
+# (wsu.gradient = color.colorsInGradient(10, 
+#                     c( rgb2hex( col2rgb(wsu.crimson) ),
+#                        rgb2hex( col2rgb(wsu.gray)  ) ) ) );
+```
+
+### Color Grays
+
+`R::base` has a built-in function to display a gradient of grays.
+
+See <http://applied-r.com/grey-scales/> for an example. 
+
+
+```{r}
+###### R::base #####
+(my.grays = gray.colors(12, start = 0, end = 1, gamma = 1) );
+
+color.displayColorOptions(my.grays);
+
+## gamma changes the output significantly.  
+
+```
+The above is a bit different than colors in gradient.
+
+```{r}
+###### R::humanVerse #####
+(my.grays.2 = color.colorsInGradient(12, 
+                    c( "black", "white")  ) );
+
+
+color.displayColorOptions(my.grays.2);
 ```
 
 
@@ -443,7 +505,7 @@ color.buildTable(unique.colors);
 ## Search by color name (wildcard)
 
 ```{r}
-color.nameSearch("*teal*");
+color.nameSearch("*blue*");
 ```
 
 

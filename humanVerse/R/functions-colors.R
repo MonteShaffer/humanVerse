@@ -1,5 +1,28 @@
 
 
+
+initSeedMemory = function(purge.memory = FALSE, verbose = TRUE)
+  {
+  initMemory();
+  
+  
+  if(!exists("color", .GlobalEnv$.humanVerse) || purge.memory)
+    {
+    if(verbose)
+      {
+	  cat("humanVerse::initSeedMemory ... initializing list '.humanVerse[[\"color\"]]'", "\n");
+      }
+    .GlobalEnv$.humanVerse[["colors"]] = list();
+		.GlobalEnv$.humanVerse[["colors"]][["random"]] = list();  			# captures get/set seed 
+		.GlobalEnv$.humanVerse[["colors"]][["lists"]] = list();				# keyed lists of hex with "alpha" maybe
+		.GlobalEnv$.humanVerse[["colors"]][["dataframes"]] = list();		# cached tables
+		.GlobalEnv$.humanVerse[["colors"]][["nearest"]] = list();			# cached "nearest-color" index 
+		.GlobalEnv$.humanVerse[["colors"]][["search"]] = list();			# cached "search" history
+    }
+  }
+  
+  
+
 # color "search" by wildcard
 # cache color tables (such as wheels)
 
@@ -8,7 +31,18 @@ color.nameSearch = function(skey, colors.df = NULL, col.name="color", ...)
 	if(is.null(colors.df))
 		{
 		colors.df = color.buildTable();
-		}
+		} else {
+				# key in color memory
+				if(is.character(colors.df))
+					{
+					if(exists(colors.df, .GlobalEnv$.humanVerse[["colors"]][["dataframes"]]))
+						{
+						colors.df = .GlobalEnv$.humanVerse[["colors"]][["dataframes"]][[colors.df]];
+						}
+					}
+				}
+	if(!is.data.frame(colors.df)) { stop("humanVerse::color.nameSearch ... 'colors.df' not correctly specified"); }			
+	
 	res = wildcardSearch(skey, col.name, ..., df=colors.df);
 	res;
 	}
@@ -41,8 +75,11 @@ stringToInteger = function(strvec, isHEX = FALSE)
 # hexadecimal to decimal
 # hexdec("FF");
 # alias hex2dec
-hexdec = function(hexstr)
+hexdec = function(hexstr, ...)
 	{
+	more = unlist(list(...));
+	hexstr = c(hexstr, more); 
+	
 	# rather than checking, let's remove and add leading "0x"
 	hexstr = paste0("0x", str_replace("0x", "", trimMe(tolower(hexstr))) );
 	stringToInteger(hexstr, TRUE);
@@ -50,9 +87,13 @@ hexdec = function(hexstr)
 
 # decimal to hexadecimal
 # alias dec2hex
-dechex = function(intdec, n=NULL)
+dechex = function(intdec, ..., n=NULL)
 	{
+	more = unlist(list(...));
+	intdec = c(intdec, more); 
+	
 	res = toupper( as.character( as.hexmode( as.integer( round(intdec) ) ) ) );
+	# if the vector already has two-character mode ... dechex( 0:255);  ... n is not necessary
 	if(!is.null(n)) { res = strPadLeft( res, n, "0"); 	}
 	res;
 	}
@@ -60,34 +101,50 @@ dechex = function(intdec, n=NULL)
 
 
 
-
+# source('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-colors.R')
+# source('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-str.R')
 # hex2rgb("monte");
 # hex2rgb("red");
 # hex2rgb( "#abcdef" );
 # as.numeric( unlist( hex2rgb( "abcdef" ) ) );
 # unlist( hex2rgb( "ABC" ) );
-hex2rgb = function(hex)
+hex2rgb = function(hex, ...)
 	{
-	hex = checkHEX(hex);
+		more = unlist(list(...));
+	hex = c(hex, more); 
+	# dput(hex);
+	hex = checkHEX(hex);		
 	  if(is.null(hex)) { return (NULL); }
-
-	hex = str_replace("#", "", trimMe(toupper(hex)));
-		hexV = charVector(hex);
-	if(length(hexV) == 3)
+	m = length(hex);
+	result = list();
+	hexvec = hex;
+	for(i in 1:m)
 		{
-		#  'FFF' => 'FFFFFF'
-		hexV = c(hexV[1], hexV[1], hexV[2], hexV[2], hexV[3], hexV[3]);
-		}
+		hex = hexvec[i];
 
-	list(
-		"r" = hexdec( paste(hexV[1:2], collapse="") ),
-		"g" = hexdec( paste(hexV[3:4], collapse="") ),
-		"b" = hexdec( paste(hexV[5:6], collapse="") )
-		);
+		hex = str_replace("#", "", trimMe(toupper(hex)));
+			hexV = charVector(hex);
+		if(length(hexV) == 3)
+			{
+			#  'FFF' => 'FFFFFF'
+			hexV = c(hexV[1], hexV[1], hexV[2], hexV[2], hexV[3], hexV[3]);
+			}
+
+			res = list(
+					"r" = hexdec( paste(hexV[1:2], collapse="") ),
+					"g" = hexdec( paste(hexV[3:4], collapse="") ),
+					"b" = hexdec( paste(hexV[5:6], collapse="") )
+					);
+		result[[i]] = res;
+		}
+	
+	if(m > 1) { result; } else { result[[1]]; }
 	}
 
 
+
 # this check if the hex was past; if it was "color", it sees if it can look it up
+# this is a vectorized function ...
 checkHEX = function(hex)
 	{
 	hex = str_replace("#", "", trimMe(tolower(hex)));
@@ -96,16 +153,23 @@ checkHEX = function(hex)
 	# insert "color" check here ... if it is "red", let's get "hex" from that ...
 	# "^[A-Fa-f0-9]{6}|[A-Fa-f0-9]{3}$"
 	# "^#?(([0-9a-fA-F]{2}){3}|([0-9a-fA-F]){3})$"
+	#### ALPHA SEARCH FIRST
+	search.alpha = grep("^#?(([0-9a-fA-F]{2}){4}|([0-9a-fA-F]){4})$", hex);
+	if(length(search.alpha) > 0)
+	  {
+	  return ( str_replace("##", "#", toupper( paste0("#", hex) ) ) );
+	  }
 	search = grep("^#?(([0-9a-fA-F]{2}){3}|([0-9a-fA-F]){3})$", hex);
 	if(length(search) < 1)
 		{
 		hasFound = FALSE;
 		# look in base for now
-		color.idx = which( colors(TRUE) == hex );
+		# color.idx = which( colors(TRUE) == hex );
+		color.idx = match(hex, colors(TRUE));  # %in% is currently defined as "%in%" <- function(x, table) match(x, table, nomatch = 0) > 0
 		if(length(color.idx) > 0)
 			{
-			col.rgb = cleanupRGB(col2rgb(hex));
-			hex = rgb2hex( col.rgb );
+			hasFound = TRUE;			
+			hex = rgb2hex(col2rgb(hex));
 			hasFound = TRUE;
 			}
 		if(!hasFound)
@@ -115,85 +179,126 @@ checkHEX = function(hex)
 		    }
 		}
 
-	toupper( paste0("#", hex) );
+	return ( str_replace("##", "#", toupper( paste0("#", hex) ) ) );
 	}
 
+
+# maybe write generic color "function", FUN = mean
+.color.average = function(a.hex, b.hex)
+  {
+  a.rgb = checkRGB(a.hex);
+  b.rgb = checkRGB(b.hex);
+
+  n.rgb = (a.rgb + b.rgb) / 2 ;
+  rgb2hex(n.rgb);
+  }
+  
 # this checks if the rgb was past, if it was hex, it proceeds ...
 checkRGB = function(rgb)
 	{
-	if(length(rgb) == 1) { rgb = hex2rgb(rgb); } # they can pass in "hex"
+	if(is.null( dim(rgb) ) ) 
+		{ 
+		# my.names = sort(unique(names(rgb)));  	# if I did "unlist"
+		# my.length = length(rgb);				# if I did as.numeric on "unlist"
+												# my.length %% 3
+		if(is.character(rgb))
+			{
+			rgb = hex2rgb(rgb); 
+			}
+		} # they can pass in "hex"
 	cleanupRGB(rgb);
 	}
-
-
-
-rgb2hex = function(rgb, pre="#")
-	{
-	rgb = cleanupRGB(rgb);
-	paste0(pre, dechex(rgb[1],2), dechex(rgb[2],2), dechex(rgb[3],2) );
-	}
-
-
-cleanupGenericColor = function(obj)
-  {
-  as.numeric( unlist( obj ) );
-  }
 
 cleanupRGB = function(rgb)
 	{
 	rgb = as.numeric( unlist( rgb ) ); # just in case ...
+		rgb = matrix(rgb, nrow=3);
+		
 	if( max(rgb) <= 1 ) { rgb = 255 * rgb; } # we should be in 255 as "1"
+		
 	rgb;
 	}
-
-
-hue2rgb = function(hue)
+	
+	
+# source('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-colors.R')
+rgb2hex = function(rgb, pre="#")
 	{
-	hue = as.numeric( unlist( hue ) ); # just in case ...
-	v1 = hue[1];
-	v2 = hue[2];
-	vH = hue[3];
-
-	if(vH < 0) { vH = vH + 1;}
-	if(vH > 1) { vH = vH - 1;}
-
-	once = v1;
-	useOnce = FALSE;
-
-	if ( (( 6 * vH ) < 1) && !useOnce ) {once = ( v1 + ( v2 - v1 ) * 6 * vH ); useOnce = TRUE;}
-	if ( (( 2 * vH ) < 1) && !useOnce ) {once= ( v2 ); useOnce = TRUE;}
-	if ( (( 3 * vH ) < 2) && !useOnce ) {once =( v1 + ( v2 - v1 ) * ( ( 2 / 3 ) - vH ) * 6 );}
-
-	255 * once;
+	rgb = cleanupRGB(rgb);
+	# print(rgb);
+	paste0(pre, dechex(rgb[1,], n=2), dechex(rgb[2,], n=2), dechex(rgb[3,], n=2) );
 	}
 
 
-hsl2rgb = function(hsl)
+
+
+
+
+hue2rgb = function(hues)
 	{
-	hsl = as.numeric( unlist( hsl ) ); # just in case ...
-	# cat("\n", "===", print(hsl), "===", "\n");
-
-	h = hsl[1] / 360;  # fraction of circle in degrees
-	s = hsl[2];
-	l = hsl[3];
-
-	if(s == 0)
+	hues = as.numeric( unlist( hues ) ); # just in case ...
+	hues = matrix(hues, nrow=3);
+	
+	m = ncol(hues);
+	res = numeric(m);
+	for(i in 1:m)
 		{
-		r = g = b = l * 255; # gray
-		} else 	{
-				v2	=	if(l < 0.5) {l * (1+s); } else {(l + s) - (s*l); }
-				v1	=	2*l-v2;
+		hue = hues[,i];
+		
+		v1 = hue[1];
+		v2 = hue[2];
+		vH = hue[3];
 
-				r	= hue2rgb(c(v1,v2,h+1/3));
-				g	= hue2rgb(c(v1,v2,h));
-				b	= hue2rgb(c(v1,v2,h-1/3));
-				}
+		if(vH < 0) { vH = vH + 1;}
+		if(vH > 1) { vH = vH - 1;}
 
-	list(
-		"r" = as.integer( r ),
-		"g" = as.integer( g ),
-		"b" = as.integer( b )
-		);
+		once = v1;
+		useOnce = FALSE;
+
+		if ( (( 6 * vH ) < 1) && !useOnce ) {once = ( v1 + ( v2 - v1 ) * 6 * vH ); useOnce = TRUE;}
+		if ( (( 2 * vH ) < 1) && !useOnce ) {once= ( v2 ); useOnce = TRUE;}
+		if ( (( 3 * vH ) < 2) && !useOnce ) {once =( v1 + ( v2 - v1 ) * ( ( 2 / 3 ) - vH ) * 6 );}
+
+		res[i] = 255 * once;
+		}
+	res;
+	}
+
+
+hsl2rgb = function(hsls)
+	{
+	hsls = as.numeric( unlist( hsls ) ); # just in case ...
+	hsls = matrix(hsls, nrow=3);
+	
+	m = ncol(hsls);
+	res = list();
+	for(i in 1:m)
+		{
+		hsl = hsls[,i];
+
+		h = hsl[1] / 360;  # fraction of circle in degrees
+		s = hsl[2];
+		l = hsl[3];
+
+		if(s == 0)
+			{
+			r = g = b = l * 255; # gray
+			} else 	{
+					v2	=	if(l < 0.5) {l * (1+s); } else {(l + s) - (s*l); }
+					v1	=	2*l-v2;
+
+					r	= hue2rgb(c(v1,v2,h+1/3));
+					g	= hue2rgb(c(v1,v2,h));
+					b	= hue2rgb(c(v1,v2,h-1/3));
+					}
+
+		res[[i]] = list(
+						"r" = as.integer( r ),
+						"g" = as.integer( g ),
+						"b" = as.integer( b )
+						);
+		}
+		
+	if(m > 1) { res; } else { res[[1]]; }	
 	}
 
 
@@ -207,43 +312,55 @@ rgb2hsl = function(rgb)
 	{
 	rgb = checkRGB(rgb);
 	rgb = rgb / 255; # we want it on the [0,1] scale
-		myMin = min(rgb);
-		v = myMax = max(rgb);
-		myRange = myMax - myMin;
-		l = myMid = (myMax + myMin) / 2;
-	r = rgb[1];
-	g = rgb[2];
-	b = rgb[3];
-
-	if(myRange == 0)  ## gray
+	
+	m = ncol(rgb);
+	res = list();
+	rgbs = rgb;
+	
+	for(i in 1:m)
 		{
-		s = 0;
+		rgb = rgbs[,i];
+	
+			myMin = min(rgb);
+			v = myMax = max(rgb);
+			myRange = myMax - myMin;
+			l = myMid = (myMax + myMin) / 2;
+		r = rgb[1];
+		g = rgb[2];
+		b = rgb[3];
 
-		h = 0;
-		} else 	{
-				# this line is only difference with rgb2hsv
-				# l is myMid, v = myMax
-				s = if(myMid < 0.5) { myRange / (myMax + myMin)} else {myRange / (2-myMax-myMin); }
+		if(myRange == 0)  ## gray
+			{
+			s = 0;
 
-				useOnce = FALSE;
-					deltaR = ((myMax - r / 6) + (myRange /2))/myRange;
-					deltaG = ((myMax - g / 6) + (myRange /2))/myRange;
-					deltaB = ((myMax - b / 6) + (myRange /2))/myRange;
-				if(myMax == r && !useOnce) { h = deltaB - deltaG; useOnce = TRUE; }
-				if(myMax == g && !useOnce) { h = (1/3) + deltaR - deltaB; useOnce = TRUE; }
-				if(myMax == b && !useOnce) { h = (2/3) + deltaG - deltaR; useOnce = TRUE; }
-				if(h < 0) { h = h + 1;}
-				if(h > 1) { h = h - 1;}
-				}
+			h = 0;
+			} else 	{
+					# this line is only difference with rgb2hsv
+					# l is myMid, v = myMax
+					s = if(myMid < 0.5) { myRange / (myMax + myMin)} else {myRange / (2-myMax-myMin); }
 
-		l = myMid;
-		h = 360*h; # 360 degrees in a circle
+					useOnce = FALSE;
+						deltaR = ((myMax - r / 6) + (myRange /2))/myRange;
+						deltaG = ((myMax - g / 6) + (myRange /2))/myRange;
+						deltaB = ((myMax - b / 6) + (myRange /2))/myRange;
+					if(myMax == r && !useOnce) { h = deltaB - deltaG; useOnce = TRUE; }
+					if(myMax == g && !useOnce) { h = (1/3) + deltaR - deltaB; useOnce = TRUE; }
+					if(myMax == b && !useOnce) { h = (2/3) + deltaG - deltaR; useOnce = TRUE; }
+					if(h < 0) { h = h + 1;}
+					if(h > 1) { h = h - 1;}
+					}
 
-	list(
-		"h" = h,
-		"s" = s,
-		"l" = l
-		);
+			l = myMid;
+			h = 360*h; # 360 degrees in a circle
+
+		res[[i]] = list(
+					"h" = h,
+					"s" = s,
+					"l" = l
+					);
+		}
+		
+	if(m > 1) { res; } else { res[[1]]; }	
 	}
 
 
@@ -255,109 +372,142 @@ rgb2hsl = function(rgb)
 # unlist( hsv2rgb(hsv) );
 
 
-hsv2rgb = function(hsv)
+# wsu.crimson = "#981e32";	
+# (rgb = unlist ( hex2rgb( wsu.crimson ) ) );
+# cat("\n", "===============", "\n\n");
+# (hsv = unlist(rgb2hsv(rgb) ) );
+# cat("\n", "===============", "\n\n");
+# unlist ( hsv2rgb( hsv ) );
+### SEEMS TO BE A BUG on "blue" 
+		
+hsv2rgb = function(hsvs)
 	{
-	hsv = as.numeric( unlist( hsv ) ); # just in case ...
-	h = hsv[1];
-	s = hsv[2];
-	v = hsv[3];
-
-	if(s == 0)
+	hsvs = as.numeric( unlist( hsvs ) ); # just in case ...
+	hsvs = matrix(hsvs, nrow=3);
+	
+	m = ncol(hsvs);
+	res = list();
+	for(i in 1:m)
 		{
-		r = g = b = v; # gray
-		} else 	{
-				vH	=	h * 6;
-				# mod 6
-				vH = if(vH == 6) { 0; } else { vH; }
-				vI = as.integer(vH);
+		hsv = hsvs[,i];
 
-				v1	=	v * (1-s);
-				v2	=	v * (1-s*(vH-vI));
-				v3	=	v * (1-s*(1-(vH-vI)));
+		h = hsv[1];
+		s = hsv[2];
+		v = hsv[3];
 
-				if( vI == 0 )
-					{
-					r = v;
-					g = v3;
-					b = v1;
-					} else if( vI == 1 )
+		if(s == 0)
+			{
+			r = g = b = v; # gray
+			} else 	{
+					vH	=	h * 6;
+					# mod 6
+					vH = if(vH == 6) { 0; } else { vH; }
+					vI = as.integer(vH);
+
+					v1	=	v * (1-s);
+					v2	=	v * (1-s*(vH-vI));
+					v3	=	v * (1-s*(1-(vH-vI)));
+
+					if( vI == 0 )
 						{
-						r = v2;
-						g = v;
+						r = v;
+						g = v3;
 						b = v1;
-						}  else if( vI == 2 )
+						} else if( vI == 1 )
 							{
-							r = v1;
+							r = v2;
 							g = v;
-							b = v3;
-							} else if( vI == 3 )
+							b = v1;
+							}  else if( vI == 2 )
 								{
 								r = v1;
-								g = v2;
-								b = v;
-								} else if( vI == 4 )
+								g = v;
+								b = v3;
+								} else if( vI == 3 )
 									{
-									r = v3;
-									g = v1;
+									r = v1;
+									g = v2;
 									b = v;
-									} else 	{
-											# default case "5"
-											r = v;
-											g = v1;
-											b = v2;
-											}
+									} else if( vI == 4 )
+										{
+										r = v3;
+										g = v1;
+										b = v;
+										} else 	{
+												# default case "5"
+												r = v;
+												g = v1;
+												b = v2;
+												}
 
-				}
+					}
 
-	list(
-		"r" = as.integer( 255*r ),
-		"g" = as.integer( 255*g ),
-		"b" = as.integer( 255*b )
-		);
+				res[[i]] = list(
+					"r" = as.integer( 255*r ),
+					"g" = as.integer( 255*g ),
+					"b" = as.integer( 255*b )
+					);
+		}
+		
+	if(m > 1) { res; } else { res[[1]]; }			
 	}
 
 
+		
 rgb2hsv = function(rgb)
 	{
 	rgb = checkRGB(rgb);
 	rgb = rgb / 255; # we want it on the [0,1] scale
-		myMin = min(rgb);
-		v = myMax = max(rgb);
-		myRange = myMax - myMin;
-		l = myMid = (myMax + myMin) / 2;
-	r = rgb[1];
-	g = rgb[2];
-	b = rgb[3];
-
-	if(myRange == 0)  ## gray
+	
+	m = ncol(rgb);
+	res = list();
+	rgbs = rgb;
+	
+	for(i in 1:m)
 		{
-		s = 0;
+		rgb = rgbs[,i];
+				myMin = min(rgb);
+				v = myMax = max(rgb);
+				myRange = myMax - myMin;
+				l = myMid = (myMax + myMin) / 2;
+			r = rgb[1];
+			g = rgb[2];
+			b = rgb[3];
 
-		h = 0;
-		} else 	{
-				# this line is only difference with rgb2hsl
-				# l is myMid, v = myMax
-				s = myRange / myMax;
+			if(myRange == 0)  ## gray
+				{
+				s = 0;
 
-				useOnce = FALSE;
-					deltaR = ((myMax - r / 6) + (myRange /2))/myRange;
-					deltaG = ((myMax - g / 6) + (myRange /2))/myRange;
-					deltaB = ((myMax - b / 6) + (myRange /2))/myRange;
-				if(myMax == r && !useOnce) { h = deltaB - deltaG; useOnce = TRUE; }
-				if(myMax == g && !useOnce) { h = (1/3) + deltaR - deltaB; useOnce = TRUE; }
-				if(myMax == b && !useOnce) { h = (2/3) + deltaG - deltaR; useOnce = TRUE; }
-				if(h < 0) { h = h + 1;}
-				if(h > 1) { h = h - 1;}
-				}
+				h = 0;
+				} else 	{
+						# this line is only difference with rgb2hsl
+						# l is myMid, v = myMax
+						s = myRange / myMax;
 
-		l = myMid;
-		h = 360*h; # 360 degrees in a circle
+						useOnce = FALSE;
+							deltaR = ((myMax - r / 6) + (myRange /2))/myRange;
+							deltaG = ((myMax - g / 6) + (myRange /2))/myRange;
+							deltaB = ((myMax - b / 6) + (myRange /2))/myRange;
+						if(myMax == r && !useOnce) { h = deltaB - deltaG; useOnce = TRUE; }
+						if(myMax == g && !useOnce) { h = (1/3) + deltaR - deltaB; useOnce = TRUE; }
+						if(myMax == b && !useOnce) { h = (2/3) + deltaG - deltaR; useOnce = TRUE; }
+						if(h < 0) { h = h + 1;}
+						if(h > 1) { h = h - 1;}
+						}
 
-	list(
-		"h" = h,
-		"s" = s,
-		"v" = v
-		);
+				l = myMid;
+				h = 360*h; # 360 degrees in a circle
+
+			res[[i]] = list(
+						"h" = h,
+						"s" = s,
+						"v" = v
+						);
+		
+		
+		}
+		
+	if(m > 1) { res; } else { res[[1]]; }	
 	}
 
 
@@ -371,78 +521,112 @@ rgb2hsv = function(rgb)
 # unlist( cmyk2rgb(cmyk) );
 
 
-cmyk2rgb = function(cmyk)
+cmyk2rgb = function(cmyks, ...)
 	{
-	cmyk = as.numeric( unlist( cmyk ) ); # just in case ...
-	c = cmyk[1];
-	m = cmyk[2];
-	y = cmyk[3];
-	k = cmyk[4];
+	more = unlist(list(...));
+	cmyks = c(cmyks, more); 
+	
+	cmyks = as.numeric( unlist( cmyks ) ); # just in case ...
+	cmyks = matrix(cmyks, nrow=4);
+	
+	m = ncol(cmyks);
+	res = list();
+	for(i in 1:m)
+		{
+		cmyk = cmyks[,i];
+	
+	
+			c = cmyk[1];
+			m = cmyk[2];
+			y = cmyk[3];
+			k = cmyk[4];
 
-	# cmyk -> CMY
-	C = ( c * ( 1 - k ) + k );
-	M = ( m * ( 1 - k ) + k );
-	Y = ( y * ( 1 - k ) + k );
+			# cmyk -> CMY
+			C = ( c * ( 1 - k ) + k );
+			M = ( m * ( 1 - k ) + k );
+			Y = ( y * ( 1 - k ) + k );
 
 
-	# CMY -> RGB
-	r = ( 1 - C );
-	g = ( 1 - M );
-	b = ( 1 - Y );
+			# CMY -> RGB
+			r = ( 1 - C );
+			g = ( 1 - M );
+			b = ( 1 - Y );
 
-	list(
-		"r" = as.integer( 255*r ),
-		"g" = as.integer( 255*g ),
-		"b" = as.integer( 255*b )
-		);
+		res[[i]] = 	list(
+						"r" = as.integer( 255*r ),
+						"g" = as.integer( 255*g ),
+						"b" = as.integer( 255*b )
+						);
+		}
+		
+	if(m > 1) { res; } else { res[[1]]; }		
+		
 	}
 
 rgb2cmyk = function(rgb)
 	{
 	rgb = checkRGB(rgb);
-		myMin = min(rgb);
-		v = myMax = max(rgb);
-		myRange = myMax - myMin;
-		l = myMid = (myMax + myMin) / 2;
-	r = rgb[1];
-	g = rgb[2];
-	b = rgb[3];
+	
+	m = ncol(rgb);
+	res = list();
+	rgbs = rgb;
+	
+	for(i in 1:m)
+		{
+		rgb = rgbs[,i];
+				
+				myMin = min(rgb);
+				v = myMax = max(rgb);
+				myRange = myMax - myMin;
+				l = myMid = (myMax + myMin) / 2;
+			r = rgb[1];
+			g = rgb[2];
+			b = rgb[3];
 
-	# RGB -> CMY
-		C = 1 - ( r / 255 );
-		M = 1 - ( g / 255 );
-		Y = 1 - ( b / 255 );
+			# RGB -> CMY
+				C = 1 - ( r / 255 );
+				M = 1 - ( g / 255 );
+				Y = 1 - ( b / 255 );
 
-	# CMY -> cmyk
+			# CMY -> cmyk
 
-		vK = 1;
+				vK = 1;
 
-		# min ?
-		if ( C < vK )   {vK = C;}
-		if ( M < vK )   {vK = M;}
-		if ( Y < vK )   {vK = Y;}
-		if ( vK == 1 )
-			{
-			# Black
-			c = 0;
-			m = 0;
-			y = 0;
-			}
-			else
-				{
-				c = ( C - vK ) / ( 1 - vK );
-				m = ( M - vK ) / ( 1 - vK );
-				y = ( Y - vK ) / ( 1 - vK );
-				}
-		k = vK;
+				# min ?
+				if ( C < vK )   {vK = C;}
+				if ( M < vK )   {vK = M;}
+				if ( Y < vK )   {vK = Y;}
+				if ( vK == 1 )
+					{
+					# Black
+					c = 0;
+					m = 0;
+					y = 0;
+					}
+					else
+						{
+						c = ( C - vK ) / ( 1 - vK );
+						m = ( M - vK ) / ( 1 - vK );
+						y = ( Y - vK ) / ( 1 - vK );
+						}
+				k = vK;
 
-	# these are  [0,1]
-	list(
-		"c" = c ,
-		"m" = m ,
-		"y" = y ,
-		"k" = k
-		);
+	
+
+		# these are  [0,1]
+		res[[i]] = list(
+						"c" = c ,
+						"m" = m ,
+						"y" = y ,
+						"k" = k
+						);
+		
+		
+		}
+		
+	if(m > 1) { res; } else { res[[1]]; }	
+	
+	
 	}
 
 
@@ -578,44 +762,62 @@ color.findNearestName = function(hex, how.many = 1, scale.me = TRUE, how="distan
 	}
 
 
-# maybe write generic color "function", FUN = mean
-.color.average = function(a.hex, b.hex)
-  {
-  a.rgb = checkRGB(a.hex);
-  b.rgb = checkRGB(b.hex);
 
-  n.rgb = (a.rgb + b.rgb) / 2 ;
-  rgb2hex(n.rgb);
-  }
 
 # we need to cache this in "last" memory
-color.buildTable = function(cvec = colors(TRUE))
+color.buildTable = function(colvec=NULL, key=NULL)
 	{
-	n = length(cvec);
+	if(is.null(colvec)) 
+		{ 
+		if(!is.null(key))
+			{
+			if(exists(key, .GlobalEnv$.humanVerse[["colors"]][["lists"]]))
+				{
+				colvec = .GlobalEnv$.humanVerse[["colors"]][["lists"]][[key]];
+				}
+			}
+		if(is.null(colvec)) { key = "ALL"; colvec = colors(TRUE); }  # not found, so let's set to default 'ALL'
+		}
+	if(is.null(key)) { key = md5( paste(colvec, collapse="-") ); } # make a "hash-table" of an un-named list
+	
+	if(exists(key, .GlobalEnv$.humanVerse[["colors"]][["dataframes"]]))
+		{
+		return( .GlobalEnv$.humanVerse[["colors"]][["dataframes"]][[key]] );
+		}
+
+	n = length(colvec);
 	hvec = character(n);
 	r = g = b = numeric(n);
 
 	for(i in 1:n)
 		{
-		color = cvec[i];
+		color = colvec[i];
 		rgb = cleanupRGB( col2rgb(color) );
 		hvec[i] = rgb2hex( rgb );
 		r[i] = rgb[1]; g[i] = rgb[2]; b[i] = rgb[3];
 		}
 
-	df = as.data.frame(cbind(cvec, hvec, r, g, b));
+	df = as.data.frame(cbind(colvec, hvec, r, g, b));
 		colnames(df) = c("color", "hex.color", "r", "g", "b");
 
 	df = assignColumnsTypeInDataFrame(c("r","g","b"), "numeric", df);
+	.GlobalEnv$.humanVerse[["colors"]][["dataframes"]][[key]] = df; # stored in memory 
 
 	df;
 	}
 
+
+
 color.setOpacity = function(hexvec, opacity=100)
 	{
-	alpha = dechex(255 * opacity/100, 2);
+	# hexvec must be #123456 form already ...
+	hex = checkHEX(hex);
+	alpha = dechex(255 * opacity/100, n=2);
 	paste0(hexvec,alpha);
 	}
+
+
+
 
 # we need to cache this in "last" memory
 # accessor can get elements without having to rebuild
@@ -642,7 +844,7 @@ color.chromatics = function(rgb, n = 12) # mono steps of monochronic ... half on
 
 	df;
 	}
-
+ 
 
 
 ## http://c.mshaffer.com/js/colorpicker/functions.colors.js
@@ -734,19 +936,61 @@ color.webSafeHEX = function(rgb)
 	rgb2hex(rgb);
 	}
 
-color.randomHEX = function()
+color.randomHEX = function(n=1, my.seed=NULL, key=NULL)
 	{
-	rgb2hex( color.randomRGB() );
+	rgb = color.randomRGB(n=n, my.seed=my.seed, key=key);
+	rgb = cleanupRGB(rgb);
+	rgb2hex( rgb );
 	}
 
 
-color.randomRGB = function()
+# source('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-random.R')
+# source('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-memory.R')
+# source('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-colors.R')
+# source('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-str.R')
+
+color.randomRGB = function(n=1, my.seeds=NULL, key=NULL)
 	{
-	list(
-		"r" = rand(0,255),
-		"g" = rand(0,255),
-		"b" = rand(0,255)
-		);
+	if(!is.null(key))
+		{
+		if(exists(key, .GlobalEnv$.humanVerse[["colors"]][["random"]]))
+			{
+			my.seeds = .GlobalEnv$.humanVerse[["colors"]][["random"]][[key]];
+			}
+		} else { key = "last"; }
+	
+	my.names = c("r", "g", "b");
+	res = list();
+	if(!is.null(my.seeds)) 
+		{ 
+		if(length(my.seeds) != 3*n) 
+			{ 
+			stop("humanVerse::color.randomRGB ... if you set.seed, it has to be the same length as the number of random colors"); 
+			}
+		}
+	m = 0; # this is total counter ... of length 3*n ... use 16777215 ... (2^8)^3 - 1
+	new.seeds = c();
+	for(i in 1:n)
+		{	
+		res[[i]] = list("r" = NA, "g" = NA, "b" = NA);
+		for(j in 1:3)
+			{
+			m = 1 + m;
+			if(is.null(my.seeds)) 
+				{ 
+				setSeed(NULL,"color"); my.seed = getSeed("color"); 
+				} else { my.seed = my.seeds[m]; }
+			
+			new.seeds = c(new.seeds, my.seed);
+			
+			my.name = my.names[j];
+			res[[i]][[my.name]] = rand(0,255, seed=my.seed);
+			
+			}		
+		}
+	.GlobalEnv$.humanVerse[["colors"]][["random"]][[key]] = new.seeds;	
+	
+	if(n > 1) { res; } else { res[[1]]; }	
 	}
 
 
@@ -806,9 +1050,9 @@ color.roundHEX = function(rgb, n=3, full=FALSE)
 					decV[2] = doMod(decV[2]);
 					decV[4] = doMod(decV[4]);
 					decV[6] = doMod(decV[6]);
-				hexV[2] = dechex(decV[2]);
-				hexV[4] = dechex(decV[4]);
-				hexV[6] = dechex(decV[6]);
+				hexV[2] = dechex(decV[2], n=1);
+				hexV[4] = dechex(decV[4], n=1);
+				hexV[6] = dechex(decV[6], n=1);
 
 				hex = paste0("#", paste(hexV, collapse=""));
 				hex;
