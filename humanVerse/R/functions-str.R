@@ -333,18 +333,18 @@ strlen = function(str)
 # PHP wrapper ... https://www.php.net/manual/en/function.substr.php
 .substr = substr.neg = function(str, n = -1, length=NULL, PHP.offset=TRUE)
 	{
-	n = as.integer(n); 
+	n = as.integer(n);
 		if(!PHP.offset) { n = n - 1; } # PHP indexes at "0"
-	
-	if(!is.null(length)) 
-		{ 
-		length = as.integer(length); 
+
+	if(!is.null(length))
+		{
+		length = as.integer(length);
 		if(!PHP.offset) { length = length - 1; } # PHP indexes at "0"
 		}
-	
+
 	str.len = strlen(str);
 		if(is.negative(n))
-			{	
+			{
 			str.tmp = substr(str, start=1+(str.len + n), stop=str.len );
 				if(is.null(length)) { return (str.tmp); }
 				if(length == 0) 	{ return (str.tmp); }
@@ -355,14 +355,14 @@ strlen = function(str)
 						str.len.tmp = strlen(str.tmp);
 						str.final = substr(str.tmp, start=1, stop = str.len.tmp + length);
 						}
-			return ( str.final );	
-			} else {	
+			return ( str.final );
+			} else {
 					# PHP allows n = 0 ... first element ...
 					str.tmp = substr(str, start=1+n, stop=str.len );
 						if(is.null(length)) { return (str.tmp); }
 						if(length == 0) 	{ return (str.tmp); }
-					
-					
+
+
 					if(is.positive(length))
 						{
 						str.final = substr(str.tmp, start=1, stop = length);
@@ -370,7 +370,7 @@ strlen = function(str)
 								str.len.tmp = strlen(str.tmp);
 								str.final = substr(str.tmp, start=1, stop = str.len.tmp + length);
 								}
-					return ( str.final );	
+					return ( str.final );
 					}
 	stop("humanVerse::.substr ... how did you get here?!?");
 	}

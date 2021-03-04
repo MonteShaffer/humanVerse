@@ -89,13 +89,13 @@ initSeed = function(...)
 #' setSeed(); getSeed(); initSeedMemory(purge.memory = TRUE); getSeed();
 initSeedMemory = function(purge.memory = FALSE, verbose = FALSE)
   {
-  initMemory();  
-  
+  initMemory();
+
   if(!exists("seed", .GlobalEnv$.humanVerse) || purge.memory)
     {
     if(verbose)
       {
-	  cat("humanVerse::initSeedMemory ... initializing list '.humanVerse[[\"seed\"]]'", "\n");
+	    cat("humanVerse::initSeedMemory ... initializing list '.humanVerse[[\"seed\"]]'", "\n");
       }
     .GlobalEnv$.humanVerse[["seed"]] = list();
     }

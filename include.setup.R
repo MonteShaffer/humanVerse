@@ -19,7 +19,11 @@ source(include.me); # trimMe
 source(include.me); # folderizeURL ... 
 	include.me = paste0(github.monte, "humanVerse/main/humanVerse/R/functions-get-set.R");  
 source(include.me); # grabFunctionParameters ... 
-
-
+	include.me = paste0(github.monte, "humanVerse/main/humanVerse/R/functions-number.R");  
+source(include.me); # is.negative ... 
+ 	include.me = paste0(github.monte, "humanVerse/main/humanVerse/R/zzz.R");  
+source(include.me); # .onLoad ... 
+	
+	.onLoad();
 
 

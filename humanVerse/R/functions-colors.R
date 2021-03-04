@@ -1,27 +1,27 @@
 
 
 
-initSeedMemory = function(purge.memory = FALSE, verbose = TRUE)
+initColorMemory = function(purge.memory = FALSE, verbose = FALSE)
   {
   initMemory();
-  
-  
+
+
   if(!exists("color", .GlobalEnv$.humanVerse) || purge.memory)
     {
     if(verbose)
       {
-	  cat("humanVerse::initSeedMemory ... initializing list '.humanVerse[[\"color\"]]'", "\n");
+	    cat("humanVerse::initColorMemory ... initializing list '.humanVerse[[\"color\"]]'", "\n");
       }
     .GlobalEnv$.humanVerse[["colors"]] = list();
-		.GlobalEnv$.humanVerse[["colors"]][["random"]] = list();  			# captures get/set seed 
+		.GlobalEnv$.humanVerse[["colors"]][["random"]] = list();  			# captures get/set seed
 		.GlobalEnv$.humanVerse[["colors"]][["lists"]] = list();				# keyed lists of hex with "alpha" maybe
 		.GlobalEnv$.humanVerse[["colors"]][["dataframes"]] = list();		# cached tables
-		.GlobalEnv$.humanVerse[["colors"]][["nearest"]] = list();			# cached "nearest-color" index 
+		.GlobalEnv$.humanVerse[["colors"]][["nearest"]] = list();			# cached "nearest-color" index
 		.GlobalEnv$.humanVerse[["colors"]][["search"]] = list();			# cached "search" history
     }
   }
-  
-  
+
+
 
 # color "search" by wildcard
 # cache color tables (such as wheels)
@@ -41,8 +41,8 @@ color.nameSearch = function(skey, colors.df = NULL, col.name="color", ...)
 						}
 					}
 				}
-	if(!is.data.frame(colors.df)) { stop("humanVerse::color.nameSearch ... 'colors.df' not correctly specified"); }			
-	
+	if(!is.data.frame(colors.df)) { stop("humanVerse::color.nameSearch ... 'colors.df' not correctly specified"); }
+
 	res = wildcardSearch(skey, col.name, ..., df=colors.df);
 	res;
 	}
@@ -78,8 +78,8 @@ stringToInteger = function(strvec, isHEX = FALSE)
 hexdec = function(hexstr, ...)
 	{
 	more = unlist(list(...));
-	hexstr = c(hexstr, more); 
-	
+	hexstr = c(hexstr, more);
+
 	# rather than checking, let's remove and add leading "0x"
 	hexstr = paste0("0x", str_replace("0x", "", trimMe(tolower(hexstr))) );
 	stringToInteger(hexstr, TRUE);
@@ -90,8 +90,8 @@ hexdec = function(hexstr, ...)
 dechex = function(intdec, ..., n=NULL)
 	{
 	more = unlist(list(...));
-	intdec = c(intdec, more); 
-	
+	intdec = c(intdec, more);
+
 	res = toupper( as.character( as.hexmode( as.integer( round(intdec) ) ) ) );
 	# if the vector already has two-character mode ... dechex( 0:255);  ... n is not necessary
 	if(!is.null(n)) { res = strPadLeft( res, n, "0"); 	}
@@ -111,9 +111,9 @@ dechex = function(intdec, ..., n=NULL)
 hex2rgb = function(hex, ...)
 	{
 		more = unlist(list(...));
-	hex = c(hex, more); 
+	hex = c(hex, more);
 	# dput(hex);
-	hex = checkHEX(hex);		
+	hex = checkHEX(hex);
 	  if(is.null(hex)) { return (NULL); }
 	m = length(hex);
 	result = list();
@@ -137,7 +137,7 @@ hex2rgb = function(hex, ...)
 					);
 		result[[i]] = res;
 		}
-	
+
 	if(m > 1) { result; } else { result[[1]]; }
 	}
 
@@ -166,9 +166,10 @@ checkHEX = function(hex)
 		# look in base for now
 		# color.idx = which( colors(TRUE) == hex );
 		color.idx = match(hex, colors(TRUE));  # %in% is currently defined as "%in%" <- function(x, table) match(x, table, nomatch = 0) > 0
+		if(is.na(color.idx)) { color.idx = NULL;}
 		if(length(color.idx) > 0)
 			{
-			hasFound = TRUE;			
+			hasFound = TRUE;
 			hex = rgb2hex(col2rgb(hex));
 			hasFound = TRUE;
 			}
@@ -192,18 +193,18 @@ checkHEX = function(hex)
   n.rgb = (a.rgb + b.rgb) / 2 ;
   rgb2hex(n.rgb);
   }
-  
+
 # this checks if the rgb was past, if it was hex, it proceeds ...
 checkRGB = function(rgb)
 	{
-	if(is.null( dim(rgb) ) ) 
-		{ 
+	if(is.null( dim(rgb) ) )
+		{
 		# my.names = sort(unique(names(rgb)));  	# if I did "unlist"
 		# my.length = length(rgb);				# if I did as.numeric on "unlist"
 												# my.length %% 3
 		if(is.character(rgb))
 			{
-			rgb = hex2rgb(rgb); 
+			rgb = hex2rgb(rgb);
 			}
 		} # they can pass in "hex"
 	cleanupRGB(rgb);
@@ -213,13 +214,13 @@ cleanupRGB = function(rgb)
 	{
 	rgb = as.numeric( unlist( rgb ) ); # just in case ...
 		rgb = matrix(rgb, nrow=3);
-		
+
 	if( max(rgb) <= 1 ) { rgb = 255 * rgb; } # we should be in 255 as "1"
-		
+
 	rgb;
 	}
-	
-	
+
+
 # source('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-colors.R')
 rgb2hex = function(rgb, pre="#")
 	{
@@ -237,13 +238,13 @@ hue2rgb = function(hues)
 	{
 	hues = as.numeric( unlist( hues ) ); # just in case ...
 	hues = matrix(hues, nrow=3);
-	
+
 	m = ncol(hues);
 	res = numeric(m);
 	for(i in 1:m)
 		{
 		hue = hues[,i];
-		
+
 		v1 = hue[1];
 		v2 = hue[2];
 		vH = hue[3];
@@ -268,7 +269,7 @@ hsl2rgb = function(hsls)
 	{
 	hsls = as.numeric( unlist( hsls ) ); # just in case ...
 	hsls = matrix(hsls, nrow=3);
-	
+
 	m = ncol(hsls);
 	res = list();
 	for(i in 1:m)
@@ -297,8 +298,8 @@ hsl2rgb = function(hsls)
 						"b" = as.integer( b )
 						);
 		}
-		
-	if(m > 1) { res; } else { res[[1]]; }	
+
+	if(m > 1) { res; } else { res[[1]]; }
 	}
 
 
@@ -312,15 +313,15 @@ rgb2hsl = function(rgb)
 	{
 	rgb = checkRGB(rgb);
 	rgb = rgb / 255; # we want it on the [0,1] scale
-	
+
 	m = ncol(rgb);
 	res = list();
 	rgbs = rgb;
-	
+
 	for(i in 1:m)
 		{
 		rgb = rgbs[,i];
-	
+
 			myMin = min(rgb);
 			v = myMax = max(rgb);
 			myRange = myMax - myMin;
@@ -359,8 +360,8 @@ rgb2hsl = function(rgb)
 					"l" = l
 					);
 		}
-		
-	if(m > 1) { res; } else { res[[1]]; }	
+
+	if(m > 1) { res; } else { res[[1]]; }
 	}
 
 
@@ -372,19 +373,19 @@ rgb2hsl = function(rgb)
 # unlist( hsv2rgb(hsv) );
 
 
-# wsu.crimson = "#981e32";	
+# wsu.crimson = "#981e32";
 # (rgb = unlist ( hex2rgb( wsu.crimson ) ) );
 # cat("\n", "===============", "\n\n");
 # (hsv = unlist(rgb2hsv(rgb) ) );
 # cat("\n", "===============", "\n\n");
 # unlist ( hsv2rgb( hsv ) );
-### SEEMS TO BE A BUG on "blue" 
-		
+### SEEMS TO BE A BUG on "blue"
+
 hsv2rgb = function(hsvs)
 	{
 	hsvs = as.numeric( unlist( hsvs ) ); # just in case ...
 	hsvs = matrix(hsvs, nrow=3);
-	
+
 	m = ncol(hsvs);
 	res = list();
 	for(i in 1:m)
@@ -448,21 +449,21 @@ hsv2rgb = function(hsvs)
 					"b" = as.integer( 255*b )
 					);
 		}
-		
-	if(m > 1) { res; } else { res[[1]]; }			
+
+	if(m > 1) { res; } else { res[[1]]; }
 	}
 
 
-		
+
 rgb2hsv = function(rgb)
 	{
 	rgb = checkRGB(rgb);
 	rgb = rgb / 255; # we want it on the [0,1] scale
-	
+
 	m = ncol(rgb);
 	res = list();
 	rgbs = rgb;
-	
+
 	for(i in 1:m)
 		{
 		rgb = rgbs[,i];
@@ -503,11 +504,11 @@ rgb2hsv = function(rgb)
 						"s" = s,
 						"v" = v
 						);
-		
-		
+
+
 		}
-		
-	if(m > 1) { res; } else { res[[1]]; }	
+
+	if(m > 1) { res; } else { res[[1]]; }
 	}
 
 
@@ -524,18 +525,18 @@ rgb2hsv = function(rgb)
 cmyk2rgb = function(cmyks, ...)
 	{
 	more = unlist(list(...));
-	cmyks = c(cmyks, more); 
-	
+	cmyks = c(cmyks, more);
+
 	cmyks = as.numeric( unlist( cmyks ) ); # just in case ...
 	cmyks = matrix(cmyks, nrow=4);
-	
+
 	m = ncol(cmyks);
 	res = list();
 	for(i in 1:m)
 		{
 		cmyk = cmyks[,i];
-	
-	
+
+
 			c = cmyk[1];
 			m = cmyk[2];
 			y = cmyk[3];
@@ -558,23 +559,23 @@ cmyk2rgb = function(cmyks, ...)
 						"b" = as.integer( 255*b )
 						);
 		}
-		
-	if(m > 1) { res; } else { res[[1]]; }		
-		
+
+	if(m > 1) { res; } else { res[[1]]; }
+
 	}
 
 rgb2cmyk = function(rgb)
 	{
 	rgb = checkRGB(rgb);
-	
+
 	m = ncol(rgb);
 	res = list();
 	rgbs = rgb;
-	
+
 	for(i in 1:m)
 		{
 		rgb = rgbs[,i];
-				
+
 				myMin = min(rgb);
 				v = myMax = max(rgb);
 				myRange = myMax - myMin;
@@ -611,7 +612,7 @@ rgb2cmyk = function(rgb)
 						}
 				k = vK;
 
-	
+
 
 		# these are  [0,1]
 		res[[i]] = list(
@@ -620,13 +621,13 @@ rgb2cmyk = function(rgb)
 						"y" = y ,
 						"k" = k
 						);
-		
-		
+
+
 		}
-		
-	if(m > 1) { res; } else { res[[1]]; }	
-	
-	
+
+	if(m > 1) { res; } else { res[[1]]; }
+
+
 	}
 
 
@@ -767,8 +768,8 @@ color.findNearestName = function(hex, how.many = 1, scale.me = TRUE, how="distan
 # we need to cache this in "last" memory
 color.buildTable = function(colvec=NULL, key=NULL)
 	{
-	if(is.null(colvec)) 
-		{ 
+	if(is.null(colvec))
+		{
 		if(!is.null(key))
 			{
 			if(exists(key, .GlobalEnv$.humanVerse[["colors"]][["lists"]]))
@@ -779,7 +780,7 @@ color.buildTable = function(colvec=NULL, key=NULL)
 		if(is.null(colvec)) { key = "ALL"; colvec = colors(TRUE); }  # not found, so let's set to default 'ALL'
 		}
 	if(is.null(key)) { key = md5( paste(colvec, collapse="-") ); } # make a "hash-table" of an un-named list
-	
+
 	if(exists(key, .GlobalEnv$.humanVerse[["colors"]][["dataframes"]]))
 		{
 		return( .GlobalEnv$.humanVerse[["colors"]][["dataframes"]][[key]] );
@@ -801,7 +802,7 @@ color.buildTable = function(colvec=NULL, key=NULL)
 		colnames(df) = c("color", "hex.color", "r", "g", "b");
 
 	df = assignColumnsTypeInDataFrame(c("r","g","b"), "numeric", df);
-	.GlobalEnv$.humanVerse[["colors"]][["dataframes"]][[key]] = df; # stored in memory 
+	.GlobalEnv$.humanVerse[["colors"]][["dataframes"]][[key]] = df; # stored in memory
 
 	df;
 	}
@@ -844,7 +845,7 @@ color.chromatics = function(rgb, n = 12) # mono steps of monochronic ... half on
 
 	df;
 	}
- 
+
 
 
 ## http://c.mshaffer.com/js/colorpicker/functions.colors.js
@@ -944,17 +945,17 @@ color.randomHEX = function(n=1, my.seed=NULL, key=NULL)
 			{
 			my.seed = .GlobalEnv$.humanVerse[["colors"]][["random"]][[key]];
 			}
-		} else { key = "last"; }	
+		} else { key = "last"; }
 
-	if(is.null(my.seed)) 
-		{ 
-		setSeed(NULL,"color"); my.seed = getSeed("color"); 
-		} 
+	if(is.null(my.seed))
+		{
+		setSeed(NULL,"color"); my.seed = getSeed("color");
+		}
 	.GlobalEnv$.humanVerse[["colors"]][["random"]][[key]] = my.seed;
 	setSeed(my.seed,"color"); my.numbers = rand(2^1 - 1, (2^8)^3 - 1, n);
-	
+
 	my.hexs = paste0("#",dechex(my.numbers, n=6));
-	my.hexs;		
+	my.hexs;
 	}
 
 
@@ -965,10 +966,10 @@ color.randomHEX = function(n=1, my.seed=NULL, key=NULL)
 
 color.randomRGB = function(n=1, my.seed=NULL, key=NULL)
 	{
-	my.hexs = color.randomHEX(n=n, my.seed=my.seed, key=key);	
+	my.hexs = color.randomHEX(n=n, my.seed=my.seed, key=key);
 	rgb = hex2rgb( my.hexs );
 	rgb = cleanupRGB(rgb);
-	
+
 	rgb;
 	}
 

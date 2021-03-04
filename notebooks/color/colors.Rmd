@@ -39,7 +39,7 @@ github.monte.humanVerse = paste0(github.monte.http, "humanVerse/tree/main/humanV
 ######## you can pass flag `force.download = TRUE` if you want to make certain it is not coming from cache ########
 
 ###### R::humanVerse #####
-includeGithubFolder(github.monte.humanVerse, force.download = FALSE); 
+includeGithubFolder(github.monte.humanVerse, force.download = TRUE); 
 ```
 
 #### source (humanVerse/misc)
@@ -50,7 +50,7 @@ github.monte.misc = paste0(github.monte.http, "humanVerse/tree/main/misc/");
 ######## you can pass flag `force.download = TRUE` if you want to make certain it is not coming from cache ########
 
 ###### R::humanVerse #####
-includeGithubFolder(github.monte.misc, force.download = FALSE);
+includeGithubFolder(github.monte.misc, force.download = TRUE);
 ```
 
 
