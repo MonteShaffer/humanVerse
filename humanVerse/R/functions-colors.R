@@ -938,9 +938,23 @@ color.webSafeHEX = function(rgb)
 
 color.randomHEX = function(n=1, my.seed=NULL, key=NULL)
 	{
-	rgb = color.randomRGB(n=n, my.seed=my.seed, key=key);
-	rgb = cleanupRGB(rgb);
-	rgb2hex( rgb );
+	if(!is.null(key))
+		{
+		if(exists(key, .GlobalEnv$.humanVerse[["colors"]][["random"]]))
+			{
+			my.seed = .GlobalEnv$.humanVerse[["colors"]][["random"]][[key]];
+			}
+		} else { key = "last"; }	
+
+	if(is.null(my.seed)) 
+		{ 
+		setSeed(NULL,"color"); my.seed = getSeed("color"); 
+		} 
+	.GlobalEnv$.humanVerse[["colors"]][["random"]][[key]] = my.seed;
+	setSeed(my.seed,"color"); my.numbers = rand(2^1 - 1, (2^8)^3 - 1, n);
+	
+	my.hexs = paste0("#",dechex(my.numbers, n=6));
+	my.hexs;		
 	}
 
 
@@ -949,48 +963,13 @@ color.randomHEX = function(n=1, my.seed=NULL, key=NULL)
 # source('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-colors.R')
 # source('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-str.R')
 
-color.randomRGB = function(n=1, my.seeds=NULL, key=NULL)
+color.randomRGB = function(n=1, my.seed=NULL, key=NULL)
 	{
-	if(!is.null(key))
-		{
-		if(exists(key, .GlobalEnv$.humanVerse[["colors"]][["random"]]))
-			{
-			my.seeds = .GlobalEnv$.humanVerse[["colors"]][["random"]][[key]];
-			}
-		} else { key = "last"; }
+	my.hexs = color.randomHEX(n=n, my.seed=my.seed, key=key);	
+	rgb = hex2rgb( my.hexs );
+	rgb = cleanupRGB(rgb);
 	
-	my.names = c("r", "g", "b");
-	res = list();
-	if(!is.null(my.seeds)) 
-		{ 
-		if(length(my.seeds) != 3*n) 
-			{ 
-			stop("humanVerse::color.randomRGB ... if you set.seed, it has to be the same length as the number of random colors"); 
-			}
-		}
-	m = 0; # this is total counter ... of length 3*n ... use 16777215 ... (2^8)^3 - 1
-	new.seeds = c();
-	for(i in 1:n)
-		{	
-		res[[i]] = list("r" = NA, "g" = NA, "b" = NA);
-		for(j in 1:3)
-			{
-			m = 1 + m;
-			if(is.null(my.seeds)) 
-				{ 
-				setSeed(NULL,"color"); my.seed = getSeed("color"); 
-				} else { my.seed = my.seeds[m]; }
-			
-			new.seeds = c(new.seeds, my.seed);
-			
-			my.name = my.names[j];
-			res[[i]][[my.name]] = rand(0,255, seed=my.seed);
-			
-			}		
-		}
-	.GlobalEnv$.humanVerse[["colors"]][["random"]][[key]] = new.seeds;	
-	
-	if(n > 1) { res; } else { res[[1]]; }	
+	rgb;
 	}
 
 
