@@ -331,7 +331,7 @@ strlen = function(str)
 # .substr("abcdef", 4, -4);  // returns false ... returns EMPTY ""
 ## earlier called 'substr.neg'
 # PHP wrapper ... https://www.php.net/manual/en/function.substr.php
-.substr = function(str, n = -1, length=NULL, PHP.offset=TRUE)
+.substr = substr.neg = function(str, n = -1, length=NULL, PHP.offset=TRUE)
 	{
 	n = as.integer(n); 
 		if(!PHP.offset) { n = n - 1; } # PHP indexes at "0"
