@@ -171,9 +171,11 @@ trimMe = function(str, side="both", method="stringi")
 #' str = removeWhiteSpace("    four   scores    and  seven      years     ", "[s]");
 #' strvec = explodeMe("[s]", str);
 #' strvec[3];
-explodeMe = function(delimiter=" ",str="hello friend")
+explodeMe = function(delimiter=" ",str="hello friend",n=1)
   {
-  strsplit(str, delimiter, fixed=TRUE)[[1]];
+  res = strsplit(str, delimiter, fixed=TRUE);
+  if(is.null(n)) { return (res); } # ALL OF THEM
+  res[[n]]; # single element
   }
 
 
