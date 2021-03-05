@@ -9,7 +9,7 @@
 # Can I build a protocol that inserts these functions
 # here programmatically?  So when they update this updates?
 # Maybe a script called "update.include.me.R"?
- 
+
 github.monte = "https://raw.githubusercontent.com/MonteShaffer/";
 	include.me = paste0(github.monte, "humanVerse/main/humanVerse/R/functions-file.R");  
 source(include.me); # includeGithubFolder
