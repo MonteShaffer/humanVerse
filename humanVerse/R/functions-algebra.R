@@ -8,6 +8,16 @@
 	  # e = crossprod(a, b) / (sqrt(crossprod(a, a)) * sqrt(crossprod(b, b)))
 
 
+.angular.distance = function(cos.sim, v.neg = FALSE)
+  {
+  if(v.neg)
+    {
+    1 * acos(cos.sim) / pi;  
+    } else  {
+            2 * acos(cos.sim) / pi; 
+            }
+  }
+  
 .cosine.similarity = function(a, b, method="crossprod")
   {
   # cat("\n\n ==================== COSINE SIMILARITY (a,b) ========== \n\n");
@@ -26,7 +36,7 @@
   as.numeric(theta);
   }
 
-computeCosineSimilarityMatrix = function(A)
+computeCosineSimilarityMatrix = function(A, angle.distance=FALSE)
   {
   # compute a score similar to a "dist" matrix ... lower triangle?
   }

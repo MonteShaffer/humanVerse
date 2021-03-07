@@ -1,4 +1,15 @@
 
+
+catMe = function(lines, pre="\n", post="", file="", append=TRUE)
+	{
+	lines = getElementsInList(lines, 1);
+	n = length(lines);
+	for(line in lines)
+		{
+		cat(pre, line, post, file=file, append=append);		
+		}	
+	}
+
 # s = "Alexander"; svec = strsplit(s,"",fixed=TRUE)[[1]];
 charVector = function(strvec, sep="")
 	{
@@ -401,11 +412,27 @@ char.vec = function(str, sep="")
 	}
 
 
-is.substring = function(string, search)
+# e.g., strpos in PHP
+is.substring = function(haystack, needle, out="BOOLEAN")
   {
-  grepl(search, string, fixed = TRUE);
+  out = substr(trimMe(toupper(out)),1,1);
+  if(out == "B")
+	{
+	grepl(needle, haystack, fixed = TRUE);
+	} else 	{
+			# TODO, add strpos as list of places found ... multiple ?
+			}
   }
 
+
+
+# https://www.php.net/manual/en/function.str-repeat.php
+str_repeat = function(str, times=1)
+	{
+	paste( rep(str, times), collapse="");	
+	}
+	
+	
 # this is "fixed" find and replace # str = gsub(find[i], replace[i], str, fixed=TRUE);
 # method = base, method = stringi
 # stringi is not performing well on this:  "{wsu.crimson}" with fixed
@@ -448,55 +475,6 @@ str_replace = function(find, replace, str, method="base")
 
 
 
-castStringAsHTML = function(str)
-	{
-	str = setAttribute("html", TRUE, str);
-
-	class(str) = c("html", "character");
-	str;
-	}
-
-
-#' castStringAsFunction
-#'
-#' @param fstr The RHS (right hand side) of a function in string form.
-#' @param ... The elements in RHS that are parameters (e.g., x)
-#' @param envir The scope of the environment for the function
-#'
-#' @return A function
-#' @export
-#'
-#' @examples
-#' x = -3:3;
-#' FUN = "exp( 3 * x^2 + 2 * x + 1)";
-#' myFunction = castStringAsFunction (  FUN, x );
-#' myFunction;
-#' myFunction(x);
-#'
-castStringAsFunction = function(fstr, ..., envir = parent.frame() )
-  {
-  # https://stackoverflow.com/questions/66266860/
-  dots            = match.call(expand.dots = FALSE)$... ;
-  form_ls         = rep(list(bquote()), length(dots));
-  names(form_ls)  = as.character(dots);
-
-  f = function(){};
-    formals(f)      = form_ls;
-    body(f)         = str2lang(fstr);
-    environment(f)  = envir;
-
-  f;
-  }
 
 
 
-
-
-# R> library(fortunes)
-# R> fortune("parse")
-
-# If the answer is parse() you should usually rethink the question.
-   # -- Thomas Lumley
-      # R-help (February 2005)
-
-# R>

@@ -1,33 +1,5 @@
 
 
-# https://stackoverflow.com/questions/66329835/
-# nice work :: B. Christian Kamgang
-# .GlobalEnv$.function.args.memory ... key memory on last function call ... so I could reference outside the function
-
-grabFunctionParameters <- function()
-	{
-    pf			= parent.frame();
-    my.names	= ls(envir = pf, all.names = TRUE, sorted = FALSE);
-
-	dots		= if("..." %in% my.names) { eval(quote(list(...)), envir = pf); } else { list(); }
-	dots.idx	= ( names(dots) != "" );
-
-    remaining 	= sapply( setdiff(my.names, "..."), as.name);
-
-	not.dots	= if(length(remaining) > 0) { lapply( remaining, eval, envir = pf);  } else { list(); }
-
-
-	res = list();
-
-		res$.fn. 			= as.character( sys.call(1L)[[1L]] );
-		res$.scope. 		= pf;
-		res$.keys. 			= names( not.dots );
-		res$.vals. 			= not.dots; 							# unname(not_dots);  # I want keys on "vals"
-		res$.dots.keys. 	= names( dots[dots.idx] );
-		res$.dots.vals. 	= dots[dots.idx]; 						# unname(dots[dots.idx]);
-
-	res;
-	}
 
 
 
@@ -56,9 +28,9 @@ getParKey = function(myKey)
 	}
 
 
-getAttributes = function(myObj)  # maybe getAllAttributes
+getAttributes = function(myObj)
 	{
-	attributes(myObj);
+	attributes(myObj);  # maybe name 'getAllAttributes'
 	}
 
 getAttribute = function(myAttribute, myObj)
@@ -66,12 +38,23 @@ getAttribute = function(myAttribute, myObj)
 	attributes(myObj)[[myAttribute]];
 	}
 
+
 setAttribute = function(myAttribute, myValue, myObj)
 	{
 	attributes(myObj)[[myAttribute]] = myValue;
 	myObj;  # no object referencing, so I must return
 	}
 
+
+#  R::base has "getOption" but not "setOption"
+setOption = function(myKey, myValue)
+	{
+	onames = names( options() );
+	if(is.element(myKey, onames))
+		{
+		options(setNames(list(myValue), myKey));
+		}
+	}
 
 getElementsInList = function(myList, idx)
   {

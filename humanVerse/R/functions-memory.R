@@ -21,14 +21,160 @@ initMemory = function(purge.memory = FALSE, verbose = TRUE)
       {
       cat("humanVerse::initMemory ... initializing list '.humanVerse'", "\n");
       }
+	 
+	# assign(".humanVerse", list(), envir = .GlobalEnv);
+
     .GlobalEnv$.humanVerse = list();
-		initSeedMemory();
-		initColorMemory();
-		initInflationMemory();
 		initPathMemory();
+		initInflationMemory();
+		initColorMemory();
+		initSQLMemory();
+		initFunctionMemory();	
+		initSystemMemory();
+		initSeedMemory();		
+		
 	}	
   }
 
+
+initInflationMemory = function(purge.memory = FALSE, verbose = FALSE)
+	{
+	if(!exists(".humanVerse")) { initMemory(); }
 	
 	
+	if(!exists("inflation", .GlobalEnv$.humanVerse) || purge.memory)
+		{
+		if(verbose)
+		  {
+		  cat("humanVerse::initInflationMemory ... initializing list '.humanVerse[[\"inflation\"]]'", "\n");
+		  }
+		.GlobalEnv$.humanVerse[["inflation"]] = list();
+		}
+	}	
+
+
+initFunctionMemory = function(purge.memory = FALSE, verbose = FALSE)
+	{
+	if(!exists(".humanVerse")) { initMemory(); }
+	
+	if(!exists("functions", .GlobalEnv$.humanVerse) || purge.memory)
+		{
+		if(verbose)
+		  {
+		  cat("humanVerse::initFunctionMemory ... initializing list '.humanVerse[[\"functions\"]]'", "\n");
+		  }
+		# this is a list of "included" or "sourced" functions ... 
+		.GlobalEnv$.humanVerse[["functions"]] = list();
+			.GlobalEnv$.humanVerse[["functions"]][["local"]] = list();  
+			.GlobalEnv$.humanVerse[["functions"]][["local-search"]] = list(); 
+		# this is a list of functions referenced in stack using getFunctionParameters(TRUE)
+		.GlobalEnv$.humanVerse[["stack"]] = list();
+		.GlobalEnv$.humanVerse[["stack-order"]] = list();
+		}
+	}
+	
+initSQLMemory = function(purge.memory = FALSE, verbose = FALSE)
+	{
+	if(!exists(".humanVerse")) { initMemory(); }
+	
+	if(!exists("sql", .GlobalEnv$.humanVerse) || purge.memory)
+		{
+		if(verbose)
+		  {
+		  cat("humanVerse::initSQLMemory ... initializing list '.humanVerse[[\"sql\"]]'", "\n");
+		  }
+		.GlobalEnv$.humanVerse[["sql"]] = list();
+		}
+	}
+
+initSystemMemory = function(purge.memory = FALSE, verbose = FALSE)
+	{
+	if(!exists(".humanVerse")) { initMemory(); }
+	
+	if(!exists("system", .GlobalEnv$.humanVerse) || purge.memory)
+		{
+		if(verbose)
+		  {
+		  cat("humanVerse::initSystemMemory ... initializing list '.humanVerse[[\"system\"]]'", "\n");
+		  }
+		.GlobalEnv$.humanVerse[["system"]] = list(
+												"stack-length" = 10,
+												"max-print" = 20  # useful for reviewing global .humanVerse
+												);
+												
+		# setOption("max.print", .GlobalEnv$.humanVerse[["system"]][["max-print"]]);
+		options(max.print = .GlobalEnv$.humanVerse[["system"]][["max-print"]]);
+		}
+	}
+	
+initPathMemory = function(purge.memory = FALSE, verbose = FALSE)
+	{
+	if(!exists(".humanVerse")) { initMemory(); }
+	
+	if(!exists("path", .GlobalEnv$.humanVerse) || purge.memory)
+		{
+		if(verbose)
+		  {
+		  cat("humanVerse::initPathMemory ... initializing list '.humanVerse[[\"path\"]]'", "\n");
+		  }
+		.GlobalEnv$.humanVerse[["path"]] = list(
+												"TMP" = getSourceLocation(),
+												"TEMP" = getSourceLocation(),
+												"github" = list( "main" = "https://github.com/MonteShaffer/humanVerse/",
+																 "raw"  = "https://raw.githubusercontent.com/MonteShaffer/humanVerse/"
+																 )
+												);
+		}
+	}	
+	
+
+initColorMemory = function(purge.memory = FALSE, verbose = FALSE)
+  {
+  if(!exists(".humanVerse")) { initMemory(); }
+  
+
+
+  if(!exists("color", .GlobalEnv$.humanVerse) || purge.memory)
+    {
+    if(verbose)
+      {
+	    cat("humanVerse::initColorMemory ... initializing list '.humanVerse[[\"color\"]]'", "\n");
+      }
+    .GlobalEnv$.humanVerse[["colors"]] = list();
+		.GlobalEnv$.humanVerse[["colors"]][["random"]] = list();  			# captures get/set seed
+		.GlobalEnv$.humanVerse[["colors"]][["lists"]] = list();				# keyed lists of hex with "alpha" maybe
+		.GlobalEnv$.humanVerse[["colors"]][["dataframes"]] = list();		# cached tables
+		.GlobalEnv$.humanVerse[["colors"]][["nearest"]] = list();			# cached "nearest-color" index
+		.GlobalEnv$.humanVerse[["colors"]][["search"]] = list();			# cached "search" history
+    }
+  }
+  
+  
+#' initSeedMemory
+#'
+#' @param purge.memory If TRUE, this memory is erased and reset.
+#'
+#' @return NULL (nothing)
+#' @export
+#'
+#' @examples
+#' initSeedMemory();
+#' setSeed(); getSeed(); initSeedMemory(purge.memory = TRUE); getSeed();
+initSeedMemory = function(purge.memory = FALSE, verbose = FALSE)
+  {
+  if(!exists(".humanVerse")) { initMemory(); }
+
+  if(!exists("seed", .GlobalEnv$.humanVerse) || purge.memory)
+    {
+    if(verbose)
+      {
+	    cat("humanVerse::initSeedMemory ... initializing list '.humanVerse[[\"seed\"]]'", "\n");
+      }
+    .GlobalEnv$.humanVerse[["seed"]] = list();
+    }
+  }
+
+
+
+
 	

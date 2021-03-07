@@ -4,14 +4,29 @@
 # https://www.php.net/manual/en/function.empty.php
 is.empty = function(x)
   {
+  # x.str = deparse(substitute(x));
+  
+  # if(!exists(x.str)) { return (TRUE); }
+  
+  if(!obj.exists(x)) { return (TRUE); }
+  
   if(is.null(x)) { return (TRUE); }
   if(length(x) == 0 ) { return (TRUE); }
   if(is.na(x)) { return (TRUE); }
   if(trimMe(x) == "") { return (TRUE); } # nothing inside (except maybe white space)
 
-
+# can I be certain ???
   return (FALSE);
   }
+  
+# similar to `dir.exists` or `file.exists` 
+obj.exists = function(x)
+	{
+	x.str = deparse(substitute(x));
+	exists(x.str);
+	}
+
+# maybe use my `$$` accessor function for exists ...
 
 
 # https://www.php.net/manual/en/function.isset.php
@@ -119,3 +134,5 @@ extractList = function(myList, envir = .GlobalEnv)
         }
       }
     }
+
+

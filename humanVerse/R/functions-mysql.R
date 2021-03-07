@@ -1,4 +1,4 @@
-mysql.memory = list();  # global scope ... ## add to .humanVerse
+# mysql.memory = list();  # global scope ... ## add to .humanVerse
 
 
 #' mysql.secretConnectionSQL
@@ -14,7 +14,7 @@ mysql.memory = list();  # global scope ... ## add to .humanVerse
 #'
 #' @param str character string, default from above example would be ""WSU_SANDBOX_"
 #' @param timeout.secs integer, 60 is default
-#' @param save key to cache the db connection credential into mysql.memory
+#' @param save key to cache the db connection credential into .GlobalEnv$.humanVerse[["sql"]]
 
 #'
 #' @return mysql.connection `conn` if successful
@@ -41,7 +41,7 @@ mysql.secretConnectionSQL = function(str="WSU_SANDBOX_", timeout.secs = 60, save
               "dbname" = Sys.getenv( paste0(str,"DATABASE") ),
               "host" = Sys.getenv( paste0(str,"HOST") ) );
 
-    mysql.memory[[save]] = serialize(info, connection=NULL);
+    .GlobalEnv$.humanVerse[["sql"]][[save]] = serialize(info, connection=NULL);
     }
   conn;
   }
@@ -54,7 +54,7 @@ mysql.secretConnectionSQL = function(str="WSU_SANDBOX_", timeout.secs = 60, save
 #' @param dbname character string
 #' @param host character string
 #' @param timeout.secs integer, 60 is default
-#' @param save key to cache the db connection credential into mysql.memory
+#' @param save key to cache the db connection credential into .GlobalEnv$.humanVerse[["sql"]]
 #'
 #' @return
 #' @export
@@ -75,14 +75,14 @@ mysql.dbConnect = function(user=user,password=password,dbname=dbname,host=host,t
               "password" = password,
               "dbname" = dbname,
               "host" = host );
-    mysql.memory[[save]] = serialize(info, connection=NULL);
+    .GlobalEnv$.humanVerse[["sql"]][[save]] = serialize(info, connection=NULL);
     }
   conn;
   }
 
 #' mysql.dbConnectFromMemory
 #'
-#' @param save single character string, key to save the db info into mysql.memory
+#' @param save single character string, key to save the db info into .GlobalEnv$.humanVerse[["sql"]]
 #'
 #' @return FALSE if fails, a `conn` if succeeds
 #' @export
@@ -92,7 +92,7 @@ mysql.dbConnectFromMemory = function(save="")
   if(save == "") { save = 1; }
   db = tryCatch(
         {
-        info = unserialize(mysql.memory[[save]]);
+        info = unserialize(.GlobalEnv$.humanVerse[["sql"]][[save]]);
         },
         warning = function(w)
             {
@@ -200,8 +200,21 @@ mysql.fetchAllSQL = function(conn, sql, save="")
   result;
   }
 
-
-#' parseTemplateSQL
+mysql.parseTemplateFromList = function(sql, obj)
+  {
+  keys = names(obj);
+  nsql = sql;
+  n.keys = length(keys);
+  for(i in 1:n.keys)
+    {
+    mykey = paste0("{", keys[i], "}");
+    nsql = gsub(mykey, obj[[mykey]], nsql, fixed=TRUE);
+    }
+  nsql;
+  }
+  
+  
+#' mysql.parseTemplateKeysVals
 #'
 #' @param sql character string as sql.template
 #' @param keys keys to replace in the sql.template
@@ -216,7 +229,7 @@ mysql.fetchAllSQL = function(conn, sql, save="")
 #'         vals = c("zipcodes", 99163);
 #' parseTemplateSQL(sql.template, keys, vals);
 #'
-parseTemplateSQL = function(sql, keys, vals)
+mysql.parseTemplateKeysVals = function(sql, keys, vals)
   {
   # similiar to pdo but for readablity and parsing (variadic)
   nsql = sql;

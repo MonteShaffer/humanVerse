@@ -1,31 +1,31 @@
 
 
+## moved to functions-memory.R
+# initColorMemory = function(purge.memory = FALSE, verbose = FALSE)
+  # {
+  # initMemory();
 
-initColorMemory = function(purge.memory = FALSE, verbose = FALSE)
-  {
-  initMemory();
 
-
-  if(!exists("color", .GlobalEnv$.humanVerse) || purge.memory)
-    {
-    if(verbose)
-      {
-	    cat("humanVerse::initColorMemory ... initializing list '.humanVerse[[\"color\"]]'", "\n");
-      }
-    .GlobalEnv$.humanVerse[["colors"]] = list();
-		.GlobalEnv$.humanVerse[["colors"]][["random"]] = list();  			# captures get/set seed
-		.GlobalEnv$.humanVerse[["colors"]][["lists"]] = list();				# keyed lists of hex with "alpha" maybe
-		.GlobalEnv$.humanVerse[["colors"]][["dataframes"]] = list();		# cached tables
-		.GlobalEnv$.humanVerse[["colors"]][["nearest"]] = list();			# cached "nearest-color" index
-		.GlobalEnv$.humanVerse[["colors"]][["search"]] = list();			# cached "search" history
-    }
-  }
+  # if(!exists("color", .GlobalEnv$.humanVerse) || purge.memory)
+    # {
+    # if(verbose)
+      # {
+	    # cat("humanVerse::initColorMemory ... initializing list '.humanVerse[[\"color\"]]'", "\n");
+      # }
+    # .GlobalEnv$.humanVerse[["colors"]] = list();
+		# .GlobalEnv$.humanVerse[["colors"]][["random"]] = list();  			# captures get/set seed
+		# .GlobalEnv$.humanVerse[["colors"]][["lists"]] = list();				# keyed lists of hex with "alpha" maybe
+		# .GlobalEnv$.humanVerse[["colors"]][["dataframes"]] = list();		# cached tables
+		# .GlobalEnv$.humanVerse[["colors"]][["nearest"]] = list();			# cached "nearest-color" index
+		# .GlobalEnv$.humanVerse[["colors"]][["search"]] = list();			# cached "search" history
+    # }
+  # }
 
 
 
 # color "search" by wildcard
 # cache color tables (such as wheels)
-
+# this caching is WEIRD
 color.nameSearch = function(skey, colors.df = NULL, col.name="color", ...)
 	{
 	if(is.null(colors.df))
@@ -766,8 +766,10 @@ color.findNearestName = function(hex, how.many = 1, scale.me = TRUE, how="distan
 
 
 # we need to cache this in "last" memory
-color.buildTable = function(colvec=NULL, key=NULL)
+color.buildTable = function(colvec=NULL, key=NULL, save.key=NULL)
 	{
+	# colvec is cached as "key"  ... auto-caching
+	# the output of this function is cached as "save.key" ... must be specified to cache
 	if(is.null(colvec))
 		{
 		if(!is.null(key))
@@ -779,12 +781,24 @@ color.buildTable = function(colvec=NULL, key=NULL)
 			}
 		if(is.null(colvec)) { key = "ALL"; colvec = colors(TRUE); }  # not found, so let's set to default 'ALL'
 		}
-	if(is.null(key)) { key = md5( paste(colvec, collapse="-") ); } # make a "hash-table" of an un-named list
-
-	if(exists(key, .GlobalEnv$.humanVerse[["colors"]][["dataframes"]]))
+	
+	if(is.null(key)) { key = md5.object( colvec ); } # make a "hash-table" of an un-named list
+	
+	if(!is.null(save.key))
 		{
-		return( .GlobalEnv$.humanVerse[["colors"]][["dataframes"]][[key]] );
+		if(!is.character(save.key)) { save.key = md5.object(getFunctionParameters(TRUE)); }
+		cat("\n", "save.key:", save.key, "\n\n");
+		if(exists(save.key, .GlobalEnv$.humanVerse[["colors"]][["dataframes"]]))
+			{
+			return( .GlobalEnv$.humanVerse[["colors"]][["dataframes"]][[save.key]] );
+			}		
 		}
+	
+	# key is for the list, save.key is for the dataframe ...
+	# if(exists(key, .GlobalEnv$.humanVerse[["colors"]][["dataframes"]]))
+		# {
+		# return( .GlobalEnv$.humanVerse[["colors"]][["dataframes"]][[key]] );
+		# }
 
 	n = length(colvec);
 	hvec = character(n);
@@ -802,7 +816,20 @@ color.buildTable = function(colvec=NULL, key=NULL)
 		colnames(df) = c("color", "hex.color", "r", "g", "b");
 
 	df = assignColumnsTypeInDataFrame(c("r","g","b"), "numeric", df);
+	
+	
+	
+	df = setAttribute("key", key, df);
+	df = setAttribute("save.key", save.key, df);		
+	
 	.GlobalEnv$.humanVerse[["colors"]][["dataframes"]][[key]] = df; # stored in memory
+	
+	
+	# cache it ... 
+	if(!is.null(save.key))
+		{
+		.GlobalEnv$.humanVerse[["colors"]][["dataframes"]][[save.key]] = df;
+		}
 
 	df;
 	}
@@ -811,8 +838,7 @@ color.buildTable = function(colvec=NULL, key=NULL)
 
 color.setOpacity = function(hexvec, opacity=100)
 	{
-	# hexvec must be #123456 form already ...
-	hex = checkHEX(hex);
+	hexvec = checkHEX(hexvec);  # this allows "color.names"
 	alpha = dechex(255 * opacity/100, n=2);
 	paste0(hexvec,alpha);
 	}
@@ -822,8 +848,19 @@ color.setOpacity = function(hexvec, opacity=100)
 
 # we need to cache this in "last" memory
 # accessor can get elements without having to rebuild
-color.chromatics = function(rgb, n = 12) # mono steps of monochronic ... half on "white" / half on "black"
+color.chromatics = function(rgb, n = 12, save.key = NULL) # mono steps of monochronic ... half on "white" / half on "black"
 	{
+	
+	if(!is.null(save.key))
+		{
+		if(!is.character(save.key)) { save.key = md5.object(getFunctionParameters(TRUE)); }
+		cat("\n", "save.key:", save.key, "\n\n");
+		if(exists(save.key, .GlobalEnv$.humanVerse[["colors"]][["dataframes"]]))
+			{
+			return( .GlobalEnv$.humanVerse[["colors"]][["dataframes"]][[save.key]] );
+			}		
+		}
+
 	if(length(rgb) == 1) { rgb = hex2rgb(rgb); } # they can pass in "hex"
 	hex = rgb2hex(rgb);
 
@@ -841,6 +878,13 @@ color.chromatics = function(rgb, n = 12) # mono steps of monochronic ... half on
 		colnames(df) = c("index", "hex.color");
 		df = setAttribute("hex", hex, df);
 		df = setAttribute("rgb", unlist(rgb), df);
+		
+		df = setAttribute("save.key", save.key, df);	
+	# cache it ... 
+	if(!is.null(save.key))
+		{
+		.GlobalEnv$.humanVerse[["colors"]][["dataframes"]][[save.key]] = df;
+		}
 
 
 	df;

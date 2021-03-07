@@ -32,6 +32,20 @@ assignColumnsTypeInDataFrame = function(cols, type, df)
 			df[[col]] = as.numeric( df[[col]] );
 			}
 		}
+	if(type == "integer")
+		{
+		for(col in cols)
+			{
+			df[[col]] = as.integer( df[[col]] );
+			}
+		}	
+	if(type == "character")
+		{
+		for(col in cols)
+			{
+			df[[col]] = as.character( df[[col]] );
+			}
+		}	
 	df;
 	}
 

@@ -77,31 +77,7 @@ initSeed = function(...)
   }
 
 
-#' initSeedMemory
-#'
-#' @param purge.memory If TRUE, this memory is erased and reset.
-#'
-#' @return NULL (nothing)
-#' @export
-#'
-#' @examples
-#' initSeedMemory();
-#' setSeed(); getSeed(); initSeedMemory(purge.memory = TRUE); getSeed();
-initSeedMemory = function(purge.memory = FALSE, verbose = FALSE)
-  {
-  initMemory();
-
-  if(!exists("seed", .GlobalEnv$.humanVerse) || purge.memory)
-    {
-    if(verbose)
-      {
-	    cat("humanVerse::initSeedMemory ... initializing list '.humanVerse[[\"seed\"]]'", "\n");
-      }
-    .GlobalEnv$.humanVerse[["seed"]] = list();
-    }
-  }
-
-setSeed = function(seed, key, ..., args.set = list(), verbose = FALSE )
+setSeed = function(seed, key, ..., args.set = list(), print.seed = TRUE, verbose = FALSE )
   {
   # can I have two ellipses in a single function?
     # one for initSeed
@@ -129,6 +105,13 @@ setSeed = function(seed, key, ..., args.set = list(), verbose = FALSE )
       {
       cat("setSeed :: calling base::set.seed with seed ... ", seed, "\n");
       }
+  
+  if(print.seed)
+	{
+	cat("\n setSeed: ", seed, "\n");
+	}
+  # invisible(seed);
+  
   set.seed(seed, kind=kind, normal.kind=normal.kind, sample.kind=sample.kind);
   }
 

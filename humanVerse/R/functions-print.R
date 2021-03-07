@@ -125,7 +125,18 @@ roundMeToString = function(val, digits=3, leadingZero=TRUE, decimal.sep=".")
   }
 
 
-
+truncateNumeric = function(val, digits=3, append="...")
+	{
+	strvec = as.character(val);
+		tmp = explodeMe(".", strvec, NULL);
+	whole 	= getElementsInList(tmp,1);
+	decimal = getElementsInList(tmp,2);
+		decimal = strPadRight(decimal, digits, "0");
+	
+	res = paste0(whole, ".", substr(decimal, 1, digits), append );
+	
+	res;
+	}
 
 
 

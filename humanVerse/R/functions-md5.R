@@ -1,6 +1,11 @@
 
 
-
+md5.object = function(obj, sep="-")
+	{
+	obj = as.character(unlist(obj));
+	obj = paste(obj, collapse=sep);
+	md5(obj);	
+	}
 
 #' md5.digest
 #'
@@ -85,7 +90,7 @@ md5 = function(strvec, times=1)
     } else {
             if (requireNamespace("digest", quietly = TRUE)) 
               {
-              return( md5.digest(strvec,times) );
+              return( md5.digest(strvec, times) );
               } else {
                       # do INTERNAL .md5 very slow 
 					  n = length(strvec);
@@ -126,6 +131,7 @@ md5 = function(strvec, times=1)
 # s = "The quick brown fox jumps over the lazy dog";
 # "9e107d9d372bb6826bd81d3542a419d6"
 # http://md5.mshaffer.com/
+# RFC 1321
 .md5 = function(s)
   {
   s = s[1]; # this is not vectorized ... very slow 
@@ -157,7 +163,7 @@ md5 = function(strvec, times=1)
   x[idx] = nx;
   x[L] = w;
 
-############### INTERNAL FUNCTIONS ###############
+########## INTERNAL FUNCTIONS [START] ##########
 # Shifting is done assuming the values represent unsigned integers.
   X = function (xx,yy)
     {
@@ -197,6 +203,8 @@ md5 = function(strvec, times=1)
 	  Y( (bitwXor(cc, (bitwOr(bb,bitwNot(dd))))),
 	      aa,bb,xi,si,ti);
 	  }
+########## INTERNAL FUNCTIONS [END] ##########
+
 
 ############### DIGEST ###############
   a=1732584193; b=-271733879; c=-1732584194; d=271733878;
@@ -308,8 +316,10 @@ md5 = function(strvec, times=1)
   }
 
 
-.md5_out = function(xb = c(-1652748130, -2101990601, 891148395, -702962622))
+.md5_out = function(xb)
   {
+  # for testing puruposes? UNUSED?
+  if(missing(xb)) { xb = c(-1652748130, -2101990601, 891148395, -702962622); }
   hex = "0123456789abcdef";
   o = "";
   for(i in 0:15)

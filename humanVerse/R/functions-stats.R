@@ -1,4 +1,11 @@
 
+
+doStatsSummaryDataFrame = function(df)
+	{
+	# pastec?
+	
+	}
+
 #' doStatsSummary
 #'
 #' @family Stats
@@ -24,6 +31,8 @@ doStatsSummary = function(x)
 	result$mean = mean(xx);
 	result$mean.trim.05 = mean(xx, trim=0.05);
 	result$mean.trim.20 = mean(xx, trim=0.20);
+	
+	result$sorted = sort(xx);
 
 	result$median = stats::median(xx);
 	result$MAD = stats::mad(xx);
@@ -39,8 +48,10 @@ doStatsSummary = function(x)
 	result$centiles = stats::quantile(xx, prob=probs.centiles, type=1 );
 	# ?cut   cut(xx, 10) ... will be usefull for a histogram-ish device ...
 	# https://stackoverflow.com/questions/11728419/using-cut-and-quartile-to-generate-breaks-in-r-function
-
-
+		probs.niniles = (1:8)/9;
+	result$niniles = stats::quantile(xx, prob=probs.niniles, type=1 );
+	
+	
 	result$median.weighted = matrixStats::weightedMad(xx);
 	result$MAD.weighted = matrixStats::weightedMedian(xx);
 
@@ -71,12 +82,7 @@ doStatsSummary = function(x)
 
 	result$var.naive = doSampleVariance(x,"naive");
 	result$var.2step = doSampleVariance(x,"2step");
-
-
-	## normality
-	result$shapiro = stats::shapiro.test(xx);
-	result$shapiro.is.normal = list("0.10" = isTRUE(result$shapiro$p.value > 0.10), "0.05" = isTRUE(result$shapiro$p.value > 0.05), "0.01" = isTRUE(result$shapiro$p.value > 0.01) );
-
+	
 	result$outliers.z = findOutliersUsingZscores(x);
 	result$outliers.IQR = findOutliersUsingIQR(x);
 
@@ -226,6 +232,23 @@ cutMe = function(x, qs, type=1, lower.equal=TRUE)
 	}
 
 
+cutN = function(x, ..., n=2)
+	{
+	more = unlist(list(...));
+	x = c(x, more);
+	
+	# create a list of elements with "n"
+	out = list();
+	i = 0;
+	while(length(x) > 0)
+		{
+		i = 1 + i;
+		sub = x[1:n];
+			out[[i]] = sub;
+		x = x[-c(1:n)];
+		}
+	out;
+	}
 
 # quantile(data, probs = c(.37, .53, .87))
 getQuantiles = function(x, qs, type=1)

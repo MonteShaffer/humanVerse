@@ -55,7 +55,14 @@ storeToFile = function (str, file)
 	}
 
 
-#' storeToPipe
+
+readRDS.url = function(file)
+	{
+	readRDS(url(file));
+	}
+
+
+#' writeToPipe
 #'
 #' @param df dataframe to be stored
 #' @param file filename and path
@@ -69,7 +76,8 @@ storeToFile = function (str, file)
 #'
 #' @examples
 #'
-storeToPipe = function(df, file, header=TRUE, quote="", sep="|", row.names=FALSE)
+#' # alias storeToPipe
+writeToPipe = function(df, file, header=TRUE, quote="", sep="|", row.names=FALSE)
   {
   if(quote == "") { quote = FALSE; }
   utils::write.table(df, file=file, quote=quote, col.names=header, row.names=row.names, sep=sep);
@@ -141,6 +149,35 @@ includeRemoteFiles = function(urls, verbose=FALSE, ...)
     if(verbose) { cat("\t ... ",myfile); } else { cat("\t ... ",basename(myfile),"\n"); }
     }
   }
+
+# source('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-get-set.R')
+# mySource('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-get-set.R')
+mySource = function(myfile, key = "local", indexFunctions = TRUE)
+	{
+	if(!indexFunctions)
+		{
+		source(myfile);
+		} else  {
+				indexFunctionsInFile(file, key=key); # this will store to cache		
+				}	
+	}
+
+
+file.readLines = function(file, n=-1, skip=NULL)
+	{
+	# why base::readLines doesn't have skip ?!?
+	# where did the fopen/fread stuff go ... that would enable skip
+	content = readLines(file, n=n);
+	nlen = length(content); # how many lines ?
+	if(!is.null(skip))
+		{
+		if(skip < nlen)
+			{
+			content = content[skip:nlen];
+			}
+		}	
+	paste(content, collapse="\n");	
+	}
 
 
 installGithubLibrary = function()
@@ -291,23 +328,7 @@ deleteLocalCacheFolder = function(folder)
   }
 
 
-initPathMemory = function(purge.memory = FALSE, verbose = FALSE)
-	{
-	if(!exists("path", .GlobalEnv$.humanVerse) || purge.memory)
-		{
-		if(verbose)
-		  {
-		  cat("humanVerse::initSeedMemory ... initializing list '.humanVerse[[\"path\"]]'", "\n");
-		  }
-		.GlobalEnv$.humanVerse[["path"]] = list(
-												"TMP" = getSourceLocation(),
-												"TEMP" = getSourceLocation(),
-												"github" = list( "main" = "https://github.com/MonteShaffer/humanVerse/",
-																 "raw"  = "https://raw.githubusercontent.com/MonteShaffer/humanVerse/"
-																 )
-												);
-		}
-	}
+
 
 # https://github.com/MonteShaffer/humanVerse
 # https://github.com/MonteShaffer/humanVerse/blob/main/humanVerse/R/functions-algebra.R
@@ -320,12 +341,25 @@ getSourceLocation = function(tmp.folder = "/humanVerse/cache/")
   mypath;
   }
 
+
+getDirectoryPath = function(file, trailing=TRUE)
+	{
+	dn = dirname(file);
+	dn = str_replace("\\", "/", dn); # windoze issues
+	if(trailing)
+		{
+		paste0(dirname(file), "/");
+		} else 	{
+				dirname(file);
+				}	
+	}
+
 getRemoteAndCache = function(remote, local.file = NULL,
     tmp.folder = "/humanVerse/cache/", force.download = FALSE,
     verbose = FALSE, md5.hash = FALSE)
   {
   useTEMP = FALSE;
-  trailingSlash = (substr.neg(remote) == "/");
+  trailingSlash = (.substr(remote, -1) == "/");
   if(verbose)
     {
     cat("\n", "remote ... ", remote, "\n\n");
@@ -416,44 +450,6 @@ downloadFile = function(remote, myfile, n=(2^31 - 1), quiet = TRUE, ...)  # n co
 
 
 
-
-
-
-http.headers = function(remote)
-  {
-  # requires libcurl
-  curlGetHeaders(remote);
-  }
-
-
-http.status = function(headers)
-  {
-  # requires libcurl
-  attributes(headers)$status;  # getAttribute
-  }
-
-
-http.headerValue = function(headers, which="Content-Length:")
-  {
-  # requires libcurl
-  # "Content-Length: 30528\r\n"
-  for(header in rev(headers)) # reverse so we get past redirects
-    {
-    if(is.substring(header, which))
-      {
-      size = trimMe( gsub(which, "", header, fixed=TRUE) );
-      return( as.integer( size ) );
-      }
-    }
-  FALSE;
-  }
-
-http.size = function(headers)
-  {
-  # requires libcurl
-  # "Content-Length: 30528\r\n"
-  http.headerValue(headers, "Content-Length:");
-  }
 
 
 
