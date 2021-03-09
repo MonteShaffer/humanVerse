@@ -417,7 +417,8 @@ plot.myHistogram = function(x,
 	if(do.density)
 		{
 		par(new=TRUE);
-		plot(	density(z), axes=F, ylim=ylim, xlim=c(-4,4), main="", xlab="", ylab="",
+		z.d = density(z);  # maybe scale so it stays in the 0.4 viewing window?
+		plot( z.d	, axes=F, ylim=ylim, xlim=c(-4,4), main="", xlab="", ylab="",
 					lwd = 4, col=color.setOpacity(density.color, density.opacity)
 					);
 		}	
