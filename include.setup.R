@@ -11,6 +11,8 @@
 # Maybe a script called "update.include.me.R"?
 
 github.monte = "https://raw.githubusercontent.com/MonteShaffer/";
+	include.me = paste0(github.monte, "humanVerse/main/humanVerse/R/functions-functions.R");  
+source(include.me); # grabFunctionParameters => getFunctionParameters
 	include.me = paste0(github.monte, "humanVerse/main/humanVerse/R/functions-file.R");  
 source(include.me); # includeGithubFolder
 	include.me = paste0(github.monte, "humanVerse/main/humanVerse/R/functions-str.R");  
