@@ -509,6 +509,81 @@ stepIntoFunction = function(obj)
 # nice work :: B. Christian Kamgang
 # .GlobalEnv$.function.args.memory ... key memory on last function call ... so I could reference outside the function
 # grabFunctionParameters # 
+grabFunctionParameters = function(global.memory = FALSE, n=1, out.dput = FALSE)
+	{
+	pf			= parent.frame(n=n);
+	
+# arguments <- unlist( as.character( as.list( match.call( call=sys.call(1L)[[1L]]) ) ) );
+	# arguments <- unlist(as.character(as.list(match.call()[-1])));
+# print(arguments);	
+
+	more = eval(quote(unlist(as.character(as.list(match.call()[-1])))), envir = pf);
+# print(more);	
+	
+# print(pf);
+    my.names	= ls(envir = pf, all.names = TRUE, sorted = FALSE);
+	
+# print(my.names);
+	
+	my.names	= ls(pos = pf, all.names = TRUE, sorted = FALSE);
+	
+# print(my.names);
+
+	my.names	= ls(pos = pf, envir = pf, all.names = TRUE, sorted = FALSE);
+	
+# print(my.names);
+
+# print(quote(list(...)));
+
+	dots		= if("..." %in% my.names) { eval(quote(list(...)), envir = pf); } else { list(); }
+	# dots.idx	= ( names(dots) != "" );
+	
+	names(dots) = more;
+cat("\n\n === DOTS === \n\n");
+print(dots);
+cat("\n\n === NAMES DOTS === \n\n");
+print( names(dots) );
+# cat("\n\n === DOTS.IDX === \n\n");
+# print(dots.idx);
+    remaining 	= sapply( setdiff(my.names, "..."), as.name);
+# cat("\n\n === remaining === \n\n");
+# print(remaining);
+	not.dots	= if(length(remaining) > 0) { lapply( remaining, eval, envir = pf);  } else { list(); }
+# cat("\n\n === not.dots === \n\n");
+# print(not.dots);
+
+	res = list();
+
+		res$.fn. 			= as.character( sys.call(1L)[[1L]] );
+		# res$.scope. 		= pf;
+		# dput doesn't like scope 
+		res$.keys. 			= names( not.dots );
+		res$.vals. 			= not.dots; 							# unname(not_dots);  # I want keys on "vals"
+		res$.dots.keys. 	= names(dots); 							# names( dots[dots.idx] );
+		res$.dots.vals. 	= dots;									# dots[dots.idx]; 						# unname(dots[dots.idx]);
+
+if(out.dput)
+	{
+	dput(res);
+	}
+	
+	# we will store in stack ... just last call to this function
+	if(global.memory)
+		{
+		fn = res$.fn.;
+		.GlobalEnv$.humanVerse[["stack"]][[ fn ]] = res;
+		
+		n = length(.GlobalEnv$.humanVerse[["stack-order"]]) + 1;
+		.GlobalEnv$.humanVerse[["stack-order"]][[n]] = fn;
+		
+		# if(n > .GlobalEnv$.humanVerse[["system"]][["stack-length"]])
+			{
+			# cat("\n", "NEED TO POP STACK", "\n");
+			}
+		}
+
+	res;
+	}
 getFunctionParameters = function(global.memory = FALSE, n=1, out.dput = FALSE)
 	{
     pf			= parent.frame(n=n);
