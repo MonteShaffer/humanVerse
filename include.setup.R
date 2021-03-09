@@ -10,6 +10,9 @@
 # here programmatically?  So when they update this updates?
 # Maybe a script called "update.include.me.R"?
 
+# http://github.com/<username>/<project>/commits/<branch>/<path/to/file>
+# https://github.com/MonteShaffer/humanVerse/commit/main/humanVerse/R/functions-file.R
+
 github.monte = "https://raw.githubusercontent.com/MonteShaffer/";
 	include.me = paste0(github.monte, "humanVerse/main/humanVerse/R/functions-functions.R");  
 source(include.me); # grabFunctionParameters => getFunctionParameters

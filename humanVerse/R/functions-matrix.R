@@ -22,7 +22,7 @@ matrixRank = function(A, ...)
 
 is.square.matrix = function(A)
 	{
-	if(!is.matrix(A)) { warning("Not a matrix"); return NA; } # FALSE ?
+	if(!is.matrix(A)) { warning("Not a matrix"); return (NA); } # FALSE ?
 	nr = nrow(A);
 	nc = ncol(A);
 	return (nr == nc);
