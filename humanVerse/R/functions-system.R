@@ -4,11 +4,12 @@
 # https://www.php.net/manual/en/function.empty.php
 is.empty = function(x)
   {
-  # x.str = deparse(substitute(x));
+  # if(!obj.exists(x)) { return (TRUE); }
+  # below is the function obj.exists, but it has to run at this level, not a passthru
+  x.str = deparse(substitute(x));  
+  if(!exists(x.str)) { return (TRUE); }
   
-  # if(!exists(x.str)) { return (TRUE); }
   
-  if(!obj.exists(x)) { return (TRUE); }
   
   if(is.null(x)) { return (TRUE); }
   if(length(x) == 0 ) { return (TRUE); }
