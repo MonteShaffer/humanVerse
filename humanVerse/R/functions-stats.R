@@ -50,6 +50,7 @@ doStatsSummary = function(x)
 	# https://stackoverflow.com/questions/11728419/using-cut-and-quartile-to-generate-breaks-in-r-function
 		probs.niniles = (1:8)/9;
 	result$niniles = stats::quantile(xx, prob=probs.niniles, type=1 );
+	result$niniles.members = cutMe(xx, probs.niniles, lower.equal = TRUE);
 	
 	
 	result$median.weighted = matrixStats::weightedMad(xx);

@@ -22,28 +22,47 @@ parseFunctionFile = function(file)
 	
 	lines = readLines(file);
 	# we are assuming "WhiteSmith" indentation and '= function'
-	braces = c();
-	internals = c();
+	left.braces = right.braces = c();
+	internals = comments = c();
+	fnames = c();
 	functions = NULL;
 	lineno = 0;
 	for(line in lines)
 		{
 		lineno = 1 + lineno;
 		line = removeWhiteSpace(line);  # this will also TRIM ...  
-		
-		if(line == "}")
-			{
-			braces = c(braces, lineno);
-			next;
-			}
-		
-
+		first = substr(line,1,1);
 		
 		if(is.substring(line, "########## INTERNAL FUNCTIONS"))
 			{
 			internals = c(internals, lineno);
 			next;
 			}
+			
+		if(first == "#")
+			{
+			# comment 
+			comments = c(comments, lineno);
+			next;
+			}
+			
+			
+			
+		if(first == "{")
+			{
+			left.braces = c(left.braces, lineno);
+			next;
+			}	
+			
+		if(first == "}")
+			{
+			right.braces = c(right.braces, lineno);
+			next;
+			}
+		
+
+		
+		
 		
 		### whitesmith form
 		grx = utils::glob2rx("*= function*");  # could add same syntax for "<- function"
@@ -55,8 +74,11 @@ parseFunctionFile = function(file)
 				n.tmp = length(tmp);
 				fn = trimMe(tmp[1]);
 				fp = trimMe( str_replace("function", "", paste(tmp[2:n.tmp], collapse="=") ) );
-			row = c(NA, lineno, NA, fn,  fp);
+			row = c(NA, lineno, NA, NA, fn,  fp);
 			functions = rbind(functions, row);
+			
+			fnames = c(fnames, lineno);
+			next;
 			}
 		
 		### "other" non-C based "assignment" form 
@@ -69,68 +91,99 @@ parseFunctionFile = function(file)
 				n.tmp = length(tmp);
 				fn = trimMe(tmp[1]);
 				fp = trimMe( str_replace("function", "", paste(tmp[2:n.tmp], collapse="=") ) );
-			row = c(NA, lineno, NA, fn,  fp);
+			row = c(NA, lineno, NA, NA, fn,  fp);
 			functions = rbind(functions, row);
+			
+			fnames = c(fnames, lineno);
+			next;
 			}
 		
 		}
 	# we have to line up "end of function" as well ... 
 	
 	functions = as.data.frame(functions);
-		colnames(functions) = c("lineno.pre", "lineno.start", "lineno.end", "fn", "parameters");
-	functions = assignColumnsTypeInDataFrame(c("lineno.pre", "lineno.start", "lineno.end"), "numeric", functions);
+			# lineno.name is where the function name appears ... start is the first brace ...
+		colnames(functions) = c("lineno.pre", "lineno.name", "lineno.start", "lineno.end", "fn", "parameters");
+	functions = assignColumnsTypeInDataFrame(c("lineno.pre", "lineno.name", "lineno.start", "lineno.end"), "numeric", functions);
 
 	
-		rownames(functions) = functions$lineno.start;
-		
-		
-	# cbraces = braces; # for debugging
+		rownames(functions) = functions$lineno.name;
+	
+	
+	
+	
+	## copy ## 
+	lbraces = left.braces;
+	rbraces = right.braces; # for debugging
+	# fnames;
 	
 	# internals ... 160 200
 
 	### braces may not be ideal if people CRAM their code together ...
 	### I believe I could find a REGEX to find the matching brace immediately after function ...
 	### WHAT ABOUT if PARAMETERS FLOW ACROSS MULTIPLE LINES ...
-
-	# braces = cbraces;
 	
 	n = nrow(functions);
-	my.starts = functions$lineno.start;
+	my.starts = functions$lineno.name;
 	current.line = 1;
+	
+	
 	
 	
 	for(i in 1:n)
 		{
 		# i = 1;
-		my.start = my.starts[i];
-		idx = which(braces < my.start);
+		my.start = my.starts[i];		
+		idx = which(right.braces < my.start);
 		n.idx = length(idx);
+		########### GET PREAMBLE #############
 		if(n.idx < 1) 
 			{ 
 			functions$lineno.pre[i] = current.line;
 			} else 	{
-					braces = braces[-c(1:n.idx)]; # empty braces list 
+					# stop("monte");
+					right.braces = right.braces[-c(1:n.idx)]; # empty right.braces list 
 					}
 		
+		########### UPDATE PARAMETERS #############
+				
+		idx = which(left.braces > functions$lineno.name[i])[1];
+		next.brace = left.braces[idx];
+		
+		functions$lineno.start[i] = next.brace;
+			if( (next.brace - my.start) > 1)
+				{
+				idx = (my.start + 1) : (next.brace - 1);
+				
+				functions$parameters[i] = paste0(functions$parameters[i], " \n ", paste( trimMe(lines[idx]), collapse=" \n ") );
+				
+				# stop("monte"); 
+				}
+		# empty left.braces 	
+			idx = which(left.braces <= next.brace);  # should exist
+			n.idx = length(idx);
+				left.braces = left.braces[-c(1:n.idx)]; # empty right.braces list 
+		
+		########### GET BODY #############
 		if(i < n)
 			{
 			next.start = my.starts[i+1];	
-			idx = which(braces < next.start);  # should exist
+			idx = which(right.braces < next.start);  # should exist
 			n.idx = length(idx);
 			my.idx = idx[n.idx]; # last one 
-			my.lineno = braces[my.idx];
+			my.lineno = right.braces[my.idx];
 			functions$lineno.end[i] = my.lineno;
 			
 			current.line = 1 + my.lineno;
-			braces = braces[-c(1:n.idx)]; # empty braces list 
+			right.braces = right.braces[-c(1:n.idx)]; # empty right.braces list 
 				
 			} else 	{
 					# last one ...
 					
-					n.b = length(braces);
+					n.b = length(right.braces);
 					
 					
-					functions$lineno.end[i] = braces[n.b]; # last.brace 
+					functions$lineno.end[i] = right.braces[n.b]; # last.brace 
 					# there may be extra "post" material which we ignore ... lineno from first loop ...
 					
 					}
@@ -140,36 +193,53 @@ parseFunctionFile = function(file)
 		}
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	## let's update dataframe and skip internals ... 
 		## remove rows, and append "end of line" to parent ...
 		
 	## internals should be in pairs ... start/stop ...
-	works = cutN(internals, n=2);
-	n = length(works);
-	for(i in 1:n)
+	if(!is.null(internals))
 		{
-		work = works[[i]];
-		# first is which function it belongs to ...
-		first = work[1];
-			idx.first = which(functions$lineno.end < first);
-			n.first = length(idx.first);
-			# last one is correct ...
-			my.fn = functions$fn[n.first];
+		works = cutN(internals, n=2);
+		n = length(works);
+		for(i in 1:n)
+			{
+			work = works[[i]];
+			# first is which function it belongs to ...
+			first = work[1];
+				idx.first = which(functions$lineno.end < first);
+				n.first = length(idx.first);
+				# last one is correct ...
+				my.fn = functions$fn[n.first];
+				
+			# last is key to getting element of last vector 
+			last = work[2];
+				idx.last = which(functions$lineno.start < last);
+				n.last = length(idx.last);
+				# last one is correct ...
+				my.end = functions$lineno.end[n.last];
+				
+			# update
+			functions$lineno.end[n.first] = my.end;
+				row.idx = (n.first+1):n.last;
 			
-		# last is key to getting element of last vector 
-		last = work[2];
-			idx.last = which(functions$lineno.start < last);
-			n.last = length(idx.last);
-			# last one is correct ...
-			my.end = functions$lineno.end[n.last];
+			functions = functions[-c(row.idx),];
 			
-		# update
-		functions$lineno.end[n.first] = my.end;
-			row.idx = (n.first+1):n.last;
-		
-		functions = functions[-c(row.idx),];
-		
-		
+			
+			}
 		}
 		
 		
@@ -180,12 +250,32 @@ parseFunctionFile = function(file)
 	}
 	
 	
+# Rgui # basic after running SIMULATIONS
+# > search()
+ # [1] ".GlobalEnv"            "package:pracma"        "package:PolynomF"     
+ # [4] "package:humanVerseWSU" "package:stats"         "package:graphics"     
+ # [7] "package:grDevices"     "package:utils"         "package:datasets"     
+# [10] "package:methods"       "Autoloads"             "package:base"  
+
+# ls("package:stats")
+# lsf.str("package:stats")
+# x <- library(help = stats)
+# x$info[[2]] 
+	
+indexFunctionsInAttachedPackages = function(packages = "ALL")
+	{
+	# RStudio inflates the search list ...
+
+	
+	}
+		
 # source('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-str.R')
 # scanFunctionsInFile('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-get-set.R')
 # functions-md5.R has "INTERNAL functions"
 # don't index internals ... 
 indexFunctionsInFile = function(file, key="local")
 	{
+	search = paste0(key,"-search");
 	functions = parseFunctionFile(file);
 	# we can store a master dataframe, or a key/value dataframe ... 
 		my.file = basename(file);  				# set as key
@@ -196,17 +286,19 @@ indexFunctionsInFile = function(file, key="local")
 		{
 		.GlobalEnv$.humanVerse[["functions"]][[key]][[my.file]] = list();
 		}		
+	## file-level cache
 	.GlobalEnv$.humanVerse[["functions"]][[key]][[my.file]] = functions;
 	
 	# keyed on "fn" => `file.name.R` ...
 	
-	search = paste0(key,"-search");
+	
 	len.start = ceiling( log10( 1 + max(functions$lineno.start, na.rm=TRUE) ) );
 	len.end   = ceiling( log10( 1 + max(functions$lineno.end, na.rm=TRUE) ) );
 	
 		fn = functions$fn;
 		str = paste0("LINES [", strPadLeft(functions$lineno.start, len.start, " ") , "-", strPadLeft(functions$lineno.end, len.end , " ") , "]", " :: ", my.file);
 		n = length(fn);
+	## function-level cache 
 	for(i in 1:n)
 		{
 		.GlobalEnv$.humanVerse[["functions"]][[search]][[ fn[i] ]] = str[i];		
@@ -216,47 +308,6 @@ indexFunctionsInFile = function(file, key="local")
 
 
 
-ascii.line = function(strs, out.length=66, left = "## ", right = " ##", sep=" ", justification="center")
-	{
-	res = list();
-	n = length(strs);
-	for(i in 1:n)
-		{
-		str = strs[i];
-	
-		sep = charAt(sep,1); # we only allow a 1-element separator
-		
-		len.s = strlen(str);
-		len.l = strlen(left);
-		len.r = strlen(right);	
-			
-		if(justification == "center")
-			{
-			out.left  = out.right = floor( (out.length - len.l - len.s - len.r )/2 );
-				# offset = out.length - len.l - out.left - len.s - out.right - len.r;		
-			line = paste0(left, str_repeat(sep,out.left), str, str_repeat(sep, out.right));
-			
-			remaining = out.length - strlen(line) - len.r;			
-			if(remaining > 0)
-				{
-				line = paste0(line, str_repeat(sep, remaining));
-				}
-			line = paste0(line, right);						
-			} else {
-					# left 
-					line = paste0(left, str);
-					remaining = out.length - strlen(line) - len.r;
-					if(remaining > 0)
-						{
-						line = paste0(line, str_repeat(sep, remaining), right);
-						} 
-					}	
-		
-		res[[i]] = line;
-		}
-		
-	if(n > 1) { res; } else { res[[1]]; }	
-	}
 
 # punchcards had 80 characters, a traditional typewriter US had 72 characters per line (CPL)
 # http://mikeyanderson.com/optimal_characters_per_line#:~:text=%E2%80%9CAnything%20from%2045%20to%2075,is%2040%20to%2050%20characters.%E2%80%9D
@@ -267,6 +318,8 @@ function.summary = function(fn, key = "local", out = "cat", out.length=66, out.f
 	fn = trimMe(fn);
 	info = list();
 	info$fn = fn;
+	
+	search = paste0(key,"-search");
 		
 		res = .GlobalEnv$.humanVerse[["functions"]][[search]][[ fn ]];
 		if(is.null(res)) { return("NA"); }
@@ -282,41 +335,54 @@ function.summary = function(fn, key = "local", out = "cat", out.length=66, out.f
 	
 	
 	lines = explodeMe("\n", mystr);
-		local.start = 1 + info$more$lineno.start - info$more$lineno.pre;
+		local.start = 1 + info$more$lineno.name - info$more$lineno.pre;
 	n = length(lines);
 	
+	#print(info$more);
+	#print(lines);
+	
 	preamble 	= trimMe( paste(lines[1:(local.start - 1)], collapse="\n") );
-	body 		= trimMe( paste(lines[local.start:n], collapse="\n") );	
+		body.skip = info$more$lineno.start - info$more$lineno.name;
+	body 		= trimMe( paste(lines[(local.start + body.skip):n], collapse="\n") );	
 			
 	info$str = list("preamble" = preamble, "body" = body);		
 			
+			
+	keys = c(" Parameters: ", " Path: ", " Source: ", " Line numbers: ", " Line count: ");
+		max.key = max(strlen(keys));
+		
+		
 	# cat(info$str);
 	
 	if(out == "cat")
 		{
 		header = str_repeat("#", out.length);
+		subheader = paste0("##", str_repeat("-", (out.length-4) ), "##");
 		cat("\n", header, file=out.file, append=FALSE);
 		
 		line = ascii.line(fn);
 		cat("\n", line, file=out.file, append=TRUE);
 		
-		cat("\n", header, file=out.file, append=TRUE);
+		cat("\n", subheader, file=out.file, append=TRUE);
 		
-		keys = c(" Parameters: ", " Path: ", " Source: ", " Line numbers: ", " Line count: ");
-		max.key = max(strlen(keys));
 		
-			core = paste0( strPadLeft(keys[1], max.key, " "), df$parameters[1]);
-			line = ascii.line(core, justification="left");
-		cat("\n", line, file=out.file, append=TRUE);
 		
+		
+		
+		########## PATH ##########
 			core = paste0( strPadLeft(keys[2], max.key, " "), info$path);
 			line = ascii.line(core, justification="left");
 		cat("\n", line, file=out.file, append=TRUE);
 		
 		
+		
 			core = paste0( strPadLeft(keys[3], max.key, " "), info$file);
 			line = ascii.line(core, justification="left");
 		cat("\n", line, file=out.file, append=TRUE);
+		
+		cat("\n", subheader, file=out.file, append=TRUE);
+		
+		########## LINE NOS ##########
 		
 			core = paste0( strPadLeft(keys[4], max.key, " "), info$more$lineno.start, "-", info$more$lineno.end);
 			line = ascii.line(core, justification="left");
@@ -327,27 +393,45 @@ function.summary = function(fn, key = "local", out = "cat", out.length=66, out.f
 		cat("\n", line, file=out.file, append=TRUE);
 		
 		
-						
+		cat("\n", subheader, file=out.file, append=TRUE);
 		
+		########## PARAMETERS ##########
+				parameters = explodeMe("\n", df$parameters[1]);
+				n.p = length(parameters);
+			core = paste0( strPadLeft(keys[1], max.key, " "), parameters[1]);
+			line = ascii.line(core, justification="left");
+		cat("\n", line, file=out.file, append=TRUE);   # empty out.file will print to screen ...
+				if(n.p > 1)
+					{
+					lines = ascii.line( parameters[2:n.p], left="## \t\t\t ", right=" ", justification="left");
+					catMe(lines, "\n", "", file=out.file, append=TRUE);
+					}
+					
 		
-		if(!is.empty(preamble))
-			{
-			cat("\n", header, file=out.file, append=TRUE);
-				line = ascii.line("PREAMBLE");
-			cat("\n", line, file=out.file, append=TRUE);
-			cat("\n", header, file=out.file, append=TRUE);
-				lines = ascii.line( explodeMe("\n",preamble), left=" ", right=" ", justification="left");
-			catMe(lines, "\n", "", file=out.file, append=TRUE);
-			cat("\n", header, file=out.file, append=TRUE);
-			}
 			
 		cat("\n", header, file=out.file, append=TRUE);
 				line = ascii.line("BODY");
 		cat("\n", line, file=out.file, append=TRUE);
-		cat("\n", header, file=out.file, append=TRUE);
-			lines = ascii.line(explodeMe("\n",body), left=" ", right=" ", justification="left");		
+		cat("\n", subheader, file=out.file, append=TRUE);
+				bodylines = explodeMe("\n",body);
+				bodylines[1] = paste0("\t", bodylines[1]); # putting TAB back
+			lines = ascii.line(bodylines, left=" ", right=" ", justification="left");		
 		catMe(lines, "\n", "", file=out.file, append=TRUE);
-		cat("\n", header, file=out.file, append=TRUE);
+		cat("\n", subheader, file=out.file, append=TRUE);
+		
+		
+		
+		if(!is.empty(preamble))
+			{
+
+				line = ascii.line("PREAMBLE");
+			cat("\n", line, file=out.file, append=TRUE);
+			cat("\n", header, file=out.file, append=TRUE);
+				lines = ascii.line( explodeMe("\n",preamble), left="### ", right=" ", justification="left");
+			catMe(lines, "\n", "", file=out.file, append=TRUE);
+			cat("\n", subheader, file=out.file, append=TRUE);
+			}
+			
 		
 		} else { info; }
 	}

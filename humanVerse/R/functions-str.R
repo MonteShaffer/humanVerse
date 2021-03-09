@@ -478,3 +478,47 @@ str_replace = function(find, replace, str, method="base")
 
 
 
+ascii.line = function(strs, out.length=66, left = "## ", right = " ##", sep=" ", justification="center")
+	{
+	res = list();
+	n = length(strs);
+	for(i in 1:n)
+		{
+		str = strs[i];
+	
+		sep = charAt(sep,1); # we only allow a 1-element separator
+		
+		len.s = strlen(str);
+		len.l = strlen(left);
+		len.r = strlen(right);	
+			
+		if(justification == "center")
+			{
+			out.left  = out.right = floor( (out.length - len.l - len.s - len.r )/2 );
+				# offset = out.length - len.l - out.left - len.s - out.right - len.r;		
+			line = paste0(left, str_repeat(sep,out.left), str, str_repeat(sep, out.right));
+			
+			remaining = out.length - strlen(line) - len.r;			
+			if(remaining > 0)
+				{
+				line = paste0(line, str_repeat(sep, remaining));
+				}
+			line = paste0(line, right);						
+			} else {
+					# left 
+					line = paste0(left, str);
+					remaining = out.length - strlen(line) - len.r;
+					if(remaining > 0)
+						{
+						line = paste0(line, str_repeat(sep, remaining), right);
+						} 
+					}	
+		
+		res[[i]] = line;
+		}
+		
+	if(n > 1) { res; } else { res[[1]]; }	
+	}
+	
+	
+	

@@ -145,8 +145,41 @@ whichMin = function(x, ...)
 	}
 
 
+# original = c("P.1", "P.2", "P.3", "P.4", "P.5", "P.6", "P.7", "P.8", "P.9", "P.10");
+# new = c("P.7", "P.1", "P.3", "P.6", "P.5", "P.8", "P.4", "P.9", "P.10", "P.2")
+computeIndexFromOriginalToNew = function(original, new)
+	{
+	# I want to shuffle based on these "keys", how to index them?
+	idx = c();
+	n = length(new);
+	for(i in 1:n)
+		{
+		w = whereIsValueInVector(new[i], original);
+		idx = c(idx, w);		
+		}	
+	idx;
+	}
 
-
+whereIsValueInVector = function(val, vec, n=NULL)
+	{
+	idx = which(vec == val);
+	n.idx = length(idx);
+	if(n.idx > 0)
+		{
+		if(is.null(n)) { return (idx); } else { return (idx[n]); }
+		} else { return (NA); }	
+	}
+	
+removeValueFromVector = function(val, vec)
+	{
+	idx = which(vec == val);
+	n.idx = length(idx);	
+	if(n.idx > 0)
+		{
+		vec = vec[-c(idx)];
+		}	
+	vec;
+	}
 
 
 #' findFrequencyValueInVector

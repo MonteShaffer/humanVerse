@@ -146,7 +146,7 @@ standardizeFromOneRangeToAnother = function(x, another, onerange=range(x) )
 	}
 
 
-standardizeFromOldRangeToNew = function(x, oldrange=range(x), newrange)
+standardizeFromOldRangeToNew = function(x, oldrange=range(x), newrange=NULL)
 	{
 	if(length(newrange) < 2)  { return (NULL); }
 	if(length(oldrange) < 2) { return (NULL); }

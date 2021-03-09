@@ -71,15 +71,9 @@ computeCosineSimilarity = function(a, bs)
 
 
 
-# compute eigenRank here using the Romani / Del Corsi approach
-# append super node to end, use inverse "solve" or ginv
 
 
-# source multiply.cpp from library  ... inst/cpp"
-# ? system.file
-# lives in "inst/extdata"
-# idf = readRDS( system.file("extdata", "inflation.rds", package="humanVerseWSU") );
-  #assign("inflation.df",idf);
-# .GlobalEnv$inflation.df = idf;
 
-
+	
+	
+	

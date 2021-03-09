@@ -49,8 +49,9 @@ setAttribute = function(myAttribute, myValue, myObj)
 #  R::base has "getOption" but not "setOption"
 setOption = function(myKey, myValue)
 	{
-	onames = names( options() );
-	if(is.element(myKey, onames))
+	# you can set an option that doesn't exist ...
+	#onames = names( options() );
+	#if(is.element(myKey, onames))
 		{
 		options(setNames(list(myValue), myKey));
 		}

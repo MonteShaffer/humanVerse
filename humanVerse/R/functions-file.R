@@ -150,15 +150,20 @@ includeRemoteFiles = function(urls, verbose=FALSE, ...)
     }
   }
 
+
+
+	
+	
 # source('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-get-set.R')
 # mySource('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-get-set.R')
-mySource = function(myfile, key = "local", indexFunctions = TRUE)
+sourceMe = function(myfile, key = "local", indexFunctions = TRUE)
 	{
 	if(!indexFunctions)
 		{
 		source(myfile);
 		} else  {
-				indexFunctionsInFile(file, key=key); # this will store to cache		
+				indexFunctionsInFile(myfile, key=key); # this will store to cache	
+				source(myfile);
 				}	
 	}
 

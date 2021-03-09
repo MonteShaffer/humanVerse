@@ -30,7 +30,8 @@ plot.myFlorencePlot = function(df)
 
 
 
-stats.prepareTukeyPlot = function(x.list, heresy=FALSE, sort.list="ASC", sort.key="median")
+stats.prepareTukeyPlot = function(x.list, heresy=FALSE, 
+									sort.me = TRUE, sort.list="ASC", sort.key="median")
 	{
 	# with ASC ... it will put smallest first, we will plot from first index ...
 	x.stats = list();
@@ -50,19 +51,23 @@ stats.prepareTukeyPlot = function(x.list, heresy=FALSE, sort.list="ASC", sort.ke
 		x.stats[[i]] = info;
 		}
 	
-	df = as.data.frame( cbind(1:n, med, mea) );
-		colnames(df) = c("i", "median", "mean");
-	df$name = nam;
-	df = sortDataFrameByNumericColumns(df, sort.key, direction=sort.list);
 	
 	# ordered ...
 	
-	new.stats = list();
-	for(i in 1:n)
+	if(sort.me)
 		{
-		j = df$i[i];
-		new.stats[[j]] = x.stats[[i]];
-		}
+		df = as.data.frame( cbind(1:n, med, mea) );
+			colnames(df) = c("i", "median", "mean");
+		df$name = nam;
+		df = sortDataFrameByNumericColumns(df, sort.key, direction=sort.list);
+	
+		new.stats = list();
+		for(i in 1:n)
+			{
+			j = df$i[i];
+			new.stats[[j]] = x.stats[[i]];
+			}
+		} else { new.stats = x.stats; }
 	
 
 		
@@ -373,7 +378,9 @@ plot.setPosition = function(where)
 	
 	
 	
-	
+# multivariate histogram, overlay two on the same graph ... 
+# the z-shift is right or left (mu) ... and we strech the polygons (sigma)
+# how to plot 2 area normal curves in the background with these scales is the functional challenge
 	
 	
 # x = runif(1000); plot.myHistogram(x);
