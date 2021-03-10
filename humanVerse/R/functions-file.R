@@ -77,6 +77,12 @@ readRDS.url = function(file)
 #' @examples
 #'
 #' # alias storeToPipe
+storeToPipe = function(df, file, header=TRUE, quote="", sep="|", row.names=FALSE)
+  {
+  if(quote == "") { quote = FALSE; }
+  utils::write.table(df, file=file, quote=quote, col.names=header, row.names=row.names, sep=sep);
+  }
+  
 writeToPipe = function(df, file, header=TRUE, quote="", sep="|", row.names=FALSE)
   {
   if(quote == "") { quote = FALSE; }
