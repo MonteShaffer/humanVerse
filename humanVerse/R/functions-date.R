@@ -59,5 +59,12 @@ convertDateStringToFormat = function (strvec,to="%Y",to.name="years",from="%Y-%m
 	as.data.frame(result);
 	}
 
+getDate = function(how="%Y-%m", when = Sys.time())
+	{	
+	format(when, how);	
+	}
+	
+	
+	
 
 

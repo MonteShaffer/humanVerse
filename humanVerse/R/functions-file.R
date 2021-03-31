@@ -233,12 +233,17 @@ installGithubLibrary = function()
 
 	}
 
+
 includeGithubFolder = function(url, ...)  # pattern = "[.][RrSsQq]$",
 	{
-	args = grabFunctionParameters();
+	# args = grabFunctionParameters();
+	args = getFunctionParameters();
         # TRUE would store "last" in some memory (GLOBAL SCOPE)
 	# args = .GlobalEnv$.args = grabFunctionParameters();
-	# print(args);
+	
+	cat("\n\n === MY-ARGS === \n\n");
+	
+	print(args);
 
 	# stop("monte");
 
