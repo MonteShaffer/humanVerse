@@ -139,10 +139,10 @@ for(i in 1:numberClusters)
   
 ```
 
-#### Event-level Analysis
+#### Protein-level Analysis
 ```{r}
-X = as.matrix(running.df[,c(2:4, 10:14)]) ;
-  rownames(X) = running.df$Country;
+X = as.matrix(protein.df[,c(2:10)]) ;
+  rownames(X) = protein.df$Country;
 X = transposeMatrix(X);
 
 Xs = scale(X);
@@ -154,17 +154,17 @@ whichX = X;
 X.d = dist(whichX);  # Euclidean Distance
 
 X.hclust = hclust(X.d);  # method = "complete"
-plot(X.hclust, main="Events (complete)");
+plot(X.hclust, main="Protein (complete)");
 ```
 
 ```{r}
 X.hclust = hclust(X.d, method="ward.D2");
-plot(X.hclust, main="Events (ward.D2)");
+plot(X.hclust, main="Protein (ward.D2)");
 ```
 
 ##### Cutting the Tree into Clusters
 ```{r}
-numberClusters = 3;
+numberClusters = 4;
 
 X.cut = stats::cutree(X.hclust, k=numberClusters);
 table(X.cut);
@@ -181,7 +181,7 @@ dend = stats::as.dendrogram(X.hclust);
 dend = dendextend::color_branches(dend, k = numberClusters);
 
   graphics::par(mfrow = c(1,1));
-  graphics::plot(dend, main="Countries (ward.D2)", ylim=c(0, ceiling(max(X.hclust$height))) );  # Can I color-code the labels?  "Fe"
+  graphics::plot(dend, main="Protein (ward.D2)", ylim=c(0, ceiling(max(X.hclust$height))) );  # Can I color-code the labels?  "Fe"
 
 ```
 
@@ -208,8 +208,8 @@ for(i in 1:numberClusters)
 ### PCA
 
 ```{r}
-X = as.matrix(running.df[,c(2:4, 10:14)]) ;
-  rownames(X) = running.df$Country;
+X = as.matrix(protein.df[,c(2:10)]) ;
+  rownames(X) = protein.df$Country;
 # X = transposeMatrix(X);
 
 Xs = scale(X);
@@ -246,6 +246,11 @@ biplot(Xs.PCA, 7:6, xlab=paste0("PC7: (", 100 * VAF[7], "%)"), ylab=paste0("PC6:
 ```{r}
 biplot(Xs.PCA, 7:8, xlab=paste0("PC7: (", 100 * VAF[7], "%)"), ylab=paste0("PC8: (", 100 * VAF[8], "%)"));
 ```
+
+```{r}
+biplot(Xs.PCA, 9:8, xlab=paste0("PC9: (", 100 * VAF[9], "%)"), ylab=paste0("PC8: (", 100 * VAF[8], "%)"));
+```
+
 
 # Conclusion 
 
