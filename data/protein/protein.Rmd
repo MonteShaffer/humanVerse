@@ -1,5 +1,5 @@
 ---
-title: 'R Notebook sandbox: Running Records as an example of GIGO'
+title: 'R Notebook sandbox: Protein in Diet'
 output:
   html_document:
     df_print: paged
@@ -37,65 +37,47 @@ includeGithubFolder(github.monte.humanVerse, force.download = TRUE);
 
 How good is your data?  Have you documented your data?
 
-## Running Records
+## Protein
 
-For example, there is a dataset floating around on the internet that I used in the university course I took several years ago on multivariate statistics.  
+Here is another dataset often used in multivariate statistics courses.
 
-- <https://link.springer.com/content/pdf/bbm%3A978-0-387-73508-5%2F1.pdf>
-- <http://sfb649.wiwi.hu-berlin.de/fedc_homepage/xplore/tutorials/mvahtmlnode145.html>
-- <https://link.springer.com/book/10.1007%2F978-0-387-73508-5>
+- <https://github.com/MonteShaffer/humanVerse/blob/main/data/protein/protein.md>
 
-I guess it contains "fastest-times" for men athletes in several races by country.  Based on the data available, I am guessing it was "as-of" the 1988 Summer Olympics held in South Korea <https://en.wikipedia.org/wiki/Athletics_at_the_1988_Summer_Olympics_%E2%80%93_Men%27s_100_metres>?  Or maybe 1976 Summer Olympics held in Canada <https://en.wikipedia.org/wiki/Athletics_at_the_1976_Summer_Olympics_%E2%80%93_Men%27s_100_metres>?  Or maybe the 1987 World Championships held in Rome Italy <https://en.wikipedia.org/wiki/1987_World_Championships_in_Athletics_%E2%80%93_Men%27s_100_metres>?
+Notice that the information is a bit more detailed, and it has been published in at least three locations.  Although we don't know exactly how the data was collected and "averaged", we can "assume" that some reasonable protocols were estaplished.  The earliest publication was Weber (1973), so we would assume that the data was collected circa 1970.
 
-We know it mentions some countries but not others.  Where is Jamaica?  Where is Trinidad and Tobago?
+I would give this dataset a reasonably good score on the data-provenance scale, maybe a 9/10.  Everything looks good, and that I don't have more detail may likely be a function of the era (1970s).
 
-Ultimately, one can conjecture based on several data points.  It appears the Ben Johnson (Canada) world records were erased, but he fastest time was the US time of Carl Lewis in Rome, Italy. [Ironically, Carl Lewis was also doing the dirty with drugs, but the US conveniently covered it up as they wanted to beat the Russians:  <https://en.wikipedia.org/wiki/Carl_Lewis#Use_of_stimulants> and <https://www.theguardian.com/sport/2003/apr/24/athletics.duncanmackay>]
+I think about this data-provenance quality like a time capsule.  If someone discovered your data and notebooks in a distant future time, could they understand and recreate what you have prepared and analyzed.
 
-Sidebar:  This demonstrate the concept of PIP in Human Performance theory; that is,  potential for improving performance <https://hptmanual.weebly.com/pip.html>
-
-If you run the 100m in 30 seconds, it is rather easy with coaching to shave 10 seconds off your time.  But PIP lowers as you get more proficient.  This same principle applies to any apprenticeship/coaching domain, including this class.
-
-## Garbage In Garbage Out (GIGO)
-
-This dataset is a nice example to understand what HORRIBLE data provenance is.  We don't fully understand the time or methods of the data collection.  We can't trust the data because even Carl Lewis and 100's of other Americans were doping (enhancing illegally) to guarantee they would be the best in the world (during the cold war with Russia then called the USSR).
 
 ### Data Import
 
 #### Text Import
 ```{r}
-data.file = paste0(github.monte, "humanVerse/main/data/running-records/running-records.txt");  
+data.file = paste0(github.monte, "humanVerse/main/data/protein/protein.txt");  
 
-running.txt = readFromPipe(data.file);
+protein.txt = readFromPipe(data.file);
 # notice, it did not like a column name starting with a number.
 ```
 
 #### RDS Import
 ```{r}
-# https://github.com/MonteShaffer/humanVerse/blob/main/data/running-records/running-records.rds?raw=true
+data.file = paste0(github.monte, "humanVerse/main/data/protein/protein.rds");  
 
-data.file = paste0(github.monte, "humanVerse/main/data/running-records/running-records.rds");  
-
-running.rds = readRDS(url(data.file));
+protein.rds = readRDS(url(data.file));
 # notice, this binary form didn't care about the column name format ...
 ```
 
-### Match times (all in seconds)
-```{r}
-running.df = running.rds;
-running.df$`800m.secs` = 60 * running.df$`800m.mins`;
-running.df$`1500m.secs` = 60 * running.df$`1500m.mins`;
-running.df$`5000m.secs` = 60 * running.df$`5000m.mins`;
-running.df$`10000m.secs` = 60 * running.df$`10000m.mins`;
-running.df$`marathon.secs` = 60 * running.df$`marathon.mins`;
-```
+We don't know the exact units of the proteins, but with a bit more research, we could likely find that scale (if you can read German).  I wonder if the 1973 article was published in East or West Germany?  Is the USA in the dataset?
 
 ### hclust
 
 #### Country-level Analysis
 ```{r}
-X = as.matrix(running.df[,c(2:4, 10:14)]) ;
-  rownames(X) = running.df$Country;
-  colnames(X) = c("100m", "200m", "400m", "800m", "1500m", "5000m", "10000m", "marathon"); # all in seconds
+protein.df = protein.rds;
+X = as.matrix(protein.df[,c(2:10)]) ;
+  rownames(X) = protein.df$Country;
+  
 Xs = scale(X);
 # you can change which X is being used: X or Xs
 whichX = X;
@@ -199,7 +181,7 @@ dend = stats::as.dendrogram(X.hclust);
 dend = dendextend::color_branches(dend, k = numberClusters);
 
   graphics::par(mfrow = c(1,1));
-  graphics::plot(dend, main="Events (ward.D2)", ylim=c(0, ceiling(max(X.hclust$height))) );  # Can I color-code the labels?  "Fe"
+  graphics::plot(dend, main="Countries (ward.D2)", ylim=c(0, ceiling(max(X.hclust$height))) );  # Can I color-code the labels?  "Fe"
 
 ```
 
