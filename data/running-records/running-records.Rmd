@@ -1,0 +1,72 @@
+---
+title: 'R Notebook sandbox: PCA and SVD'
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float: true
+    toc_depth: 4
+    fig_caption: true
+    number_sections: true
+my-var: "monte"  # https://bookdown.org/yihui/rmarkdown/html-document.html
+---
+
+
+
+# Setup
+
+
+### source setup
+```{r}
+github.monte.raw = "https://raw.githubusercontent.com/MonteShaffer/";
+include.setup = paste0(github.monte.raw, "humanVerse/main/include.setup.R");
+source(include.setup);  # Maybe comment this out, if error 
+ 
+github.monte.http = "https://github.com/MonteShaffer/";
+######## we will parse this page to get a list of the .R functions to include ########
+github.monte.humanVerse = paste0(github.monte.http, "humanVerse/tree/main/humanVerse/R/"); 
+
+######## you can pass flag `force.download = TRUE` if you want to make certain it is not coming from cache ########
+
+# getSourceLocation();
+###### R::humanVerse #####
+includeGithubFolder(github.monte.humanVerse, force.download = TRUE); 
+```
+
+# Data Provenance
+
+How good is your data?  Have you documented your data?
+
+## Running Records
+
+For example, there is a dataset floating around on the internet that I used in the university course I took several years ago on multivariate statistics.  
+
+- <https://link.springer.com/content/pdf/bbm%3A978-0-387-73508-5%2F1.pdf>
+- <http://sfb649.wiwi.hu-berlin.de/fedc_homepage/xplore/tutorials/mvahtmlnode145.html>
+- <https://link.springer.com/book/10.1007%2F978-0-387-73508-5>
+
+I guess it contains "fastest-times" for men athletes in several races by country.  Based on the data available, I am guessing it was "as-of" the 1988 Summer Olympics held in South Korea <https://en.wikipedia.org/wiki/Athletics_at_the_1988_Summer_Olympics_%E2%80%93_Men%27s_100_metres>?  Or maybe 1976 Summer Olympics held in Canada <https://en.wikipedia.org/wiki/Athletics_at_the_1976_Summer_Olympics_%E2%80%93_Men%27s_100_metres>?  Or maybe the 1987 World Championships held in Rome Italy <https://en.wikipedia.org/wiki/1987_World_Championships_in_Athletics_%E2%80%93_Men%27s_100_metres>?
+
+We know it mentions some countries but not others.  Where is Jamaica?  Where is Trinidad and Tobago?
+
+Ultimately, one can conjecture based on several data points.  It appears the Ben Johnson (Canada) world records were erased, but he fastest time was the US time of Carl Lewis in Rome, Italy. [Ironically, Carl Lewis was also doing the dirty with drugs, but the US conveniently covered it up as they wanted to beat the Russians:  <https://en.wikipedia.org/wiki/Carl_Lewis#Use_of_stimulants> and <https://www.theguardian.com/sport/2003/apr/24/athletics.duncanmackay>]
+
+Sidebar:  This demonstrate the concept of PIP in Human Performance theory; that is,  potential for improving performance <https://hptmanual.weebly.com/pip.html>
+
+If you run the 100m in 30 seconds, it is rather easy with coaching to shave 10 seconds off your time.  But PIP lowers as you get more proficient.  This same principle applies to any apprenticeship/coaching domain, including this class.
+
+## Garbage In Garbage Out (GIGO)
+
+This dataset is a nice example to understand what HORRIBLE data provenance is.  We don't fully understand the time or methods of the data collection.  We can't trust the data because even Carl Lewis and 100's of other Americans were doping (enhancing illegally) to guarantee they would be the best in the world (during the cold war with Russia then called the USSR).
+
+### Data Import
+
+```{r}
+running.txt = readFromPipe();
+```
+
+```{r}
+running.rds = readRDS(url());
+```
+
+

@@ -1,5 +1,16 @@
-# slice and dice
-sliceDiceContent = function (str, start="<h2>",end="</h2>", strip=FALSE, direction="end")
+
+
+
+parseTable = function(str)
+	{
+	
+	
+	}
+
+
+
+# slice and dice ... could I build this as "multivariate"?
+sliceDiceContent = function (str, start="<h2>",end="</h2>", strip=FALSE, direction="start")
 		{
 		d = substr(tolower(trimMe(direction)), 1,1);
 		

@@ -370,6 +370,10 @@ getDirectoryPath = function(file, trailing=TRUE)
 				}	
 	}
 
+
+
+
+
 getRemoteAndCache = function(remote, local.file = NULL,
     tmp.folder = "/humanVerse/cache/", force.download = FALSE,
     verbose = FALSE, md5.hash = FALSE)
@@ -388,6 +392,11 @@ getRemoteAndCache = function(remote, local.file = NULL,
     if(!dir.exists(localpath)) { useTEMP = TRUE; }
     } else { useTEMP = TRUE; }
 
+if(verbose)
+    {
+    cat("\n", "useTEMP ... ", useTEMP, "\n\n");
+    }
+	
   if(useTEMP)
     {
 	subfolder = if(trailingSlash) {  folderizeURL(remote); } else { folderizeURL(dirname(remote)); }
@@ -400,12 +409,18 @@ getRemoteAndCache = function(remote, local.file = NULL,
     createDirectoryRecursive(mypath);
     myfile = paste0(mypath,"/",filestem);
     } else {
-            mypath = dirname(local);
-            filestem = basename(local);
-            if(md5.hash) { filestem = md5(local); }
-            createDirectoryRecursive(mypath);
-            myfile = paste0(mypath,"/",filestem);
+            # mypath = dirname(local);
+            # filestem = basename(local);
+            # if(md5.hash) { filestem = md5(local); }
+            # createDirectoryRecursive(mypath);
+            # myfile = paste0(mypath,"/",filestem);
+			mypath 		= dirname(local.file);
+				createDirectoryRecursive(mypath);
+			filestem 	= basename(local.file);
+			myfile 		= local.file;
             }
+			
+			
     myfile = setAttribute("path", mypath, myfile);
     myfile = setAttribute("filestem", filestem, myfile);
 
