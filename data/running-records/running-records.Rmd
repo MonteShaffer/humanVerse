@@ -1,5 +1,5 @@
 ---
-title: 'R Notebook sandbox: PCA and SVD'
+title: 'R Notebook sandbox: Running Records as an example of GIGO'
 output:
   html_document:
     df_print: paged
@@ -61,12 +61,227 @@ This dataset is a nice example to understand what HORRIBLE data provenance is.  
 
 ### Data Import
 
+#### Text Import
 ```{r}
-running.txt = readFromPipe();
+data.file = paste0(github.monte, "humanVerse/main/data/running-records/running-records.txt");  
+
+running.txt = readFromPipe(data.file);
+# notice, it did not like a column name starting with a number.
+```
+
+#### RDS Import
+```{r}
+# https://github.com/MonteShaffer/humanVerse/blob/main/data/running-records/running-records.rds?raw=true
+
+data.file = paste0(github.monte, "humanVerse/main/data/running-records/running-records.rds");  
+
+running.rds = readRDS(url(data.file));
+# notice, this binary form didn't care about the column name format ...
+```
+
+### Match times (all in seconds)
+```{r}
+running.df = running.rds;
+running.df$`800m.secs` = 60 * running.df$`800m.mins`;
+running.df$`1500m.secs` = 60 * running.df$`1500m.mins`;
+running.df$`5000m.secs` = 60 * running.df$`5000m.mins`;
+running.df$`10000m.secs` = 60 * running.df$`10000m.mins`;
+running.df$`marathon.secs` = 60 * running.df$`marathon.mins`;
+```
+
+### hclust
+
+#### Country-level Analysis
+```{r}
+X = as.matrix(running.df[,c(2:4, 10:14)]) ;
+  rownames(X) = running.df$Country;
+  colnames(X) = c("100m", "200m", "400m", "800m", "1500m", "5000m", "10000m", "marathon"); # all in seconds
+Xs = scale(X);
+# you can change which X is being used: X or Xs
+whichX = X;
 ```
 
 ```{r}
-running.rds = readRDS(url());
+X.d = dist(whichX);  # Euclidean Distance
+
+X.hclust = hclust(X.d);  # method = "complete"
+plot(X.hclust, main="Countries (complete)");
+```
+
+```{r}
+X.hclust = hclust(X.d, method="ward.D2");
+plot(X.hclust, main="Countries (ward.D2)");
+```
+
+##### Cutting the Tree into Clusters
+```{r}
+numberClusters = 8;
+
+X.cut = stats::cutree(X.hclust, k=numberClusters);
+table(X.cut);
+X.cut;
+```
+
+##### Subtrees
+```{r}
+
+library(dendextend);
+colors = colorspace::rainbow_hcl(numberClusters);
+
+dend = stats::as.dendrogram(X.hclust);
+dend = dendextend::color_branches(dend, k = numberClusters);
+
+  graphics::par(mfrow = c(1,1));
+  graphics::plot(dend, main="Countries (ward.D2)", ylim=c(0, ceiling(max(X.hclust$height))) );  # Can I color-code the labels?  "Fe"
+
+# maybe make custom ceiling approach that rounds to a significant digit ... 76425 -> 77000 or 76500
+```
+
+```{r}
+
+dend.labels = base::labels(dend);
+  groups = dendextend::cutree(dend, k=numberClusters, order_clusters_as_data = FALSE);
+
+graphics::par(mfrow = c(2,2));
+
+dends = list();
+for(i in 1:numberClusters)
+  {
+  keep.me    = dend.labels[i != groups];
+  dends[[i]] = dendextend::prune(dend, keep.me);
+  graphics::plot(dends[[i]], cex=0.5, main = paste0("SubTree number ", i) );  # , ylim=c(0,100)
+  }
+
+# restore plot
+  graphics::par(mfrow = c(1,1));
+  
+```
+
+#### Event-level Analysis
+```{r}
+X = as.matrix(running.df[,c(2:4, 10:14)]) ;
+  rownames(X) = running.df$Country;
+X = transposeMatrix(X);
+
+Xs = scale(X);
+# you can change which X is being used: X or Xs
+whichX = X;
+```
+
+```{r}
+X.d = dist(whichX);  # Euclidean Distance
+
+X.hclust = hclust(X.d);  # method = "complete"
+plot(X.hclust, main="Events (complete)");
+```
+
+```{r}
+X.hclust = hclust(X.d, method="ward.D2");
+plot(X.hclust, main="Events (ward.D2)");
+```
+
+##### Cutting the Tree into Clusters
+```{r}
+numberClusters = 3;
+
+X.cut = stats::cutree(X.hclust, k=numberClusters);
+table(X.cut);
+X.cut;
+```
+
+##### Subtrees
+```{r}
+
+library(dendextend);
+colors = colorspace::rainbow_hcl(numberClusters);
+
+dend = stats::as.dendrogram(X.hclust);
+dend = dendextend::color_branches(dend, k = numberClusters);
+
+  graphics::par(mfrow = c(1,1));
+  graphics::plot(dend, main="Countries (ward.D2)", ylim=c(0, ceiling(max(X.hclust$height))) );  # Can I color-code the labels?  "Fe"
+
+```
+
+```{r}
+
+dend.labels = base::labels(dend);
+  groups = dendextend::cutree(dend, k=numberClusters, order_clusters_as_data = FALSE);
+
+graphics::par(mfrow = c(2,2));
+
+dends = list();
+for(i in 1:numberClusters)
+  {
+  keep.me    = dend.labels[i != groups];
+  dends[[i]] = dendextend::prune(dend, keep.me);
+  graphics::plot(dends[[i]], cex=0.5, main = paste0("SubTree number ", i) );  # , ylim=c(0,100)
+  }
+
+# restore plot
+  graphics::par(mfrow = c(1,1));
+  
+```
+
+### PCA
+
+```{r}
+X = as.matrix(running.df[,c(2:4, 10:14)]) ;
+  rownames(X) = running.df$Country;
+# X = transposeMatrix(X);
+
+Xs = scale(X);
+
+Xs.PCA = stats::prcomp(Xs);
+Xs.SVD = base::svd(Xs);
+VAF = summary(Xs.PCA)$importance[2,];
+```
+
+#### Biplots
+```{r}
+biplot(Xs.PCA, 1:2, xlab=paste0("PC1: (", 100 * VAF[1], "%)"), ylab=paste0("PC2: (", 100 * VAF[2], "%)"));
 ```
 
 
+```{r}
+biplot(Xs.PCA, 3:2, xlab=paste0("PC3: (", 100 * VAF[3], "%)"), ylab=paste0("PC2: (", 100 * VAF[2], "%)"));
+```
+
+```{r}
+biplot(Xs.PCA, 3:4, xlab=paste0("PC3: (", 100 * VAF[3], "%)"), ylab=paste0("PC4: (", 100 * VAF[4], "%)"));
+```
+```{r}
+biplot(Xs.PCA, 5:4, xlab=paste0("PC5: (", 100 * VAF[5], "%)"), ylab=paste0("PC4: (", 100 * VAF[4], "%)"));
+```
+```{r}
+biplot(Xs.PCA, 5:6, xlab=paste0("PC5: (", 100 * VAF[5], "%)"), ylab=paste0("PC6: (", 100 * VAF[6], "%)"));
+```
+
+```{r}
+biplot(Xs.PCA, 7:6, xlab=paste0("PC7: (", 100 * VAF[7], "%)"), ylab=paste0("PC6: (", 100 * VAF[6], "%)"));
+```
+
+```{r}
+biplot(Xs.PCA, 7:8, xlab=paste0("PC7: (", 100 * VAF[7], "%)"), ylab=paste0("PC8: (", 100 * VAF[8], "%)"));
+```
+
+# Conclusion 
+
+<https://en.wikipedia.org/wiki/200_metres#Men_(outdoor)>
+
+Who the outliers from these countries may be very difficult to discover because the Soviet era doesn't seem to have a lot of balanced records.
+
+<https://en.wikipedia.org/wiki/Men%27s_200_metres_world_record_progression>
+
+Maybe Muriaroa Ngaro (1980) was the runner associated with the marathon from the Cook Islands <https://en.wikipedia.org/wiki/List_of_Cook_Islands_records_in_athletics#Men>
+
+In 1980, he ran the marathon in 2:51:26 ... The winning time was 2:11:03 run by German Waldemar Cierpinski (East Germany).  <https://en.wikipedia.org/wiki/Athletics_at_the_1980_Summer_Olympics_%E2%80%93_Men%27s_marathon>
+
+So maybe Muriaroa Ngaro was an extreme outlier because he was so slow.
+
+1980 the USA boycotted the USSR-hosted olympics.
+1984 the USSR boycotted the USA-hosted olympics.
+
+- Copy/Paste is your Friend.  Notice how I label the variables generically `X` so I can re-use the code.  I re-used code from `PCA-SVD.Rmd` as well.
+- Good data provenance means you can document everything about your data.  Many times this means you have multiple noteboooks documenting each stage of "data development".  For this reason, it is better to keep things independent and modular.  When in doubt, make another notebook.
+- Think about the process like a "chain-of-custody" approach that you see on TV detective shows.  Each step should be a separate notebook, and each notebook should be able to run to reproduce the data.  Starting from nothing to a final report, each step is documented and can be tweaked.  Iteration is a key feature of proficient data provenance.
