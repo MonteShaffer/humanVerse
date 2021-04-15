@@ -321,6 +321,8 @@ perform.EFA = function(X, numberFactors = NULL,
                       scores = scores,
                       fm = fa.fm);
   
+  res$CFI = 1-((Xs.EFA$STATISTIC - Xs.EFA$dof)/(Xs.EFA$null.chisq - Xs.EFA$null.dof));
+  
   Xs.EFA;
   
   res$Xs.EFA = Xs.EFA;
