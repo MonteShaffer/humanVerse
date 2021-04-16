@@ -3,6 +3,15 @@ library(psych);
 library(Matrix);
 library(nFactors);
 
+likert.reverseScore = function(X, reverse, points=7)
+	{
+  if(!is.integer(reverse)) { reverse = which(names(X) == reverse); }
+  for(column in reverse)
+    {
+    X[,column] = points - X[,column] + 1;
+    }
+  X;
+  }
 
 #' performKMOTest
 #'
