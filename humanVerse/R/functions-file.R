@@ -429,8 +429,8 @@ if(verbose)
 	
 	# 
 	my.tmp = Sys.getenv("TMP");
-	if(is.empty(my.tmp)) { my.tmp = Sys.getenv("TEMP"); }
-	if(is.empty(my.tmp)) 
+	if(trimMe(my.tmp) == "") { my.tmp = Sys.getenv("TEMP"); }
+	if(trimMe(my.tmp) == "")
 		{ 
 		message.stop ("Function: *getRemoteAndCache* requires \n\t a TMP or TEMP folder in your 'Sys.getenv()' \n   Maybe run 'Sys.setenv(\"TMP\" = \"/path/to/TMP\")' \n\t and make certain the directory is made and writeable \n\t as in 'mkdir /path/to/TMP' "); 
 		}
