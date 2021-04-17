@@ -86,7 +86,7 @@ IMDB.getMoviesForPerson = function(nmid, return.cols=NULL, imdb=imdb.data)
 
   #info.even.more = merge(info.more, imdb$all.movies.actors.characters, by="nmid");
 
-  info.more = humanVerseWSU::sortDataFrameByNumericColumns(info.more,"rank", "ASC");
+  info.more = sortDataFrameByNumericColumns(info.more,"rank", "ASC");
 
   if(is.null(return.cols)) { info.more; } else { info.more[, return.cols]; }
   }
@@ -110,7 +110,7 @@ IMDB.getActorsFromMovie = function(ttid, return.cols=NULL, imdb=imdb.data)
   # movies info, just a few cols ...
   info = imdb.data$all.movies.actors.characters[imdb.data$all.movies.actors.characters$ttid == ttid, ];
   # latest function
-  # info = humanVerseWSU::subsetDataFrame(imdb.data$all.movies.actors.characters, "ttid", "==", ttid);
+  # info = subsetDataFrame(imdb.data$all.movies.actors.characters, "ttid", "==", ttid);
 
   # character name here as well?  From a different dataset ...
   # https://www.datasciencemadesimple.com/join-in-r-merge-in-r/
@@ -121,7 +121,7 @@ IMDB.getActorsFromMovie = function(ttid, return.cols=NULL, imdb=imdb.data)
 
   #info.even.more = merge(info.more, imdb$all.movies.actors.characters, by="nmid");
   info.more = info;
-  info.more = humanVerseWSU::sortDataFrameByNumericColumns(info.more,"actor.rank", "ASC");
+  info.more = sortDataFrameByNumericColumns(info.more,"actor.rank", "ASC");
 
   if(is.null(return.cols)) { info.more; } else { info.more[, return.cols]; }
   }
@@ -187,7 +187,7 @@ IMDB.getUniqueCharactersForPerson = function(nmid, imdb=imdb.data$all.movies.act
   rows = imdb[imdb$nmid==nmid, ];
   characters = as.data.frame( table( stats::na.omit( rows$character ) ) )[,c(2,1)];
       colnames(characters) = c("count","character");
-  humanVerseWSU::sortDataFrameByNumericColumns(characters,"count");
+  sortDataFrameByNumericColumns(characters,"count");
   }
 
 
