@@ -56,6 +56,7 @@ data.load = function(dfolder, dstem = NULL,
 	}
 
 
+
 data.prepare.personality = function()
 	{
 	p.df 		= data.load("personality", "personality-raw", mode="txt");
