@@ -2,19 +2,24 @@
 
 # No warning is generated if the variable does not exist. That means empty() is essentially the concise equivalent to !isset($var) || $var == false.
 # https://www.php.net/manual/en/function.empty.php
+## the variable has to be passed in isolation, so it is not "substitute/parsed"
+## my.tmp = Sys.getenv("TMP"); is.empty(my.tmp); 	# works as expected
+## is.empty(Sys.getenv("TMP"));						# does **NOT** work as expected
 is.empty = function(x)
-  {
+  {  
   # if(!obj.exists(x)) { return (TRUE); }
   # below is the function obj.exists, but it has to run at this level, not a passthru
   x.str = deparse(substitute(x));  
   if(!exists(x.str)) { return (TRUE); }
+  
+  if(trimMe(x) == "") { return (TRUE); } # nothing inside (except maybe white space)
+  
   
   
   
   if(is.null(x)) { return (TRUE); }
   if(length(x) == 0 ) { return (TRUE); }
   if(is.na(x)) { return (TRUE); }
-  if(trimMe(x) == "") { return (TRUE); } # nothing inside (except maybe white space)
 
 # can I be certain ???
   return (FALSE);

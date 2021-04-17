@@ -268,6 +268,8 @@ indexFunctionsInAttachedPackages = function(packages = "ALL")
 
 	
 	}
+
+
 		
 # source('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-str.R')
 # scanFunctionsInFile('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-get-set.R')

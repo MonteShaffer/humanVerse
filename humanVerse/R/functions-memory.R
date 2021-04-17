@@ -128,6 +128,8 @@ initPathMemory = function(purge.memory = FALSE, verbose = FALSE)
 	}	
 	
 
+
+
 initColorMemory = function(purge.memory = FALSE, verbose = FALSE)
   {
   if(!exists(".humanVerse")) { initMemory(); }

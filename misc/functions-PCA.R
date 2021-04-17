@@ -3,6 +3,8 @@ library(psych);
 library(Matrix);
 library(nFactors);
 
+
+
 likert.reverseScore = function(X, reverse, points=7)
 	{
   if(!is.integer(reverse)) { reverse = which(names(X) == reverse); }

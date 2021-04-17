@@ -51,14 +51,35 @@ writeLine = function(str, file, append=TRUE, end="\n")
 #' @export
 storeToFile = function (str, file)
 	{
-  cat(str, file=file, append=FALSE);
+	cat(str, file=file, append=FALSE);
 	}
 
 
+cleanup.local = function(myfile)
+	{
+	# myfile = folderizeURL(myfile);  # find = c("/",".",",");     replace = c("-","^","+");	
+	myfile = str_replace("//", "/",   myfile);
+	myfile = str_replace("?", "^-QUESTION-^",   myfile);
+	myfile = str_replace("&", "^-AND-^",   myfile);
+	myfile = str_replace("=", "^-EQUAL-^",   myfile);
+	myfile;
+	}
+	
+	
+cleanup.url = function(url)
+	{
+	url = str_replace("//", "/",   url);
+	url = str_replace(":/", "://", url); # https://
+	url;
+	}
 
 readRDS.url = function(file)
 	{
+	file = cleanup.url(file);
+	# kudos to antonio
 	readRDS(url(file));
+	# https://stackoverflow.com/questions/19890633/
+	# readRDS( RCurl::getURL(file, ssl.verifypeer=0L, followlocation=1L));
 	}
 
 
@@ -158,7 +179,7 @@ includeRemoteFiles = function(urls, verbose=FALSE, ...)
 
 
 
-	
+	 
 	
 # source('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-get-set.R')
 # mySource('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-get-set.R')
@@ -324,6 +345,7 @@ readStringFromFile = function(myFile, n = NULL, method ="readChar", source = "lo
 	# readChar is one long string; readLines is a vector broken on "\n"
 	if(source == "remote")
 		{
+		myFile = cleanup.url(myFile);
 		if(is.null(n)) { n = if(method == "readLines") { n = -1; } else { n = (2^31 - 1); } }
 		} else {
 				if(is.null(n)) { n = if(method == "readLines") { n = -1; } else { n = file.info(myFile)$size; } }
@@ -378,6 +400,7 @@ getRemoteAndCache = function(remote, local.file = NULL,
     tmp.folder = "/humanVerse/cache/", force.download = FALSE,
     verbose = FALSE, md5.hash = FALSE)
   {
+  remote = cleanup.url(remote);
   useTEMP = FALSE;
   trailingSlash = (.substr(remote, -1) == "/");
   if(verbose)
@@ -403,8 +426,17 @@ if(verbose)
 	filestem  = if(trailingSlash) {  "index.html" } else { basename(remote); }
 
     if(md5.hash) { filestem = md5(filestem); }
+	
+	# 
+	my.tmp = Sys.getenv("TMP");
+	if(is.empty(my.tmp)) { my.tmp = Sys.getenv("TEMP"); }
+	if(is.empty(my.tmp)) 
+		{ 
+		message.stop ("Function: *getRemoteAndCache* requires \n\t a TMP or TEMP folder in your 'Sys.getenv()' \n   Maybe run 'Sys.setenv(\"TMP\" = \"/path/to/TMP\")' \n\t and make certain the directory is made and writeable \n\t as in 'mkdir /path/to/TMP' "); 
+		}
 
-    tmp = gsub("\\","/",Sys.getenv("TMP"), fixed=TRUE); # windoze?
+
+    tmp = gsub("\\", "/", my.tmp , fixed=TRUE); # windoze?
     mypath = paste0(tmp, tmp.folder, subfolder);
     createDirectoryRecursive(mypath);
     myfile = paste0(mypath,"/",filestem);
@@ -420,9 +452,14 @@ if(verbose)
 			myfile 		= local.file;
             }
 			
+
+	myfile 		= cleanup.local(myfile);
+	mypath 		= cleanup.local(mypath);
+	filestem 	= cleanup.local(filestem);
+	
 			
-    myfile = setAttribute("path", mypath, myfile);
-    myfile = setAttribute("filestem", filestem, myfile);
+    myfile = setAttribute("path", 		mypath, 	myfile);
+    myfile = setAttribute("filestem", 	filestem, 	myfile);
 
   if(verbose)
     {
