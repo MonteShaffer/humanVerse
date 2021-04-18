@@ -193,16 +193,6 @@ parseTextToListOfValues = function(xp)
 	nres;
 	}
 
-getAttribute = function(myAttribute, myObj)
-    {
-    attributes(myObj)[[myAttribute]];  
-    }
-
-setAttribute = function(myAttribute, myValue, myObj)
-    {
-    attributes(myObj)[[myAttribute]] = myValue;
-    myObj;  # no object referencing, so I must return
-    }
 
 buildNumericalDataForIntegral = function(fprep="normal: -1, 1", 
                                          i.lim = c(NA,NA), x.domain = c(-10,10), dxi = 0.01, forceEven = TRUE)
@@ -263,7 +253,7 @@ buildNumericalDataForIntegral = function(fprep="normal: -1, 1",
     # could be overwritten with eval(parse
     eval(parse(text = xp));
     
-    yi = dnorm(xi, mean=mean, sd=sd);
+    yi = stats::dnorm(xi, mean=mean, sd=sd);
      # plot(xi,yi);
 	result$x = xi;
 	result$y = yi;
@@ -288,7 +278,7 @@ buildNumericalDataForIntegral = function(fprep="normal: -1, 1",
      # could be overwritten with eval(parse
     eval(parse(text = xp));
     
-    yi = dt(xi, df=df);
+    yi = stats::dt(xi, df=df);
      # plot(xi,yi);
     result$x = xi;
 	result$y = yi;
@@ -317,7 +307,7 @@ buildNumericalDataForIntegral = function(fprep="normal: -1, 1",
     eval(parse(text = xp));
     
     df1 = p; df2 = n-p+1;
-    yi = df(xi, df1=df1, df2=df2);
+    yi = stats::df(xi, df1=df1, df2=df2);
     if(rev.x == TRUE) { xi = rev(xi); } # switches skew-left to skew-right
      # plot(xi,yi);
     result$x = xi;
@@ -346,7 +336,7 @@ buildNumericalDataForIntegral = function(fprep="normal: -1, 1",
      # could be overwritten with eval(parse
     eval(parse(text = xp));
     
-    yi = df(xi, df1=df1, df2=df2);
+    yi = stats::df(xi, df1=df1, df2=df2);
     if(rev.x == TRUE) { xi = rev(xi); } # switches skew-left to skew-right
     # if(rev.x == TRUE) { xi = rev(xi); yi = rev(yi); }
     # plot(xi,yi);
@@ -375,7 +365,7 @@ buildNumericalDataForIntegral = function(fprep="normal: -1, 1",
     # could be overwritten with eval(parse
     eval(parse(text = xp));
     
-    yi = dchisq(xi, df=df);
+    yi = stats::dchisq(xi, df=df);
     
     if(rev.x == TRUE) { xi = rev(xi); } # switches skew-left to skew-right
     # plot(xi,yi);
@@ -405,7 +395,7 @@ buildNumericalDataForIntegral = function(fprep="normal: -1, 1",
     # could be overwritten with eval(parse
     eval(parse(text = xp));
     
-    yi = dgamma(xi, shape=shape, scale=scale);
+    yi = stats::dgamma(xi, shape=shape, scale=scale);
     
     if(rev.x == TRUE) { xi = rev(xi); } # switches skew-left to skew-right
     # plot(xi,yi);
@@ -866,7 +856,7 @@ computeNumericalIntegrationString = function(fstr,
 		{
 		if(parNew) 
 			{ 
-			par(new=TRUE); 
+			graphics::par(new=TRUE); 
 			plot(info, type="l", lwd=3, main="", xlab="", ylab="", axes=FALSE, xlim=range(info$x), ...);
 			} else {
 
@@ -884,11 +874,11 @@ computeNumericalIntegrationString = function(fstr,
 							axes = FALSE,
 							xlim=range(info$x), ...);
 							
-							axis(1, lwd=0, lwd.ticks=1, col="#888888"); # below
+							graphics::axis(1, lwd=0, lwd.ticks=1, col="#888888"); # below
 							# axis(2, lwd=0, lwd.ticks=1, col="#888888");  # left
-					abline(h = 0, col="#888888", lty=2);
+					graphics::abline(h = 0, col="#888888", lty=2);
 					
-					par(new=TRUE);
+					graphics::par(new=TRUE);
 					plot(info, 
 							xlab="", ylab="",
 							type="l", lwd=4,  bty="n", main="",
@@ -947,7 +937,7 @@ computeNumericalIntegrationString = function(fstr,
      
 		  if(showPolygons)
 			{        
-			polygon(px, py, col=mycol, border=polygon.border, lty=1, lwd=polygon.lwd);
+			graphics::polygon(px, py, col=mycol, border=polygon.border, lty=1, lwd=polygon.lwd);
 			}
 		polygons[[i]] = list("x" = px, "y" = py, "col" = which.col);		
 		}
@@ -1202,7 +1192,7 @@ computeNumericalIntegration = function(info,
       if(showPolygons)
         {
         
-        polygon(px, py, col=mycol, border=polygon.border, lty=1, lwd=polygon.lwd);
+        graphics::polygon(px, py, col=mycol, border=polygon.border, lty=1, lwd=polygon.lwd);
         if(length(animatePolygons) != 0)
           {
            # Sys.sleep(animatePolygons); 

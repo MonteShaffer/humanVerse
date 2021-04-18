@@ -165,12 +165,12 @@ checkHEX = function(hex)
 		hasFound = FALSE;
 		# look in base for now
 		# color.idx = which( colors(TRUE) == hex );
-		color.idx = match(hex, colors(TRUE));  # %in% is currently defined as "%in%" <- function(x, table) match(x, table, nomatch = 0) > 0
+		color.idx = match(hex, grDevices::colors(TRUE));  # %in% is currently defined as "%in%" <- function(x, table) match(x, table, nomatch = 0) > 0
 		if(is.na(color.idx)) { color.idx = NULL;}
 		if(length(color.idx) > 0)
 			{
 			hasFound = TRUE;
-			hex = rgb2hex(col2rgb(hex));
+			hex = rgb2hex(grDevices::col2rgb(hex));
 			hasFound = TRUE;
 			}
 		if(!hasFound)
@@ -650,7 +650,7 @@ color.findNearestName = function(hex, how.many = 1, scale.me = TRUE, how="distan
 		x = res;
 			x = setAttribute("match", "exact", x);
 			x = setAttribute("distance", 0, x);
-			x = setAttribute("hex", rgb2hex(col2rgb( res )), x);
+			x = setAttribute("hex", rgb2hex(grDevices::col2rgb( res )), x);
 		return (x);
 		} # should just be one, but maybe more
 
@@ -685,7 +685,7 @@ color.findNearestName = function(hex, how.many = 1, scale.me = TRUE, how="distan
 		x = names(res);
 			x = setAttribute("match", "difference", x);
 			x = setAttribute("distance", as.numeric( res ), x);
-			x = setAttribute("hex", rgb2col(col2rgb( names(res) )), x);
+			x = setAttribute("hex", rgb2col(grDevices::col2rgb( names(res) )), x);
 		return (x);
 		}
 	if(how == "distance")
@@ -703,7 +703,7 @@ color.findNearestName = function(hex, how.many = 1, scale.me = TRUE, how="distan
 		x = names(res);
 			x = setAttribute("match", "distance", x);
 			x = setAttribute("distance", as.numeric( res ), x);
-			x = setAttribute("hex", rgb2col(col2rgb( names(res) )), x);
+			x = setAttribute("hex", rgb2col(grDevices::col2rgb( names(res) )), x);
 		return (x);
 		}
 	if(how == "cosine")
@@ -757,7 +757,7 @@ color.findNearestName = function(hex, how.many = 1, scale.me = TRUE, how="distan
 		x = names(res);
 			x = setAttribute("match", "cosine", x);
 			x = setAttribute("distance", as.numeric( res ), x);
-			x = setAttribute("hex", rgb2col(col2rgb( names(res) )), x);
+			x = setAttribute("hex", rgb2col(grDevices::col2rgb( names(res) )), x);
 		return (x);
 		}
 	}
@@ -779,7 +779,7 @@ color.buildTable = function(colvec=NULL, key=NULL, save.key=NULL)
 				colvec = .GlobalEnv$.humanVerse[["colors"]][["lists"]][[key]];
 				}
 			}
-		if(is.null(colvec)) { key = "ALL"; colvec = colors(TRUE); }  # not found, so let's set to default 'ALL'
+		if(is.null(colvec)) { key = "ALL"; colvec = grDevices::colors(TRUE); }  # not found, so let's set to default 'ALL'
 		}
 	
 	if(is.null(key)) { key = md5.object( colvec ); } # make a "hash-table" of an un-named list
@@ -807,7 +807,7 @@ color.buildTable = function(colvec=NULL, key=NULL, save.key=NULL)
 	for(i in 1:n)
 		{
 		color = colvec[i];
-		rgb = cleanupRGB( col2rgb(color) );
+		rgb = cleanupRGB( grDevices::col2rgb(color) );
 		hvec[i] = rgb2hex( rgb );
 		r[i] = rgb[1]; g[i] = rgb[2]; b[i] = rgb[3];
 		}
@@ -1097,12 +1097,12 @@ color.plotWheel = function(df = color.buildWheel("red"), harmony="all")
     # - rectangle ... complement, +30 and it's complement
 
   # blank canvas
-  plot.new( );
-  plot.window(
+  graphics::plot.new( );
+  graphics::plot.window(
               xlim=c(-1.5,1.5), # unit circle is 1
               ylim=c(-1.5,1.5),
               log="",
-              par(mar=c(0.25, 0.25, 0.25, 0.25)) # outer margins
+              graphics::par(mar=c(0.25, 0.25, 0.25, 0.25)) # outer margins
             );
 
   # maybe put a marker like a clock on 12 ("up")
@@ -1111,13 +1111,13 @@ color.plotWheel = function(df = color.buildWheel("red"), harmony="all")
       x0 = 0;
       y0 = 0; # center of circle
 
-  draw.circle(x0,y0, radius, col="gray");
+  plotrix::draw.circle(x0,y0, radius, col="gray");
 
     original = df[1,];
-      x = x0 + radius * sin( pracma::deg2rad( original$wheel ) );
-      y = y0 + radius * cos( pracma::deg2rad( original$wheel ) );
-        draw.circle(x,y, radius/3, col=original$hex.color);
-        text(x,y, adj=c(0.5,0.5), cex=1, labels=original$hex.color);
+      x = x0 + radius * sin( deg2rad( original$wheel ) );
+      y = y0 + radius * cos( deg2rad( original$wheel ) );
+        plotrix::draw.circle(x,y, radius/3, col=original$hex.color);
+        graphics::text(x,y, adj=c(0.5,0.5), cex=1, labels=original$hex.color);
             # maybe add names to wheel.table
             # maybe write function "best contrast" to determine
             # foreground color
@@ -1126,16 +1126,16 @@ color.plotWheel = function(df = color.buildWheel("red"), harmony="all")
     nr = dim(remaining)[1];
     for(i in 1:nr)
       {
-      x = x0 + radius * sin( pracma::deg2rad( remaining$wheel[i] ) );
-      y = y0 + radius * cos( pracma::deg2rad( remaining$wheel[i] ) );
-        draw.circle(x,y, radius/6, col=remaining$hex.color[i]);
-        text(x,y, adj=c(0.5,0.5), cex=1/2, labels=remaining$hex.color[i]);
+      x = x0 + radius * sin( deg2rad( remaining$wheel[i] ) );
+      y = y0 + radius * cos( deg2rad( remaining$wheel[i] ) );
+        plotrix::draw.circle(x,y, radius/6, col=remaining$hex.color[i]);
+        graphics::text(x,y, adj=c(0.5,0.5), cex=1/2, labels=remaining$hex.color[i]);
       }
 
   }
 
 
-color.displayColorOptions = function(my.colors = colors(),
+color.displayColorOptions = function(my.colors = grDevices::colors(),
                               showHEX = FALSE,
                               alpha = TRUE, # works with showHEX = TRUE
                               xlim=c(0,10),
@@ -1162,12 +1162,12 @@ color.displayColorOptions = function(my.colors = colors(),
     {
     xstart = xlim[1];
     ystart = ylim[2];
-    plot.new( );
-    plot.window(
+    graphics::plot.new( );
+    graphics::plot.window(
                 xlim=xlim,
                 ylim=ylim,
                 log="",
-                par(mar=c(0.25, 0.25, 0.25, 0.25))
+                graphics::par(mar=c(0.25, 0.25, 0.25, 0.25))
 
               );
 
@@ -1181,7 +1181,7 @@ color.displayColorOptions = function(my.colors = colors(),
         if(is.na(mycolor)) { break; break; }
         mycolor.name = names(my.colors)[i];
 
-        hexcolor = rgb2col( col2rgb(mycolor, alpha=alpha)  );
+        hexcolor = rgb2col( grDevices::col2rgb(mycolor, alpha=alpha)  );
 
         if(is.null(mycolor.name)) { mycolor.name = mycolor;}
 
@@ -1199,13 +1199,13 @@ color.displayColorOptions = function(my.colors = colors(),
         xright  = xleft + xunit;
         ybottom = ytop - yunit;
 
-        rect(xleft, ybottom, xright, ytop, col=hexcolor);  # hexcolor is safer
+        graphics::rect(xleft, ybottom, xright, ytop, col=hexcolor);  # hexcolor is safer
 
           top.y = mean(c(ytop,ytop,ytop,ybottom));
-        text(xleft, top.y, label=mycolor.label,
+        graphics::text(xleft, top.y, label=mycolor.label,
                               cex=cex, pos=4, col="black");
           bottom.y = mean(c(ytop,ybottom,ybottom,ybottom));
-        text(xleft, bottom.y, label=mycolor.label,
+        graphics::text(xleft, bottom.y, label=mycolor.label,
                               cex=cex, pos=4, col="white");
 
         i = 1 + i;
@@ -1247,7 +1247,7 @@ color.colorsInGradient = function(n, colvec=c("red","royalblue"), alpha=FALSE)
   # color.colorsInGradient(4, c("red", "royalblue"));
   # color.colorsInGradient(4, c("#FF000000", "#FF0000FF"), TRUE);  # red through alphas
   # color.colorsInGradient(4, c("#FF000000", "#4169E1FF"), TRUE);  # red->royalblue through alphas
-  # rgb2col( col2rgb("royalblue") );
+  # rgb2col( grDevices::col2rgb("royalblue") );
 
   # color.colorsInGradient(4, c("#FF0000", "#00FF00"), FALSE);
 
@@ -1269,14 +1269,14 @@ color.colorsInGradient = function(n, colvec=c("red","royalblue"), alpha=FALSE)
 #'
 #' @examples
 #'
-#' rgb2col( col2rgb("red") );
-#' rgb2col( col2rgb("red", alpha=TRUE) );
-#' rgb2col( col2rgb("#FF0000FF", alpha=TRUE) );
-#' rgb2col( col2rgb("#FF000033", alpha=TRUE) );
+#' rgb2col( grDevices::col2rgb("red") );
+#' rgb2col( grDevices::col2rgb("red", alpha=TRUE) );
+#' rgb2col( grDevices::col2rgb("#FF0000FF", alpha=TRUE) );
+#' rgb2col( grDevices::col2rgb("#FF000033", alpha=TRUE) );
 #'
 rgb2col = function(x)
   {
-  # reverses col2rgb function
+  # reverses grDevices::col2rgb function
   x.n = dim(x)[1];
   if(x.n == 4)
     {

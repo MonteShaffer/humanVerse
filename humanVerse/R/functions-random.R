@@ -35,12 +35,12 @@ rand = function(min = -1*as.integer(Sys.time()), max = as.integer(Sys.time()), n
     if(me == "hi")  # high-low method
       {
 	  if(!is.null(seed)) { set.seed(seed); }
-      return( as.integer(( (max + 1) - min) * runif(n) + min) );
+      return( as.integer(( (max + 1) - min) * stats::runif(n) + min) );
       }
     if(me == "fl")  # floor method
       {
 	  if(!is.null(seed)) { set.seed(seed); }
-      return( as.integer( floor( runif(n, min = min, max = (max + 1) ) ) ) );
+      return( as.integer( floor( stats::runif(n, min = min, max = (max + 1) ) ) ) );
       }
     if(me == "sa")  # sample method
       {

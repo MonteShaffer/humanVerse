@@ -77,7 +77,7 @@ readRDS.url = function(file)
 	{
 	file = cleanup.url(file);
 	# kudos to antonio
-	readRDS(url(file));
+	readRDS( url(file) );
 	# https://stackoverflow.com/questions/19890633/
 	# readRDS( RCurl::getURL(file, ssl.verifypeer=0L, followlocation=1L));
 	}
@@ -127,7 +127,7 @@ readFromPipe = function(file, header=TRUE, quote="", sep="|")
 #' @export
 #'
 #' @examples
-includeLocalDirectory = function(directory, verbose=TRUE, pattern = "[.][RrSsQq]$", ...)
+includeLocalDirectory = function(path, verbose=TRUE, pattern = "[.][RrSsQq]$", ...)
   {
   # ?source
   for (nm in list.files(path, pattern = pattern))
@@ -500,7 +500,7 @@ downloadFile = function(remote, myfile, n=(2^31 - 1), quiet = TRUE, ...)  # n co
   {
   if(isTRUE(capabilities("libcurl")))
     {
-    download.file(remote, myfile, quiet = quiet, ...);
+    utils::download.file(remote, myfile, quiet = quiet, ...);
     } else {
 			# this approach is not working ... maybe readChar
             raw.binary = readBin(remote, "raw", n);

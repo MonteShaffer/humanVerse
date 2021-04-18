@@ -4,14 +4,14 @@
 count.sign.changes = function(x, na.rm=TRUE, part="Re")
   {
   if(part == "Im") { x = Im(x); } else { x = Re(x); }
-  if(na.rm) { x = na.omit(x); }
+  if(na.rm) { x = stats::na.omit(x); }
   sum(diff(sign(x)) != 0);
   }
 
 which.sign.changes = function(x, na.rm=TRUE, part="Re")
   {
   if(part == "Im") { x = Im(x); } else { x = Re(x); }
-  if(na.rm) { x = na.omit(x); }
+  if(na.rm) { x = stats::na.omit(x); }
   which( diff(sign(x)) != 0 )
   }
 

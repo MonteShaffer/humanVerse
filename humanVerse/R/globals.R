@@ -4,5 +4,5 @@
 ## utils::globalVariables(c(".random.seed.memory"));
 
 utils::globalVariables(c(".humanVerse"));
-
+utils::globalVariables(c("imdb.data"));
 

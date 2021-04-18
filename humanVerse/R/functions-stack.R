@@ -1,14 +1,14 @@
 
 # # https://stackoverflow.com/questions/28687806/a-better-way-to-push-and-pop-to-from-lists-in-r
                 
-pushList = function(nlist, veclist, n=length(vlist))
-  {
+# pushList = function(nlist, veclist, n=length(vlist))
+  # {
   
-  }
-popList = function(nlist, veclist, n=length(vlist))
-  {
+  # }
+# popList = function(nlist, veclist, n=length(vlist))
+  # {
   
-  }
+  # }
 
 # https://stackoverflow.com/questions/2805102/how-is-pushing-and-popping-defined
 # vec = 1: 10;

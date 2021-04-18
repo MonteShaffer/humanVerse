@@ -3,6 +3,7 @@
 
 # matrixcalc is boring
 # Matrix might have some cool stuff ... sparse matrix 
+# matrixStats is also boring 
 
 
 matrixRank = function(A, ...)

@@ -26,22 +26,25 @@
 
 md5.digest = function(strvec, times=1, serialize=FALSE)
   {
-  ####################### digest is not vector driven ... # `apply` could work ...
-  n = length(strvec);
-  nvec = c();
-  for(i in 1:n)
+  if (requireNamespace("digest", quietly = TRUE))
     {
-    myval = digest::digest(strvec[i], algo="md5", serialize=serialize);
-    if(times > 1)
-      {
-      for(j in 2:times)
-        {
-        myval = digest::digest(myval, algo="md5", serialize=serialize);
-        }
-      }
-    nvec[i] = myval;
-    }
-  nvec;
+	  ####################### digest is not vector driven ... # `apply` could work ...
+	  n = length(strvec);
+	  nvec = c();
+	  for(i in 1:n)
+		{
+		myval = digest::digest(strvec[i], algo="md5", serialize=serialize);
+		if(times > 1)
+		  {
+		  for(j in 2:times)
+			{
+			myval = digest::digest(myval, algo="md5", serialize=serialize);
+			}
+		  }
+		nvec[i] = myval;
+		}
+	  nvec;
+	} else { return (NULL); }
   }
 
 

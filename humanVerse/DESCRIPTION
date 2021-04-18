@@ -10,7 +10,18 @@ URL: https://github.com/MonteShaffer/humanVerse/humanVerse
 BugReports: https://github.com/MonteShaffer/humanVerse/issues
 Encoding: UTF-8
 LazyData: true
+Suggests:
+  digest,
+  openssl,
+  plotrix,
+  Matrix,
+  matrixStats,
+  matrixcalc,
+  stringi
 Imports:
+  graphics,
+  rjson,
+  RMariaDB,
   stats,
   utils,
   xml2

@@ -28,7 +28,7 @@ github.monte.humanVerse = paste0(github.monte.http, "humanVerse/tree/main/humanV
 
 ######## you can pass flag `force.download = TRUE` if you want to make certain it is not coming from cache ########
 
-# getSourceLocation();
+getSourceLocation();
 ###### R::humanVerse #####
 includeGithubFolder(github.monte.humanVerse, force.download = TRUE); 
 ```
@@ -52,13 +52,40 @@ It is globalized and the "older" functions will work.
 ```{r}
 .GlobalEnv$imdb.data = imdb.data;
 ```
-
-# Will is Better
-
+#Heading (IE: Currency in US Dollars Adjusted)
 ```{r}
 
+idf= currentInflationData()
+```
+# Will is Better
+## Will Smith Search
+
+```{r}
+IMDB.searchPersonName("Will*Smith")
+```
 
 
+
+```{r}
+will = list();
+
+will$nmid = "nm0000226"
+```
+
+
+```{r}
+## Will Movie Search
+
+will$bio= IMDB.getPersonInfo(will$nmid)
+```
+
+
+```{r}
+will$movies = IMDB.getMoviesForPerson(will$nmid)
+```
+
+```{r}
+will$movies = standardizeDollarsInDataFrame(will$movies, 2010, "millions", "year" , "millions2010")
 ```
 
 

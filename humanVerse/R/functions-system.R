@@ -1,5 +1,16 @@
 
+# # source('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-file.R')
 
+
+returnList = function(res)
+	{
+	nr = length(res);
+		if(nr == 0) { return (NULL); }
+		if(nr == 1) { return (res[[1]]); }
+	unlist(res);	
+	}
+	
+	
 # No warning is generated if the variable does not exist. That means empty() is essentially the concise equivalent to !isset($var) || $var == false.
 # https://www.php.net/manual/en/function.empty.php
 ## the variable has to be passed in isolation, so it is not "substitute/parsed"

@@ -148,7 +148,7 @@ howManyFactorsToSelect = function(Xs, plotMe      = TRUE,
     if(plotMe)
       {
       plot(Xs.eigen, type="b");
-        abline(h=1, col="green");
+        graphics::abline(h=1, col="green");
       }
   
     idxs = which(Xs.eigen > eigen.cutoff);

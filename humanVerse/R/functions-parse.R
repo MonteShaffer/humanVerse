@@ -174,13 +174,12 @@ listToString = function(mylist,sep1="-",sep2="_")
 #' keys;
 getKeysFromStringWithSeparator = function(str, sep=",", lower.case=TRUE)
       {
-      # I believe there are two functions strsplit and str_split.  I should pick on.
       if(lower.case) { str = tolower(str);}
-      vals = stringr::str_split(str,sep);
+      vals = explodeMe(sep, str);
       f.vals = c();
       for(val in vals)
         {
-        val = stringr::str_trim(val);
+        val = trimMe(val);
         f.vals = c(f.vals,val);
         }
       f.vals;

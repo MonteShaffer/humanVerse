@@ -3,7 +3,7 @@
 # This "shades" between two lines or other data, specificy a color in ...
 plot.polygonsBetweenTwoData = function(x1, y1, x2, y2, ...)
   {
-  polygon (  x = c(x1, rev(x2), x1[1]),  # x1, reverse on x2, and reconnect to first point of x1
+  graphics::polygon (  x = c(x1, rev(x2), x1[1]),  # x1, reverse on x2, and reconnect to first point of x1
              y = c(y1, rev(y2), y1[1]),
             ...
           );
@@ -112,13 +112,19 @@ stats.prepareTukeyPlot = function(x.list, heresy=FALSE,
 # x = rnorm(100); y = runif(100);
 # visualize.t.test = function(x
 ###########################
-plot.t.test = function(x, ..., alpha=0.05, truncate.t = 4, plotHistogram = FALSE,
+plot.t.test = function(x, y=NULL, ..., alpha=0.05, truncate.t = 4, plotHistogram = FALSE,
 									x.lim = c(-4,4),
 									background.color 	= "#4DBF4D", background.opacity = 80,
 									overlay.color 		= "#4D4DBF", overlay.opacity = 80,
 									arrow.color 		= "#BF4D4D", arrow.opacity = 80)
 	{
-	my.test = t.test(x, ...);
+	my.test = stats::t.test(x, y=y, ...);
+	
+	# args = getFunctionParameters();	
+	# print(args);
+	
+	# args2 = grabFunctionParameters();
+	# print(args2);
 	
 	yMax = 0.55;
 	
@@ -131,7 +137,7 @@ plot.t.test = function(x, ..., alpha=0.05, truncate.t = 4, plotHistogram = FALSE
 	d.of.f = as.numeric(my.test$parameter);
 	pvalue = as.numeric(my.test$p.value  );
 	
-	t.crit = qt(1-alpha/2, d.of.f); # should be positive
+	t.crit = stats::qt(1-alpha/2, d.of.f); # should be positive
 	t.crit = abs(t.crit); 
 	
 	
@@ -150,10 +156,10 @@ plot.t.test = function(x, ..., alpha=0.05, truncate.t = 4, plotHistogram = FALSE
 		{
 		if(!is.null(y))
 			{
-			par(mfrow=c(1,2));
+			graphics::par(mfrow=c(1,2));
 				x.h = plot.myHistogram(x, myMain="- x -");
 				y.h = plot.myHistogram(y, myMain="- y -");
-			par(mfrow=c(1,1));	
+			graphics::par(mfrow=c(1,1));	
 			} else  {
 					x.h = plot.myHistogram(x, myMain="- x -");
 					}
@@ -180,19 +186,19 @@ plot.t.test = function(x, ..., alpha=0.05, truncate.t = 4, plotHistogram = FALSE
 				start = -1*t.crit, stop = t.crit,
 				polygon.col.pos = color.setOpacity(overlay.color, overlay.opacity) );
 				
-		text(0, 0.1, label = paste0( " ", 100*(1-alpha), "% \n of Area"), col="white", cex=1.25);
+		graphics::text(0, 0.1, label = paste0( " ", 100*(1-alpha), "% \n of Area"), col="white", cex=1.25);
 
 
 ################   ===   LINES/ARROW	   ===   ################		
-	arrows(0, yMax-0.10, t.stat, 0, code=2, lwd=6, col=color.setOpacity(arrow.color, arrow.opacity));
-			text(0, yMax-0.10, label = truncateNumeric(t.stat, truncate.t), col=arrow.color, cex=1.5, pos=plot.setPosition("above"));
+	graphics::arrows(0, yMax-0.10, t.stat, 0, code=2, lwd=6, col=color.setOpacity(arrow.color, arrow.opacity));
+			graphics::text(0, yMax-0.10, label = truncateNumeric(t.stat, truncate.t), col=arrow.color, cex=1.5, pos=plot.setPosition("above"));
 	
 	
 	y.crit = 0.15;
-		segments(t.crit, 0, t.crit, y.crit);
-			text(t.crit, y.crit, label = round(t.crit,2), col="black", cex=0.75, pos=plot.setPosition("above"));
-		segments(-1*t.crit, 0, -1*t.crit, y.crit);
-			text(-1*t.crit, y.crit, label = round(-1*t.crit,2), col="black", cex=0.75, pos=plot.setPosition("above"));
+		graphics::segments(t.crit, 0, t.crit, y.crit);
+			graphics::text(t.crit, y.crit, label = round(t.crit,2), col="black", cex=0.75, pos=plot.setPosition("above"));
+		graphics::segments(-1*t.crit, 0, -1*t.crit, y.crit);
+			graphics::text(-1*t.crit, y.crit, label = round(-1*t.crit,2), col="black", cex=0.75, pos=plot.setPosition("above"));
 	
 		
 	res = list("info" = my.test, "alpha" = alpha, "dof" = d.of.f, "t.stat" = t.stat, "t.crit" = t.crit, "p.value" = pvalue);
@@ -200,6 +206,27 @@ plot.t.test = function(x, ..., alpha=0.05, truncate.t = 4, plotHistogram = FALSE
 	invisible(res);
 	}
 ###########################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -237,16 +264,20 @@ plot.myTukeyPlot = function(x.list, heresy=FALSE,
 			# place "1" extra margin top/bottom, so we have 63 to work with (golden ration)
 			# workspace is 1/3 larger than football field ...
 			
-	plot.new( );
-	plot.window( 	xlim = xlim,
+	graphics::plot.new( );
+	graphics::plot.window( 	xlim = xlim,
 					ylim = ylim,
 					log  = "",
-					par(mar=mar)
+					graphics::par(mar=mar)
 				);
 	
 ###########################################################	
 	# background rectange 
-	rect(xlim[1] + 1, ylim[1] - 1, xlim[2] + 1, ylim[2] - 1, col=color.bg, border=NA);
+	graphics::rect(		xlim[1] + 1, 
+						ylim[1] - 1, 
+						xlim[2] + 1, 
+						ylim[2] - 1, 
+				col=color.bg, border=NA);
 		xleft 	= xlim[1] + 1;
 		xright 	= xlim[2] + 1;
 		ybottom = ylim[1] - 1;
@@ -267,7 +298,7 @@ plot.myTukeyPlot = function(x.list, heresy=FALSE,
 			y0 = y0 + height.plot;
 			y1 = y0 + height.football;
 # cat("\n", "x0: ", x0, " ... x1: ", x1, " ... y0: ", y0, " ... y1: ", y1, "\n"); 
-			rect(x0, y0, x1, y1, col=color.field, border=NA);
+			graphics::rect(x0, y0, x1, y1, col=color.field, border=NA);
 			
 			for(j in 0:10)
 				{
@@ -275,7 +306,7 @@ plot.myTukeyPlot = function(x.list, heresy=FALSE,
 				if(j == 0 || j == 5 || j == 10) { myCol = color.hash; }
 					x0 = 10*j;
 					x1 = 10*j+0.5;
-				rect(x0, y0, x1, y1, col=myCol, border=NA);
+				graphics::rect(x0, y0, x1, y1, col=myCol, border=NA);
 				}
 				
 			y0 = y0 + height.football;
@@ -300,23 +331,32 @@ plot.myTukeyPlot = function(x.list, heresy=FALSE,
 		info = x.stats[[i]];
 		my.name = names(x.stats)[i];
 		if(is.null(my.name)) { my.name = paste0("V", strPadLeft(i, (1+ceiling( log10(n) ) ), "0") ); }
-			text(xleft, y0 + height.plot, labels = paste0(" - ",my.name," - "), cex=1.5, 
+			graphics::text(xleft, y0 + height.plot, labels = paste0(" - ",my.name," - "), cex=1.5, 
 							pos=plot.setPosition("right"), 
 							col=color.setOpacity("#000000",common.opacity) );
 		
 		x.niniles = standardizeFromOneRangeToAnother( as.numeric(info$niniles), xscale, data.scale);
 			for(d in 1:8)
 				{
-					segments(x.niniles[d], y0 + 1*height.plot/3, x.niniles[d], y0 + 2*height.plot/3, 
+					graphics::segments(
+											x.niniles[d], 
+											y0 + 1*height.plot/3, 
+											x.niniles[d], 
+											y0 + 2*height.plot/3, 
 								col=color.setOpacity("#000099",common.opacity), lwd=1);
 				}
 				
 		
 		x.IDR3 = standardizeFromOneRangeToAnother(info$IDR.3$IDR$xlim, xscale, data.scale);
-			rect(x.IDR3[1], y0, x.IDR3[2], y0 + height.plot, 
+			graphics::rect(		x.IDR3[1], 
+								y0, 
+								x.IDR3[2], 
+								y0 + height.plot, 
 							col=color.setOpacity("#FF69B4",common.opacity), border="black");		
 		x.mid = mean(x.IDR3);
-			text(x.mid, y0 + i*y.offset, labels = "INNER TRECILE", cex=0.75, 
+			graphics::text(		x.mid, 
+								y0 + i*y.offset, 
+							labels = "INNER TRECILE", cex=0.75, 
 							pos=plot.setPosition("below"), 
 							col=color.setOpacity("#000000",common.opacity) );
 							
@@ -324,10 +364,10 @@ plot.myTukeyPlot = function(x.list, heresy=FALSE,
 			
 		
 		x.median = standardizeFromOneRangeToAnother(info$myMedian, xscale, data.scale);
-			segments(x.median, y0, x.median, y0 + height.plot, 
+			graphics::segments(x.median, y0, x.median, y0 + height.plot, 
 							col=color.setOpacity("#3CB371",common.opacity), lwd=2);
 			
-			text(x.mid, y0 + height.plot , labels = round(info$myMedian,2), cex=0.75, 
+			graphics::text(x.mid, y0 + height.plot , labels = round(info$myMedian,2), cex=0.75, 
 							pos=plot.setPosition("above"), 
 							col=color.setOpacity("#000000",common.opacity) );
 			
@@ -337,13 +377,13 @@ plot.myTukeyPlot = function(x.list, heresy=FALSE,
 		na = info$length.na;
 			x.steps 	= height.plot / nx;
 			y.vertical 	= x.steps * 1:nx;			
-		points(x.ecdf, y0 + y.vertical );
+		graphics::points(x.ecdf, y0 + y.vertical );
 		# put n = 
-			text(xright, y0 + 1*border/2, labels = paste0("n = ",  nx), cex=0.75, 
+			graphics::text(xright, y0 + 1*border/2, labels = paste0("n = ",  nx), cex=0.75, 
 						pos=plot.setPosition("left"), 
 						col="black" );
 		# put NAs: 
-			text(xright, y0 + 0*border/2, labels = paste0("NAs: ", na), cex=0.75, 
+			graphics::text(xright, y0 + 0*border/2, labels = paste0("NAs: ", na), cex=0.75, 
 						pos=plot.setPosition("left"), 
 						col="#666666" );
 		
@@ -416,8 +456,8 @@ plot.myHistogram = function(x,
 	
 	if(do.density)
 		{
-		par(new=TRUE);
-		z.d = density(z);  # maybe scale so it stays in the 0.4 viewing window?
+		graphics::par(new=TRUE);
+		z.d = stats::density(z);  # maybe scale so it stays in the 0.4 viewing window?
 		plot( z.d	, axes=F, ylim=ylim, xlim=c(-4,4), main="", xlab="", ylab="",
 					lwd = 4, col=color.setOpacity(density.color, density.opacity)
 					);

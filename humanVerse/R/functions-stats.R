@@ -117,7 +117,7 @@ zCutOverlay = function(z.table, steps.z = 1/2, verbose = FALSE, myColor = "blue"
 		vals.normmax = standardizeToFactor(vals.max, 0.4);
 	ytop = vals.normmax
 
-	rect(xleft, ybottom, xright, ytop, col=myColor);
+	graphics::rect(xleft, ybottom, xright, ytop, col=myColor);
 	}
 
 cutZ = function(z, range.z = c(-3,3), steps.z = 1/2, verbose = FALSE)
@@ -254,14 +254,14 @@ cutN = function(x, ..., n=2)
 # quantile(data, probs = c(.37, .53, .87))
 getQuantiles = function(x, qs, type=1)
 	{
-	xx = na.omit(x);
+	xx = stats::na.omit(x);
 	as.numeric(stats::quantile(xx, prob=qs, type=type));
 	}
 
 
 doIDR = function(x, lower = 0.25, upper = 1 - lower, type=1)
 	{
-	xx = na.omit(x);
+	xx = stats::na.omit(x);
 	q.lower = getQuantiles(xx, lower, type);
 	q.upper = getQuantiles(xx, upper, type);
 	q.lim = c(q.lower, q.upper);
@@ -545,13 +545,13 @@ doMode = function(x) # alias ?
 
 doMedian = function(x, type=1)
   {
-  xx = na.omit(x);
+  xx = stats::na.omit(x);
   as.numeric(stats::quantile(xx, prob=c(0.5), type=type));
   }
 
 doMean = function(x)
   {
-  xx = na.omit(x);
+  xx = stats::na.omit(x);
   m = mean(xx);
   deviationFromMean = abs(xx-m);
   xx[ whichMin(deviationFromMean)[1] ];  # value from data
