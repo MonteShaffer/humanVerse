@@ -250,6 +250,32 @@ removeWhiteSpace = function( str, replace=" ", n = 2,
   }
 
 
+removeFunnyCharacters = function(str, which="alpha-numeric", ASCII=TRUE)
+	{
+	# https://stackoverflow.com/questions/10294284/remove-all-special-characters-from-a-string-in-r
+	# str = "Ábcdêãçoàúü"; str = iconv(str, from = 'UTF-8', to = 'ASCII//TRANSLIT'); str;
+	# str = "Ábcdêãçoàúü"; str = iconv(str, from = '', to = 'ASCII//TRANSLIT'); str;
+	if(ASCII) { str = iconv(str, from = '', to = 'ASCII//TRANSLIT'); }
+	
+	# ?regex 
+	if(which == "alpha-numeric")
+		{
+		str = gsub("[^[:alnum:]]", " ", str);
+		return (str);
+		}
+	if(which == "alpha")
+		{
+		str = gsub("[^[:alpha:]]", " ", str);
+		return (str);
+		}
+	if(which == "numeric")
+		{
+		str = gsub("[^[:digit:]]", " ", str);
+		return (str);
+		}
+	
+	str; # maybe just ascii move 
+	}
 
 #' strPadLeft
 #'

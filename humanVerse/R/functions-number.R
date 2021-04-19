@@ -61,8 +61,9 @@ is.whole.number = function(x, tol = sqrt(.Machine$double.eps))
 #' is.positive(-1);
 #' is.positive(c(-1*1:5,1:5));
 #'
-is.positive = function(x, tol = sqrt(.Machine$double.eps))
+is.positive = function(x, ..., tol = sqrt(.Machine$double.eps))
   {
+  more = unlist(list(...)); x = c(x, more);
   x > tol;
   }
 
@@ -81,8 +82,9 @@ is.positive = function(x, tol = sqrt(.Machine$double.eps))
 #' is.negative(-1);
 #' is.negative(c(-1*1:5,1:5));
 #'
-is.negative = function(x, tol = sqrt(.Machine$double.eps))
+is.negative = function(x, ..., tol = sqrt(.Machine$double.eps))
   {
+  more = unlist(list(...)); x = c(x, more);
   x < ( -1 * tol );
   }
 
@@ -118,8 +120,10 @@ is.negative = function(x, tol = sqrt(.Machine$double.eps))
 #' get.sign( sin(pi), tol = .Machine$double.eps^2 );
 #' get.sign( -sin(pi), tol = .Machine$double.eps^2  );
 #'
-get.sign = function(xs, other=NA, return="number", tol = sqrt(.Machine$double.eps))
+get.sign = function(xs, ..., other=NA, return="number", tol = sqrt(.Machine$double.eps))
 	{
+	more = unlist(list(...)); xs = c(xs, more);
+	
 	myval = cval = other;
 	out = c();
 	for(x in xs)
@@ -274,8 +278,9 @@ isClose = function(a,b, tol=sqrt(.Machine$double.eps) )
 #' x = c(sin(pi), -sin(pi));
 #' zeroIsh(x);
 #' zeroIsh(x, 8);
-zeroIsh = function(x, digits=getOption("digits"))
+zeroIsh = function(x, ..., digits=getOption("digits"))
   {
+  more = unlist(list(...)); x = c(x, more);
   # zapsmall has log10 feature
 
   # positive values

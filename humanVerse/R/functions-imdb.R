@@ -71,21 +71,8 @@ IMDB.getPersonInfo = function(nmid, return.cols=NULL, imdb=imdb.data$all.actors.
 #' @export
 IMDB.getMoviesForPerson = function(nmid, return.cols=NULL, imdb=imdb.data)
   {
-  # $all.actors.movies
-  # $$all.actors.rank
-  # inner join with rank / character names ??
-  # movies info, just a few cols ...
   info = imdb$all.actors.rank[imdb$all.actors.rank$nmid == nmid, ];
-
-  # character name here as well?  From a different dataset ...
-  # https://www.datasciencemadesimple.com/join-in-r-merge-in-r/
   info.more = merge(info, imdb$all.actors.movies, by="ttid");
-
-  #characters = imdb$all.movies.actors.characters[
-   #                 imdb$all.movies.actors.characters$nmid == nmid,];
-
-  #info.even.more = merge(info.more, imdb$all.movies.actors.characters, by="nmid");
-
   info.more = sortDataFrameByNumericColumns(info.more,"rank", "ASC");
 
   if(is.null(return.cols)) { info.more; } else { info.more[, return.cols]; }
@@ -104,25 +91,9 @@ IMDB.getMoviesForPerson = function(nmid, return.cols=NULL, imdb=imdb.data)
 #' @export
 IMDB.getActorsFromMovie = function(ttid, return.cols=NULL, imdb=imdb.data)
   {
-  # $all.actors.movies
-  # $$all.actors.rank
-  # inner join with rank / character names ??
-  # movies info, just a few cols ...
   info = imdb.data$all.movies.actors.characters[imdb.data$all.movies.actors.characters$ttid == ttid, ];
-  # latest function
-  # info = subsetDataFrame(imdb.data$all.movies.actors.characters, "ttid", "==", ttid);
-
-  # character name here as well?  From a different dataset ...
-  # https://www.datasciencemadesimple.com/join-in-r-merge-in-r/
-  # info.more = merge(info, imdb$all.actors.movies, by="ttid");
-
-  #characters = imdb$all.movies.actors.characters[
-   #                 imdb$all.movies.actors.characters$nmid == nmid,];
-
-  #info.even.more = merge(info.more, imdb$all.movies.actors.characters, by="nmid");
   info.more = info;
   info.more = sortDataFrameByNumericColumns(info.more,"actor.rank", "ASC");
-
   if(is.null(return.cols)) { info.more; } else { info.more[, return.cols]; }
   }
 

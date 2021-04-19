@@ -86,53 +86,51 @@ md5 = function(strvec, times=1)
         }
     return( nstrvec );
     } else {
-            if (requireNamespace("digest", quietly = TRUE)) 
+            if (requireNamespace("digest", quietly = TRUE))
               {
               return( md5.digest(strvec,times) );
               } else {
-                      # do INTERNAL .md5 very slow 
-					  n = length(strvec);
-					  nstrvec = character(n);
-					  for(i in 1:n)
-						{
-						nstrvec[i] = .md5(strvec[i]);
-						for(j in 2:times)
-						  {
-						  nstrvec[i] = .md5(nstrvec[i]);
-						  }
-						}
-					  return( nstrvec );				  
+                      # do INTERNAL .md5 very slow
+          					  n = length(strvec);
+          					  nstrvec = character(n);
+          					  for(i in 1:n)
+          						{
+          						nstrvec[i] = .md5(strvec[i]);
+          						for(j in 2:times)
+          						  {
+          						  nstrvec[i] = .md5(nstrvec[i]);
+          						  }
+          						}
+          					  return( nstrvec );
                       }
 
             }
 	# should never get here with SLOW INTERNAL
-  stop("`openssl` or `digest` must be installed to use `md5()`"); 
+  stop("`openssl` or `digest` must be installed to use `md5()`");
   }
 
 
 
-# if (!requireNamespace("digest", quietly = TRUE)) {
-#         stop("`digest` must be installed to use `source_url()`",
-#             call. = FALSE)
-#     }
 
-
-
-
-
-
-# > .md5("monte")
-# [1] "ae442b3eb02781e25f556cee2bb3eec3"
-# > "ae442b3ec02781e25f556cee2bb3eec3"
-# [1] "ae442b3ec02781e25f556cee2bb3eec3"
-# >
-# s = "The quick brown fox jumps over the lazy dog";
-# "9e107d9d372bb6826bd81d3542a419d6"
-# http://md5.mshaffer.com/
+#' .md5
+#'
+#' This is a univariate function ...
+#'
+#' @param s a string as an input
+#'
+#' @return an md5-string output
+#' @export
+#'
+#' @examples
+#' .md5("The quick brown fox jumps over the lazy dog");
+#' .md5("alex 22");
 .md5 = function(s)
   {
-  s = s[1]; # this is not vectorized ... very slow 
-  # change to strlen soon
+  # http://md5.mshaffer.com/         ... circa 2005 ???
+  # http://md5.mshaffer.com/md5.js
+  # https://tools.ietf.org/html/rfc1321 ... ported from c -> javascript -> R
+
+  s = s[1]; # this is not vectorized ... very slow
   w = 8 * nchar( as.character(s), type="chars");
   hex = "0123456789abcdef";
   # w is length, so >>> should be >>
@@ -307,12 +305,23 @@ md5 = function(strvec, times=1)
     idx = 1 + bitwAnd( bitwShiftR( xb[ (bitwShiftR(i,2) + 1)] ,  ((i%%4)*8)), 0xF);
       o = paste0(o, charAt(hex,idx) );
     }
-  o;
+	o = setAttribute("xb", xb, o);
+	o;
   }
 
 
+#' .md5_out
+#'
+#' @param xb Vector of 4 integer keys
+#'
+#' @return md5 output of those integer keys
+#' @export
+#'
+#' @examples
+#' .md5_out();
 .md5_out = function(xb = c(-1652748130, -2101990601, 891148395, -702962622))
   {
+
   hex = "0123456789abcdef";
   o = "";
   for(i in 0:15)
@@ -322,6 +331,7 @@ md5 = function(strvec, times=1)
     idx = 1 + bitwAnd( bitwShiftR( xb[ (bitwShiftR(i,2) + 1)] ,  ((i%%4)*8)), 0xF);
       o = paste0(o, charAt(hex,idx) );
     }
+  o = setAttribute("xb", xb, o);
   o;
   }
 

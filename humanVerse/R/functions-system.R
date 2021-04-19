@@ -2,12 +2,12 @@
 # # source('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-file.R')
 
 
-returnList = function(res)
+returnList = function(res, unlist=TRUE)
 	{
 	nr = length(res);
 		if(nr == 0) { return (NULL); }
 		if(nr == 1) { return (res[[1]]); }
-	unlist(res);	
+	if(unlist) { unlist(res); } else { res; }	
 	}
 	
 	

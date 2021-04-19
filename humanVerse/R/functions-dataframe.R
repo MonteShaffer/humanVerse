@@ -22,6 +22,22 @@ callOrderFunctionWithMatrixInput = function(mat)
 
 
 
+#' assignColumnsTypeInDataFrame
+#'
+#' @param cols Names of columns to assign
+#' @param type Assignment type:  "numeric" or "integer" or "character"
+#' @param df dataframe
+#'
+#' @return dataframe updated
+#' @export
+#'
+#' @examples
+#' library(datasets);
+#' data(iris);
+#' mydf = iris; head(mydf);
+#' mycols = c("Sepal.Width","Petal.Width");
+#' mydf = assignColumnsTypeInDataFrame(mycols, "integer", mydf);
+#' head(mydf);
 assignColumnsTypeInDataFrame = function(cols, type, df)
 	{
 	type = trimMe(tolower(type));
@@ -38,14 +54,14 @@ assignColumnsTypeInDataFrame = function(cols, type, df)
 			{
 			df[[col]] = as.integer( df[[col]] );
 			}
-		}	
+		}
 	if(type == "character")
 		{
 		for(col in cols)
 			{
 			df[[col]] = as.character( df[[col]] );
 			}
-		}	
+		}
 	df;
 	}
 
@@ -247,16 +263,6 @@ subsetDataFrame = function(df, mycols=mycols, comparison="==", myvals=myvals, lo
   }
 
 
-
-mergeDataFrames = function(df1,df2,merge.col,extra="")
-  {
-  # MORE TODO HERE
-  # https://www.datasciencemadesimple.com/join-in-r-merge-in-r/
-  # extra == "cross-join"
-
-
-
-  }
 
 #' removeColumnsFromDataFrame
 #'
@@ -856,7 +862,7 @@ sortDataFrameByNumericColumns = function (df, mycols, direction="DESC")
 
 
 
-##############################
+############################## Factors ##############################
 
 
 

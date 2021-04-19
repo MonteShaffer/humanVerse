@@ -1,25 +1,119 @@
 
+#' .color.average
+#'
+#'
+#' This is univariate
+#'
+#' @param a.hex The first color 'a' in hexcolor form
+#' @param b.hex The second color 'b' in hexcolor form
+#'
+#' @return An "average" color in hexcolor form
+#' @export
+#'
+#' @examples
+#' .color.average("#abcdef", "#123456");
+.color.average = function(a.hex, b.hex)
+  {
+  # maybe write generic color "function", FUN = mean
+  a.rgb = checkRGB(a.hex);
+  b.rgb = checkRGB(b.hex);
 
-## moved to functions-memory.R
-# initColorMemory = function(purge.memory = FALSE, verbose = FALSE)
-  # {
-  # initMemory();
+  n.rgb = (a.rgb + b.rgb) / 2 ;
+  rgb2hex(n.rgb);
+  }
 
 
-  # if(!exists("color", .GlobalEnv$.humanVerse) || purge.memory)
-    # {
-    # if(verbose)
-      # {
-	    # cat("humanVerse::initColorMemory ... initializing list '.humanVerse[[\"color\"]]'", "\n");
-      # }
-    # .GlobalEnv$.humanVerse[["colors"]] = list();
-		# .GlobalEnv$.humanVerse[["colors"]][["random"]] = list();  			# captures get/set seed
-		# .GlobalEnv$.humanVerse[["colors"]][["lists"]] = list();				# keyed lists of hex with "alpha" maybe
-		# .GlobalEnv$.humanVerse[["colors"]][["dataframes"]] = list();		# cached tables
-		# .GlobalEnv$.humanVerse[["colors"]][["nearest"]] = list();			# cached "nearest-color" index
-		# .GlobalEnv$.humanVerse[["colors"]][["search"]] = list();			# cached "search" history
-    # }
-  # }
+
+#' color.setOpacity
+#'
+#' @param hexvec color in hexform
+#' @param opacity opacity level from 0 to 100
+#'
+#' @return a hexform in RGBa format
+#' @export
+#'
+#' @examples
+#' color.setOpacity("#abcdef", 0);
+#' color.setOpacity("#abcdef", 50);
+#' color.setOpacity("#abcdef", 100);
+color.setOpacity = function(hexvec, opacity=100)
+	{
+	hexvec = checkHEX(hexvec);  # this allows "color.names"
+	alpha = dechex(255 * opacity/100, n=2);
+	paste0(hexvec,alpha);
+  }
+
+
+#' color.buildTable
+#'
+#' @param colvec This is the colors we wish to include in our table
+#' (a subset of the function ?colors)
+#' @param key This is where we cache the listname tied to colvec
+#' @param save.key This is where we cache the output dataframe generated
+#'
+#' @return dataframe with color (name), hex.color, r, g, b
+#' @export
+#'
+#' @examples
+#' color.buildTable();
+color.buildTable = function(colvec=NULL, key=NULL, save.key=NULL)
+	{
+  # we need to cache this in "last" memory
+	# colvec is cached as "key"  ... auto-caching
+	# the output of this function is cached as "save.key" ... must be specified to cache
+	if(is.null(colvec))
+		{
+		if(!is.null(key))
+			{
+			if(exists(key, .GlobalEnv$.humanVerse[["colors"]][["lists"]]))
+				{
+				colvec = .GlobalEnv$.humanVerse[["colors"]][["lists"]][[key]];
+				}
+			}
+		if(is.null(colvec)) { key = "ALL"; colvec = grDevices::colors(TRUE); }  # not found, so let's set to default 'ALL'
+		}
+
+	if(is.null(key)) { key = md5.object( colvec ); } # make a "hash-table" of an un-named list
+
+
+  if(!is.character(save.key)) { save.key = md5.object(getFunctionParameters(TRUE)); }
+		  cat("\n", "save.key:", save.key, "\n\n");
+
+	if(exists(save.key, .GlobalEnv$.humanVerse[["colors"]][["dataframes"]]))
+			{
+			return( .GlobalEnv$.humanVerse[["colors"]][["dataframes"]][[save.key]] );
+	    }
+
+	n = length(colvec);
+	hvec = character(n);
+	r = g = b = numeric(n);
+
+	for(i in 1:n)
+		{
+		color = colvec[i];
+		rgb = cleanupRGB( grDevices::col2rgb(color) );
+		hvec[i] = rgb2hex( rgb );
+		r[i] = rgb[1]; g[i] = rgb[2]; b[i] = rgb[3];
+		}
+
+	df = as.data.frame(cbind(colvec, hvec, r, g, b));
+		colnames(df) = c("color", "hex.color", "r", "g", "b");
+
+	df = assignColumnsTypeInDataFrame(c("r","g","b"), "numeric", df);
+
+	df = setAttribute("key", key, df);
+	df = setAttribute("save.key", save.key, df);
+
+	.GlobalEnv$.humanVerse[["colors"]][["dataframes"]][[key]] = df; # stored in memory
+  .GlobalEnv$.humanVerse[["colors"]][["dataframes"]][[save.key]] = df;
+
+
+	df;
+	}
+
+
+
+
 
 
 
@@ -49,14 +143,620 @@ color.nameSearch = function(skey, colors.df = NULL, col.name="color", ...)
 
 
 
-# as.hexmode(333)
-# base::strtoi
-# strtoi(c("0xff", "077", "123"))  # string to integer
-# For decimal strings as.integer is equally useful.
-# stringToInteger( c("0xff", "077", "123"), TRUE );
-# stringToInteger( c("0xff", "077", "123"), FALSE );
+
+
+
+
+
+
+# ALMOST WORKING CORRECTLY ...
+# color.findNearestName("#8B8378", how.many = 12, scale.me = TRUE);
+color.findNearestName = function(hex, how.many = 1, scale.me = TRUE, how="distance", ...)
+	{
+	hex = checkHEX(hex);
+	  if(is.null(hex)) { return (NULL); }
+
+	# we need a caching mechanism on this ...
+	df = color.buildTable();
+#################  SEE if HEX is in the TABLE  #################
+	## let's just look for it ...
+		color.idx = which(df$hex.color == hex);
+	if(length(color.idx) > 0)
+		{
+		res = df$color[color.idx];
+		x = res;
+			x = setAttribute("match", "exact", x);
+			x = setAttribute("distance", 0, x);
+			x = setAttribute("hex", rgb2hex(grDevices::col2rgb( res )), x);
+		return (x);
+		} # should just be one, but maybe more
+
+#################  USE DISTANCE/COSINE SIMILARITY  #################
+	rgb = cleanupRGB( hex2rgb(hex) );
+		r = rgb[1];
+		g = rgb[2];
+		b = rgb[3];
+	row = c("===search===", hex, r, g, b);
+
+	df = rbind(row, df);
+	df = assignColumnsTypeInDataFrame(c("r","g","b"), "numeric", df);
+
+
+	Xs = ( as.matrix( cbind(df$r, df$g, df$b) ) );
+		if(scale.me) { Xs = scale(Xs); }
+
+	if(how == "difference")
+		{
+		# is this not "manhattan"
+		vsearch = Xs[1,];
+		vcolors = Xs[-c(1),];
+
+		vdiff = abs(vcolors - vsearch);
+		vdiff.rowS = rowSums(vdiff);
+
+		names(vdiff.rowS) = df$color[-c(1)];
+
+		one = sort(vdiff.rowS);
+
+		res = one[1:how.many];
+		x = names(res);
+			x = setAttribute("match", "difference", x);
+			x = setAttribute("distance", as.numeric( res ), x);
+			x = setAttribute("hex", rgb2col(grDevices::col2rgb( names(res) )), x);
+		return (x);
+		}
+	if(how == "distance")
+		{
+		X.d = stats::dist( Xs, method="euclidean");
+		X.m = round( as.matrix(X.d), 2);
+		X.df = as.data.frame( X.m );
+			colnames(X.df) = rownames(X.df) = df$color;
+
+		one = X.df[,1]; names(one) = df$color;
+		one = one[-c(1)];  # first is "self"
+		one = sort(one);
+
+		res = one[1:how.many];
+		x = names(res);
+			x = setAttribute("match", "distance", x);
+			x = setAttribute("distance", as.numeric( res ), x);
+			x = setAttribute("hex", rgb2col(grDevices::col2rgb( names(res) )), x);
+		return (x);
+		}
+	if(how == "cosine")
+		{
+	  vsearch = Xs[1,];
+	      vsearch = setAttribute("name", df$color[1], vsearch);
+	      # names(vsearch) = df$color[1];
+		vcolors = Xs[-c(1),];
+		    names(vcolors) = rownames(vcolors) = df$color[-c(1)];
+
+		vCosine = computeCosineSimilarity(vsearch, vcolors);
+		  vCosine$name = df$color;
+		  rownames(vCosine) = df$color;
+		vCosine = assignColumnsTypeInDataFrame(c("cosine.similarity"), "numeric", vCosine);
+
+		# vsearch = Xs[1,];
+		# vcolors = Xs[-c(1),];
+
+	  # https://stackoverflow.com/questions/1746501/
+	  # a = c(2,1,0,2,0,1,1,1)
+	  # b = c(2,1,1,1,1,0,1,1)
+	  # d = (a %*% b) / (sqrt(sum(a^2)) * sqrt(sum(b^2)))
+
+	  ## OR
+
+	  # e = crossprod(a, b) / (sqrt(crossprod(a, a)) * sqrt(crossprod(b, b)))
+
+
+		# v.cos = cosine(vsearch, vcolors); # raw no distance or SVD
+
+		# https://stackoverflow.com/questions/18946966/
+		# X.d = stats::dist( Xs, method="euclidean");
+		# X.m = round( as.matrix(X.d), 2);
+		# X.df = as.data.frame( X.m );
+		# 	colnames(X.df) = rownames(X.df) = df$color;
+
+
+
+
+		## library(lsa); # very slow, replace
+		#X.cos = as.data.frame( 1 - round( cosine(X.m),4 ) );
+		#	colnames(X.df) = rownames(X.df) = df$color;
+
+		#one = X.cos[,1]; names(one) = df$color;
+
+
+		## similarity is closeness, distance is farness
+		one = 1 - vCosine$cosine.similarity;  names(one) = df$color;
+		one = one[-c(1)];   # first is "self"
+
+		one = sort(one);  # what if I have negative values ?
+
+		res = one[1:how.many];
+		x = names(res);
+			x = setAttribute("match", "cosine", x);
+			x = setAttribute("distance", as.numeric( res ), x);
+			x = setAttribute("hex", rgb2col(grDevices::col2rgb( names(res) )), x);
+		return (x);
+		}
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+# we need to cache this in "last" memory
+# accessor can get elements without having to rebuild
+color.chromatics = function(rgb, n = 12, save.key = NULL) # mono steps of monochronic ... half on "white" / half on "black"
+	{
+
+	if(!is.null(save.key))
+		{
+		if(!is.character(save.key)) { save.key = md5.object(getFunctionParameters(TRUE)); }
+		cat("\n", "save.key:", save.key, "\n\n");
+		if(exists(save.key, .GlobalEnv$.humanVerse[["colors"]][["dataframes"]]))
+			{
+			return( .GlobalEnv$.humanVerse[["colors"]][["dataframes"]][[save.key]] );
+			}
+		}
+
+	if(length(rgb) == 1) { rgb = hex2rgb(rgb); } # they can pass in "hex"
+	hex = rgb2hex(rgb);
+
+	n2 = ceiling(n/2);  # 11 will do 13 ... original doesn't count ...
+	res = c( color.colorsInGradient(n2+1, c("#FFFFFF", hex)),
+	            hex,
+	         color.colorsInGradient(n2+1, c(hex, "#000000"))
+	        );
+	res = unique(res);
+
+	which.hex = which(res == hex)[1];
+	idx = -1*( 1:length(res) - which.hex );
+
+	df = as.data.frame(cbind(idx, res));
+		colnames(df) = c("index", "hex.color");
+		df = setAttribute("hex", hex, df);
+		df = setAttribute("rgb", unlist(rgb), df);
+
+		df = setAttribute("save.key", save.key, df);
+	# cache it ...
+	if(!is.null(save.key))
+		{
+		.GlobalEnv$.humanVerse[["colors"]][["dataframes"]][[save.key]] = df;
+		}
+
+
+	df;
+	}
+
+
+
+## http://c.mshaffer.com/js/colorpicker/functions.colors.js
+# we need to cache this in "last" memory
+# accessor can get elements without having to rebuild
+# - complement, split, split-complement, triad, square, rectangle, and so on ...
+color.buildWheel = function(rgb, wheel.steps = 12, find.names=FALSE)  # wheel steps needs to be divisible by 360?
+	{
+	if(length(rgb) == 1) { rgb = hex2rgb(rgb); } # they can pass in "hex"
+	hex = rgb2hex(rgb);
+
+	hsl = rgb2hsl(rgb);
+	hsl = as.numeric( unlist( hsl ) );
+		h = hsl[1];
+		s = hsl[2];
+		l = hsl[3];
+
+	res = character(wheel.steps);
+	names = character(wheel.steps);
+	myh = numeric(wheel.steps);
+	deg = numeric(wheel.steps);
+	one.step = 360 / wheel.steps;
+	degrees = 0;
+	  my.hex = rgb2hex(rgb); # starting color ... this is also the ending color, but fine
+	  if(find.names)
+	    {
+	    my.name = color.findNearestName(my.hex);
+	    if(getAttribute("match",my.name) != "exact") { my.name = paste0("~",my.name); }
+	    } else { my.name = my.hex; }
+	res[1] = my.hex;
+	names[1] = my.name;
+	myh[1] = h;
+	deg[1] = degrees;
+	for(i in 2:wheel.steps)
+		{
+		degrees = degrees + one.step;
+		h2 = as.integer( round( one.step + h ) );
+			h2 = h2 %% 360;
+			# update hsl
+			hsl[1] = h2;
+
+		my.hex = rgb2hex( hsl2rgb(hsl) );
+		if(find.names)
+	    {
+	    my.name = color.findNearestName(my.hex);
+	    if(getAttribute("match",my.name) != "exact") { my.name = paste0("~",my.name); }
+	    } else { my.name = my.hex; }
+		my.name = color.findNearestName(my.hex);
+	    if(getAttribute("match",my.name) != "exact") { my.name = paste0("~",my.name); }
+		res[i] = my.hex;
+	  names[i] = my.name;
+		deg[i] = degrees;
+		h = h2;
+		myh[i] = h;
+		}
+
+	df = as.data.frame(cbind(deg, res, names, myh));
+		colnames(df) = c("degrees", "hex.color", "color.names", "wheel");
+
+		df = setAttribute("hex", hex, df);
+		df = setAttribute("rgb", unlist(rgb), df);
+
+
+	df;
+	}
+
+
+
+
+color.webSafeHEX = function(rgb)
+	{
+	rgb = checkRGB(rgb);
+	r = rgb[1];
+	g = rgb[2];
+	b = rgb[3];
+
+	doMod = function(x)
+		{
+		xMod = x %% 51;
+		if(xMod <= 25) { floor(x/51) * 51; } else { ceiling(x/51) * 51; }
+		}
+
+	rgb = list(
+			"r" = doMod(r),
+			"g" = doMod(g),
+			"b" = doMod(b)
+			);
+
+	rgb2hex(rgb);
+	}
+
+color.randomHEX = function(n=1, my.seed=NULL, key=NULL)
+	{
+	if(!is.null(key))
+		{
+		if(exists(key, .GlobalEnv$.humanVerse[["colors"]][["random"]]))
+			{
+			my.seed = .GlobalEnv$.humanVerse[["colors"]][["random"]][[key]];
+			}
+		} else { key = "last"; }
+
+	if(is.null(my.seed))
+		{
+		setSeed(NULL,"color"); my.seed = getSeed("color");
+		}
+	.GlobalEnv$.humanVerse[["colors"]][["random"]][[key]] = my.seed;
+	setSeed(my.seed,"color"); my.numbers = rand(2^1 - 1, (2^8)^3 - 1, n);
+
+	my.hexs = paste0("#",dechex(my.numbers, n=6));
+	my.hexs;
+	}
+
+
+# source('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-random.R')
+# source('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-memory.R')
+# source('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-colors.R')
+# source('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-str.R')
+
+color.randomRGB = function(n=1, my.seed=NULL, key=NULL)
+	{
+	my.hexs = color.randomHEX(n=n, my.seed=my.seed, key=key);
+	rgb = hex2rgb( my.hexs );
+	rgb = cleanupRGB(rgb);
+
+	rgb;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+color.roundHEX = function(rgb, n=3, full=FALSE)
+	{
+	# this round "FA" to "FC", "FD" to "FF"
+	rgb = checkRGB(rgb);
+	if(full)  # this rounds at the whole "FF" value, not just the last element ...
+		{
+		r = rgb[1];
+		g = rgb[2];
+		b = rgb[3];
+
+		doMod = function(x)
+			{
+			xMod = x %% n;
+			floor(x/n) * n;
+			}
+
+		rgb = list(
+				"r" = doMod(r),
+				"g" = doMod(g),
+				"b" = doMod(b)
+				);
+
+		rgb2hex(rgb);
+		} else {
+				# round at just the last hex value
+				hex = rgb2hex(rgb);
+				hex = str_replace("#", "", hex);
+				hexV = charVector(hex);
+				decV = hexdec(hexV);
+					decV[2] = doMod(decV[2]);
+					decV[4] = doMod(decV[4]);
+					decV[6] = doMod(decV[6]);
+				hexV[2] = dechex(decV[2], n=1);
+				hexV[4] = dechex(decV[4], n=1);
+				hexV[6] = dechex(decV[6], n=1);
+
+				hex = paste0("#", paste(hexV, collapse=""));
+				hex;
+				}
+	}
+
+
+color.plotWheel = function(df = color.buildWheel("red"), harmony="all")
+  {
+  df = assignColumnsTypeInDataFrame(c("degrees","wheel"), "numeric", df);
+  # subset df based on elements that fit with harmony value
+    # - complement ... 180 degrees from original
+    # - split-complement ... 150/210 degrees from original
+    # - analagous  ... +30/-30 degrees from original
+    #               (split ... inverse of split-complement)
+    # - triad ... +120/-120 degrees from original
+    # - square ... +90/-90/+180
+    # - rectangle ... complement, +30 and it's complement
+
+  # blank canvas
+  graphics::plot.new( );
+  graphics::plot.window(
+              xlim=c(-1.5,1.5), # unit circle is 1
+              ylim=c(-1.5,1.5),
+              log="",
+              graphics::par(mar=c(0.25, 0.25, 0.25, 0.25)) # outer margins
+            );
+
+  # maybe put a marker like a clock on 12 ("up")
+  # figure out the aspect ratio
+  radius = 1;
+      x0 = 0;
+      y0 = 0; # center of circle
+
+  plotrix::draw.circle(x0,y0, radius, col="gray");
+
+    original = df[1,];
+      x = x0 + radius * sin( deg2rad( original$wheel ) );
+      y = y0 + radius * cos( deg2rad( original$wheel ) );
+        plotrix::draw.circle(x,y, radius/3, col=original$hex.color);
+        graphics::text(x,y, adj=c(0.5,0.5), cex=1, labels=original$hex.color);
+            # maybe add names to wheel.table
+            # maybe write function "best contrast" to determine
+            # foreground color
+
+    remaining = df[-c(1),];
+    nr = dim(remaining)[1];
+    for(i in 1:nr)
+      {
+      x = x0 + radius * sin( deg2rad( remaining$wheel[i] ) );
+      y = y0 + radius * cos( deg2rad( remaining$wheel[i] ) );
+        plotrix::draw.circle(x,y, radius/6, col=remaining$hex.color[i]);
+        graphics::text(x,y, adj=c(0.5,0.5), cex=1/2, labels=remaining$hex.color[i]);
+      }
+
+  }
+
+
+color.displayColorOptions = function(my.colors = grDevices::colors(),
+                              showHEX = FALSE,
+                              alpha = TRUE, # works with showHEX = TRUE
+                              xlim=c(0,10),
+                              ylim=c(0,10),
+                              cex = 0.75,
+                              ncol=2, nrow=10)
+  {
+  # http://www.sthda.com/english/wiki/colors-in-r
+
+  ## build a collection of graphs, each two columsn ...
+  ## limit the total number per row of a column ... pagination ...
+  ## how to let them copy it?  identify? clipboard?
+  nc = length(my.colors);
+  per.page = ncol*nrow;
+  pages = ceiling(nc / per.page);
+
+  i = 1;
+  page = 1;
+
+  xunit = diff(xlim) / ncol;
+  yunit = diff(ylim) / nrow;
+
+  while(page <= pages)
+    {
+    xstart = xlim[1];
+    ystart = ylim[2];
+    graphics::plot.new( );
+    graphics::plot.window(
+                xlim=xlim,
+                ylim=ylim,
+                log="",
+                graphics::par(mar=c(0.25, 0.25, 0.25, 0.25))
+
+              );
+
+    for(c in 1: ncol)
+      {
+      xleft = xstart + (c-1) * xunit;
+      ytop  = ystart;
+      for(r in 1: nrow)
+        {
+        mycolor = as.character(my.colors[i]);
+        if(is.na(mycolor)) { break; break; }
+        mycolor.name = names(my.colors)[i];
+
+        hexcolor = rgb2col( grDevices::col2rgb(mycolor, alpha=alpha)  );
+
+        if(is.null(mycolor.name)) { mycolor.name = mycolor;}
+
+        if(!showHEX)
+          {
+          mycolor.label = paste0(mycolor.name, "  ...  ", i);
+          } else {
+                  mycolor.label = paste0(mycolor.name, "  .  ", i ,
+                          "  .  ", hexcolor   );
+                  }
+
+
+
+
+        xright  = xleft + xunit;
+        ybottom = ytop - yunit;
+
+        graphics::rect(xleft, ybottom, xright, ytop, col=hexcolor);  # hexcolor is safer
+
+          top.y = mean(c(ytop,ytop,ytop,ybottom));
+        graphics::text(xleft, top.y, label=mycolor.label,
+                              cex=cex, pos=4, col="black");
+          bottom.y = mean(c(ytop,ybottom,ybottom,ybottom));
+        graphics::text(xleft, bottom.y, label=mycolor.label,
+                              cex=cex, pos=4, col="white");
+
+        i = 1 + i;
+        ytop = ybottom;
+        }
+      ytop  = ystart;
+      }
+    page = 1 + page;
+    }
+  }
+
+
+
+
+
+################### HELPER FUNCTIONS ###################
+
+
+#' color.colorsInGradient
+#'
+#' @param n Number of colors to return
+#' @param colvec Vector of color names "red" or RGB "#FF0000" or RGBa "#4169E1FF"
+#' @param alpha Pass transparency filter "alpha" as TRUE or FALSE
+#'
+#' @return vector of colors in RGB or RGBa form (depending on alpha)
+#' @export
+#'
+#' @examples
+#'
+#' color.colorsInGradient(4, c("red", "royalblue"));
+#' color.colorsInGradient(4, c("#FF000000", "#FF0000FF"), TRUE);  # red through alphas
+#' color.colorsInGradient(4, c("#FF000000", "#4169E1FF"), TRUE);
+#'
+color.colorsInGradient = function(n, colvec=c("red","royalblue"), alpha=FALSE)
+  {
+  # alpha doesn't seem to work as expected ... unless I pass in RGBa?
+  grDevices::colorRampPalette(colvec, alpha=alpha)(n);
+  }
+
+
+
+#' rgb2col
+#'
+#' Reverse the built-in grDevices::col2rgb function
+#' [ See grDevices::convertColor or grDevices::make.rgb ]
+#'
+#' @param x vector of colors
+#'
+#' @return vector of colors in RGB hex format
+#' @export
+#'
+#' @examples
+#'
+#' rgb2col( grDevices::col2rgb("red") );
+#' rgb2col( grDevices::col2rgb("red", alpha=TRUE) );
+#' rgb2col( grDevices::col2rgb("#FF0000FF", alpha=TRUE) );
+#' rgb2col( grDevices::col2rgb("#FF000033", alpha=TRUE) );
+#'
+rgb2col = function(x)
+  {
+  # reverses grDevices::col2rgb function
+  x.n = dim(x)[1];
+  if(x.n == 4)
+    {
+    x.rgb = t(x[1:4,]) /255;
+    grDevices::rgb(   as.numeric(x.rgb[,1]),
+                      as.numeric(x.rgb[,2]),
+                      as.numeric(x.rgb[,3]),
+                      as.numeric(x.rgb[,4]),
+      names=rownames(x.rgb) );
+    } else {
+            x.rgb = t(x[1:3,]) /255;
+            grDevices::rgb( x.rgb, names=rownames(x.rgb) );
+            }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+#' stringToInteger
+#'
+#' @param strvec Vector of strings
+#' @param isHEX Are we looking at hexadecimal values
+#'
+#' @return vector of integers
+#' @export
+#'
+#' @examples
+#' stringToInteger( c("0xff", "077", "123"), FALSE );
+#' stringToInteger( c("0xff", "077", "123"), TRUE );
 stringToInteger = function(strvec, isHEX = FALSE)
 	{
+  # as.hexmode(333)
+  # base::strtoi
+  # strtoi(c("0xff", "077", "123"))  # string to integer
+  # For decimal strings as.integer is equally useful.
 	if(isHEX)
 		{
 		strtoi( tolower(strvec) );  # we could have other "base 10"?
@@ -66,28 +766,66 @@ stringToInteger = function(strvec, isHEX = FALSE)
 	}
 
 
-# http://php.net/manual/en/function.hexdec.php
-# http://php.net/manual/en/function.dechex.php
-# java conversions:: http://www.cs.rit.edu/~ncs/color/t_convert.html
-#	http://www.easyrgb.com/math.php?MATH=M19#text19
+
 
 # DDEECC -> rounds to dcedcb
 # hexadecimal to decimal
 # hexdec("FF");
 # alias hex2dec
+
+
+#' hexdec
+#'
+#' Converts a hexadecimal to decimal
+#'
+#' @param hexstr vector of one or more hex values as a string
+#' @param ... vector of one or more hex values as a string
+#'
+#' @return vector of one or more integer values
+#' @export
+#' @alias hex2dec
+#'
+#' @examples
+#' hexdec("FF");
+#' hexdec("0xFFFF");
+#' hexdec("0xFFFF", "#FF");
 hexdec = function(hexstr, ...)
 	{
+  # http://php.net/manual/en/function.hexdec.php
+  # http://php.net/manual/en/function.dechex.php
+  # java conversions:: http://www.cs.rit.edu/~ncs/color/t_convert.html
+  #	http://www.easyrgb.com/math.php?MATH=M19#text19
+
 	more = unlist(list(...));
 	hexstr = c(hexstr, more);
 
+	# if it has "color" pre-pend, remove it ...
+	hexstr = str_replace("#", "", hexstr);
 	# rather than checking, let's remove and add leading "0x"
 	hexstr = paste0("0x", str_replace("0x", "", trimMe(tolower(hexstr))) );
 	stringToInteger(hexstr, TRUE);
 	}
 
-# decimal to hexadecimal
-# alias dec2hex
-dechex = function(intdec, ..., n=NULL)
+
+
+
+#' dechex
+#'
+#' Converts a decimal to hexadecimal
+#'
+#' @param intdec vector of one or more integer values
+#' @param ... vector of one or more integer values
+#' @param n Should we prepend some zeroes, if so how many?
+#' @param hash Should we pre..pre-pend the "#" for colors?
+#'
+#' @return vector of one or more hex values as a string
+#' @export
+#' @alias dec2hex
+#'
+#' @examples
+#' dechex(123,255,50, n=2, hash=FALSE);
+#' dechex(16581375,12581375,50, n=6, hash=TRUE);
+dechex = function(intdec, ..., n=NULL, hash=FALSE)
 	{
 	more = unlist(list(...));
 	intdec = c(intdec, more);
@@ -95,6 +833,7 @@ dechex = function(intdec, ..., n=NULL)
 	res = toupper( as.character( as.hexmode( as.integer( round(intdec) ) ) ) );
 	# if the vector already has two-character mode ... dechex( 0:255);  ... n is not necessary
 	if(!is.null(n)) { res = strPadLeft( res, n, "0"); 	}
+	if(hash) { res = paste0("#",res); }
 	res;
 	}
 
@@ -108,33 +847,67 @@ dechex = function(intdec, ..., n=NULL)
 # hex2rgb( "#abcdef" );
 # as.numeric( unlist( hex2rgb( "abcdef" ) ) );
 # unlist( hex2rgb( "ABC" ) );
-hex2rgb = function(hex, ...)
+
+
+#' hex2rgb
+#'
+#' Converts a hexform of color to rgb form
+#' Input can be of RGB or RRGGBB hexadecimal form
+#' Input can also be a named color
+#'
+#' @param hexvec vector of one or more hexforms of color
+#' @param ... vector of one or more hexforms of color
+#'
+#' @return list of one or more rgb forms of color
+#' @export
+#'
+#' @examples
+#' hex2rgb("#FF0000");
+#' hex2rgb(c("#FF0000", "#00FF00"));
+#' hex2rgb("#FF0000", "#FFFFFF");
+#'
+#'
+#' hex2rgb("red");
+#' hex2rgb(c("red", "green"));
+#' hex2rgb("red", "white");
+#'
+#' hex2rgb("alex");
+#'
+#' as.numeric( unlist( hex2rgb( "abcdef" ) ) );
+#' unlist( hex2rgb( "ABC" ) );
+#'
+hex2rgb = function(hexvec, ...)
 	{
-		more = unlist(list(...));
-	hex = c(hex, more);
-	# dput(hex);
-	hex = checkHEX(hex);
-	  if(is.null(hex)) { return (NULL); }
-	m = length(hex);
+	more = unlist(list(...));
+	hexvec = c(hexvec, more);
+
+	m = length(hexvec);
 	result = list();
-	hexvec = hex;
+
 	for(i in 1:m)
 		{
 		hex = hexvec[i];
+		hex = checkHEX(hex);
+		if(is.null(hex))
+		  {
+		  res = NA;
+		  } else {
 
-		hex = str_replace("#", "", trimMe(toupper(hex)));
-			hexV = charVector(hex);
-		if(length(hexV) == 3)
-			{
-			#  'FFF' => 'FFFFFF'
-			hexV = c(hexV[1], hexV[1], hexV[2], hexV[2], hexV[3], hexV[3]);
-			}
+          		hex = str_replace("#", "", trimMe(toupper(hex)));
+          			hexV = charVector(hex);
+          		if(length(hexV) == 3)
+          			{
+          			#  'FFF' => 'FFFFFF'
+          			hexV = c(hexV[1], hexV[1], hexV[2], hexV[2], hexV[3], hexV[3]);
+          			}
 
-			res = list(
-					"r" = hexdec( paste(hexV[1:2], collapse="") ),
-					"g" = hexdec( paste(hexV[3:4], collapse="") ),
-					"b" = hexdec( paste(hexV[5:6], collapse="") )
-					);
+          			res = list(
+          					"r" = hexdec( paste(hexV[1:2], collapse="") ),
+          					"g" = hexdec( paste(hexV[3:4], collapse="") ),
+          					"b" = hexdec( paste(hexV[5:6], collapse="") )
+          					);
+		          }
+
 		result[[i]] = res;
 		}
 
@@ -143,16 +916,34 @@ hex2rgb = function(hex, ...)
 
 
 
-# this check if the hex was past; if it was "color", it sees if it can look it up
-# this is a vectorized function ...
+
+#' checkHEX
+#'
+#' This checks a hexadecimal input
+#'
+#' @param hex the hex form of the color
+#'
+#' @return cleansed hex form of the color
+#' @export
+#'
+#' @examples
+#' checkHEX("ABC");  # returns an updated 3-digit form
+#' checkHEX("ABCDEF");
+#' checkHEX("123456");
+#'
+#' checkHEX("red"); # looks this up
+#' checkHEX("alex"); # can't find anything in the lookup
+#'
 checkHEX = function(hex)
 	{
+  # this check if the hex was past; if it was "color", it sees if it can look it up
+  # this is a vectorized function ...
 	hex = str_replace("#", "", trimMe(tolower(hex)));
 
-	###############  CHECK if [hex] is [colorname]  ###############
-	# insert "color" check here ... if it is "red", let's get "hex" from that ...
-	# "^[A-Fa-f0-9]{6}|[A-Fa-f0-9]{3}$"
-	# "^#?(([0-9a-fA-F]{2}){3}|([0-9a-fA-F]){3})$"
+	## CHECK if [hex] is [colorname] ##
+	    # insert "color" check here ... if it is "red", let's get "hex" from that ...
+	    # "^[A-Fa-f0-9]{6}|[A-Fa-f0-9]{3}$"
+	    # "^#?(([0-9a-fA-F]{2}){3}|([0-9a-fA-F]){3})$"
 	#### ALPHA SEARCH FIRST
 	search.alpha = grep("^#?(([0-9a-fA-F]{2}){4}|([0-9a-fA-F]){4})$", hex);
 	if(length(search.alpha) > 0)
@@ -184,19 +975,27 @@ checkHEX = function(hex)
 	}
 
 
-# maybe write generic color "function", FUN = mean
-.color.average = function(a.hex, b.hex)
-  {
-  a.rgb = checkRGB(a.hex);
-  b.rgb = checkRGB(b.hex);
 
-  n.rgb = (a.rgb + b.rgb) / 2 ;
-  rgb2hex(n.rgb);
-  }
-
-# this checks if the rgb was past, if it was hex, it proceeds ...
+#' checkRGB
+#'
+#' This checks a rgb input and replaces a bad "hex"
+#'
+#'
+#' @param rgb the rgb input
+#'
+#' @return cleansed rgb
+#' @export
+#'
+#' @examples
+#'
+#' checkRGB("red");
+#' checkRGB(hex2rgb("red"));
+#' checkRGB(hex2rgb("#F00"));
+#'
 checkRGB = function(rgb)
 	{
+  # this checks if the rgb was past, if it was hex, it proceeds ...
+
 	if(is.null( dim(rgb) ) )
 		{
 		# my.names = sort(unique(names(rgb)));  	# if I did "unlist"
@@ -210,8 +1009,21 @@ checkRGB = function(rgb)
 	cleanupRGB(rgb);
 	}
 
+
+#' cleanupRGB
+#'
+#' @param rgb matrix of rgb values
+#'
+#' @return matrix of rgb values on 255 scale
+#' @export
+#'
+#' @examples
+#'
+#' rgbs = hex2rgb("#F00", "pink");
+#' cleanupRGB(rgbs);
 cleanupRGB = function(rgb)
 	{
+
 	rgb = as.numeric( unlist( rgb ) ); # just in case ...
 		rgb = matrix(rgb, nrow=3);
 
@@ -221,9 +1033,20 @@ cleanupRGB = function(rgb)
 	}
 
 
-# source('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-colors.R')
+#' rgb2hex
+#'
+#' @param rgb matrix of RGB values
+#' @param pre do we want to pre-pend the hash "#" ?
+#'
+#' @return vector of hexform colors
+#' @export
+#'
+#' @examples
+#' rgbs = hex2rgb("#F00", "pink");
+#' rgb2hex(rgbs);#'
 rgb2hex = function(rgb, pre="#")
 	{
+
 	rgb = cleanupRGB(rgb);
 	# print(rgb);
 	paste0(pre, dechex(rgb[1,], n=2), dechex(rgb[2,], n=2), dechex(rgb[3,], n=2) );
@@ -234,8 +1057,19 @@ rgb2hex = function(rgb, pre="#")
 
 
 
+#' hue2rgb
+#'
+#' Converts hue color format to rgb color format
+#'
+#' @param hues matrix of hues
+#'
+#' @return matrix of rgbs
+#' @export
+#'
+#' @examples
 hue2rgb = function(hues)
 	{
+
 	hues = as.numeric( unlist( hues ) ); # just in case ...
 	hues = matrix(hues, nrow=3);
 
@@ -629,672 +1463,3 @@ rgb2cmyk = function(rgb)
 
 
 	}
-
-
-
-# ALMOST WORKING CORRECTLY ...
-# color.findNearestName("#8B8378", how.many = 12, scale.me = TRUE);
-color.findNearestName = function(hex, how.many = 1, scale.me = TRUE, how="distance", ...)
-	{
-	hex = checkHEX(hex);
-	  if(is.null(hex)) { return (NULL); }
-
-	# we need a caching mechanism on this ...
-	df = color.buildTable();
-#################  SEE if HEX is in the TABLE  #################
-	## let's just look for it ...
-		color.idx = which(df$hex.color == hex);
-	if(length(color.idx) > 0)
-		{
-		res = df$color[color.idx];
-		x = res;
-			x = setAttribute("match", "exact", x);
-			x = setAttribute("distance", 0, x);
-			x = setAttribute("hex", rgb2hex(grDevices::col2rgb( res )), x);
-		return (x);
-		} # should just be one, but maybe more
-
-#################  USE DISTANCE/COSINE SIMILARITY  #################
-	rgb = cleanupRGB( hex2rgb(hex) );
-		r = rgb[1];
-		g = rgb[2];
-		b = rgb[3];
-	row = c("===search===", hex, r, g, b);
-
-	df = rbind(row, df);
-	df = assignColumnsTypeInDataFrame(c("r","g","b"), "numeric", df);
-
-
-	Xs = ( as.matrix( cbind(df$r, df$g, df$b) ) );
-		if(scale.me) { Xs = scale(Xs); }
-
-	if(how == "difference")
-		{
-		# is this not "manhattan"
-		vsearch = Xs[1,];
-		vcolors = Xs[-c(1),];
-
-		vdiff = abs(vcolors - vsearch);
-		vdiff.rowS = rowSums(vdiff);
-
-		names(vdiff.rowS) = df$color[-c(1)];
-
-		one = sort(vdiff.rowS);
-
-		res = one[1:how.many];
-		x = names(res);
-			x = setAttribute("match", "difference", x);
-			x = setAttribute("distance", as.numeric( res ), x);
-			x = setAttribute("hex", rgb2col(grDevices::col2rgb( names(res) )), x);
-		return (x);
-		}
-	if(how == "distance")
-		{
-		X.d = stats::dist( Xs, method="euclidean");
-		X.m = round( as.matrix(X.d), 2);
-		X.df = as.data.frame( X.m );
-			colnames(X.df) = rownames(X.df) = df$color;
-
-		one = X.df[,1]; names(one) = df$color;
-		one = one[-c(1)];  # first is "self"
-		one = sort(one);
-
-		res = one[1:how.many];
-		x = names(res);
-			x = setAttribute("match", "distance", x);
-			x = setAttribute("distance", as.numeric( res ), x);
-			x = setAttribute("hex", rgb2col(grDevices::col2rgb( names(res) )), x);
-		return (x);
-		}
-	if(how == "cosine")
-		{
-	  vsearch = Xs[1,];       names(vsearch) = df$color[1];
-		vcolors = Xs[-c(1),];   names(vcolors) = df$color[-c(1)];
-
-		vCosine = computeCosineSimilarity(vsearch, vcolors);
-		  vCosine$color = df$color;
-		  rownames(vCosine) = df$color;
-		vCosine = assignColumnsTypeInDataFrame(c("cosine.similarity"), "numeric", vCosine);
-
-		# vsearch = Xs[1,];
-		# vcolors = Xs[-c(1),];
-
-	  # https://stackoverflow.com/questions/1746501/
-	  # a = c(2,1,0,2,0,1,1,1)
-	  # b = c(2,1,1,1,1,0,1,1)
-	  # d = (a %*% b) / (sqrt(sum(a^2)) * sqrt(sum(b^2)))
-
-	  ## OR
-
-	  # e = crossprod(a, b) / (sqrt(crossprod(a, a)) * sqrt(crossprod(b, b)))
-
-
-		# v.cos = cosine(vsearch, vcolors); # raw no distance or SVD
-
-		# https://stackoverflow.com/questions/18946966/
-		# X.d = stats::dist( Xs, method="euclidean");
-		# X.m = round( as.matrix(X.d), 2);
-		# X.df = as.data.frame( X.m );
-		# 	colnames(X.df) = rownames(X.df) = df$color;
-
-
-
-
-		## library(lsa); # very slow, replace
-		#X.cos = as.data.frame( 1 - round( cosine(X.m),4 ) );
-		#	colnames(X.df) = rownames(X.df) = df$color;
-
-		#one = X.cos[,1]; names(one) = df$color;
-
-
-		## similarity is closeness, distance is farness
-		one = 1 - vCosine$cosine.similarity;  names(one) = df$color;
-		one = one[-c(1)];   # first is "self"
-
-		one = sort(one);  # what if I have negative values ?
-
-		res = one[1:how.many];
-		x = names(res);
-			x = setAttribute("match", "cosine", x);
-			x = setAttribute("distance", as.numeric( res ), x);
-			x = setAttribute("hex", rgb2col(grDevices::col2rgb( names(res) )), x);
-		return (x);
-		}
-	}
-
-
-
-
-# we need to cache this in "last" memory
-color.buildTable = function(colvec=NULL, key=NULL, save.key=NULL)
-	{
-	# colvec is cached as "key"  ... auto-caching
-	# the output of this function is cached as "save.key" ... must be specified to cache
-	if(is.null(colvec))
-		{
-		if(!is.null(key))
-			{
-			if(exists(key, .GlobalEnv$.humanVerse[["colors"]][["lists"]]))
-				{
-				colvec = .GlobalEnv$.humanVerse[["colors"]][["lists"]][[key]];
-				}
-			}
-		if(is.null(colvec)) { key = "ALL"; colvec = grDevices::colors(TRUE); }  # not found, so let's set to default 'ALL'
-		}
-	
-	if(is.null(key)) { key = md5.object( colvec ); } # make a "hash-table" of an un-named list
-	
-	if(!is.null(save.key))
-		{
-		if(!is.character(save.key)) { save.key = md5.object(getFunctionParameters(TRUE)); }
-		cat("\n", "save.key:", save.key, "\n\n");
-		if(exists(save.key, .GlobalEnv$.humanVerse[["colors"]][["dataframes"]]))
-			{
-			return( .GlobalEnv$.humanVerse[["colors"]][["dataframes"]][[save.key]] );
-			}		
-		}
-	
-	# key is for the list, save.key is for the dataframe ...
-	# if(exists(key, .GlobalEnv$.humanVerse[["colors"]][["dataframes"]]))
-		# {
-		# return( .GlobalEnv$.humanVerse[["colors"]][["dataframes"]][[key]] );
-		# }
-
-	n = length(colvec);
-	hvec = character(n);
-	r = g = b = numeric(n);
-
-	for(i in 1:n)
-		{
-		color = colvec[i];
-		rgb = cleanupRGB( grDevices::col2rgb(color) );
-		hvec[i] = rgb2hex( rgb );
-		r[i] = rgb[1]; g[i] = rgb[2]; b[i] = rgb[3];
-		}
-
-	df = as.data.frame(cbind(colvec, hvec, r, g, b));
-		colnames(df) = c("color", "hex.color", "r", "g", "b");
-
-	df = assignColumnsTypeInDataFrame(c("r","g","b"), "numeric", df);
-	
-	
-	
-	df = setAttribute("key", key, df);
-	df = setAttribute("save.key", save.key, df);		
-	
-	.GlobalEnv$.humanVerse[["colors"]][["dataframes"]][[key]] = df; # stored in memory
-	
-	
-	# cache it ... 
-	if(!is.null(save.key))
-		{
-		.GlobalEnv$.humanVerse[["colors"]][["dataframes"]][[save.key]] = df;
-		}
-
-	df;
-	}
-
-
-
-color.setOpacity = function(hexvec, opacity=100)
-	{
-	hexvec = checkHEX(hexvec);  # this allows "color.names"
-	alpha = dechex(255 * opacity/100, n=2);
-	paste0(hexvec,alpha);
-	}
-
-
-
-
-# we need to cache this in "last" memory
-# accessor can get elements without having to rebuild
-color.chromatics = function(rgb, n = 12, save.key = NULL) # mono steps of monochronic ... half on "white" / half on "black"
-	{
-	
-	if(!is.null(save.key))
-		{
-		if(!is.character(save.key)) { save.key = md5.object(getFunctionParameters(TRUE)); }
-		cat("\n", "save.key:", save.key, "\n\n");
-		if(exists(save.key, .GlobalEnv$.humanVerse[["colors"]][["dataframes"]]))
-			{
-			return( .GlobalEnv$.humanVerse[["colors"]][["dataframes"]][[save.key]] );
-			}		
-		}
-
-	if(length(rgb) == 1) { rgb = hex2rgb(rgb); } # they can pass in "hex"
-	hex = rgb2hex(rgb);
-
-	n2 = ceiling(n/2);  # 11 will do 13 ... original doesn't count ...
-	res = c( color.colorsInGradient(n2+1, c("#FFFFFF", hex)),
-	            hex,
-	         color.colorsInGradient(n2+1, c(hex, "#000000"))
-	        );
-	res = unique(res);
-
-	which.hex = which(res == hex)[1];
-	idx = -1*( 1:length(res) - which.hex );
-
-	df = as.data.frame(cbind(idx, res));
-		colnames(df) = c("index", "hex.color");
-		df = setAttribute("hex", hex, df);
-		df = setAttribute("rgb", unlist(rgb), df);
-		
-		df = setAttribute("save.key", save.key, df);	
-	# cache it ... 
-	if(!is.null(save.key))
-		{
-		.GlobalEnv$.humanVerse[["colors"]][["dataframes"]][[save.key]] = df;
-		}
-
-
-	df;
-	}
-
-
-
-## http://c.mshaffer.com/js/colorpicker/functions.colors.js
-# we need to cache this in "last" memory
-# accessor can get elements without having to rebuild
-# - complement, split, split-complement, triad, square, rectangle, and so on ...
-color.buildWheel = function(rgb, wheel.steps = 12, find.names=FALSE)  # wheel steps needs to be divisible by 360?
-	{
-	if(length(rgb) == 1) { rgb = hex2rgb(rgb); } # they can pass in "hex"
-	hex = rgb2hex(rgb);
-
-	hsl = rgb2hsl(rgb);
-	hsl = as.numeric( unlist( hsl ) );
-		h = hsl[1];
-		s = hsl[2];
-		l = hsl[3];
-
-	res = character(wheel.steps);
-	names = character(wheel.steps);
-	myh = numeric(wheel.steps);
-	deg = numeric(wheel.steps);
-	one.step = 360 / wheel.steps;
-	degrees = 0;
-	  my.hex = rgb2hex(rgb); # starting color ... this is also the ending color, but fine
-	  if(find.names)
-	    {
-	    my.name = color.findNearestName(my.hex);
-	    if(getAttribute("match",my.name) != "exact") { my.name = paste0("~",my.name); }
-	    } else { my.name = my.hex; }
-	res[1] = my.hex;
-	names[1] = my.name;
-	myh[1] = h;
-	deg[1] = degrees;
-	for(i in 2:wheel.steps)
-		{
-		degrees = degrees + one.step;
-		h2 = as.integer( round( one.step + h ) );
-			h2 = h2 %% 360;
-			# update hsl
-			hsl[1] = h2;
-
-		my.hex = rgb2hex( hsl2rgb(hsl) );
-		if(find.names)
-	    {
-	    my.name = color.findNearestName(my.hex);
-	    if(getAttribute("match",my.name) != "exact") { my.name = paste0("~",my.name); }
-	    } else { my.name = my.hex; }
-		my.name = color.findNearestName(my.hex);
-	    if(getAttribute("match",my.name) != "exact") { my.name = paste0("~",my.name); }
-		res[i] = my.hex;
-	  names[i] = my.name;
-		deg[i] = degrees;
-		h = h2;
-		myh[i] = h;
-		}
-
-	df = as.data.frame(cbind(deg, res, names, myh));
-		colnames(df) = c("degrees", "hex.color", "color.names", "wheel");
-
-		df = setAttribute("hex", hex, df);
-		df = setAttribute("rgb", unlist(rgb), df);
-
-
-	df;
-	}
-
-
-
-
-color.webSafeHEX = function(rgb)
-	{
-	rgb = checkRGB(rgb);
-	r = rgb[1];
-	g = rgb[2];
-	b = rgb[3];
-
-	doMod = function(x)
-		{
-		xMod = x %% 51;
-		if(xMod <= 25) { floor(x/51) * 51; } else { ceiling(x/51) * 51; }
-		}
-
-	rgb = list(
-			"r" = doMod(r),
-			"g" = doMod(g),
-			"b" = doMod(b)
-			);
-
-	rgb2hex(rgb);
-	}
-
-color.randomHEX = function(n=1, my.seed=NULL, key=NULL)
-	{
-	if(!is.null(key))
-		{
-		if(exists(key, .GlobalEnv$.humanVerse[["colors"]][["random"]]))
-			{
-			my.seed = .GlobalEnv$.humanVerse[["colors"]][["random"]][[key]];
-			}
-		} else { key = "last"; }
-
-	if(is.null(my.seed))
-		{
-		setSeed(NULL,"color"); my.seed = getSeed("color");
-		}
-	.GlobalEnv$.humanVerse[["colors"]][["random"]][[key]] = my.seed;
-	setSeed(my.seed,"color"); my.numbers = rand(2^1 - 1, (2^8)^3 - 1, n);
-
-	my.hexs = paste0("#",dechex(my.numbers, n=6));
-	my.hexs;
-	}
-
-
-# source('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-random.R')
-# source('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-memory.R')
-# source('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-colors.R')
-# source('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-str.R')
-
-color.randomRGB = function(n=1, my.seed=NULL, key=NULL)
-	{
-	my.hexs = color.randomHEX(n=n, my.seed=my.seed, key=key);
-	rgb = hex2rgb( my.hexs );
-	rgb = cleanupRGB(rgb);
-
-	rgb;
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-color.roundHEX = function(rgb, n=3, full=FALSE)
-	{
-	# this round "FA" to "FC", "FD" to "FF"
-	rgb = checkRGB(rgb);
-	if(full)  # this rounds at the whole "FF" value, not just the last element ...
-		{
-		r = rgb[1];
-		g = rgb[2];
-		b = rgb[3];
-
-		doMod = function(x)
-			{
-			xMod = x %% n;
-			floor(x/n) * n;
-			}
-
-		rgb = list(
-				"r" = doMod(r),
-				"g" = doMod(g),
-				"b" = doMod(b)
-				);
-
-		rgb2hex(rgb);
-		} else {
-				# round at just the last hex value
-				hex = rgb2hex(rgb);
-				hex = str_replace("#", "", hex);
-				hexV = charVector(hex);
-				decV = hexdec(hexV);
-					decV[2] = doMod(decV[2]);
-					decV[4] = doMod(decV[4]);
-					decV[6] = doMod(decV[6]);
-				hexV[2] = dechex(decV[2], n=1);
-				hexV[4] = dechex(decV[4], n=1);
-				hexV[6] = dechex(decV[6], n=1);
-
-				hex = paste0("#", paste(hexV, collapse=""));
-				hex;
-				}
-	}
-
-
-color.plotWheel = function(df = color.buildWheel("red"), harmony="all")
-  {
-  df = assignColumnsTypeInDataFrame(c("degrees","wheel"), "numeric", df);
-  # subset df based on elements that fit with harmony value
-    # - complement ... 180 degrees from original
-    # - split-complement ... 150/210 degrees from original
-    # - analagous  ... +30/-30 degrees from original
-    #               (split ... inverse of split-complement)
-    # - triad ... +120/-120 degrees from original
-    # - square ... +90/-90/+180
-    # - rectangle ... complement, +30 and it's complement
-
-  # blank canvas
-  graphics::plot.new( );
-  graphics::plot.window(
-              xlim=c(-1.5,1.5), # unit circle is 1
-              ylim=c(-1.5,1.5),
-              log="",
-              graphics::par(mar=c(0.25, 0.25, 0.25, 0.25)) # outer margins
-            );
-
-  # maybe put a marker like a clock on 12 ("up")
-  # figure out the aspect ratio
-  radius = 1;
-      x0 = 0;
-      y0 = 0; # center of circle
-
-  plotrix::draw.circle(x0,y0, radius, col="gray");
-
-    original = df[1,];
-      x = x0 + radius * sin( deg2rad( original$wheel ) );
-      y = y0 + radius * cos( deg2rad( original$wheel ) );
-        plotrix::draw.circle(x,y, radius/3, col=original$hex.color);
-        graphics::text(x,y, adj=c(0.5,0.5), cex=1, labels=original$hex.color);
-            # maybe add names to wheel.table
-            # maybe write function "best contrast" to determine
-            # foreground color
-
-    remaining = df[-c(1),];
-    nr = dim(remaining)[1];
-    for(i in 1:nr)
-      {
-      x = x0 + radius * sin( deg2rad( remaining$wheel[i] ) );
-      y = y0 + radius * cos( deg2rad( remaining$wheel[i] ) );
-        plotrix::draw.circle(x,y, radius/6, col=remaining$hex.color[i]);
-        graphics::text(x,y, adj=c(0.5,0.5), cex=1/2, labels=remaining$hex.color[i]);
-      }
-
-  }
-
-
-color.displayColorOptions = function(my.colors = grDevices::colors(),
-                              showHEX = FALSE,
-                              alpha = TRUE, # works with showHEX = TRUE
-                              xlim=c(0,10),
-                              ylim=c(0,10),
-                              cex = 0.75,
-                              ncol=2, nrow=10)
-  {
-  # http://www.sthda.com/english/wiki/colors-in-r
-
-  ## build a collection of graphs, each two columsn ...
-  ## limit the total number per row of a column ... pagination ...
-  ## how to let them copy it?  identify? clipboard?
-  nc = length(my.colors);
-  per.page = ncol*nrow;
-  pages = ceiling(nc / per.page);
-
-  i = 1;
-  page = 1;
-
-  xunit = diff(xlim) / ncol;
-  yunit = diff(ylim) / nrow;
-
-  while(page <= pages)
-    {
-    xstart = xlim[1];
-    ystart = ylim[2];
-    graphics::plot.new( );
-    graphics::plot.window(
-                xlim=xlim,
-                ylim=ylim,
-                log="",
-                graphics::par(mar=c(0.25, 0.25, 0.25, 0.25))
-
-              );
-
-    for(c in 1: ncol)
-      {
-      xleft = xstart + (c-1) * xunit;
-      ytop  = ystart;
-      for(r in 1: nrow)
-        {
-        mycolor = as.character(my.colors[i]);
-        if(is.na(mycolor)) { break; break; }
-        mycolor.name = names(my.colors)[i];
-
-        hexcolor = rgb2col( grDevices::col2rgb(mycolor, alpha=alpha)  );
-
-        if(is.null(mycolor.name)) { mycolor.name = mycolor;}
-
-        if(!showHEX)
-          {
-          mycolor.label = paste0(mycolor.name, "  ...  ", i);
-          } else {
-                  mycolor.label = paste0(mycolor.name, "  .  ", i ,
-                          "  .  ", hexcolor   );
-                  }
-
-
-
-
-        xright  = xleft + xunit;
-        ybottom = ytop - yunit;
-
-        graphics::rect(xleft, ybottom, xright, ytop, col=hexcolor);  # hexcolor is safer
-
-          top.y = mean(c(ytop,ytop,ytop,ybottom));
-        graphics::text(xleft, top.y, label=mycolor.label,
-                              cex=cex, pos=4, col="black");
-          bottom.y = mean(c(ytop,ybottom,ybottom,ybottom));
-        graphics::text(xleft, bottom.y, label=mycolor.label,
-                              cex=cex, pos=4, col="white");
-
-        i = 1 + i;
-        ytop = ybottom;
-        }
-      ytop  = ystart;
-      }
-    page = 1 + page;
-    }
-  }
-
-
-
-
-
-
-
-
-## ... base R cleanup ...
-
-
-#' colorsInGradient
-#'
-#' @param n Number of colors to return
-#' @param colvec Vector of color names "red" or RGB "#FF0000" or RGBa "#4169E1FF"
-#' @param alpha Pass transparency filter "alpha" as TRUE or FALSE
-#'
-#' @return vector of colors in RGB or RGBa form (depending on alpha)
-#' @export
-#'
-#' @examples
-#'
-#' color.colorsInGradient(4, c("red", "royalblue"));
-#' color.colorsInGradient(4, c("#FF000000", "#FF0000FF"), TRUE);  # red through alphas
-#' color.colorsInGradient(4, c("#FF000000", "#4169E1FF"), TRUE);
-#'
-color.colorsInGradient = function(n, colvec=c("red","royalblue"), alpha=FALSE)
-  {
-  # color.colorsInGradient(4, c("red", "royalblue"));
-  # color.colorsInGradient(4, c("#FF000000", "#FF0000FF"), TRUE);  # red through alphas
-  # color.colorsInGradient(4, c("#FF000000", "#4169E1FF"), TRUE);  # red->royalblue through alphas
-  # rgb2col( grDevices::col2rgb("royalblue") );
-
-  # color.colorsInGradient(4, c("#FF0000", "#00FF00"), FALSE);
-
-  # alpha doesn't seem to work as expected ... unless I pass in RGBa?
-  grDevices::colorRampPalette(colvec, alpha=alpha)(n);
-  }
-
-
-
-#' rgb2col
-#'
-#' Reverse the built-in grDevices::col2rgb function
-#' [ See grDevices::convertColor or grDevices::make.rgb ]
-#'
-#' @param x vector of colors
-#'
-#' @return vector of colors in RGB hex format
-#' @export
-#'
-#' @examples
-#'
-#' rgb2col( grDevices::col2rgb("red") );
-#' rgb2col( grDevices::col2rgb("red", alpha=TRUE) );
-#' rgb2col( grDevices::col2rgb("#FF0000FF", alpha=TRUE) );
-#' rgb2col( grDevices::col2rgb("#FF000033", alpha=TRUE) );
-#'
-rgb2col = function(x)
-  {
-  # reverses grDevices::col2rgb function
-  x.n = dim(x)[1];
-  if(x.n == 4)
-    {
-    x.rgb = t(x[1:4,]) /255;
-    grDevices::rgb(   as.numeric(x.rgb[,1]),
-                      as.numeric(x.rgb[,2]),
-                      as.numeric(x.rgb[,3]),
-                      as.numeric(x.rgb[,4]),
-      names=rownames(x.rgb) );
-    } else {
-            x.rgb = t(x[1:3,]) /255;
-            grDevices::rgb( x.rgb, names=rownames(x.rgb) );
-            }
-  }
-
-
-
-
-
-
-

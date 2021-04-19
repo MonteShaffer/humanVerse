@@ -12,6 +12,8 @@
 
 # utils::globalVariables(c(".humanVerse"));
 
+## maybe create a generic set of functions ... get/set Memory
+
 
 initMemory = function(purge.memory = FALSE, verbose = TRUE)
   {
@@ -21,7 +23,7 @@ initMemory = function(purge.memory = FALSE, verbose = TRUE)
       {
       cat("humanVerse::initMemory ... initializing list '.humanVerse'", "\n");
       }
-	 
+
 	# assign(".humanVerse", list(), envir = .GlobalEnv);
 
     .GlobalEnv$.humanVerse = list();
@@ -29,19 +31,19 @@ initMemory = function(purge.memory = FALSE, verbose = TRUE)
 		initInflationMemory();
 		initColorMemory();
 		initSQLMemory();
-		initFunctionMemory();	
+		initFunctionMemory();
 		initSystemMemory();
-		initSeedMemory();		
-		
-	}	
+		initSeedMemory();
+
+	}
   }
 
 
 initInflationMemory = function(purge.memory = FALSE, verbose = FALSE)
 	{
 	if(!exists(".humanVerse")) { initMemory(); }
-	
-	
+
+
 	if(!exists("inflation", .GlobalEnv$.humanVerse) || purge.memory)
 		{
 		if(verbose)
@@ -50,33 +52,33 @@ initInflationMemory = function(purge.memory = FALSE, verbose = FALSE)
 		  }
 		.GlobalEnv$.humanVerse[["inflation"]] = list();
 		}
-	}	
+	}
 
 
 initFunctionMemory = function(purge.memory = FALSE, verbose = FALSE)
 	{
 	if(!exists(".humanVerse")) { initMemory(); }
-	
+
 	if(!exists("functions", .GlobalEnv$.humanVerse) || purge.memory)
 		{
 		if(verbose)
 		  {
 		  cat("humanVerse::initFunctionMemory ... initializing list '.humanVerse[[\"functions\"]]'", "\n");
 		  }
-		# this is a list of "included" or "sourced" functions ... 
+		# this is a list of "included" or "sourced" functions ...
 		.GlobalEnv$.humanVerse[["functions"]] = list();
-			.GlobalEnv$.humanVerse[["functions"]][["local"]] = list();  
-			.GlobalEnv$.humanVerse[["functions"]][["local-search"]] = list(); 
+			.GlobalEnv$.humanVerse[["functions"]][["local"]] = list();
+			.GlobalEnv$.humanVerse[["functions"]][["local-search"]] = list();
 		# this is a list of functions referenced in stack using getFunctionParameters(TRUE)
 		.GlobalEnv$.humanVerse[["stack"]] = list();
 		.GlobalEnv$.humanVerse[["stack-order"]] = list();
 		}
 	}
-	
+
 initSQLMemory = function(purge.memory = FALSE, verbose = FALSE)
 	{
 	if(!exists(".humanVerse")) { initMemory(); }
-	
+
 	if(!exists("sql", .GlobalEnv$.humanVerse) || purge.memory)
 		{
 		if(verbose)
@@ -90,7 +92,7 @@ initSQLMemory = function(purge.memory = FALSE, verbose = FALSE)
 initSystemMemory = function(purge.memory = FALSE, verbose = FALSE)
 	{
 	if(!exists(".humanVerse")) { initMemory(); }
-	
+
 	if(!exists("system", .GlobalEnv$.humanVerse) || purge.memory)
 		{
 		if(verbose)
@@ -98,19 +100,20 @@ initSystemMemory = function(purge.memory = FALSE, verbose = FALSE)
 		  cat("humanVerse::initSystemMemory ... initializing list '.humanVerse[[\"system\"]]'", "\n");
 		  }
 		.GlobalEnv$.humanVerse[["system"]] = list(
+												"nine" = list(), # cache for functions-nines.R
 												"stack-length" = 10,
-												"max-print" = 20  # useful for reviewing global .humanVerse
+												"max-print" = 225  # useful for reviewing global .humanVerse
 												);
-												
+
 		# setOption("max.print", .GlobalEnv$.humanVerse[["system"]][["max-print"]]);
-		options(max.print = .GlobalEnv$.humanVerse[["system"]][["max-print"]]);
+		# options(max.print = .GlobalEnv$.humanVerse[["system"]][["max-print"]]);
 		}
 	}
-	
+
 initPathMemory = function(purge.memory = FALSE, verbose = FALSE)
 	{
 	if(!exists(".humanVerse")) { initMemory(); }
-	
+
 	if(!exists("path", .GlobalEnv$.humanVerse) || purge.memory)
 		{
 		if(verbose)
@@ -125,15 +128,15 @@ initPathMemory = function(purge.memory = FALSE, verbose = FALSE)
 																 )
 												);
 		}
-	}	
-	
+	}
+
 
 
 
 initColorMemory = function(purge.memory = FALSE, verbose = FALSE)
   {
   if(!exists(".humanVerse")) { initMemory(); }
-  
+
 
 
   if(!exists("color", .GlobalEnv$.humanVerse) || purge.memory)
@@ -150,8 +153,8 @@ initColorMemory = function(purge.memory = FALSE, verbose = FALSE)
 		.GlobalEnv$.humanVerse[["colors"]][["search"]] = list();			# cached "search" history
     }
   }
-  
-  
+
+
 #' initSeedMemory
 #'
 #' @param purge.memory If TRUE, this memory is erased and reset.
@@ -179,4 +182,4 @@ initSeedMemory = function(purge.memory = FALSE, verbose = FALSE)
 
 
 
-	
+

@@ -6,7 +6,7 @@
 #' @export
 #'
 #' @examples
-#' createDirectoryRecursive("R:/monte/says/hi/");
+#' # createDirectoryRecursive("R:/monte/says/hi/");
 createDirectoryRecursive = function(folder)
   {
   if(!dir.exists(folder))
@@ -31,8 +31,8 @@ createDirectoryRecursive = function(folder)
 #' @export
 #'
 #' @examples
-#' writeLine("hello there", file="R:/monte/says/hi/again/my.log", append=FALSE);
-#' writeLine("hi again", file="R:/monte/says/hi/again/my.log");
+#' # writeLine("hello there", file="R:/monte/says/hi/again/my.log", append=FALSE);
+#' # writeLine("hi again", file="R:/monte/says/hi/again/my.log");
 writeLine = function(str, file, append=TRUE, end="\n")
   {
   cat( paste(str,end,sep=""),
@@ -55,26 +55,57 @@ storeToFile = function (str, file)
 	}
 
 
+#' cleanup.local
+#'
+#' @param myfile The original filename, may be a URL with ? = & symbols
+#'
+#' @return A windoze-friendly filename
+#' @export
+#'
+#' @examples
+#' cleanup.local("index.html?endYear=1920&amount=1000000");
+#'
 cleanup.local = function(myfile)
 	{
-	# myfile = folderizeURL(myfile);  # find = c("/",".",",");     replace = c("-","^","+");	
 	myfile = str_replace("//", "/",   myfile);
 	myfile = str_replace("?", "^-QUESTION-^",   myfile);
 	myfile = str_replace("&", "^-AND-^",   myfile);
 	myfile = str_replace("=", "^-EQUAL-^",   myfile);
 	myfile;
 	}
-	
-	
+
+
+#' cleanup.url
+#'
+#' @param url URL to be cleansed
+#'
+#' @return cleansed URL
+#' @export
+#'
+#' @examples
+#' cleanup.url("https://www.myprofiletraits.com//");
+#' cleanup.url("https:/www.mshaffer.com//arizona//");
+#'
 cleanup.url = function(url)
 	{
+
 	url = str_replace("//", "/",   url);
 	url = str_replace(":/", "://", url); # https://
 	url;
 	}
 
+#' readRDS.url
+#'
+#' This wraps 'url' and 'readRDS' so they are webfriendly ...
+#'
+#' @param file The file is likely a URL in this function
+#'
+#' @return a data object, likely a dataframe or a list
+#' @export
+#'
 readRDS.url = function(file)
 	{
+
 	file = cleanup.url(file);
 	# kudos to antonio
 	readRDS( url(file) );
@@ -85,6 +116,8 @@ readRDS.url = function(file)
 
 #' writeToPipe
 #'
+#' This is the inverse of 'readFromPipe'
+#'
 #' @param df dataframe to be stored
 #' @param file filename and path
 #' @param header whether or not to add a header
@@ -92,23 +125,28 @@ readRDS.url = function(file)
 #' @param sep "pipe" means sep="|" but you could change
 #' @param row.names whether or not to include row names
 #'
-#' @return
+#' @return NOTHING, it writes
 #' @export
 #'
-#' @examples
-#'
-#' # alias storeToPipe
-storeToPipe = function(df, file, header=TRUE, quote="", sep="|", row.names=FALSE)
-  {
-  if(quote == "") { quote = FALSE; }
-  utils::write.table(df, file=file, quote=quote, col.names=header, row.names=row.names, sep=sep);
-  }
-  
+#' @alias storeToPipe
 writeToPipe = function(df, file, header=TRUE, quote="", sep="|", row.names=FALSE)
   {
   if(quote == "") { quote = FALSE; }
   utils::write.table(df, file=file, quote=quote, col.names=header, row.names=row.names, sep=sep);
   }
+
+
+#' readFromPipe
+#'
+#' This is the inverse of 'writeToPipe'
+#'
+#' @param file filename and path
+#' @param header whether or not to add a header
+#' @param quote whether or not to add quotes
+#' @param sep "pipe" means sep="|" but you could change
+#'
+#' @return a dataframe
+#' @export
 
 readFromPipe = function(file, header=TRUE, quote="", sep="|")
   {
@@ -125,8 +163,6 @@ readFromPipe = function(file, header=TRUE, quote="", sep="|")
 #'
 #' @return
 #' @export
-#'
-#' @examples
 includeLocalDirectory = function(path, verbose=TRUE, pattern = "[.][RrSsQq]$", ...)
   {
   # ?source
@@ -179,8 +215,8 @@ includeRemoteFiles = function(urls, verbose=FALSE, ...)
 
 
 
-	 
-	
+
+
 # source('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-get-set.R')
 # mySource('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-get-set.R')
 sourceMe = function(myfile, key = "local", indexFunctions = TRUE)
@@ -189,9 +225,9 @@ sourceMe = function(myfile, key = "local", indexFunctions = TRUE)
 		{
 		source(myfile);
 		} else  {
-				indexFunctionsInFile(myfile, key=key); # this will store to cache	
+				indexFunctionsInFile(myfile, key=key); # this will store to cache
 				source(myfile);
-				}	
+				}
 	}
 
 
@@ -207,8 +243,8 @@ file.readLines = function(file, n=-1, skip=NULL)
 			{
 			content = content[skip:nlen];
 			}
-		}	
-	paste(content, collapse="\n");	
+		}
+	paste(content, collapse="\n");
 	}
 
 
@@ -261,9 +297,9 @@ includeGithubFolder = function(url, ...)  # pattern = "[.][RrSsQq]$",
 	args = getFunctionParameters();
         # TRUE would store "last" in some memory (GLOBAL SCOPE)
 	# args = .GlobalEnv$.args = grabFunctionParameters();
-	
+
 	cat("\n\n === MY-ARGS === \n\n");
-	
+
 	print(args);
 
 	# stop("monte");
@@ -389,7 +425,7 @@ getDirectoryPath = function(file, trailing=TRUE)
 		paste0(dirname(file), "/");
 		} else 	{
 				dirname(file);
-				}	
+				}
 	}
 
 
@@ -419,20 +455,20 @@ if(verbose)
     {
     cat("\n", "useTEMP ... ", useTEMP, "\n\n");
     }
-	
+
   if(useTEMP)
     {
 	subfolder = if(trailingSlash) {  folderizeURL(remote); } else { folderizeURL(dirname(remote)); }
 	filestem  = if(trailingSlash) {  "index.html" } else { basename(remote); }
 
     if(md5.hash) { filestem = md5(filestem); }
-	
-	# 
+
+	#
 	my.tmp = Sys.getenv("TMP");
 	if(trimMe(my.tmp) == "") { my.tmp = Sys.getenv("TEMP"); }
 	if(trimMe(my.tmp) == "")
-		{ 
-		message.stop ("Function: *getRemoteAndCache* requires \n\t a TMP or TEMP folder in your 'Sys.getenv()' \n   Maybe run 'Sys.setenv(\"TMP\" = \"/path/to/TMP\")' \n\t and make certain the directory is made and writeable \n\t as in 'mkdir /path/to/TMP' "); 
+		{
+		message.stop ("Function: *getRemoteAndCache* requires \n\t a TMP or TEMP folder in your 'Sys.getenv()' \n   Maybe run 'Sys.setenv(\"TMP\" = \"/path/to/TMP\")' \n\t and make certain the directory is made and writeable \n\t as in 'mkdir /path/to/TMP' ");
 		}
 
 
@@ -451,13 +487,13 @@ if(verbose)
 			filestem 	= basename(local.file);
 			myfile 		= local.file;
             }
-			
+
 
 	myfile 		= cleanup.local(myfile);
 	mypath 		= cleanup.local(mypath);
 	filestem 	= cleanup.local(filestem);
-	
-			
+
+
     myfile = setAttribute("path", 		mypath, 	myfile);
     myfile = setAttribute("filestem", 	filestem, 	myfile);
 
