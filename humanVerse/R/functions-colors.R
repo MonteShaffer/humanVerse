@@ -1425,6 +1425,8 @@ hsv2rgb = function(hsvs)
 #' @export
 rgb2hsv = function(rgb)
 	{
+  # package:grDevices
+  # ? grDevices::rgb2hsv (r,g,b)
 	rgb = checkRGB(rgb);
 	rgb = rgb / 255; # we want it on the [0,1] scale
 

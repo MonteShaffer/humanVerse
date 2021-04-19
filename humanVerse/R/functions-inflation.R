@@ -110,7 +110,9 @@ adjustDollarForInflation = function(mydollar,myyear,newyear,idf=.GlobalEnv$.huma
 
 	ratio = dollar.newyear/dollar.myyear;
 
-	mydollar*ratio;
+	nd = suppressWarnings(mydollar*ratio);
+
+	nd;
 	}
 
 

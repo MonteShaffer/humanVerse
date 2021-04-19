@@ -259,7 +259,7 @@ subsetDataFrame = function(df, mycols=mycols, comparison="==", myvals=myvals, lo
             final.idxs = which(truth.rows == n.cols);
             }
 
-  
+
   invisible(ndf[final.idxs,]);
   }
 
@@ -964,6 +964,7 @@ replaceFactorColumnWithIndicatorVariables = function(df, source.column,
       {
       #print(i); flush.console();
       r.val = df[i,sidx];
+      # this is **NOT** efficient ... 70,000 movies ...
       u.vals = getKeysFromStringWithSeparator(r.val,sep=sep,lower.case=lower.case);
       for(u.val in u.vals)
         {
