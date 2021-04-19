@@ -18,9 +18,9 @@ numeric dollar from idf table for that year
 lookupInflationDollar
 }
 \examples{
-loadInflationData();  # does lookup to create ratios
-lookupInflationDollar( 1943 ); # $  865,000
-lookupInflationDollar( 2000 ); # $8,610,000
+# loadInflationData();  # does lookup to create ratios
+# lookupInflationDollar( 1943 ); # $  865,000
+# lookupInflationDollar( 2000 ); # $8,610,000
 
 }
 \seealso{

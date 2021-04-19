@@ -1,33 +1,55 @@
 
-# # source('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-file.R')
 
 
+#' returnList
+#'
+#' If list only has one element return it.
+#' By default unlist so it is just a vector ... (redundant with above?)
+#'
+#' @param res
+#' @param unlist
+#'
+#' @return
+#' @export
 returnList = function(res, unlist=TRUE)
 	{
 	nr = length(res);
 		if(nr == 0) { return (NULL); }
 		if(nr == 1) { return (res[[1]]); }
-	if(unlist) { unlist(res); } else { res; }	
+	if(unlist) { unlist(res); } else { res; }
 	}
-	
-	
+
+
+
+
+#' is.empty
+#'
+#' @param x
+#'
+#' @return
+#' @export
+is.empty = function(x)
+  {
+
+  # # source('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-file.R')
+
 # No warning is generated if the variable does not exist. That means empty() is essentially the concise equivalent to !isset($var) || $var == false.
 # https://www.php.net/manual/en/function.empty.php
 ## the variable has to be passed in isolation, so it is not "substitute/parsed"
 ## my.tmp = Sys.getenv("TMP"); is.empty(my.tmp); 	# works as expected
 ## is.empty(Sys.getenv("TMP"));						# does **NOT** work as expected
-is.empty = function(x)
-  {  
+
+
   # if(!obj.exists(x)) { return (TRUE); }
   # below is the function obj.exists, but it has to run at this level, not a passthru
-  x.str = deparse(substitute(x));  
+  x.str = deparse(substitute(x));
   if(!exists(x.str)) { return (TRUE); }
-  
+
   if(trimMe(x) == "") { return (TRUE); } # nothing inside (except maybe white space)
-  
-  
-  
-  
+
+
+
+
   if(is.null(x)) { return (TRUE); }
   if(length(x) == 0 ) { return (TRUE); }
   if(is.na(x)) { return (TRUE); }
@@ -35,21 +57,34 @@ is.empty = function(x)
 # can I be certain ???
   return (FALSE);
   }
-  
-# similar to `dir.exists` or `file.exists` 
+
+
+#' obj.exists
+#'
+#' @param x
+#'
+#' @return
+#' @export
 obj.exists = function(x)
 	{
+  # similar to `dir.exists` or `file.exists`
 	x.str = deparse(substitute(x));
 	exists(x.str);
 	}
 
+
+#' is.set
+#'
+#' @param x
+#'
+#' @return
+#' @export
+is.set = function(x)
+  {
 # maybe use my `$$` accessor function for exists ...
 
 
 # https://www.php.net/manual/en/function.isset.php
-is.set = function(x)
-  {
-
   }
 
 

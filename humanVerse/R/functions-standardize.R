@@ -146,9 +146,24 @@ standardizeFromOneRangeToAnother = function(x, another, onerange=range(x) )
 	}
 
 
+#' standardizeFromOldRangeToNew
+#'
+#' @param x numeric vector
+#' @param oldrange this is typically the current range of the vector [numeric vector of length 2]
+#' @param newrange this is the new scaled range [numeric vector of length 2]
+#'
+#' @return numeric vector, updated
+#' @export
+#'
+#' @examples
+#' standardizeFromOldRangeToNew( 1:5, newrange=c(0,1) );  # map to [0,1]
+#' standardizeFromOldRangeToNew( runif(20, min=-1, max=1), newrange=c(0,1) );  # map to [0,1]
+#' standardizeFromOldRangeToNew( 1:5, newrange=c(1,7) );  # e.g., Likert-5 to Likert-7
+#' standardizeFromOldRangeToNew( rep(1,10), newrange=c(0,1) );  #NaN ... division by zero
+#'
 standardizeFromOldRangeToNew = function(x, oldrange=range(x), newrange=NULL)
 	{
-	if(length(newrange) < 2)  { return (NULL); }
+  if(length(newrange) < 2)  { return (NULL); }
 	if(length(oldrange) < 2) { return (NULL); }
 
 	rmin = oldrange[1]; # min

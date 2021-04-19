@@ -1,11 +1,24 @@
 
 
+#' md5.object
+#'
+#' @param obj An object list
+#' @param sep How you want to separate elements when you unlist
+#'
+#' @return An md5 hash of the object, useful for hashing parameters
+#' passed into a function and caching the result
+#' @export
+#'
+#' @examples
+#' md5.object( list("alex", "is", 5) );
 md5.object = function(obj, sep="-")
 	{
 	obj = as.character(unlist(obj));
 	obj = paste(obj, collapse=sep);
-	md5(obj);	
+	md5(obj);
 	}
+
+
 
 #' md5.digest
 #'
@@ -88,11 +101,11 @@ md5 = function(strvec, times=1)
         }
     return( nstrvec );
     } else {
-            if (requireNamespace("digest", quietly = TRUE)) 
+            if (requireNamespace("digest", quietly = TRUE))
               {
               return( md5.digest(strvec, times) );
               } else {
-                      # do INTERNAL .md5 very slow 
+                      # do INTERNAL .md5 very slow
 					  n = length(strvec);
 					  nstrvec = character(n);
 					  for(i in 1:n)
@@ -103,38 +116,39 @@ md5 = function(strvec, times=1)
 						  nstrvec[i] = .md5(nstrvec[i]);
 						  }
 						}
-					  return( nstrvec );				  
+					  return( nstrvec );
                       }
 
             }
 	# should never get here with SLOW INTERNAL
-  stop("`openssl` or `digest` must be installed to use `md5()`"); 
+  stop("`openssl` or `digest` must be installed to use `md5()`");
   }
 
 
 
-# if (!requireNamespace("digest", quietly = TRUE)) {
-#         stop("`digest` must be installed to use `source_url()`",
-#             call. = FALSE)
-#     }
-
-
-
-
-
-
-# > .md5("monte")
-# [1] "ae442b3eb02781e25f556cee2bb3eec3"
-# > "ae442b3ec02781e25f556cee2bb3eec3"
-# [1] "ae442b3ec02781e25f556cee2bb3eec3"
-# >
-# s = "The quick brown fox jumps over the lazy dog";
-# "9e107d9d372bb6826bd81d3542a419d6"
-# http://md5.mshaffer.com/
-# RFC 1321
+#' .md5
+#'
+#'
+#' Internal '.md5' function using the original RFC-1321 specs.
+#'
+#' <http://md5.mshaffer.com/md5.js>
+#' <http://block111.servehttp.com/js/md5.js>
+#'
+#' Circa (2005)
+#'
+#' @param s a single string, univariate
+#'
+#' @return md5 hash of given string
+#' @export
+#'
+#' @examples
+#' .md5("monte");
+#' .md5("alex");
+#' .md5("The quick brown fox jumps over the lazy dog");
+#'
 .md5 = function(s)
   {
-  s = s[1]; # this is not vectorized ... very slow 
+  s = s[1]; # this is not vectorized ... very slow
   # change to strlen soon
   w = 8 * nchar( as.character(s), type="chars");
   hex = "0123456789abcdef";
@@ -316,6 +330,18 @@ md5 = function(strvec, times=1)
   }
 
 
+#' .md5_out
+#'
+#' This is unused, internal function of '.md5',
+#' but may have some merit for educational purposes.
+#'
+#' @param xb vector of four integers
+#'
+#' @return md5 hash from the vectors
+#' @export
+#'
+#' @examples
+#' .md5_out();
 .md5_out = function(xb)
   {
   # for testing puruposes? UNUSED?

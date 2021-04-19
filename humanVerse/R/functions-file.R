@@ -128,7 +128,7 @@ readRDS.url = function(file)
 #' @return NOTHING, it writes
 #' @export
 #'
-#' @alias storeToPipe
+#' @aliases storeToPipe
 writeToPipe = function(df, file, header=TRUE, quote="", sep="|", row.names=FALSE)
   {
   if(quote == "") { quote = FALSE; }
@@ -197,11 +197,22 @@ includeLocalFiles = function(files, ...)
     }
   }
 
-# # includeGithubFolder ...
-# includeRemoteDirectoryGithub
-# includeRemoteFiles("https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/misc/functions-md5.R");
+#' includeRemoteFiles
+#'
+#' @param urls
+#' @param verbose
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
 includeRemoteFiles = function(urls, verbose=FALSE, ...)
   {
+  # # includeGithubFolder ...
+# includeRemoteDirectoryGithub
+# includeRemoteFiles("https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/misc/functions-md5.R");
+
   cat (" INCLUDING:","\n","=========","\n");
   for(url in urls)
     {
@@ -217,10 +228,21 @@ includeRemoteFiles = function(urls, verbose=FALSE, ...)
 
 
 
-# source('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-get-set.R')
-# mySource('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-get-set.R')
+#' sourceMe
+#'
+#' @param myfile
+#' @param key
+#' @param indexFunctions
+#'
+#' @return
+#' @export
+#'
+#' @examples
 sourceMe = function(myfile, key = "local", indexFunctions = TRUE)
 	{
+  # source('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-get-set.R')
+# mySource('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-get-set.R')
+
 	if(!indexFunctions)
 		{
 		source(myfile);
@@ -231,6 +253,16 @@ sourceMe = function(myfile, key = "local", indexFunctions = TRUE)
 	}
 
 
+#' file.readLines
+#'
+#' @param file
+#' @param n
+#' @param skip
+#'
+#' @return
+#' @export
+#'
+#' @examples
 file.readLines = function(file, n=-1, skip=NULL)
 	{
 	# why base::readLines doesn't have skip ?!?
@@ -248,9 +280,15 @@ file.readLines = function(file, n=-1, skip=NULL)
 	}
 
 
+#' installGithubLibrary
+#'
+#' @return
+#' @export
+#'
+#' @examples
 installGithubLibrary = function()
 	{
-
+### TODO ###
 	#
 	# {
   # "id": 294247360,
@@ -291,6 +329,15 @@ installGithubLibrary = function()
 	}
 
 
+#' includeGithubFolder
+#'
+#' @param url
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
 includeGithubFolder = function(url, ...)  # pattern = "[.][RrSsQq]$",
 	{
 	# args = grabFunctionParameters();
@@ -375,6 +422,17 @@ includeGithubFolder = function(url, ...)  # pattern = "[.][RrSsQq]$",
 
 
 
+#' readStringFromFile
+#'
+#' @param myFile
+#' @param n
+#' @param method
+#' @param source
+#'
+#' @return
+#' @export
+#'
+#' @examples
 readStringFromFile = function(myFile, n = NULL, method ="readChar", source = "local")
 	{
 	# methods are "readChar" or "readLines"
@@ -396,26 +454,52 @@ readStringFromFile = function(myFile, n = NULL, method ="readChar", source = "lo
 	}
 
 
+#' deleteLocalCacheFolder
+#'
+#' @param folder
+#'
+#' @return
+#' @export
+#'
+#' @examples
 deleteLocalCacheFolder = function(folder)
   {
-
+# TODO
   }
 
 
 
 
+
+#' getSourceLocation
+#'
+#' @param tmp.folder
+#'
+#' @return
+#' @export
+#'
+#' @examples
+getSourceLocation = function(tmp.folder = "/humanVerse/cache/")
+  {
 # https://github.com/MonteShaffer/humanVerse
 # https://github.com/MonteShaffer/humanVerse/blob/main/humanVerse/R/functions-algebra.R
 # https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/humanVerse/R/functions-algebra.R
 
-getSourceLocation = function(tmp.folder = "/humanVerse/cache/")
-  {
   tmp = gsub("\\","/",Sys.getenv("TMP"), fixed=TRUE); # windoze?
   mypath = paste0(tmp, tmp.folder);
   mypath;
   }
 
 
+#' getDirectoryPath
+#'
+#' @param file
+#' @param trailing
+#'
+#' @return
+#' @export
+#'
+#' @examples
 getDirectoryPath = function(file, trailing=TRUE)
 	{
 	dn = dirname(file);
@@ -432,6 +516,19 @@ getDirectoryPath = function(file, trailing=TRUE)
 
 
 
+#' getRemoteAndCache
+#'
+#' @param remote
+#' @param local.file
+#' @param tmp.folder
+#' @param force.download
+#' @param verbose
+#' @param md5.hash
+#'
+#' @return
+#' @export
+#'
+#' @examples
 getRemoteAndCache = function(remote, local.file = NULL,
     tmp.folder = "/humanVerse/cache/", force.download = FALSE,
     verbose = FALSE, md5.hash = FALSE)
@@ -525,6 +622,16 @@ if(verbose)
   }
 
 
+#' moveFile
+#'
+#' @param src
+#' @param dest
+#' @param unlink
+#'
+#' @return
+#' @export
+#'
+#' @examples
 moveFile = function(src, dest, unlink=TRUE)
 	{
 	file.copy(src, dest);  # there is no file.move ???
@@ -532,6 +639,18 @@ moveFile = function(src, dest, unlink=TRUE)
 	}
 
 
+#' downloadFile
+#'
+#' @param remote
+#' @param myfile
+#' @param n
+#' @param quiet
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
 downloadFile = function(remote, myfile, n=(2^31 - 1), quiet = TRUE, ...)  # n could be 2^31 - 1
   {
   if(isTRUE(capabilities("libcurl")))

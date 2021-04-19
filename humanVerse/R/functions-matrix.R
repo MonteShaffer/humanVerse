@@ -1,17 +1,27 @@
 
 
 
-# matrixcalc is boring
-# Matrix might have some cool stuff ... sparse matrix 
-# matrixStats is also boring 
 
 
+
+#' matrixRank
+#'
+#' @param A given matrix
+#' @param ... Optional parameters to pass-through
+#'
+#' @return
+#' @export
+#'
+#' @aliases rankMatrix
 matrixRank = function(A, ...)
 	{
+  # matrixcalc is boring
+  # Matrix might have some cool stuff ... sparse matrix
+  # matrixStats is also boring
 	# maybe let them pass in a method?
 	if (requireNamespace("Matrix", quietly = TRUE))
 		{
-		Matrix::rankMatrix(A, ...);	
+		Matrix::rankMatrix(A, ...);
 		} else {
 				if (requireNamespace("matrixcalc", quietly = TRUE))
 					{
@@ -21,6 +31,14 @@ matrixRank = function(A, ...)
 	stop("I need a matrix library for this!");
 	}
 
+
+
+#' is.square.matrix
+#'
+#' @param A input matrix
+#'
+#' @return NA if not a matrix, TRUE/FALSE otherwise
+#' @export
 is.square.matrix = function(A)
 	{
 	if(!is.matrix(A)) { warning("Not a matrix"); return (NA); } # FALSE ?
@@ -29,12 +47,27 @@ is.square.matrix = function(A)
 	return (nr == nc);
 	}
 
-# # should we consider "multiply.cpp" as option? ... larger matrices ... let's see in future ...
+#' matrixPower
+#'
+#'
+#' Raise a matrix 'A' to a power 'pow' ... works for negatives if the inverse exists
+#'
+#' @param A a square matrix A
+#' @param pow an integer power
+#'
+#' @return an updated square matrix A^pow
+#' @export
+#' @aliases powerMatrix
+#'
+#' @examples
 matrixPower = function(A, pow)
 	{
+  # # should we consider "multiply.cpp" as option? ... larger matrices ... let's see in future ...
+  ## check if square ???
+  ## is.square.matrix
 	nr = nrow(A);
 	pow = as.integer(pow);
-	
+
 	if(pow == 0) { return( diag(1, nr) ); }
 	if(pow == 1) { return( A ); }
 	if(pow < 0)
@@ -46,19 +79,19 @@ matrixPower = function(A, pow)
 			{
 			A.copy = A.copy %*% A.inv;
 			}
-		return ( A.copy );	
+		return ( A.copy );
 		} else {
-				# positive	
+				# positive
 				A.copy = A;
 				for(i in 2:pow)
 					{
 					A.copy = A.copy %*% A;
 					}
-				return ( A.copy );	
+				return ( A.copy );
 				}
 	}
-	
-	
+
+
 #' matrixTrace
 #'
 #' @param square a square matrix (n x n)
@@ -68,8 +101,7 @@ matrixPower = function(A, pow)
 #' @aliases traceMatrix
 #' @examples
 #' m = as.matrix(structure(c(1, 0, 4, 0, 3, 0, 2, 0, 5), .Dim = c(3L, 3L)));
-#' matrixTrace(m);
-#'
+#' matrixTrace(m);#'
 matrixTrace = function(square)
   {
   sum(diag(square));
@@ -248,59 +280,59 @@ rotateMatrixAngle = function(x, a=0, clockwise=TRUE)
 
 matrix.rowNormalize = function(A)
 	{
-	A / rowSums(A);	
+	A / rowSums(A);
 	}
 
 matrix.convertMatrixToAdjacency = function(A, removeDiagonal=TRUE, scaleNegatives=TRUE, new.range = c(0,1))
 	{
 	# https://en.wikipedia.org/wiki/Perron%E2%80%93Frobenius_theorem#Positive_matrices
-	# let's scale to all positive if we have negatives.  
+	# let's scale to all positive if we have negatives.
 	# Won't have "expected" Perron-Frobenius meaning otherwise
 	if(scaleNegatives)
 		{
 		A = standardizeFromOldRangeToNew(A, newrange=new.range); # oldrange is figured out automatically
-		}	
+		}
 	if(removeDiagonal)
 		{
-		diag(A) = 0;  # this is a weird assignment approach ...	
+		diag(A) = 0;  # this is a weird assignment approach ...
 		}
 	A;
 	}
-	
-	
+
+
 matrix.removeSuperNode = function(A)
 	{
 	n = nrow(A) - 1;
 	A[1:n,1:n];
 	}
-	
+
 matrix.addSuperNode = function(A, name="=SUPER=")
 	{
 	n = nrow(A) + 1;
 		A. = A;
 		A. = rbind(A., 1);
 		A. = cbind(A., 1);
-		
+
 		rownames(A.)[n] = colnames(A.)[n] = name;
 	A.[n,n] = 0;
 	A.;
 	}
-	
-	
+
+
 
 
 matrix.sortAdjacencyMatrix = function(A)
 	{
 	original = remaining = colnames(A);
 	new = c();
-	# A.copy = A; 
-	
+	# A.copy = A;
+
 	cs = colSums(A);
 	rs = rowSums(A);
-	
+
 	ts = rs+cs;
 		# these are zero blocks ... "dangling"
-		which.tz = which(ts == 0);  
+		which.tz = which(ts == 0);
 		which.tz.names = names(which.tz);
 		n = length(which.tz.names);
 		if(n > 0)
@@ -314,8 +346,8 @@ matrix.sortAdjacencyMatrix = function(A)
 					}
 				}
 			}
-		
-	
+
+
 		# zero cols
 		which.cz = which(cs == 0);
 		which.cz.names = names(which.cz);
@@ -332,7 +364,7 @@ matrix.sortAdjacencyMatrix = function(A)
 				}
 			}
 
-	
+
 		# zero rows
 		which.rz = which(rs == 0);
 		which.rz.names = names(which.rz);
@@ -349,10 +381,10 @@ matrix.sortAdjacencyMatrix = function(A)
 				}
 			}
 
-		
-	
-	
-		
+
+
+
+
 	  ts = rs+cs;
 			ts.sort = sort(ts);
 			ts.sort.names = names(ts.sort);
@@ -368,50 +400,50 @@ matrix.sortAdjacencyMatrix = function(A)
 						}
 					}
 				}
-	  ## shoult be good to go ... 
-	  
+	  ## shoult be good to go ...
+
 	  new.idx = computeIndexFromOriginalToNew(original, new);
-	  
-	  
-	 
+
+
+
 	  info = list("zeroblock" = which.tz.names, "zerocols" = which.cz.names, "zerorows" = which.rz.names);
-	  
+
 	  # A.copy = A.copy[new.idx, ]; # update by rows
 	  # A.copy = A.copy[, new.idx]; # update by cols
-			
+
 	# A.copy;
-	
+
 		A = A[new.idx, ]; # update by rows
 		A = A[, new.idx]; # update by cols
-		
+
 		A = setAttribute("info", info, A);
-			
+
 	A;
 	}
-	
-	
+
+
 matrix.computeEigenRank = function(A, method="linear", norm="min-1", ...)
 	{
 	if(!is.square.matrix(A)) { stop("Matrix must be square, maybe multiply by transpose."); }
-	
+
 	A = matrix.convertMatrixToAdjacency(A);
 	A = matrix.sortAdjacencyMatrix(A);
 	A = matrix.addSuperNode(A);
 	A = matrix.rowNormalize(A);
-	
+
 	if(method == "power")
 		{
 		# maybe create a "goal-seek" function that keeps multiplying the matrix until a threshold is met ...
 		# A = matrixPowerConvergence(A, tol=0.0001);
-		# FOR BELOW:  user would have to pass in "pow = 22" or something into the MAIN of this function ... 
-		A = matrixPower(A, ...);	
+		# FOR BELOW:  user would have to pass in "pow = 22" or something into the MAIN of this function ...
+		A = matrixPower(A, ...);
 		# should we consider "multiply.cpp" as option?
 		} else {
 				# block partition
 				}
-	
+
 	A = matrix.removeSuperNode(A);
-	
+
 	A.vec = A[1,]; # any row
 	if(norm == "min-1") { return( A.vec / min(A.vec) ); }
 	if(norm == "max-100") { return ( 100 * A.vec / max(A.vec) ); }

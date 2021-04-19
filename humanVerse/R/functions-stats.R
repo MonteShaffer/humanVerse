@@ -1,10 +1,10 @@
 
-
-doStatsSummaryDataFrame = function(df)
-	{
-	# pastec?
-	
-	}
+#
+# doStatsSummaryDataFrame = function(df)
+# 	{
+# 	# pastec?
+#
+# 	}
 
 #' doStatsSummary
 #'
@@ -31,7 +31,7 @@ doStatsSummary = function(x)
 	result$mean = mean(xx);
 	result$mean.trim.05 = mean(xx, trim=0.05);
 	result$mean.trim.20 = mean(xx, trim=0.20);
-	
+
 	result$sorted = sort(xx);
 
 	result$median = stats::median(xx);
@@ -51,8 +51,8 @@ doStatsSummary = function(x)
 		probs.niniles = (1:8)/9;
 	result$niniles = stats::quantile(xx, prob=probs.niniles, type=1 );
 	result$niniles.members = cutMe(xx, probs.niniles, lower.equal = TRUE);
-	
-	
+
+
 	result$median.weighted = matrixStats::weightedMad(xx);
 	result$MAD.weighted = matrixStats::weightedMedian(xx);
 
@@ -83,7 +83,7 @@ doStatsSummary = function(x)
 
 	result$var.naive = doSampleVariance(x,"naive");
 	result$var.2step = doSampleVariance(x,"2step");
-	
+
 	result$outliers.z = findOutliersUsingZscores(x);
 	result$outliers.IQR = findOutliersUsingIQR(x);
 
@@ -95,8 +95,19 @@ doStatsSummary = function(x)
 
 
 
+#' zCutOverlay
+#'
+#' @param z.table
+#' @param steps.z
+#' @param verbose
+#' @param myColor
+#' @param ...
+#'
+#' @return
+#' @export
 zCutOverlay = function(z.table, steps.z = 1/2, verbose = FALSE, myColor = "blue", ...)
 	{
+
 	# z = calculateZscores(x);
 	  # range.z = c(-3,3);
 	  # steps.z = 1/2;
@@ -120,6 +131,17 @@ zCutOverlay = function(z.table, steps.z = 1/2, verbose = FALSE, myColor = "blue"
 	graphics::rect(xleft, ybottom, xright, ytop, col=myColor);
 	}
 
+
+
+#' cutZ
+#'
+#' @param z
+#' @param range.z
+#' @param steps.z
+#' @param verbose
+#'
+#' @return
+#' @export
 cutZ = function(z, range.z = c(-3,3), steps.z = 1/2, verbose = FALSE)
 	{
 	# allows overlay of rectangles on normal graph
@@ -189,7 +211,18 @@ cutZ = function(z, range.z = c(-3,3), steps.z = 1/2, verbose = FALSE)
 
 
 
-	# freq.df = as.data.frame( cbind( breaks, buckets ) );
+#' cutMe
+#'
+#' @param x
+#' @param qs
+#' @param type
+#' @param lower.equal
+#'
+#' @return
+#' @export
+cutMe = function(x, qs, type=1, lower.equal=TRUE)
+	{
+  	# freq.df = as.data.frame( cbind( breaks, buckets ) );
 	#	colnames(freq.df) = c("break", "count");
 
 	# df = setAttribute("cuts", q.cuts, df);  # set KEY to VAL in OBJ
@@ -203,8 +236,9 @@ cutZ = function(z, range.z = c(-3,3), steps.z = 1/2, verbose = FALSE)
 # x <- 1:10
 # attr(x,"dim") <- c(2, 5)
 # https://stackoverflow.com/questions/27546901/how-to-set-attributes-for-a-variable-in-r
-cutMe = function(x, qs, type=1, lower.equal=TRUE)
-	{
+
+
+
 	# xx = na.omit(x);
 	xx = x;
 	df = as.data.frame(xx);
@@ -233,11 +267,19 @@ cutMe = function(x, qs, type=1, lower.equal=TRUE)
 	}
 
 
+#' cutN
+#'
+#' @param x
+#' @param ...
+#' @param n
+#'
+#' @return
+#' @export
 cutN = function(x, ..., n=2)
 	{
 	more = unlist(list(...));
 	x = c(x, more);
-	
+
 	# create a list of elements with "n"
 	out = list();
 	i = 0;
@@ -251,14 +293,32 @@ cutN = function(x, ..., n=2)
 	out;
 	}
 
-# quantile(data, probs = c(.37, .53, .87))
+
+#' getQuantiles
+#'
+#' @param x
+#' @param qs
+#' @param type
+#'
+#' @return
+#' @export
 getQuantiles = function(x, qs, type=1)
 	{
+  # quantile(data, probs = c(.37, .53, .87))
 	xx = stats::na.omit(x);
 	as.numeric(stats::quantile(xx, prob=qs, type=type));
 	}
 
 
+#' doIDR
+#'
+#' @param x
+#' @param lower
+#' @param upper
+#' @param type
+#'
+#' @return
+#' @export
 doIDR = function(x, lower = 0.25, upper = 1 - lower, type=1)
 	{
 	xx = stats::na.omit(x);

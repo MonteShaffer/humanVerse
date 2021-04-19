@@ -18,6 +18,5 @@ matrixTrace
 }
 \examples{
 m = as.matrix(structure(c(1, 0, 4, 0, 3, 0, 2, 0, 5), .Dim = c(3L, 3L)));
-matrixTrace(m);
-
+matrixTrace(m);#'
 }

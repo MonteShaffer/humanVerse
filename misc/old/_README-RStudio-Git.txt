@@ -152,6 +152,7 @@ git clone https://github.com/4uchris4/STATS419_FALL2020.git
 
 # devtools::document(roclets = c('rd', 'collate', 'namespace', 'vignette'))
 
+# devtools::check(document=FALSE);
 
 # Remember DESCRIPTION to add libraries ...
 # load_all()

@@ -1,26 +1,43 @@
 
 
 
-parseTable = function(str)
-	{
-	
-	
-	}
+# parseTable = function(str)
+# 	{
+# 	# TODO
+#
+# 	}
 
 
 
-# slice and dice ... could I build this as "multivariate"?
+
+#' sliceDiceContent
+#'
+#' This takes a string and returns a substring based on some
+#'  'cut points' defined as start and end.
+#'
+#' The main engine is strsplit so there has to be a direction.
+#'
+#' @param str
+#' @param start
+#' @param end
+#' @param strip
+#' @param direction
+#'
+#' @return
+#' @export
+
 sliceDiceContent = function (str, start="<h2>",end="</h2>", strip=FALSE, direction="start")
 		{
+    # slice and dice ... could I build this as "multivariate"?
 		d = substr(tolower(trimMe(direction)), 1,1);
-		
+
 		if(d == "e")  # starting at the end on the first cut ...
 			{
 			tmp = explodeMe(end,str);
 				tmp1 = explodeMe(start,tmp[1]);
 				if(length(tmp1) < 2 ) { tmp1[2] = ""; }
 			str = tmp1[2];
-			} else { # start .... beginning, whatever 
+			} else { # start .... beginning, whatever
 					tmp = explodeMe(start,str);
 					if(length(tmp) < 2 ) { tmp[2] = ""; }
 						tmp1 = explodeMe(end,tmp[2]);
@@ -33,7 +50,17 @@ sliceDiceContent = function (str, start="<h2>",end="</h2>", strip=FALSE, directi
 
 
 
-strip_tags <- function(htmlString) 
+#' strip_tags
+#'
+#' Remove HTML tags from a string.
+#'
+#' @param htmlString
+#'
+#' @return
+#' @export
+#'
+#' @aliases strip.tags striptags
+strip_tags <- function(htmlString)
 	{
 	return(gsub("<.*?>", "", htmlString))
 	}
@@ -45,8 +72,20 @@ strip_tags <- function(htmlString)
 
 
 
+#' folderizeURL
+#'
+#'
+#' Convert a url into a reversible folder structure.
+#'
+#' @param url
+#'
+#' @return
+#' @export
+#'
+#' @examples
 folderizeURL = function(url = "https://en.wikipedia.org/wiki/Columbia_Falls,_Montana")
   {
+  # TODO: update to explodeMe and str_replace
   str = strsplit(url, "//", fixed=TRUE)[[1]][2];
     find = c("/",".",",");
     replace = c("-","^","+");
@@ -60,9 +99,21 @@ folderizeURL = function(url = "https://en.wikipedia.org/wiki/Columbia_Falls,_Mon
 
 
 
-# for shared notebooks
+
+#' stringifyLibrary
+#'
+#' If multiple users share a notebook (Dropbox), you can identify
+#'  who they are by the R_LIBS_HOME or some other element
+#'
+#' @param str
+#'
+#' @return
+#' @export
+#'
+#' @examples
 stringifyLibrary = function(str)
   {
+  # for shared notebooks
   str = gsub(" ","",str, fixed=TRUE);
   str = gsub("/","",str, fixed=TRUE);
   str = gsub(":","",str, fixed=TRUE);

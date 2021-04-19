@@ -4,7 +4,13 @@
 \alias{get.sign}
 \title{get.sign}
 \usage{
-get.sign(xs, other = NA, return = "number", tol = sqrt(.Machine$double.eps))
+get.sign(
+  xs,
+  ...,
+  other = NA,
+  return = "number",
+  tol = sqrt(.Machine$double.eps)
+)
 }
 \arguments{
 \item{other}{default is NA, zero ... 0 ... may be applicable at times}

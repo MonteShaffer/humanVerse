@@ -16,5 +16,5 @@ createDirectoryRecursive(folder)
 createDirectoryRecursive
 }
 \examples{
-createDirectoryRecursive("R:/monte/says/hi/");
+# createDirectoryRecursive("R:/monte/says/hi/");
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions-colors.R
 \name{color.colorsInGradient}
 \alias{color.colorsInGradient}
-\title{colorsInGradient}
+\title{color.colorsInGradient}
 \usage{
 color.colorsInGradient(n, colvec = c("red", "royalblue"), alpha = FALSE)
 }
@@ -17,7 +17,7 @@ color.colorsInGradient(n, colvec = c("red", "royalblue"), alpha = FALSE)
 vector of colors in RGB or RGBa form (depending on alpha)
 }
 \description{
-colorsInGradient
+color.colorsInGradient
 }
 \examples{
 

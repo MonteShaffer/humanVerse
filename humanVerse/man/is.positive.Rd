@@ -4,7 +4,7 @@
 \alias{is.positive}
 \title{is.positive}
 \usage{
-is.positive(x, tol = sqrt(.Machine$double.eps))
+is.positive(x, ..., tol = sqrt(.Machine$double.eps))
 }
 \arguments{
 \item{x}{number (and vector) to evaluate}

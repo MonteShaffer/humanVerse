@@ -33,7 +33,7 @@ dataframe, updated
 standardizeDollarsInDataFrame
 }
 \examples{
-loadInflationData();
+# loadInflationData();
 # todo once I get Will/Denzel data ...
 }
 \seealso{

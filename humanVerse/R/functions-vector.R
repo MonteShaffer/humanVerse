@@ -1,6 +1,19 @@
-## project "adebo"
+
+
+
+#' getNearestIndex
+#'
+#' @param el element
+#' @param set set
+#' @param n how many to return
+#'
+#' @return vector of 'indexes'
+#' @export
+#'
+#' @examples
 getNearestIndex = function(el, set, n=1)
 	{
+  ## project "adebo"
 	myDeviation = abs(set-el);
 	if(is.null(n))
 		{
@@ -9,17 +22,56 @@ getNearestIndex = function(el, set, n=1)
 				whichMin(myDeviation)[1:n];
 				}
 	}
+
+
+#' getNearestValue
+#'
+#' @param el element
+#' @param set set
+#' @param n how many to return
+#'
+#' @return vector of values
+#' @export
+#'
+#' @examples
 getNearestValue = function(el, set, n=1)
 	{
+  # are these two functions above the same as the two functions below?
 	idx = getNearestIndex(el, set, n);
 	set[ idx ];  # value from data
   }
 
-whichNearestValue = function(x, value, ...)
+
+
+#' whichNearestValue
+#'
+#' @param x numeric vector
+#' @param search single number
+#'
+#' @return The nearest value from the found 'index'
+#' @export
+#'
+#' @examples
+#' whichNearestValue( 1:9, 42); # 9 as in the number
+#' whichNearestValue( sample(1:9), 42); # 9 as in the number
+whichNearestValue = function(x, search)
 	{
-	findAllIndexesWithNearestValueInVector(x, value, ...);
+	idx = findAllIndexesWithNearestValueInVector(x, search)[1];
+	x[idx];
   }
 
+
+#' findAllIndexesWithNearestValueInVector
+#'
+#' @param x numeric vector
+#' @param search single number
+#'
+#' @return the 'index' or 'indices' of the nearest value
+#' @export
+#'
+#' @examples
+#' findAllIndexesWithNearestValueInVector( 1:9, 42); # 9 is nearest
+#' findAllIndexesWithNearestValueInVector( sample(1:9), 42); # changes every time
 findAllIndexesWithNearestValueInVector = function(x, search)
 	{
   result = findAllIndexesWithValueInVector(x,search);
@@ -155,8 +207,8 @@ computeIndexFromOriginalToNew = function(original, new)
 	for(i in 1:n)
 		{
 		w = whereIsValueInVector(new[i], original);
-		idx = c(idx, w);		
-		}	
+		idx = c(idx, w);
+		}
 	idx;
 	}
 
@@ -167,17 +219,17 @@ whereIsValueInVector = function(val, vec, n=NULL)
 	if(n.idx > 0)
 		{
 		if(is.null(n)) { return (idx); } else { return (idx[n]); }
-		} else { return (NA); }	
+		} else { return (NA); }
 	}
-	
+
 removeValueFromVector = function(val, vec)
 	{
 	idx = which(vec == val);
-	n.idx = length(idx);	
+	n.idx = length(idx);
 	if(n.idx > 0)
 		{
 		vec = vec[-c(idx)];
-		}	
+		}
 	vec;
 	}
 

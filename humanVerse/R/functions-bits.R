@@ -79,6 +79,8 @@ bitShiftL = function(x, bits, unsigned=FALSE)
 #'
 #' @return
 #' @export
+#'
+#' @examples
 #' bitOr(15, 7);
 bitOr = function(a, b)
   {

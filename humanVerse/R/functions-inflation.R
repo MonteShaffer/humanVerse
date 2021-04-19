@@ -1,15 +1,23 @@
 
 
+#' currentInflationData
+#'
+#' This loads the most up-to-date inflation data from URL.
+#'
+#' @param store.global If TRUE, it will be accessible for inflation functions
+#'
+#' @return data.frame, invisible
+#' @export
 currentInflationData = function(store.global = TRUE)
   {
   html = "https://www.officialdata.org/us/inflation/2000?endYear=1920&amount=1000000";
   local = getRemoteAndCache(html, force.download = TRUE);
   str = readStringFromFile(local);
-  
+
   info = sliceDiceContent(str, start='<TABLE class="regular-data table-striped" style="margin: 0 auto">', end='</TABLE>');
-  
+
   info2 = sliceDiceContent(info, start='<TBODY>', end='</TBODY>');
-  
+
   res = NULL;
   rows = explodeMe('</tr>',info2);
   i = 1;
@@ -21,7 +29,7 @@ currentInflationData = function(store.global = TRUE)
 	myres = c();
 	for(col in cols)
 		{
-		
+
 		col = trimMe(strip_tags(col));
 			col = str_replace("$", "", col);
 			col = str_replace(",", "", col);
@@ -34,22 +42,22 @@ currentInflationData = function(store.global = TRUE)
 	if(length(myres) == 3)
 		{
 		res = rbind(res, myres);
-		}	
-	i = 1 + i;	
+		}
+	i = 1 + i;
 	}
-  
+
   res = as.data.frame(res);
 	colnames(res) = c("year", "dollar", "percent");
 	rownames(res) = res$year;
-  
+
   res = assignColumnsTypeInDataFrame(c("year", "dollar"), "integer", res);
-  
+
   if(store.global) { .GlobalEnv$.humanVerse[["inflation"]] = res; }
-  
+
   invisible(res);
   }
-  
-  
+
+
 
 #' loadInflationData
 #'
@@ -71,9 +79,9 @@ currentInflationData = function(store.global = TRUE)
 loadInflationData = function()
   {
   # idf = readRDS( system.file("extdata", "inflation.rds", package="humanVerseWSU") );
-  idf = data.load("inflation");  
+  idf = data.load("inflation");
   .GlobalEnv$.humanVerse[["inflation"]] = idf;
-  
+
   invisible(idf);
   }
 
@@ -90,9 +98,9 @@ loadInflationData = function()
 #' @return dollar, updated (adjusted from myyear to newyear)
 #' @export
 #' @examples
-#' loadInflationData();
-#' adjustDollarForInflation( 123, 1943, 2000 ); # $123 in 1943 is about $1224.31 in 2000
-#' adjustDollarForInflation( 123, 2000, 1943 ); # $123 in 2000 is about $12.36 in 1943
+#' # loadInflationData();
+#' # adjustDollarForInflation( 123, 1943, 2000 ); # $123 in 1943 is about $1224.31 in 2000
+#' # adjustDollarForInflation( 123, 2000, 1943 ); # $123 in 2000 is about $12.36 in 1943
 #'
 adjustDollarForInflation = function(mydollar,myyear,newyear,idf=.GlobalEnv$.humanVerse[["inflation"]])
 	{
@@ -123,7 +131,7 @@ adjustDollarForInflation = function(mydollar,myyear,newyear,idf=.GlobalEnv$.huma
 #' @return dataframe, updated
 #' @export
 #' @examples
-#' loadInflationData();
+#' # loadInflationData();
 #' # todo once I get Will/Denzel data ...
 standardizeDollarsInDataFrame = function(df, anchor.year, dollar.source, year.source, dollar.out, idf=.GlobalEnv$.humanVerse[["inflation"]])
 	{
@@ -162,9 +170,9 @@ standardizeDollarsInDataFrame = function(df, anchor.year, dollar.source, year.so
 #' @return numeric dollar from idf table for that year
 #' @export
 #' @examples
-#' loadInflationData();  # does lookup to create ratios
-#' lookupInflationDollar( 1943 ); # $  865,000
-#' lookupInflationDollar( 2000 ); # $8,610,000
+#' # loadInflationData();  # does lookup to create ratios
+#' # lookupInflationDollar( 1943 ); # $  865,000
+#' # lookupInflationDollar( 2000 ); # $8,610,000
 #'
 lookupInflationDollar = function(year,idf=.GlobalEnv$.humanVerse[["inflation"]])
 	{

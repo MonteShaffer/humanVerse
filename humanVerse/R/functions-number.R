@@ -1,13 +1,30 @@
-# https://stackoverflow.com/questions/17220837/counting-the-number-of-times-a-value-change-signs-with-r
-# Note that sign does not operate on complex vectors.
 
+
+#' count.sign.changes
+#'
+#' @param x
+#' @param na.rm
+#' @param part
+#'
+#' @return
+#' @export
 count.sign.changes = function(x, na.rm=TRUE, part="Re")
   {
+# https://stackoverflow.com/questions/17220837/counting-the-number-of-times-a-value-change-signs-with-r
+# Note that sign does not operate on complex vectors.
   if(part == "Im") { x = Im(x); } else { x = Re(x); }
   if(na.rm) { x = stats::na.omit(x); }
   sum(diff(sign(x)) != 0);
   }
 
+#' which.sign.changes
+#'
+#' @param x
+#' @param na.rm
+#' @param part
+#'
+#' @return
+#' @export
 which.sign.changes = function(x, na.rm=TRUE, part="Re")
   {
   if(part == "Im") { x = Im(x); } else { x = Re(x); }
@@ -123,7 +140,7 @@ is.negative = function(x, ..., tol = sqrt(.Machine$double.eps))
 get.sign = function(xs, ..., other=NA, return="number", tol = sqrt(.Machine$double.eps))
 	{
 	more = unlist(list(...)); xs = c(xs, more);
-	
+
 	myval = cval = other;
 	out = c();
 	for(x in xs)

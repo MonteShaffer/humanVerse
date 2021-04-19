@@ -77,6 +77,17 @@ initSeed = function(...)
   }
 
 
+#' setSeed
+#'
+#' @param seed
+#' @param key
+#' @param ...
+#' @param args.set
+#' @param print.seed
+#' @param verbose
+#'
+#' @return
+#' @export
 setSeed = function(seed, key, ..., args.set = list(), print.seed = TRUE, verbose = FALSE )
   {
   # can I have two ellipses in a single function?
@@ -105,19 +116,29 @@ setSeed = function(seed, key, ..., args.set = list(), print.seed = TRUE, verbose
       {
       cat("setSeed :: calling base::set.seed with seed ... ", seed, "\n");
       }
-  
+
   if(print.seed)
 	{
 	cat("\n setSeed: ", seed, "\n");
 	}
   # invisible(seed);
-  
+
   set.seed(seed, kind=kind, normal.kind=normal.kind, sample.kind=sample.kind);
   }
 
-# I could create a "keyed" list of memory, not just last ...
+
+#' getSeed
+#'
+#' @param key
+#' @param verbose
+#'
+#' @return
+#' @export
+#'
+#' @examples
 getSeed = function(key, verbose = FALSE)
   {
+  # I could create a "keyed" list of memory, not just last ...
   if( missing(key) ) { key = "last"; }
   if(verbose) { cat("getSeed :: looking up key ... ", "\t", key); }
   if(exists(key, .GlobalEnv$.humanVerse[["seed"]]))

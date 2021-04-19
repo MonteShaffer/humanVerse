@@ -4,7 +4,7 @@
 \alias{zeroIsh}
 \title{zeroIsh}
 \usage{
-zeroIsh(x, digits = getOption("digits"))
+zeroIsh(x, ..., digits = getOption("digits"))
 }
 \arguments{
 \item{x}{a vector of numerics (matrix also works)}

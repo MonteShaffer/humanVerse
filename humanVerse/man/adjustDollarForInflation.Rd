@@ -27,9 +27,9 @@ dollar, updated (adjusted from myyear to newyear)
 adjustDollarForInflation
 }
 \examples{
-loadInflationData();
-adjustDollarForInflation( 123, 1943, 2000 ); # $123 in 1943 is about $1224.31 in 2000
-adjustDollarForInflation( 123, 2000, 1943 ); # $123 in 2000 is about $12.36 in 1943
+# loadInflationData();
+# adjustDollarForInflation( 123, 1943, 2000 ); # $123 in 1943 is about $1224.31 in 2000
+# adjustDollarForInflation( 123, 2000, 1943 ); # $123 in 2000 is about $12.36 in 1943
 
 }
 \seealso{

@@ -59,6 +59,30 @@ charAt = function(str,idx)
   {
   substr(str,idx,idx);
   }
+  
+#' lastChar
+#'
+#' Get the last character of a string
+#'
+#' @param str String
+#' @param trim should the string be trimmed first
+#'
+#' @return single character
+#' @export
+#'
+#' @examples
+#'
+#' lastChar("Alex");
+#' lastChar(c("Hello","there","Alex"));
+#' lastChar("Sasha");
+#' lastChar("Alexander");
+#'  
+lastChar = function(str, trim=TRUE)
+	{
+	if(trim){ str = trimMe(str); }
+	s.len = strlen(str);
+	charAt(str, s.len);
+	}
 
 
 #' charCodeAt

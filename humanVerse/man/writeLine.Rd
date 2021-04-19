@@ -24,6 +24,6 @@ Very useful for simulations and building data one line at a time.
 [ encoding is slow ]
 }
 \examples{
-writeLine("hello there", file="R:/monte/says/hi/again/my.log", append=FALSE);
-writeLine("hi again", file="R:/monte/says/hi/again/my.log");
+# writeLine("hello there", file="R:/monte/says/hi/again/my.log", append=FALSE);
+# writeLine("hi again", file="R:/monte/says/hi/again/my.log");
 }

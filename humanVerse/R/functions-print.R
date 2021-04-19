@@ -1,7 +1,7 @@
 
 
 
-  
+
 
 #' printPaste0
 #'
@@ -104,6 +104,7 @@ printMatrix = function(mat, digits=3, zeroIsh=TRUE, z.digits=6) # align decimals
 #' roundMeToString(-0.9, 3, FALSE);
 roundMeToString = function(val, digits=3, leadingZero=TRUE, decimal.sep=".")
   {
+  # is this easier with sprintf
   isNegative = (val < 0);
   isLessThanOne = (val > 0 && val < 1);
 
@@ -125,16 +126,32 @@ roundMeToString = function(val, digits=3, leadingZero=TRUE, decimal.sep=".")
   }
 
 
+
+#' truncateNumeric
+#'
+#' @param val numeric value
+#' @param digits how many digits
+#' @param append what to append (postpend) to demonstrate truncation
+#'
+#' @return stringified form of val
+#' @export
+#'
+#' @examples
+#' truncateNumeric(3.1415926535897932384626);
+#' truncateNumeric(3.1415926535897932384626, digits=22);
+#' truncateNumeric('3.1415926535897932384626', digits=22);
+#' truncateNumeric(3.1415926535897932384626, digits=9, append="");
 truncateNumeric = function(val, digits=3, append="...")
 	{
+  # is this easier with sprintf
 	strvec = as.character(val);
 		tmp = explodeMe(".", strvec, NULL);
 	whole 	= getElementsInList(tmp,1);
 	decimal = getElementsInList(tmp,2);
 		decimal = strPadRight(decimal, digits, "0");
-	
+
 	res = paste0(whole, ".", substr(decimal, 1, digits), append );
-	
+
 	res;
 	}
 

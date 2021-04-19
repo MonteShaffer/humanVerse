@@ -55,7 +55,7 @@ color.setOpacity = function(hexvec, opacity=100)
 #' @export
 #'
 #' @examples
-#' color.buildTable();
+#' # color.buildTable();
 color.buildTable = function(colvec=NULL, key=NULL, save.key=NULL)
 	{
   # we need to cache this in "last" memory
@@ -117,11 +117,21 @@ color.buildTable = function(colvec=NULL, key=NULL, save.key=NULL)
 
 
 
-# color "search" by wildcard
-# cache color tables (such as wheels)
-# this caching is WEIRD
+
+#' color.nameSearch
+#'
+#' @param skey
+#' @param colors.df
+#' @param col.name
+#' @param ...
+#'
+#' @return
+#' @export
 color.nameSearch = function(skey, colors.df = NULL, col.name="color", ...)
 	{
+	# color "search" by wildcard
+	# cache color tables (such as wheels)
+	# this caching is WEIRD
 	if(is.null(colors.df))
 		{
 		colors.df = color.buildTable();
@@ -149,10 +159,24 @@ color.nameSearch = function(skey, colors.df = NULL, col.name="color", ...)
 
 
 
-# ALMOST WORKING CORRECTLY ...
-# color.findNearestName("#8B8378", how.many = 12, scale.me = TRUE);
-color.findNearestName = function(hex, how.many = 1, scale.me = TRUE, how="distance", ...)
+
+#' color.findNearestName
+#'
+#' @param hex
+#' @param how.many
+#' @param scale.me
+#' @param how
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
+color.findNearestName = function(hex, how.many = 1, scale.me = TRUE, how="cosine", ...)
 	{
+	# ALMOST WORKING CORRECTLY ...
+	# color.findNearestName("#8B8378", how.many = 12, scale.me = TRUE);
+
 	hex = checkHEX(hex);
 	  if(is.null(hex)) { return (NULL); }
 
@@ -293,11 +317,21 @@ color.findNearestName = function(hex, how.many = 1, scale.me = TRUE, how="distan
 
 
 
-# we need to cache this in "last" memory
-# accessor can get elements without having to rebuild
+
+#' color.chromatics
+#'
+#' @param rgb
+#' @param n
+#' @param save.key
+#'
+#' @return
+#' @export
+#'
+#' @examples
 color.chromatics = function(rgb, n = 12, save.key = NULL) # mono steps of monochronic ... half on "white" / half on "black"
 	{
-
+	# we need to cache this in "last" memory
+	# accessor can get elements without having to rebuild
 	if(!is.null(save.key))
 		{
 		if(!is.character(save.key)) { save.key = md5.object(getFunctionParameters(TRUE)); }
@@ -339,12 +373,23 @@ color.chromatics = function(rgb, n = 12, save.key = NULL) # mono steps of monoch
 
 
 
-## http://c.mshaffer.com/js/colorpicker/functions.colors.js
-# we need to cache this in "last" memory
-# accessor can get elements without having to rebuild
-# - complement, split, split-complement, triad, square, rectangle, and so on ...
+#' color.buildWheel
+#'
+#' @param rgb
+#' @param wheel.steps
+#' @param find.names
+#'
+#' @return
+#' @export
+#'
+#' @examples
 color.buildWheel = function(rgb, wheel.steps = 12, find.names=FALSE)  # wheel steps needs to be divisible by 360?
 	{
+	## http://c.mshaffer.com/js/colorpicker/functions.colors.js
+	# we need to cache this in "last" memory
+	# accessor can get elements without having to rebuild
+	# - complement, split, split-complement, triad, square, rectangle, and so on ...
+
 	if(length(rgb) == 1) { rgb = hex2rgb(rgb); } # they can pass in "hex"
 	hex = rgb2hex(rgb);
 
@@ -406,6 +451,14 @@ color.buildWheel = function(rgb, wheel.steps = 12, find.names=FALSE)  # wheel st
 
 
 
+#' color.webSafeHEX
+#'
+#' @param rgb
+#'
+#' @return
+#' @export
+#'
+#' @examples
 color.webSafeHEX = function(rgb)
 	{
 	rgb = checkRGB(rgb);
@@ -428,6 +481,16 @@ color.webSafeHEX = function(rgb)
 	rgb2hex(rgb);
 	}
 
+#' color.randomHEX
+#'
+#' @param n
+#' @param my.seed
+#' @param key
+#'
+#' @return
+#' @export
+#'
+#' @examples
 color.randomHEX = function(n=1, my.seed=NULL, key=NULL)
 	{
 	if(!is.null(key))
@@ -450,13 +513,19 @@ color.randomHEX = function(n=1, my.seed=NULL, key=NULL)
 	}
 
 
-# source('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-random.R')
-# source('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-memory.R')
-# source('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-colors.R')
-# source('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-str.R')
-
+#' color.randomRGB
+#'
+#' @param n
+#' @param my.seed
+#' @param key
+#'
+#' @return
+#' @export
+#'
+#' @examples
 color.randomRGB = function(n=1, my.seed=NULL, key=NULL)
 	{
+
 	my.hexs = color.randomHEX(n=n, my.seed=my.seed, key=key);
 	rgb = hex2rgb( my.hexs );
 	rgb = cleanupRGB(rgb);
@@ -489,8 +558,19 @@ color.randomRGB = function(n=1, my.seed=NULL, key=NULL)
 
 
 
+#' color.roundHEX
+#'
+#' @param rgb
+#' @param n
+#' @param full
+#'
+#' @return
+#' @export
+#'
+#' @examples
 color.roundHEX = function(rgb, n=3, full=FALSE)
 	{
+
 	# this round "FA" to "FC", "FD" to "FF"
 	rgb = checkRGB(rgb);
 	if(full)  # this rounds at the whole "FF" value, not just the last element ...
@@ -531,8 +611,18 @@ color.roundHEX = function(rgb, n=3, full=FALSE)
 	}
 
 
+#' color.plotWheel
+#'
+#' @param df
+#' @param harmony
+#'
+#' @return
+#' @export
+#'
+#' @examples
 color.plotWheel = function(df = color.buildWheel("red"), harmony="all")
   {
+
   df = assignColumnsTypeInDataFrame(c("degrees","wheel"), "numeric", df);
   # subset df based on elements that fit with harmony value
     # - complement ... 180 degrees from original
@@ -582,6 +672,21 @@ color.plotWheel = function(df = color.buildWheel("red"), harmony="all")
   }
 
 
+#' color.displayColorOptions
+#'
+#' @param my.colors
+#' @param showHEX
+#' @param alpha
+#' @param xlim
+#' @param ylim
+#' @param cex
+#' @param ncol
+#' @param nrow
+#'
+#' @return
+#' @export
+#'
+#' @examples
 color.displayColorOptions = function(my.colors = grDevices::colors(),
                               showHEX = FALSE,
                               alpha = TRUE, # works with showHEX = TRUE
@@ -1065,11 +1170,9 @@ rgb2hex = function(rgb, pre="#")
 #'
 #' @return matrix of rgbs
 #' @export
-#'
-#' @examples
 hue2rgb = function(hues)
 	{
-
+  # TODO: where is rgb2hue ???
 	hues = as.numeric( unlist( hues ) ); # just in case ...
 	hues = matrix(hues, nrow=3);
 
@@ -1098,6 +1201,13 @@ hue2rgb = function(hues)
 	res;
 	}
 
+
+#' hsl2rgb
+#'
+#' @param hsls
+#'
+#' @return
+#' @export
 
 hsl2rgb = function(hsls)
 	{
@@ -1137,14 +1247,22 @@ hsl2rgb = function(hsls)
 	}
 
 
-# rgb = hex2rgb("#abcdef"); unlist(rgb);
+
+
+
+#' rgb2hsl
+#'
+#' @param rgb
+#'
+#' @return
+#' @export
+rgb2hsl = function(rgb)
+	{
+  # rgb = hex2rgb("#abcdef"); unlist(rgb);
 # rgb2hex(rgb);
 # hsl = rgb2hsl(rgb);  unlist(hsl);
 # unlist( hsl2rgb(hsl) );
 
-
-rgb2hsl = function(rgb)
-	{
 	rgb = checkRGB(rgb);
 	rgb = rgb / 255; # we want it on the [0,1] scale
 
@@ -1201,7 +1319,19 @@ rgb2hsl = function(rgb)
 
 
 
-# rgb = hex2rgb("#abcdef"); unlist(rgb);
+
+
+#' hsv2rgb
+#'
+#' @param hsvs
+#'
+#' @return
+#' @export
+#'
+#' @examples
+hsv2rgb = function(hsvs)
+	{
+  # rgb = hex2rgb("#abcdef"); unlist(rgb);
 # rgb2hex(rgb);
 # hsv = rgb2hsv(rgb);  unlist(hsv);
 # unlist( hsv2rgb(hsv) );
@@ -1215,8 +1345,6 @@ rgb2hsl = function(rgb)
 # unlist ( hsv2rgb( hsv ) );
 ### SEEMS TO BE A BUG on "blue"
 
-hsv2rgb = function(hsvs)
-	{
 	hsvs = as.numeric( unlist( hsvs ) ); # just in case ...
 	hsvs = matrix(hsvs, nrow=3);
 
@@ -1289,6 +1417,12 @@ hsv2rgb = function(hsvs)
 
 
 
+#' rgb2hsv
+#'
+#' @param rgb
+#'
+#' @return
+#' @export
 rgb2hsv = function(rgb)
 	{
 	rgb = checkRGB(rgb);
@@ -1350,14 +1484,22 @@ rgb2hsv = function(rgb)
 
 
 
-# rgb = hex2rgb("#abcdef"); unlist(rgb);
+
+
+
+#' cmyk2rgb
+#'
+#' @param cmyks
+#' @param ...
+#'
+#' @return
+#' @export
+cmyk2rgb = function(cmyks, ...)
+	{
+  # rgb = hex2rgb("#abcdef"); unlist(rgb);
 # rgb2hex(rgb);
 # cmyk = rgb2cmyk(rgb);  unlist(cmyk);
 # unlist( cmyk2rgb(cmyk) );
-
-
-cmyk2rgb = function(cmyks, ...)
-	{
 	more = unlist(list(...));
 	cmyks = c(cmyks, more);
 
@@ -1398,6 +1540,12 @@ cmyk2rgb = function(cmyks, ...)
 
 	}
 
+#' rgb2cmyk
+#'
+#' @param rgb
+#'
+#' @return
+#' @export
 rgb2cmyk = function(rgb)
 	{
 	rgb = checkRGB(rgb);
