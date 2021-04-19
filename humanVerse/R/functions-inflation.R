@@ -112,7 +112,8 @@ adjustDollarForInflation = function(mydollar,myyear,newyear,idf=.GlobalEnv$.huma
 
 	nd = suppressWarnings(mydollar*ratio);
 
-	nd;
+	if(is.null(nd)) { nd = NA; }
+
 	}
 
 
@@ -152,7 +153,8 @@ standardizeDollarsInDataFrame = function(df, anchor.year, dollar.source, year.so
 		myyear = years[i];
 		nd = NA;
 		if(!is.na(mydollar)) { nd = adjustDollarForInflation(mydollar,myyear,anchor.year,idf=idf); }
-
+    if(is.null(nd)) { nd = NA; }
+		# cat("\n nd: ", nd, "\n");
 		newdollars[i] = nd;
 		}
 
