@@ -104,16 +104,18 @@ loadInflationData = function()
 #'
 adjustDollarForInflation = function(mydollar,myyear,newyear,idf=.GlobalEnv$.humanVerse[["inflation"]])
 	{
+  # cat("\n", "mydollar: ", mydollar, " ... myyear: ", myyear, " ... newyear: ", newyear, "\n");
 	# use basic ratio
 	dollar.myyear = lookupInflationDollar(myyear,idf);
 	dollar.newyear = lookupInflationDollar(newyear,idf);
 
+	# ratio = NA;
+
 	ratio = dollar.newyear/dollar.myyear;
 
-	nd = suppressWarnings(mydollar*ratio);
+	nd = mydollar*ratio;
 
-	if(is.null(nd)) { nd = NA; }
-
+	nd[1];
 	}
 
 
@@ -153,7 +155,7 @@ standardizeDollarsInDataFrame = function(df, anchor.year, dollar.source, year.so
 		myyear = years[i];
 		nd = NA;
 		if(!is.na(mydollar)) { nd = adjustDollarForInflation(mydollar,myyear,anchor.year,idf=idf); }
-    if(is.null(nd)) { nd = NA; }
+    # if(is.null(nd)) { nd = NA; }
 		# cat("\n nd: ", nd, "\n");
 		newdollars[i] = nd;
 		}
@@ -180,7 +182,9 @@ standardizeDollarsInDataFrame = function(df, anchor.year, dollar.source, year.so
 #'
 lookupInflationDollar = function(year,idf=.GlobalEnv$.humanVerse[["inflation"]])
 	{
-	idf[idf$year==year,2];  # single form ...
+	res = idf[idf$year==year,2];  # single form ...
+	if(length(res) == 0) { res = NA; }
+	res;
 	}
 
 
