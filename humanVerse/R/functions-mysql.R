@@ -200,6 +200,15 @@ mysql.fetchAllSQL = function(conn, sql, save="")
   result;
   }
 
+#' mysql.parseTemplateFromList
+#'
+#' @param sql
+#' @param obj
+#'
+#' @return
+#' @export
+#'
+#' @examples
 mysql.parseTemplateFromList = function(sql, obj)
   {
   keys = names(obj);
@@ -212,8 +221,8 @@ mysql.parseTemplateFromList = function(sql, obj)
     }
   nsql;
   }
-  
-  
+
+
 #' mysql.parseTemplateKeysVals
 #'
 #' @param sql character string as sql.template
@@ -227,7 +236,7 @@ mysql.parseTemplateFromList = function(sql, obj)
 #' sql.template = "SELECT * FROM {tablename} WHERE zipcode = '{zipcode}';";
 #'         keys = c("tablename", "zipcode");
 #'         vals = c("zipcodes", 99163);
-#' parseTemplateSQL(sql.template, keys, vals);
+#' mysql.parseTemplateKeysVals(sql.template, keys, vals);
 #'
 mysql.parseTemplateKeysVals = function(sql, keys, vals)
   {
@@ -252,10 +261,10 @@ mysql.parseTemplateKeysVals = function(sql, keys, vals)
 
 
 
-	
-	
-	
-	
+
+
+
+
 
 
 

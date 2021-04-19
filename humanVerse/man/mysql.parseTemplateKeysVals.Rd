@@ -23,6 +23,6 @@ mysql.parseTemplateKeysVals
 sql.template = "SELECT * FROM {tablename} WHERE zipcode = '{zipcode}';";
         keys = c("tablename", "zipcode");
         vals = c("zipcodes", 99163);
-parseTemplateSQL(sql.template, keys, vals);
+mysql.parseTemplateKeysVals(sql.template, keys, vals);
 
 }

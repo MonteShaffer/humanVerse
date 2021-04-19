@@ -414,7 +414,7 @@ includeGithubFolder = function(url, ...)  # pattern = "[.][RrSsQq]$",
 						# do a check that it has the write extension ... # pattern = "[.][RrSsQq]$",
 					links = c(links, link);
 					}
-				storeToPipe(as.data.frame(links), html.cache, header=FALSE);
+				writeToPipe(as.data.frame(links), html.cache, header=FALSE);
 				}
 
 	includeRemoteFiles(links, ...);

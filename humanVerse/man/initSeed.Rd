@@ -16,6 +16,6 @@ A single integer
 initSeed
 }
 \examples{
-initSeed();
-initSeed(1, 10^5, method="floor");
+# initSeed();
+# initSeed(1, 10^5, method="floor");
 }

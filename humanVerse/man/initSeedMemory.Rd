@@ -16,6 +16,6 @@ NULL (nothing)
 initSeedMemory
 }
 \examples{
-initSeedMemory();
-setSeed(); getSeed(); initSeedMemory(purge.memory = TRUE); getSeed();
+# initSeedMemory();
+# setSeed(); getSeed(); initSeedMemory(purge.memory = TRUE); getSeed();
 }

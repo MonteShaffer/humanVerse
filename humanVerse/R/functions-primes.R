@@ -188,6 +188,7 @@ prime.findPrimes = function(n, first=FALSE)
 	# doesn't use seq but while ... slower than primary function 'prime.findFrom'
 	# the pracma function is looping of odds and then seq 3 ...
 	gn = n;
+	# https://www.khanacademy.org/computing/computer-science/cryptography/comp-number-theory/v/prime-number-theorem-the-density-of-primes
 	if(first) { gn = ceiling( n * log(n) + n * log(log(n)) ); }
 
 	# primes
@@ -247,7 +248,7 @@ prime.isPrime = function(x)
 prime.factors = function(x)
 	{
 	x = as.integer(x);
-	p = prime.from( ceiling(sqrt(x)) );
+	p = prime.pracmaPrimes ( ceiling(sqrt(x)) );  # squared rule of primes
 	remainder = x %% p;
 	zeroes = which(remainder == 0);
 	if(length(zeroes) == 0)

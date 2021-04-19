@@ -69,8 +69,8 @@ rand = function(min = -1*as.integer(Sys.time()), max = as.integer(Sys.time()), n
 #' @export
 #'
 #' @examples
-#' initSeed();
-#' initSeed(1, 10^5, method="floor");
+#' # initSeed();
+#' # initSeed(1, 10^5, method="floor");
 initSeed = function(...)
   {
   rand(...)[1];  # if they wrongly passed in n > 1, we only return [1]

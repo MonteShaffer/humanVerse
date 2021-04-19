@@ -15,6 +15,15 @@
 ## maybe create a generic set of functions ... get/set Memory
 
 
+#' initMemory
+#'
+#' @param purge.memory
+#' @param verbose
+#'
+#' @return
+#' @export
+#'
+#' @examples
 initMemory = function(purge.memory = FALSE, verbose = TRUE)
   {
   if(!exists(".humanVerse") || purge.memory)
@@ -39,6 +48,15 @@ initMemory = function(purge.memory = FALSE, verbose = TRUE)
   }
 
 
+#' initInflationMemory
+#'
+#' @param purge.memory
+#' @param verbose
+#'
+#' @return
+#' @export
+#'
+#' @examples
 initInflationMemory = function(purge.memory = FALSE, verbose = FALSE)
 	{
 	if(!exists(".humanVerse")) { initMemory(); }
@@ -55,6 +73,15 @@ initInflationMemory = function(purge.memory = FALSE, verbose = FALSE)
 	}
 
 
+#' initFunctionMemory
+#'
+#' @param purge.memory
+#' @param verbose
+#'
+#' @return
+#' @export
+#'
+#' @examples
 initFunctionMemory = function(purge.memory = FALSE, verbose = FALSE)
 	{
 	if(!exists(".humanVerse")) { initMemory(); }
@@ -75,6 +102,15 @@ initFunctionMemory = function(purge.memory = FALSE, verbose = FALSE)
 		}
 	}
 
+#' initSQLMemory
+#'
+#' @param purge.memory
+#' @param verbose
+#'
+#' @return
+#' @export
+#'
+#' @examples
 initSQLMemory = function(purge.memory = FALSE, verbose = FALSE)
 	{
 	if(!exists(".humanVerse")) { initMemory(); }
@@ -89,6 +125,15 @@ initSQLMemory = function(purge.memory = FALSE, verbose = FALSE)
 		}
 	}
 
+#' initSystemMemory
+#'
+#' @param purge.memory
+#' @param verbose
+#'
+#' @return
+#' @export
+#'
+#' @examples
 initSystemMemory = function(purge.memory = FALSE, verbose = FALSE)
 	{
 	if(!exists(".humanVerse")) { initMemory(); }
@@ -110,6 +155,15 @@ initSystemMemory = function(purge.memory = FALSE, verbose = FALSE)
 		}
 	}
 
+#' initPathMemory
+#'
+#' @param purge.memory
+#' @param verbose
+#'
+#' @return
+#' @export
+#'
+#' @examples
 initPathMemory = function(purge.memory = FALSE, verbose = FALSE)
 	{
 	if(!exists(".humanVerse")) { initMemory(); }
@@ -133,6 +187,15 @@ initPathMemory = function(purge.memory = FALSE, verbose = FALSE)
 
 
 
+#' initColorMemory
+#'
+#' @param purge.memory
+#' @param verbose
+#'
+#' @return
+#' @export
+#'
+#' @examples
 initColorMemory = function(purge.memory = FALSE, verbose = FALSE)
   {
   if(!exists(".humanVerse")) { initMemory(); }
@@ -163,8 +226,8 @@ initColorMemory = function(purge.memory = FALSE, verbose = FALSE)
 #' @export
 #'
 #' @examples
-#' initSeedMemory();
-#' setSeed(); getSeed(); initSeedMemory(purge.memory = TRUE); getSeed();
+#' # initSeedMemory();
+#' # setSeed(); getSeed(); initSeedMemory(purge.memory = TRUE); getSeed();
 initSeedMemory = function(purge.memory = FALSE, verbose = FALSE)
   {
   if(!exists(".humanVerse")) { initMemory(); }

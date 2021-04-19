@@ -7,7 +7,7 @@
 get.sign(
   xs,
   ...,
-  other = NA,
+  other = "NA",
   return = "number",
   tol = sqrt(.Machine$double.eps)
 )
@@ -36,9 +36,11 @@ get.sign(1, return="character");
 get.sign(0);
 get.sign(0, return="char");
 get.sign(0, 0);
-get.sign(0, ".", return="char");
+get.sign(0, other=".", return="char");
+get.sign(0, 0, other=".", return="char");
 
-# get.sign(-1*(1:10)); # doesn't work
+get.sign(-1*(1:10)); # variadic now works
+get.sign(-1*(1:10), return="char");
 
 get.sign(pi);
 get.sign(-pi);

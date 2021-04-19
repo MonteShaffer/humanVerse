@@ -124,9 +124,11 @@ is.negative = function(x, ..., tol = sqrt(.Machine$double.eps))
 #' get.sign(0);
 #' get.sign(0, return="char");
 #' get.sign(0, 0);
-#' get.sign(0, ".", return="char");
+#' get.sign(0, other=".", return="char");
+#' get.sign(0, 0, other=".", return="char");
 #'
-#' # get.sign(-1*(1:10)); # doesn't work
+#' get.sign(-1*(1:10)); # variadic now works
+#' get.sign(-1*(1:10), return="char");
 #'
 #' get.sign(pi);
 #' get.sign(-pi);
@@ -137,16 +139,18 @@ is.negative = function(x, ..., tol = sqrt(.Machine$double.eps))
 #' get.sign( sin(pi), tol = .Machine$double.eps^2 );
 #' get.sign( -sin(pi), tol = .Machine$double.eps^2  );
 #'
-get.sign = function(xs, ..., other=NA, return="number", tol = sqrt(.Machine$double.eps))
+get.sign = function(xs, ..., other="NA", return="number", tol = sqrt(.Machine$double.eps))
 	{
 	more = unlist(list(...)); xs = c(xs, more);
+	nxs = length(xs);
 
 	myval = cval = other;
 	out = c();
 	for(x in xs)
 		{
-		if(is.negative(x,tol)) { myval="-"; }
-		if(is.positive(x,tol)) { myval="+"; }
+	  myval = other;
+		if(is.negative(x, tol=tol)) { myval="-"; }
+		if(is.positive(x, tol=tol)) { myval="+"; }
 		# print(myval);
 		if(return == "number")
 			{
