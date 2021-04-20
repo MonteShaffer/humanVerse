@@ -286,53 +286,77 @@ file.readLines = function(file, n=-1, skip=NULL)
 	}
 
 
+
+
+listGithubFiles = function(github.user="MonteShaffer", github.repo="humanVerse", github.path="", ...)
+	{
+	args = getFunctionParameters();
+	force.download = isForceDownload(args);
+	cat("\n", "force.download ... ", force.download, "\n\n");
+	
+	url = buildGithubPath(github.user, github.repo);
+	url = paste0(url, github.path);
+	
+	res = parseGithubList(url, force.download = force.download);
+		res = setAttribute("url", url, res);
+		res = setAttribute("force.download", force.download, res);
+	res;
+	}
+
 #' installGithubLibrary
 #'
 #' @return
 #' @export
 #'
 #' @examples
-installGithubLibrary = function()
+installGithubLibrary = function(github.user="MonteShaffer", github.repo="humanVerseWSU", github.path="", pattern = "\\.zip$", github.version="latest", ...)
 	{
-### TODO ###
-# install.packages("C:/_git_/humanVerseWSU/humanVerseWSU_0.1.4.zip", repos=NULL, type="source");
-	#
-	# {
-  # "id": 294247360,
-  # "node_id": "MDEwOlJlcG9zaXRvcnkyOTQyNDczNjA=",
-  # "name": "humanVerseWSU",
-  # "full_name": "MonteShaffer/humanVerseWSU",
-  # "private": false,
-
-
-	# https://api.github.com/
-	# "repository_url": "https://api.github.com/repos/{owner}/{repo}",
-	# "repository_url": "https://api.github.com/repos/MonteShaffer/humanVerseWSU",
-
-	# check out remotes ...
-
-	# remote_download.github_remote <- function(x, quiet = FALSE) {
-  # if (!quiet) {
-    # message("Downloading GitHub repo ", x$username, "/", x$repo, "@", x$ref)
-  # }
-
-  # dest <- tempfile(fileext = paste0(".tar.gz"))
-  # src_root <- build_url(x$host, "repos", x$username, x$repo)
-  # src <- paste0(src_root, "/tarball/", utils::URLencode(x$ref, reserved = TRUE))
-
-  # download(dest, src, auth_token = x$auth_token)
-
-
-
-
-
-  # github_remote <- function(repo, ref = "HEAD", subdir = NULL,
-                       # auth_token = github_pat(), sha = NULL,
-                       # host = "api.github.com", ...) {
-
-  # meta <- parse_git_repo(repo)
-  # meta <- github_resolve_ref(meta$ref %||% ref, meta, host = host, auth_token = auth_token)
-
+	# build-source ==> .tar.gz
+	# build-binary ==> .zip  [WINDOZE]
+	# maybe ==> .tgz 
+	# ?install.packages
+	github.df = listGithubFiles(github.user=github.user, github.repo=github.repo, github.path=github.path, ...);
+	
+	idx.zips = grep("\\.zip$", github.df$links);
+	idx.tars = NULL;
+	# idx.tars = grep("\\.tar.giz$", github.df$links);
+	
+	
+	github.idx = c(idx.zips, idx.tars);
+	if(length(github.idx) == 0)
+		{
+		stop("no candidates");
+		}	
+	
+	github.candidates = github.df[github.idx,] ;
+	## 
+	
+	cat("\n\n =-=-=-=-=-=-=-=-=-=- CANDIDATES =-=-=-=-=-=-=-=-=-=- \n\n");
+	cat("\n\n", "  [ latest ---> ]", paste(github.candidates$name, collapse="\n\t"), "\n\n\n");
+	
+	github.zip = github.candidates[1,];  # these are sorted by latest ... 
+	
+	if(github.version != "latest")
+		{
+		# github.version is wildcard, grab first ...
+		grx = utils::glob2rx(github.version);
+		grx.grep = grep(grx, github.candidates$links);
+			if(length(github.grep) > 0)
+				{
+				my.idx = grx.grep[1]; # first match 
+				github.zip = github.candidates[my.idx,];
+				}
+		}
+	
+	cat("\n\n", paste( github.zip[c(1,2)], collapse = "\t\t"), "\n\n\n");
+	zip.url = as.character(github.zip[8]);	
+	
+	cat("\n\n", "\t\t", "      FROM: ", as.character(github.zip[8]), "\n\n");
+	myzip = getRemoteAndCache(zip.url, ...);
+	
+	cat("\n\n", "\t\t", "TO INSTALL: ", as.character(github.zip[1]), "\n\n");
+	install.packages(myzip, repos=NULL, type="source");
+		# unzips into folder 'C:/Users/Alexander Nevsky/Documents/R/win-library/4.0'
 	}
 
 
@@ -347,16 +371,6 @@ buildGithubPath = function(github.user="MonteShaffer", github.repo="humanVerse",
 	}
 
 
-listGithubFiles = function(github.user="MonteShaffer", github.repo="humanVerse", github.path="", ...)
-	{
-	args = getFunctionParameters();
-	force.download = isForceDownload(args);
-	cat("\n", "force.download ... ", force.download, "\n\n");
-	
-	url = buildGithubPath(github.user, github.repo);
-	url = paste0(url, github.path);
-	
-	}
 	
 
 parseGithubList = function(url, force.download = FALSE)

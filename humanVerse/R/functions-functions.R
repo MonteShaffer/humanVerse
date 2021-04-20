@@ -601,7 +601,14 @@ getFunctionParameters = function(global.memory = TRUE, n=1, out.dput = FALSE)
 						########## arguments <- unlist(as.character(as.list(match.call()[-1])));
 						########## print(arguments);
 ## cat("\n\n === MORE === \n\n");
-	more = eval(quote(unlist(as.character(as.list(match.call()[-1])))), envir = pf);
+	# Error in match.call() : ... used in a situation where it does not exist 
+	mc = match.call()[-1];
+	more = NULL;
+	if(!is.null(mc)) 
+		{ 
+		more = eval(quote(unlist(as.character(as.list( mc )))), envir = pf);
+		}
+	
 ##  print(more);
 
 ## cat("\n\n === PF === \n\n");
