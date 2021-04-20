@@ -521,7 +521,7 @@ isForceDownload = function(args)
 				if(is.element("force.download", args$.dots.keys.))
 					{
 					# idx = which(args$.dots.keys. == "force.download");
-					force.cache = args$.dots.vals.$force.download;
+					force.download = args$.dots.vals.$force.download;
 					}
 				}
 			}
@@ -547,7 +547,8 @@ includeGithubFolder = function(url, ...)  # pattern = "[.][RrSsQq]$",
 
 	##cat("\n\n === MY-ARGS === \n\n");
 
-	##print(args);
+	# print(args);
+	# dput(args);
 
 	# stop("monte");
 
