@@ -114,6 +114,12 @@ readRDS.url = function(file)
 	}
 
 
+writeRDS = function(obj, myfile)
+	{
+	saveRDS(obj, file=myfile);
+	}
+	
+	
 #' writeToPipe
 #'
 #' This is the inverse of 'readFromPipe'
@@ -303,14 +309,62 @@ listGithubFiles = function(github.user="MonteShaffer", github.repo="humanVerse",
 	res;
 	}
 
+
+
+buildTarFromGithubRepo = function(github.user="MonteShaffer", github.repo="humanVerse", force.download=FALSE)
+	{
+	url = buildGithubPath(github.user, github.repo);	
+	res = parseGithubList(url, force.download = force.download);
+	
+	zip.url = getAttribute("zipclone", res);
+	if(is.null(zip.url))
+		{
+		stop("no zip.url attached to url");
+		}
+	
+	## This is a redirect ... 
+	## <html><body>You are being <a href="https://codeload.github.com/MonteShaffer/humanVerse/zip/refs/heads/main">redirected</a>.</body></html>
+	## https://stackoverflow.com/questions/25474682/rcurl-geturlcontent-detect-content-type-through-final-redirect
+	## h <- basicTextGatherer()
+	## x = getBinaryURL('http://timesofindia.indiatimes.com//articleshow/2933019.cms',                  headerfunction = h$update, curl = curl)
+	
+	# require(RCurl)
+	# agent="Firefox/23.0" 
+	# curl.fun = basicTextGatherer();
+	# curl.ch = getCurlHandle();
+	
+#	x = getBinaryURL(zip.url, curl = curl.ch )
+	## maybe add this to below function
+	
+#	myzip = getRemoteAndCache(zip.url, force.download=force.download);
+	
+	
+	
+	}
+
 #' installGithubLibrary
 #'
 #' @return
 #' @export
 #'
 #' @examples
-installGithubLibrary = function(github.user="MonteShaffer", github.repo="humanVerseWSU", github.path="", pattern = "\\.zip$", github.version="latest", ...)
+installGithubLibrary = function(github.user="MonteShaffer", github.repo="humanVerse", github.path="", pattern = "\\.zip$", github.version="latest", ...)
 	{
+	## This doesn't grab the clone element, assumes you have a .zip uploaded ...
+	## https://stackoverflow.com/questions/67144476/
+	## you could download "clone", look for .Rproj, BUILD that folder to ZIP, then INSTALL 
+	
+	## https://github.com/MonteShaffer/humanVerse/tree/main/humanVerse
+	
+	## https://github.com/r-lib/devtools/archive/refs/heads/master.zip
+	## for me, this is the outer layer ...
+	## https://github.com/MonteShaffer/humanVerseWSU/archive/refs/heads/master.zip
+	## unzip ... look for github.repo ... humanVerse.Rproj ... or /R /man DESCRIPTION NAMESPACE in folder to figure out which folder ... maybe '.Rbuildignore'
+	## build ...  ?build vs ?devtools::build
+	## just build a .tar.gz from github ...
+	
+	
+	# .git.ignore is not allowing the other ... 
 	# build-source ==> .tar.gz
 	# build-binary ==> .zip  [WINDOZE]
 	# maybe ==> .tgz 
@@ -392,7 +446,8 @@ parseGithubList = function(url, force.download = FALSE)
 		{
 		cat("\n", "============", "GRABBING FROM CACHE", "============", "\n");
 		# results = as.character( unlist( readFromPipe(html.cache) ) );
-		results = readFromPipe(html.cache);
+		# results = readFromPipe(html.cache);
+		results = readRDS(html.cache);
 		} else {
 		    cat("\n", "============", "DOWNLOADING DIRECTORY PAGE", "============", "\n");
 				html.str = readStringFromFile(html.local);
@@ -439,13 +494,23 @@ parseGithubList = function(url, force.download = FALSE)
 				results$links = "";
 				results$links[ which(!results$folder) ] = links [ which(!results$folder) ];
 				
+				# pipe loses "attributes" ... 
+				zipclone = sliceDiceContent(html.str, start='data-open-app="link" href="', end='">', strip=FALSE, direction="start");
+				zipclone = cleanup.url( paste0(github.base, zipclone) );
 				
-				writeToPipe(results, html.cache);
+				results = setAttribute("zipclone", zipclone, results);
+				
+				# writeToPipe(results, html.cache);
+				writeRDS(results, html.cache);
 				}
 	results;
 	}
 
+	
 
+
+
+	
 isForceDownload = function(args)
 	{
 	force.download = FALSE; 
@@ -567,8 +632,11 @@ getSourceLocation = function(tmp.subfolder = "/humanVerse/cache/")
 		}
 	
 	
-  tmp = gsub("\\", "/", my.tmp , fixed=TRUE); # windoze?
+  tmp = gsub("\\", "/", paste0(my.tmp,"/") , fixed=TRUE); # windoze?
   mypath = paste0(tmp, tmp.subfolder);
+  mypath = cleanup.local(mypath);
+	createDirectoryRecursive(mypath);
+  
   mypath;
   }
 

@@ -69,3 +69,106 @@ date.strtotime = function(str, weight="MDY", deep=FALSE)
 # do I need to worry about precision?
 # ## Julian Day Number (JDN, https://en.wikipedia.org/wiki/Julian_day)
 
+
+
+
+
+
+
+
+
+
+
+
+url = "https://github.com/{github.user}/{github.repo}/archive/refs/heads/master.zip";
+	# url = "https://codeload.github.com/{github.user}/{github.repo}/zip/refs/heads/master";
+	# https://github.com/MonteShaffer/humanVerse/archive/refs/heads/main.zip
+	# mine is not master ... 
+	
+	url = str_replace("{github.user}", github.user, url);
+	url = str_replace("{github.repo}", github.repo, url);
+
+
+
+
+
+
+
+
+parseGithubList = function(url, force.download = FALSE)
+	{	
+	html.local = getRemoteAndCache(url, force.download = force.download);
+	html.cache = str_replace(".html", ".cache", html.local);
+	
+	github.base = "https://github.com/";
+	github.raw 	= "https://raw.githubusercontent.com/";
+	
+	### Could we do API/JSON instead of HTML CACHING?
+		### github.api = "https://api.github.com/";
+		## https://api.github.com/repos/MonteShaffer/humanVerse/git/trees/main
+		##  ==> https://api.github.com/repos/MonteShaffer/humanVerse/git/trees/75741912434181b468b761303eaa3ec312998e1d
+		### if(type == "blob") AND extension = ".R" ... include ...
+		### less to parse with HTML
+
+	if(file.exists(html.cache) && !force.download)
+		{
+		cat("\n", "============", "GRABBING FROM CACHE", "============", "\n");
+		# results = as.character( unlist( readFromPipe(html.cache) ) );
+		# results = readFromPipe(html.cache);
+		results = readRDS(html.cache);
+		} else {
+		    cat("\n", "============", "DOWNLOADING DIRECTORY PAGE", "============", "\n");
+				html.str = readStringFromFile(html.local);
+								
+				page.info = sliceDiceContent(html.str, start='<div class="js-details-container Details">', end='<div class="Details-content--shown', strip=FALSE, direction="start");
+				
+				results = NULL;
+				page.rows = explodeMe('<div role="row"', page.info);
+				nr = length(page.rows);
+				for(i in 2:nr)
+					{
+					row = explodeMe('<span', page.rows[i]);
+						row.dt = explodeMe("T", sliceDiceContent(row[3], start='datetime="', end='"', strip=TRUE, direction="start") );
+					
+						
+						
+						row.link = sliceDiceContent(row[2], start='href="', end='"', strip=TRUE, direction="start");
+							tmp = explodeMe("/", row.link); ntmp = length(tmp);
+						row.name = tmp[ntmp];
+						row.commit = sliceDiceContent(row[3], start='href="', end='"', strip=TRUE, direction="start");
+						row.commit.info = sliceDiceContent(row[3], start="\n", end='<a>', strip=TRUE, direction="start");
+						
+						row.time = paste0(row.dt[1], " ", str_replace("Z", "", row.dt[2]) );
+						
+						# install_github("Displayr/flipTime")
+						# https://github.com/Displayr/flipTime/blob/master/R/asdatetime.R
+						
+											
+					rinfo = c(row.name, row.time, row.link, row.commit, row.commit.info);
+					
+					results = rbind(results, rinfo);
+					}
+				
+				results = as.data.frame(results);
+					colnames(results) = c("name", "when", "url", "commit", "commit.info");
+					# rownames(results) = results$name; # should be unique
+					rownames(results) = NULL;
+				results$when.time = asDateTime(results$when);
+				results = sortDataFrameByNumericColumns(results,"when.time","DESC"); # newest first
+				results$folder = !is.substring(results$url, "/blob/"); # blobs are files ...
+				
+					links = cleanup.url( paste0(github.raw, results$url) );		
+					links = str_replace("/blob/", "/", links);
+				results$links = "";
+				results$links[ which(!results$folder) ] = links [ which(!results$folder) ];
+				
+				# pipe loses "attributes" ... 
+				zipclone = sliceDiceContent(html.str, start='data-open-app="link" href="', end='">', strip=FALSE, direction="start");
+				
+				results = setAttribute("zipclone", zipclone, results);
+				
+				# writeToPipe(results, html.cache);
+				writeRDS(results, html.cache);
+				}
+	results;
+	}
