@@ -60,6 +60,37 @@ convertDateStringToFormat = function (strvec,to="%Y",to.name="years",from="%Y-%m
 	}
 
 
+toSystemTime = function(numvec, which="ct", origin="1970-01-01")
+	{	
+	# reverses as.numeric(Sys.time());	
+	
+	# https://rstudio-pubs-static.s3.amazonaws.com/28038_1bcb9aa80ca84f27ace07d612872861a.html
+	# now <- Sys.time(); class(now);
+	# https://stat.ethz.ch/R-manual/R-devel/library/base/html/as.POSIXlt.html
+	# try formats ...
+	
+	if(which != "ct")
+		{
+		as.POSIXlt(numvec, origin=origin);
+		} else	{
+				as.POSIXct(numvec, origin=origin);
+				}	
+	}
+	
+	
+asDateTime = function(strvec, from="%Y-%m-%d %H:%M:%S", to="", num=TRUE)
+	{
+	# ?as.Date
+	# https://www.r-bloggers.com/2013/08/date-formats-in-r/
+	p.obj = strptime(strvec, format=from );
+	res = p.obj;
+	if(to != "") { o.obj = strftime(p.obj,  format=to); res = o.obj; }
+	if(num) { res = as.numeric(res);}
+	
+	res;	
+	}
+
+
 #' getDate
 #'
 #' Wrapper for 'format' function

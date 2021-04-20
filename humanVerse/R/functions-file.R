@@ -207,21 +207,27 @@ includeLocalFiles = function(files, ...)
 #' @export
 #'
 #' @examples
-includeRemoteFiles = function(urls, verbose=FALSE, ...)
+includeRemoteFiles = function(urls, pattern = "[.][RrSsQq]$", verbose=FALSE, ...)
   {
   # # includeGithubFolder ...
 # includeRemoteDirectoryGithub
 # includeRemoteFiles("https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/misc/functions-md5.R");
 
-  cat (" INCLUDING:","\n","=========","\n");
-  for(url in urls)
-    {
-    myfile = getRemoteAndCache(url, ...);
-    if(verbose) { cat("\t", url, " ===> \n"); }
-    # source(myfile, ...);
-	  source(myfile);
-    if(verbose) { cat("\t ... ",myfile); } else { cat("\t ... ",basename(myfile),"\n"); }
-    }
+  idx = grep(pattern, urls);
+  if(length(idx) > 0)
+	{
+	  goodurls = urls[idx];
+
+	  cat (" INCLUDING:","\n","=========","\n");
+	  for(url in goodurls)
+		{
+		myfile = getRemoteAndCache(url, ...);
+		if(verbose) { cat("\t", url, " ===> \n"); }
+		# source(myfile, ...);
+		  source(myfile);
+		if(verbose) { cat("\t ... ",myfile); } else { cat("\t ... ",basename(myfile),"\n"); }
+		}
+	}
   }
 
 
@@ -289,6 +295,7 @@ file.readLines = function(file, n=-1, skip=NULL)
 installGithubLibrary = function()
 	{
 ### TODO ###
+# install.packages("C:/_git_/humanVerseWSU/humanVerseWSU_0.1.4.zip", repos=NULL, type="source");
 	#
 	# {
   # "id": 294247360,
@@ -329,6 +336,120 @@ installGithubLibrary = function()
 	}
 
 
+buildGithubPath = function(github.user="MonteShaffer", github.repo="humanVerse", which="http")
+	{
+	if(which == "raw")
+		{
+		paste0("https://raw.githubusercontent.com/", github.user, "/", github.repo, "/");
+		} else 	{				
+				paste0("https://github.com/", github.user, "/", github.repo, "/");
+				}	
+	}
+
+
+listGithubFiles = function(github.user="MonteShaffer", github.repo="humanVerse", github.path="", ...)
+	{
+	args = getFunctionParameters();
+	force.download = isForceDownload(args);
+	cat("\n", "force.download ... ", force.download, "\n\n");
+	
+	url = buildGithubPath(github.user, github.repo);
+	url = paste0(url, github.path);
+	
+	}
+	
+
+parseGithubList = function(url, force.download = FALSE)
+	{	
+	html.local = getRemoteAndCache(url, force.download = force.download);
+	html.cache = str_replace(".html", ".cache", html.local);
+	
+	github.base = "https://github.com/";
+	github.raw 	= "https://raw.githubusercontent.com/";
+	
+	### Could we do API/JSON instead of HTML CACHING?
+		### github.api = "https://api.github.com/";
+		## https://api.github.com/repos/MonteShaffer/humanVerse/git/trees/main
+		##  ==> https://api.github.com/repos/MonteShaffer/humanVerse/git/trees/75741912434181b468b761303eaa3ec312998e1d
+		### if(type == "blob") AND extension = ".R" ... include ...
+		### less to parse with HTML
+
+	if(file.exists(html.cache) && !force.download)
+		{
+		cat("\n", "============", "GRABBING FROM CACHE", "============", "\n");
+		# results = as.character( unlist( readFromPipe(html.cache) ) );
+		results = readFromPipe(html.cache);
+		} else {
+		    cat("\n", "============", "DOWNLOADING DIRECTORY PAGE", "============", "\n");
+				html.str = readStringFromFile(html.local);
+								
+				page.info = sliceDiceContent(html.str, start='<div class="js-details-container Details">', end='<div class="Details-content--shown', strip=FALSE, direction="start");
+				
+				results = NULL;
+				page.rows = explodeMe('<div role="row"', page.info);
+				nr = length(page.rows);
+				for(i in 2:nr)
+					{
+					row = explodeMe('<span', page.rows[i]);
+						row.dt = explodeMe("T", sliceDiceContent(row[3], start='datetime="', end='"', strip=TRUE, direction="start") );
+					
+						
+						
+						row.link = sliceDiceContent(row[2], start='href="', end='"', strip=TRUE, direction="start");
+							tmp = explodeMe("/", row.link); ntmp = length(tmp);
+						row.name = tmp[ntmp];
+						row.commit = sliceDiceContent(row[3], start='href="', end='"', strip=TRUE, direction="start");
+						row.commit.info = sliceDiceContent(row[3], start="\n", end='<a>', strip=TRUE, direction="start");
+						
+						row.time = paste0(row.dt[1], " ", str_replace("Z", "", row.dt[2]) );
+						
+						# install_github("Displayr/flipTime")
+						# https://github.com/Displayr/flipTime/blob/master/R/asdatetime.R
+						
+											
+					rinfo = c(row.name, row.time, row.link, row.commit, row.commit.info);
+					
+					results = rbind(results, rinfo);
+					}
+				
+				results = as.data.frame(results);
+					colnames(results) = c("name", "when", "url", "commit", "commit.info");
+					# rownames(results) = results$name; # should be unique
+					rownames(results) = NULL;
+				results$when.time = asDateTime(results$when);
+				results = sortDataFrameByNumericColumns(results,"when.time","DESC"); # newest first
+				results$folder = !is.substring(results$url, "/blob/"); # blobs are files ...
+				
+					links = cleanup.url( paste0(github.raw, results$url) );		
+					links = str_replace("/blob/", "/", links);
+				results$links = "";
+				results$links[ which(!results$folder) ] = links [ which(!results$folder) ];
+				
+				
+				writeToPipe(results, html.cache);
+				}
+	results;
+	}
+
+
+isForceDownload = function(args)
+	{
+	force.download = FALSE; 
+	if(exists("args"))
+			{
+			if(exists(".dots.keys.", where=args))
+				{
+				if(is.element("force.download", args$.dots.keys.))
+					{
+					# idx = which(args$.dots.keys. == "force.download");
+					force.cache = args$.dots.vals.$force.download;
+					}
+				}
+			}
+	force.download;
+	}
+	
+	
 #' includeGithubFolder
 #'
 #' @param url
@@ -345,78 +466,20 @@ includeGithubFolder = function(url, ...)  # pattern = "[.][RrSsQq]$",
         # TRUE would store "last" in some memory (GLOBAL SCOPE)
 	# args = .GlobalEnv$.args = grabFunctionParameters();
 
-	cat("\n\n === MY-ARGS === \n\n");
+	##cat("\n\n === MY-ARGS === \n\n");
 
-	print(args);
+	##print(args);
 
 	# stop("monte");
 
-	force.cache = FALSE;  # maybe move as a parameter ???
-	if(!force.cache)
-		{
-		# may live in ... as force.download ...
-		if(exists("args"))
-			{
-			if(exists(".dots.keys.", where=args))
-				{
-				if(is.element("force.download", args$.dots.keys.))
-					{
-					# idx = which(args$.dots.keys. == "force.download");
-					force.cache = args$.dots.vals.$force.download;
-					}
-				}
-			}
-		}
+	force.download = isForceDownload(args);
+	cat("\n", "force.download ... ", force.download, "\n\n");
 
-	cat("\n", "force.cache ... ", force.cache, "\n\n");
-
-
-	### Could we do API/JSON instead of HTML CACHING?
-
-	### github.api = "https://api.github.com/";
-	## https://api.github.com/repos/MonteShaffer/humanVerse/git/trees/main
-	##  ==> https://api.github.com/repos/MonteShaffer/humanVerse/git/trees/75741912434181b468b761303eaa3ec312998e1d
-	### if(type == "blob") AND extension = ".R" ... include ...
-	html.local = getRemoteAndCache(url, ...);
-	html.cache = gsub(".html", ".cache", html.local);
-
-	if(file.exists(html.cache) && !force.cache)
-		{
-		cat("\n", "============", "GRABBING FROM CACHE", "============", "\n");
-		links = as.character( unlist( readFromPipe(html.cache, header=FALSE) ) );
-		} else {
-		    cat("\n", "============", "DOWNLOADING DIRECTORY PAGE", "============", "\n");
-				html.str = readStringFromFile(html.local);
-
-				github.base = "https://github.com/";
-				github.raw = "https://raw.githubusercontent.com/";
-
-				# MonteShaffer/humanVerse/tree/main/humanVerse/R/
-				# MonteShaffer/humanVerse/blob/main/humanVerse/R/functions-colors.R
-
-
-				# https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/humanVerse/R/globals.R
-
-
-				html.search = gsub(github.base, "", url, fixed = TRUE);
-				html.search = gsub("/tree/", "/blob/", html.search, fixed = TRUE);
-
-				html.keys = explodeMe(html.search, html.str);
-				n = length(html.keys)
-
-				html.raw = paste0(github.raw, gsub("/blob/", "/", html.search, fixed = TRUE) );
-
-				links = c();
-				for(i in 2:n)
-					{
-					str = html.keys[i];
-						link = paste0(html.raw, explodeMe("\"",str)[1]);
-						# do a check that it has the write extension ... # pattern = "[.][RrSsQq]$",
-					links = c(links, link);
-					}
-				writeToPipe(as.data.frame(links), html.cache, header=FALSE);
-				}
-
+	github.df = parseGithubList(url, force.download = force.download);	
+	github.df = subsetDataFrame(github.df, "folder", "==", FALSE);
+		
+	links = na.omit(github.df$links);
+	
 	includeRemoteFiles(links, ...);
 	}
 
@@ -479,14 +542,19 @@ deleteLocalCacheFolder = function(folder)
 #' @export
 #'
 #' @examples
-getSourceLocation = function(tmp.folder = "/humanVerse/cache/")
+getSourceLocation = function(tmp.subfolder = "/humanVerse/cache/")
   {
-# https://github.com/MonteShaffer/humanVerse
-# https://github.com/MonteShaffer/humanVerse/blob/main/humanVerse/R/functions-algebra.R
-# https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/humanVerse/R/functions-algebra.R
-
-  tmp = gsub("\\","/",Sys.getenv("TMP"), fixed=TRUE); # windoze?
-  mypath = paste0(tmp, tmp.folder);
+  my.tmp = Sys.getenv("HUMANVERSE_CACHE");
+	if(trimMe(my.tmp) == "") { my.tmp = Sys.getenv("TMP"); }
+	if(trimMe(my.tmp) == "") { my.tmp = Sys.getenv("TEMP"); }
+	if(trimMe(my.tmp) == "")
+		{
+		message.stop ("Function: *getSourceLocation* requires \n\t a HUMANVERSE_CACHE or TMP or TEMP folder \n\t in your 'Sys.getenv()' \n   Maybe run 'Sys.setenv(\"HUMANVERSE_CACHE\" = \"/path/to/CACHE\")' \n\t and make certain the directory is made and writeable \n\t as in 'mkdir /path/to/CACHE' ");
+		}
+	
+	
+  tmp = gsub("\\", "/", my.tmp , fixed=TRUE); # windoze?
+  mypath = paste0(tmp, tmp.subfolder);
   mypath;
   }
 
@@ -535,7 +603,7 @@ getRemoteAndCache = function(remote, local.file = NULL,
   {
   remote = cleanup.url(remote);
   useTEMP = FALSE;
-  trailingSlash = (.substr(remote, -1) == "/");
+  trailingSlash = ( lastChar(remote) == "/");
   if(verbose)
     {
     cat("\n", "remote ... ", remote, "\n\n");
@@ -560,25 +628,10 @@ if(verbose)
 
     if(md5.hash) { filestem = md5(filestem); }
 
-	#
-	my.tmp = Sys.getenv("TMP");
-	if(trimMe(my.tmp) == "") { my.tmp = Sys.getenv("TEMP"); }
-	if(trimMe(my.tmp) == "")
-		{
-		message.stop ("Function: *getRemoteAndCache* requires \n\t a TMP or TEMP folder in your 'Sys.getenv()' \n   Maybe run 'Sys.setenv(\"TMP\" = \"/path/to/TMP\")' \n\t and make certain the directory is made and writeable \n\t as in 'mkdir /path/to/TMP' ");
-		}
-
-
-    tmp = gsub("\\", "/", my.tmp , fixed=TRUE); # windoze?
-    mypath = paste0(tmp, tmp.folder, subfolder);
-    createDirectoryRecursive(mypath);
+	mypath = getSourceLocation(subfolder);
+		createDirectoryRecursive(mypath);
     myfile = paste0(mypath,"/",filestem);
     } else {
-            # mypath = dirname(local);
-            # filestem = basename(local);
-            # if(md5.hash) { filestem = md5(local); }
-            # createDirectoryRecursive(mypath);
-            # myfile = paste0(mypath,"/",filestem);
 			mypath 		= dirname(local.file);
 				createDirectoryRecursive(mypath);
 			filestem 	= basename(local.file);
@@ -589,7 +642,6 @@ if(verbose)
 	myfile 		= cleanup.local(myfile);
 	mypath 		= cleanup.local(mypath);
 	filestem 	= cleanup.local(filestem);
-
 
     myfile = setAttribute("path", 		mypath, 	myfile);
     myfile = setAttribute("filestem", 	filestem, 	myfile);

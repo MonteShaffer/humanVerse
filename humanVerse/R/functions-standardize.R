@@ -1,4 +1,5 @@
 
+
 #' standardizeToFactor
 #'
 #' Standarize a vector by multiplying by a factor

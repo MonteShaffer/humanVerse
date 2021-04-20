@@ -1,4 +1,7 @@
 
+# Sys.setenv("HUMANVERSE_CACHE" = "R:/R-humanVerse-cache");
+
+
 # maybe just one global container called ".humanVerse"
 # I can init() and store to Global Space
 # I can register() something like "random.seed" or another element
@@ -175,8 +178,7 @@ initPathMemory = function(purge.memory = FALSE, verbose = FALSE)
 		  cat("humanVerse::initPathMemory ... initializing list '.humanVerse[[\"path\"]]'", "\n");
 		  }
 		.GlobalEnv$.humanVerse[["path"]] = list(
-												"TMP" = getSourceLocation(),
-												"TEMP" = getSourceLocation(),
+												"CACHE" = getSourceLocation(),
 												"github" = list( "main" = "https://github.com/MonteShaffer/humanVerse/",
 																 "raw"  = "https://raw.githubusercontent.com/MonteShaffer/humanVerse/"
 																 )

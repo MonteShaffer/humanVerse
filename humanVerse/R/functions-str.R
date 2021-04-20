@@ -79,6 +79,7 @@ charAt = function(str,idx)
 #'  
 lastChar = function(str, trim=TRUE)
 	{
+	# this also works:: ... # .substr(str, -1)
 	if(trim){ str = trimMe(str); }
 	s.len = strlen(str);
 	charAt(str, s.len);
