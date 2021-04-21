@@ -1,6 +1,6 @@
 
 
-#' currentInflationData
+#' inflation.currentData
 #'
 #' This loads the most up-to-date inflation data from URL.
 #'
@@ -8,7 +8,9 @@
 #'
 #' @return data.frame, invisible
 #' @export
-currentInflationData = function(store.global = TRUE)
+#' 
+#' @aliases currentInflationData
+inflation.currentData = function(store.global = TRUE)
   {
   html = "https://www.officialdata.org/us/inflation/2000?endYear=1920&amount=1000000";
   local = getRemoteAndCache(html, force.download = TRUE, is.html=TRUE);
@@ -69,7 +71,7 @@ currentInflationData = function(store.global = TRUE)
 
 
 
-#' loadInflationData
+#' inflation.loadData
 #'
 #' This data was pulled from
 #' \url{https://www.officialdata.org/us/inflation/2000?endYear=1920&amount=1000000}
@@ -84,9 +86,10 @@ currentInflationData = function(store.global = TRUE)
 #'   inflation.df global gets assigned to the inflation.rds (equivalent to
 #'   inflation.txt)
 #' @export
+#' 
+#' @aliases loadInflationData
 #' @aliases loadDataInflation
-
-loadInflationData = function()
+inflation.loadData = function()
   {
   # idf = readRDS( system.file("extdata", "inflation.rds", package="humanVerseWSU") );
   idf = data.load("inflation");
@@ -96,43 +99,11 @@ loadInflationData = function()
   }
 
 
-#' adjustDollarForInflation
-#'
-#' @family Inflation
-#'
-#' @param mydollar current dollar value
-#' @param myyear current year value (4-digit format, 1920 to 2020)
-#' @param newyear new year value (4-digit format, 1920 to 2020)
-#' @param idf inflation data frame
-#'
-#' @return dollar, updated (adjusted from myyear to newyear)
-#' @export
-#' @examples
-#' # loadInflationData();
-#' # adjustDollarForInflation( 123, 1943, 2000 ); # $123 in 1943 is about $1224.31 in 2000
-#' # adjustDollarForInflation( 123, 2000, 1943 ); # $123 in 2000 is about $12.36 in 1943
-#'
-adjustDollarForInflation = function(mydollar,myyear,newyear,idf=.GlobalEnv$.humanVerse[["inflation"]])
-	{
-  # cat("\n", "mydollar: ", mydollar, " ... myyear: ", myyear, " ... newyear: ", newyear, "\n");
-	# use basic ratio
-	dollar.myyear = lookupInflationDollar(myyear,idf);
-	dollar.newyear = lookupInflationDollar(newyear,idf);
-
-	# ratio = NA;
-
-	ratio = dollar.newyear/dollar.myyear;
-
-	nd = mydollar*ratio;
-
-	nd[1];
-	}
 
 
 
 
-
-#' standardizeDollarsInDataFrame
+#' inflation.standardizeDollarsInDataFrame
 #'
 #' @family Inflation
 #'
@@ -145,10 +116,12 @@ adjustDollarForInflation = function(mydollar,myyear,newyear,idf=.GlobalEnv$.huma
 #'
 #' @return dataframe, updated
 #' @export
+#' 
+#' @aliases standardizeDollarsInDataFrame
 #' @examples
 #' # loadInflationData();
 #' # todo once I get Will/Denzel data ...
-standardizeDollarsInDataFrame = function(df, anchor.year, dollar.source, year.source, dollar.out, idf=.GlobalEnv$.humanVerse[["inflation"]])
+inflation.standardizeDollarsInDataFrame = function(df, anchor.year, dollar.source, year.source, dollar.out, idf=.GlobalEnv$.humanVerse[["inflation"]])
 	{
 	dollars = as.numeric( unlist(df[dollar.source]) ); # we assume this is numeric ...
 	years = as.numeric( unlist(df[year.source]) ); # I could do unique on years, to speed this up slightly
@@ -176,7 +149,7 @@ standardizeDollarsInDataFrame = function(df, anchor.year, dollar.source, year.so
 	}
 
 
-#' lookupInflationDollar
+#' inflation.lookupDollar
 #'
 #' @family Inflation
 #'
@@ -185,12 +158,14 @@ standardizeDollarsInDataFrame = function(df, anchor.year, dollar.source, year.so
 #'
 #' @return numeric dollar from idf table for that year
 #' @export
+#' 
+#' @aliases lookupInflationDollar
 #' @examples
 #' # loadInflationData();  # does lookup to create ratios
 #' # lookupInflationDollar( 1943 ); # $  865,000
 #' # lookupInflationDollar( 2000 ); # $8,610,000
 #'
-lookupInflationDollar = function(year,idf=.GlobalEnv$.humanVerse[["inflation"]])
+inflation.lookupDollar = function(year,idf=.GlobalEnv$.humanVerse[["inflation"]])
 	{
 	res = idf[idf$year==year,2];  # single form ...
 	if(length(res) == 0) { res = NA; }
@@ -199,6 +174,40 @@ lookupInflationDollar = function(year,idf=.GlobalEnv$.humanVerse[["inflation"]])
 
 
 
+
+#' inflation.adjustDollar
+#'
+#' @family Inflation
+#'
+#' @param mydollar current dollar value
+#' @param myyear current year value (4-digit format, 1920 to 2020)
+#' @param newyear new year value (4-digit format, 1920 to 2020)
+#' @param idf inflation data frame
+#'
+#' @return dollar, updated (adjusted from myyear to newyear)
+#' @export
+#' 
+#' @aliases adjustDollarForInflation
+#' @examples
+#' # loadInflationData();
+#' # adjustDollarForInflation( 123, 1943, 2000 ); # $123 in 1943 is about $1224.31 in 2000
+#' # adjustDollarForInflation( 123, 2000, 1943 ); # $123 in 2000 is about $12.36 in 1943
+#'
+inflation.adjustDollar = function(mydollar,myyear,newyear,idf=.GlobalEnv$.humanVerse[["inflation"]])
+	{
+  # cat("\n", "mydollar: ", mydollar, " ... myyear: ", myyear, " ... newyear: ", newyear, "\n");
+	# use basic ratio
+	dollar.myyear 	= lookupInflationDollar(myyear,idf);
+	dollar.newyear 	= lookupInflationDollar(newyear,idf);
+	
+	# this will return NA if one is not found ?
+
+	ratio = dollar.newyear/dollar.myyear;
+
+	nd = mydollar*ratio;
+
+	nd[1];
+	}
 
 
 

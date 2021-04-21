@@ -79,7 +79,7 @@ cleanup.url = function(url)
 
 
 
-#' sliceDiceContent
+#' parse.sliceDiceContent
 #'
 #' This takes a string and returns a substring based on some
 #'  'cut points' defined as start and end.
@@ -94,8 +94,9 @@ cleanup.url = function(url)
 #'
 #' @return
 #' @export
-
-sliceDiceContent = function (str, start="<h2>",end="</h2>", strip=FALSE, direction="start")
+#' 
+#' @aliases sliceDiceContent
+parse.sliceDiceContent = function (str, start="<h2>",end="</h2>", strip=FALSE, direction="start")
 		{
     # slice and dice ... could I build this as "multivariate"?
 		d = substr(tolower(trimMe(direction)), 1,1);

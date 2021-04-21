@@ -4,7 +4,7 @@
 
 
 
-#' matrixRank
+#' matrix.rank
 #'
 #' @param A given matrix
 #' @param ... Optional parameters to pass-through
@@ -12,8 +12,8 @@
 #' @return
 #' @export
 #'
-#' @aliases rankMatrix
-matrixRank = function(A, ...)
+#' @aliases rankMatrix matrixRank
+matrix.rank = function(A, ...)
 	{
   # matrixcalc is boring
   # Matrix might have some cool stuff ... sparse matrix
@@ -33,13 +33,15 @@ matrixRank = function(A, ...)
 
 
 
-#' is.square.matrix
+#' matrix.checkSquare
 #'
 #' @param A input matrix
 #'
 #' @return NA if not a matrix, TRUE/FALSE otherwise
 #' @export
-is.square.matrix = function(A)
+#'
+#' @aliases is.square.matrix matrix.is.square
+matrix.checkSquare = function(A)
 	{
 	if(!is.matrix(A)) { warning("Not a matrix"); return (NA); } # FALSE ?
 	nr = nrow(A);
@@ -47,7 +49,7 @@ is.square.matrix = function(A)
 	return (nr == nc);
 	}
 
-#' matrixPower
+#' matrix.pow
 #'
 #'
 #' Raise a matrix 'A' to a power 'pow' ... works for negatives if the inverse exists
@@ -57,10 +59,10 @@ is.square.matrix = function(A)
 #'
 #' @return an updated square matrix A^pow
 #' @export
-#' @aliases powerMatrix
+#' @aliases powerMatrix matrixPower
 #'
 #' @examples
-matrixPower = function(A, pow)
+matrix.pow = function(A, pow)
 	{
   # # should we consider "multiply.cpp" as option? ... larger matrices ... let's see in future ...
   ## check if square ???
@@ -92,52 +94,54 @@ matrixPower = function(A, pow)
 	}
 
 
-#' matrixTrace
+#' matrix.trace
 #'
 #' @param square a square matrix (n x n)
 #'
 #' @return numeric value for trace(matrix)
 #' @export
-#' @aliases traceMatrix
+#' @aliases traceMatrix matrixTrace
 #' @examples
 #' m = as.matrix(structure(c(1, 0, 4, 0, 3, 0, 2, 0, 5), .Dim = c(3L, 3L)));
 #' matrixTrace(m);#'
-matrixTrace = function(square)
+matrix.trace = function(square)
   {
   sum(diag(square));
   }
 
 
-#' transposeMatrix
+#' matrix.transpose
 #'
 #' @param mat a matrix
 #'
 #' @return matrix, updated
 #' @export
+#' @aliases transposeMatrix matrixTranspose
 #'
 #' @examples
 #' m = as.matrix(structure(c(1, 0, 4, 0, 3, 0, 2, 0, 5), .Dim = c(3L, 3L)));
 #' transposeMatrix(m);
 #'
-transposeMatrix = function(mat)
+matrix.transpose = function(mat)
 	{
 	t(mat);
 	}
 
-#' rotateMatrix
+#' matrix.rotate
 #'
 #' @param x matrix
 #' @param clockwise direction of rotation, default is clockwise
 #'
 #' @return matrix, updated
 #' @export
+#' @aliases rotateMatrix matrixRotate
 #'
 #' @examples
 #' m = as.matrix(structure(c(1, 0, 4, 0, 3, 0, 2, 0, 5), .Dim = c(3L, 3L)));
 #' rotateMatrix(m);
 #' rotateMatrix(m,FALSE);
 #'
-rotateMatrix = function(x,clockwise=TRUE)
+matrix.rotate = function(x,clockwise=TRUE)
 	{
 	if(clockwise)
 		{
@@ -147,38 +151,40 @@ rotateMatrix = function(x,clockwise=TRUE)
 				}
 	}
 
-#' rotateMatrix90
+#' matrix.rotate90
 #'
 #' @param x matrix
 #' @param clockwise direction of rotation, default is clockwise
 #'
 #' @return matrix, updated
 #' @export
+#' @aliases rotateMatrix90 matrixRotate90
 #'
 #' @examples
 #' m = as.matrix(structure(c(1, 0, 4, 0, 3, 0, 2, 0, 5), .Dim = c(3L, 3L)));
 #' rotateMatrix90(m);
 #' rotateMatrix90(m,FALSE);
 #'
-rotateMatrix90 = function(x,clockwise=TRUE)
+matrix.rotate90 = function(x,clockwise=TRUE)
 	{
   rotateMatrix(x,clockwise);
 	}
 
-#' rotateMatrix180
+#' matrix.rotate180
 #'
 #' @param x matrix
 #' @param clockwise direction of rotation, default is clockwise
 #'
 #' @return matrix, updated
 #' @export
+#' @aliases rotateMatrix180 matrixRotate180
 #'
 #' @examples
 #' m = as.matrix(structure(c(1, 0, 4, 0, 3, 0, 2, 0, 5), .Dim = c(3L, 3L)));
 #' rotateMatrix180(m);
 #' rotateMatrix180(m,FALSE);  # equivalent
 #'
-rotateMatrix180 = function(x,clockwise=TRUE)
+matrix.rotate180 = function(x,clockwise=TRUE)
 	{
   rotateMatrix(
     rotateMatrix(x,
@@ -187,13 +193,14 @@ rotateMatrix180 = function(x,clockwise=TRUE)
 
 	}
 
-#' rotateMatrix270
+#' matrix.rotate270
 #'
 #' @param x matrix
 #' @param clockwise direction of rotation, default is clockwise
 #'
 #' @return matrix, updated
 #' @export
+#' @aliases rotateMatrix270 matrixRotate270
 #'
 #' @examples
 #' m = as.matrix(structure(c(1, 0, 4, 0, 3, 0, 2, 0, 5), .Dim = c(3L, 3L)));
@@ -202,7 +209,7 @@ rotateMatrix180 = function(x,clockwise=TRUE)
 #' rotateMatrix270(m,FALSE);
 #' rotateMatrix90(m); # equivalent
 #'
-rotateMatrix270 = function(x,clockwise=TRUE)
+matrix.rotate270 = function(x,clockwise=TRUE)
 	{
   rotateMatrix(
     rotateMatrix(
@@ -213,7 +220,7 @@ rotateMatrix270 = function(x,clockwise=TRUE)
 	}
 
 
-#' rotateMatrixAngle
+#' matrix.rotateAngle
 #'
 #' @param x matrix
 #' @param a angle, must be a multiple of 90 degrees, can be 630
@@ -221,6 +228,7 @@ rotateMatrix270 = function(x,clockwise=TRUE)
 #'
 #' @return matrix, updated
 #' @export
+#' @aliases rotateMatrixAngle matrixRotateAngle
 #'
 #' @examples
 #' m = as.matrix(structure(c(1, 0, 4, 0, 3, 0, 2, 0, 5), .Dim = c(3L, 3L)));
@@ -237,7 +245,7 @@ rotateMatrix270 = function(x,clockwise=TRUE)
 #' #rotateMatrixAngle(m,33);
 #' rotateMatrixAngle(m,630);
 #'
-rotateMatrixAngle = function(x, a=0, clockwise=TRUE)
+matrix.rotateAngle = function(x, a=0, clockwise=TRUE)
 	{
 	rem = a %% 90;
 	if(rem != 0)
@@ -262,27 +270,30 @@ rotateMatrixAngle = function(x, a=0, clockwise=TRUE)
 
 	}
 
-
-
-
-
-# QUADRATIC FORM OF MATRIX ...
-# http://math.ucdenver.edu/~esulliva/LinearAlgebra/SlideShows/07_02.pdf
-
-
-
-# compute eigenRank here using the Romani / Del Corsi approach
-# append super node to end, use inverse "solve" or ginv
-
-# A = structure(c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0), .Dim = c(10L,  10L), .Dimnames = list(c("P.1", "P.2", "P.3", "P.4", "P.5", "P.6",  "P.7", "P.8", "P.9", "P.10"), c("P.1", "P.2", "P.3", "P.4", "P.5",  "P.6", "P.7", "P.8", "P.9", "P.10")))
-
-# A = structure(c(0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0,  1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), .Dim = c(10L,  10L), .Dimnames = list(c("P.1", "P.2", "P.3", "P.4", "P.5", "P.6",  "P.7", "P.8", "P.9", "P.10"), c("P.1", "P.2", "P.3", "P.4", "P.5",  "P.6", "P.7", "P.8", "P.9", "P.10")))
-
+#' matrix.rowNormalize
+#'
+#' @param A
+#'
+#' @return
+#' @export
+#'
+#' @examples
 matrix.rowNormalize = function(A)
 	{
 	A / rowSums(A);
 	}
 
+#' matrix.convertMatrixToAdjacency
+#'
+#' @param A
+#' @param removeDiagonal
+#' @param scaleNegatives
+#' @param new.range
+#'
+#' @return
+#' @export
+#'
+#' @examples
 matrix.convertMatrixToAdjacency = function(A, removeDiagonal=TRUE, scaleNegatives=TRUE, new.range = c(0,1))
 	{
 	# https://en.wikipedia.org/wiki/Perron%E2%80%93Frobenius_theorem#Positive_matrices
@@ -300,12 +311,29 @@ matrix.convertMatrixToAdjacency = function(A, removeDiagonal=TRUE, scaleNegative
 	}
 
 
+#' matrix.removeSuperNode
+#'
+#' @param A
+#'
+#' @return
+#' @export
+#'
+#' @examples
 matrix.removeSuperNode = function(A)
 	{
 	n = nrow(A) - 1;
 	A[1:n,1:n];
 	}
 
+#' matrix.addSuperNode
+#'
+#' @param A
+#' @param name
+#'
+#' @return
+#' @export
+#'
+#' @examples
 matrix.addSuperNode = function(A, name="=SUPER=")
 	{
 	n = nrow(A) + 1;
@@ -321,6 +349,14 @@ matrix.addSuperNode = function(A, name="=SUPER=")
 
 
 
+#' matrix.sortAdjacencyMatrix
+#'
+#' @param A
+#'
+#' @return
+#' @export
+#'
+#' @examples
 matrix.sortAdjacencyMatrix = function(A)
 	{
 	original = remaining = colnames(A);
@@ -422,6 +458,17 @@ matrix.sortAdjacencyMatrix = function(A)
 	}
 
 
+#' matrix.computeEigenRank
+#'
+#' @param A
+#' @param method
+#' @param norm
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
 matrix.computeEigenRank = function(A, method="linear", norm="min-1", ...)
 	{
 	if(!is.square.matrix(A)) { stop("Matrix must be square, maybe multiply by transpose."); }
@@ -439,6 +486,8 @@ matrix.computeEigenRank = function(A, method="linear", norm="min-1", ...)
 		A = matrixPower(A, ...);
 		# should we consider "multiply.cpp" as option?
 		} else {
+				# TODO ...
+
 				# block partition
 				}
 
@@ -449,4 +498,50 @@ matrix.computeEigenRank = function(A, method="linear", norm="min-1", ...)
 	if(norm == "max-100") { return ( 100 * A.vec / max(A.vec) ); }
 	A.vec;
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# QUADRATIC FORM OF MATRIX ...
+# http://math.ucdenver.edu/~esulliva/LinearAlgebra/SlideShows/07_02.pdf
+
+
+
+# compute eigenRank here using the Romani / Del Corsi approach
+# append super node to end, use inverse "solve" or ginv
+
+# A = structure(c(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0), .Dim = c(10L,  10L), .Dimnames = list(c("P.1", "P.2", "P.3", "P.4", "P.5", "P.6",  "P.7", "P.8", "P.9", "P.10"), c("P.1", "P.2", "P.3", "P.4", "P.5",  "P.6", "P.7", "P.8", "P.9", "P.10")))
+
+# A = structure(c(0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0,  1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), .Dim = c(10L,  10L), .Dimnames = list(c("P.1", "P.2", "P.3", "P.4", "P.5", "P.6",  "P.7", "P.8", "P.9", "P.10"), c("P.1", "P.2", "P.3", "P.4", "P.5",  "P.6", "P.7", "P.8", "P.9", "P.10")))
+
 
