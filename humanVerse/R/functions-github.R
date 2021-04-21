@@ -5,10 +5,10 @@ github.listFiles = function(github.user="MonteShaffer", github.repo="humanVerse"
 	force.download = isForceDownload(args);
 	cat("\n", "force.download ... ", force.download, "\n\n");
 
-	url = buildGithubPath(github.user, github.repo);
+	url = github.buildPath(github.user, github.repo);
 	url = paste0(url, github.path);
 
-	res = parseGithubList(url, force.download = force.download);
+	res = buildGithubPath(url, force.download = force.download);
 		res = setAttribute("url", url, res);
 		res = setAttribute("force.download", force.download, res);
 	res;
@@ -16,11 +16,11 @@ github.listFiles = function(github.user="MonteShaffer", github.repo="humanVerse"
 
 
 
-github.buildFromRepo = function(github.user="MonteShaffer", github.repo="humanVerse", force.download=FALSE)
+github.buildFromRepo = function(github.user="MonteShaffer", github.repo="humanVerse", force.download=FALSE, candidate=1)
 	{
 	## this will get the zip file from the webpage ...
-			# url = buildGithubPath(github.user, github.repo);
-			# res = parseGithubList(url, force.download = force.download);
+			# url = github.buildPath(github.user, github.repo);
+			# res = github.parseList(url, force.download = force.download);
 
 			https://codeload.github.com/MonteShaffer/humanVerse/legacy.tar.gz/main
 
@@ -33,52 +33,33 @@ github.buildFromRepo = function(github.user="MonteShaffer", github.repo="humanVe
 	
 	tarball = github.buildPath(github.user=github.user, github.repo=github.repo, which="tar.gz");
 	
+	cat("\n\n", "\t DOWNLOADING tarball: \n\n\t\t", tarball, "\n\n");	
+	
 	local = getRemoteAndCache(tarball, force.download=force.download, append=".tar.gz");
 	
+	cat("\n\n", "\t LOCAL [.tar.gz]: \n\n\t\t", as.character(local), "\n\n");	
 	
-
-zipme = "https://codeload.github.com/MonteShaffer/humanVerse/legacy.tar.gz/main"
-myzip = getRemoteAndCache(zipme, force.download=force.download);
-
-tar.gz = paste0( as.character(myzip), ".tar.gz");
-moveFile( myzip, tar.gz);
-
-# gzfile(tar.gz);
-outpath = cleanup.local( paste0(dirname(tar.gz), "/untar-", basename(tar.gz), "/") );
-	createDirectoryRecursive(outpath);
-untar(tar.gz, exdir = outpath); # will uncompress
-
-myfiles = list.files(outpath, pattern = "\\.Rbuildignore$", full.names = TRUE, recursive = TRUE, ignore.case = TRUE, all.files = TRUE);
-
-if(length(myfiles) == 0)
-	{
-	stop("no eligible candidate with '.Rbuildignore' found!");
-	}
-
-
-buildpath = cleanup.local( dirname(myfiles[1]) );
-
-setwd(buildpath);
-
-shell("dir", intern=T)
-
-# R CMD check [options] pkgdirs
-# R CMD build [options] pkgdirs
-
-
-# package.gz = paste0(outpath,"package.tar.gz");
-
-# tar(package.gz, files = buildpath);
-
-setwd(buildpath);
-# shell( paste0("R CMD check ",buildpath,"/"), intern=T)
-# shell( paste0("R CMD check", package.gz), intern=T)
-
-  # shell( paste0("R CMD check ./"), intern=T)  # throws error
-
-shell( paste0("R CMD build ./"), intern=T)
-
-
+	outpath = cleanup.local( paste0(dirname(local), "/", basename(local), "-untar-/") );
+		createDirectoryRecursive(outpath);
+	cat("\n\n", "\t UNPACKING ... \n\n\t\t", outpath, "\n\n");
+	untar(local, exdir = outpath); # will uncompress
+	
+	myfiles = list.files(outpath, pattern = "\\.Rbuildignore$", full.names = TRUE, recursive = TRUE, ignore.case = TRUE, all.files = TRUE);
+	
+	cat("\n\n =-=-=-=-=-=-=-=-=-=- CANDIDATES =-=-=-=-=-=-=-=-=-=- \n\n");
+	cat("\n\n", "  [ first ---> ]", paste(myfiles, collapse="\n\t"), "\n\n\n");
+	
+	if(length(myfiles) == 0)
+		{
+		stop("no eligible candidate with '.Rbuildignore' found!");
+		}
+	
+	buildpath = cleanup.local( dirname(myfiles[candidate]) );
+	cat("\n\n", "\t Build Path ... \n\n\t\t", buildpath, "\n\n");
+	setwd(buildpath);
+	
+	cat("\n\n", "\t Executing [shell] 'R CMD build ./'", "\n\n");	
+	shell( paste0("R CMD build ./"), intern=T);
 	}
 
 
@@ -109,7 +90,7 @@ github.installBinary = function(github.user="MonteShaffer", github.repo="humanVe
 	# build-binary ==> .zip  [WINDOZE]
 	# maybe ==> .tgz
 	# ?install.packages
-	github.df = listGithubFiles(github.user=github.user, github.repo=github.repo, github.path=github.path, ...);
+	github.df = github.listFiles(github.user=github.user, github.repo=github.repo, github.path=github.path, ...);
 
 	#idx.zips = grep("\\.zip$", github.df$links);
 	#idx.tars = NULL;
