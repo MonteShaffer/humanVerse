@@ -55,55 +55,6 @@ storeToFile = function (str, file)
 	}
 
 
-#' cleanup.local
-#'
-#' @param myfile The original filename, may be a URL with ? = & symbols
-#'
-#' @return A windoze-friendly filename
-#' @export
-#'
-#' @examples
-#' cleanup.local("index.html?endYear=1920&amount=1000000");
-#'
-cleanup.local = function(myfile, append="")
-	{
-	myfile = str_replace("//", "/",   myfile);
-	myfile = str_replace("?", "^-QUESTION-^",   myfile);
-	myfile = str_replace("&", "^-AND-^",   myfile);
-	myfile = str_replace("=", "^-EQUAL-^",   myfile);
-
-	if(append != "")
-	  {
-	  # append .html
-	  s = strlen(append);
-	  last.s = .substr(str, -1*s);
-	  if(last.s != append)
-	    {
-	    myfile = paste0(myfile, append);
-	    }
-	  }
-	myfile;
-	}
-
-
-#' cleanup.url
-#'
-#' @param url URL to be cleansed
-#'
-#' @return cleansed URL
-#' @export
-#'
-#' @examples
-#' cleanup.url("https://www.myprofiletraits.com//");
-#' cleanup.url("https:/www.mshaffer.com//arizona//");
-#'
-cleanup.url = function(url)
-	{
-
-	url = str_replace("//", "/",   url);
-	url = str_replace(":/", "://", url); # https://
-	url;
-	}
 
 #' readRDS.url
 #'
@@ -125,6 +76,16 @@ readRDS.url = function(file)
 	}
 
 
+#' writeRDS
+#'
+#' The opposite of readRDS is writeRDS, make it so.
+#'
+#' @param obj The object to be stored 
+#' @param myfile The file to store the object
+#'
+#' @return
+#' @export
+#'
 writeRDS = function(obj, myfile)
 	{
 	saveRDS(obj, file=myfile);
@@ -164,117 +125,10 @@ writeToPipe = function(df, file, header=TRUE, quote="", sep="|", row.names=FALSE
 #'
 #' @return a dataframe
 #' @export
-
 readFromPipe = function(file, header=TRUE, quote="", sep="|")
   {
   utils::read.csv(file, header=header, quote=quote, sep=sep);
   }
-
-
-#' includeLocalDirectory
-#'
-#' @param directory The local directory you will scan
-#' @param verbose Display details regarding includes
-#' @param pattern This is the extension of files to be sourced ( .R )
-#' @param ... Pass extra parameters to the source function
-#'
-#' @return
-#' @export
-includeLocalDirectory = function(path, verbose=TRUE, pattern = "[.][RrSsQq]$", ...)
-  {
-  # ?source
-  for (nm in list.files(path, pattern = pattern))
-    {
-    if(verbose) { cat(nm,":"); }
-    # source(file.path(path, nm), ...);
-	  source(file.path(path, nm));
-    if(verbose) { cat("\n"); }
-    }
-  }
-
-
-
-#' includeLocalFiles
-#'
-#' This loops through an "array" of files and sources them.
-#'
-#' @param files Vector of full file paths
-#' @param ...  Pass extra parameters to the source function
-#'
-#' @return
-#' @export
-#'
-#' @examples
-includeLocalFiles = function(files, ...)
-  {
-  for(file in files)
-    {
-    # source(file, ...);
-	  source(file);
-    }
-  }
-
-#' includeRemoteFiles
-#'
-#' @param urls
-#' @param verbose
-#' @param ...
-#'
-#' @return
-#' @export
-#'
-#' @examples
-includeRemoteFiles = function(urls, pattern = "[.][RrSsQq]$", verbose=FALSE, ...)
-  {
-  # # includeGithubFolder ...
-# includeRemoteDirectoryGithub
-# includeRemoteFiles("https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/misc/functions-md5.R");
-
-  idx = grep(pattern, urls);
-  if(length(idx) > 0)
-	{
-	  goodurls = urls[idx];
-
-	  cat (" INCLUDING:","\n","=========","\n");
-	  for(url in goodurls)
-		{
-		myfile = getRemoteAndCache(url, ...);
-		if(verbose) { cat("\t", url, " ===> \n"); }
-		# source(myfile, ...);
-		  source(myfile);
-		if(verbose) { cat("\t ... ",myfile); } else { cat("\t ... ",basename(myfile),"\n"); }
-		}
-	}
-  }
-
-
-
-
-
-#' sourceMe
-#'
-#' @param myfile
-#' @param key
-#' @param indexFunctions
-#'
-#' @return
-#' @export
-#'
-#' @examples
-sourceMe = function(myfile, key = "local", indexFunctions = TRUE)
-	{
-  # source('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-get-set.R')
-# mySource('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-get-set.R')
-
-	if(!indexFunctions)
-		{
-		source(myfile);
-		} else  {
-				indexFunctionsInFile(myfile, key=key); # this will store to cache
-				source(myfile);
-				}
-	}
-
 
 #' file.readLines
 #'
@@ -305,265 +159,6 @@ file.readLines = function(file, n=-1, skip=NULL)
 
 
 
-listGithubFiles = function(github.user="MonteShaffer", github.repo="humanVerse", github.path="", ...)
-	{
-	args = getFunctionParameters();
-	force.download = isForceDownload(args);
-	cat("\n", "force.download ... ", force.download, "\n\n");
-
-	url = buildGithubPath(github.user, github.repo);
-	url = paste0(url, github.path);
-
-	res = parseGithubList(url, force.download = force.download);
-		res = setAttribute("url", url, res);
-		res = setAttribute("force.download", force.download, res);
-	res;
-	}
-
-
-
-buildTarFromGithubRepo = function(github.user="MonteShaffer", github.repo="humanVerse", force.download=FALSE)
-	{
-	url = buildGithubPath(github.user, github.repo);
-	res = parseGithubList(url, force.download = force.download);
-
-	## curl -L http://github.com/zoul/Finch/tarball/master/
-
-	## curl -L http://github.com/MonteShaffer/humanVerse/tarball/master/
-
-	# https://codeload.github.com/MonteShaffer/humanVerse/legacy.tar.gz/main
-
-	zip.url = getAttribute("zipclone", res);
-	if(is.null(zip.url))
-		{
-		stop("no zip.url attached to url");
-		}
-
-	## This is a redirect ...
-	## <html><body>You are being <a href="https://codeload.github.com/MonteShaffer/humanVerse/zip/refs/heads/main">redirected</a>.</body></html>
-	## https://stackoverflow.com/questions/25474682/rcurl-geturlcontent-detect-content-type-through-final-redirect
-	## h <- basicTextGatherer()
-	## x = getBinaryURL('http://timesofindia.indiatimes.com//articleshow/2933019.cms',                  headerfunction = h$update, curl = curl)
-
-	# require(RCurl)
-	# agent="Firefox/23.0"
-	# curl.fun = basicTextGatherer();
-	# curl.ch = getCurlHandle();
-
-#	x = getBinaryURL(zip.url, curl = curl.ch )
-	## maybe add this to below function
-
-#	myzip = getRemoteAndCache(zip.url, force.download=force.download);
-
-zipme = "https://codeload.github.com/MonteShaffer/humanVerse/legacy.tar.gz/main"
-myzip = getRemoteAndCache(zipme, force.download=force.download);
-
-tar.gz = paste0( as.character(myzip), ".tar.gz");
-moveFile( myzip, tar.gz);
-
-# gzfile(tar.gz);
-outpath = cleanup.local( paste0(dirname(tar.gz), "/untar-", basename(tar.gz), "/") );
-	createDirectoryRecursive(outpath);
-untar(tar.gz, exdir = outpath); # will uncompress
-
-myfiles = list.files(outpath, pattern = "\\.Rbuildignore$", full.names = TRUE, recursive = TRUE, ignore.case = TRUE, all.files = TRUE);
-
-if(length(myfiles) == 0)
-	{
-	stop("no eligible candidate with '.Rbuildignore' found!");
-	}
-
-
-buildpath = cleanup.local( dirname(myfiles[1]) );
-
-setwd(buildpath);
-
-shell("dir", intern=T)
-
-# R CMD check [options] pkgdirs
-# R CMD build [options] pkgdirs
-
-
-# package.gz = paste0(outpath,"package.tar.gz");
-
-# tar(package.gz, files = buildpath);
-
-setwd(buildpath);
-# shell( paste0("R CMD check ",buildpath,"/"), intern=T)
-# shell( paste0("R CMD check", package.gz), intern=T)
-
-  # shell( paste0("R CMD check ./"), intern=T)  # throws error
-
-shell( paste0("R CMD build ./"), intern=T)
-
-
-	}
-
-#' installGithubLibrary
-#'
-#' @return
-#' @export
-#'
-#' @examples
-installGithubLibrary = function(github.user="MonteShaffer", github.repo="humanVerse", github.path="", pattern = "\\.zip$", github.version="latest", ...)
-	{
-	## This doesn't grab the clone element, assumes you have a .zip uploaded ...
-	## https://stackoverflow.com/questions/67144476/
-	## you could download "clone", look for .Rproj, BUILD that folder to ZIP, then INSTALL
-
-	## https://github.com/MonteShaffer/humanVerse/tree/main/humanVerse
-
-	## https://github.com/r-lib/devtools/archive/refs/heads/master.zip
-	## for me, this is the outer layer ...
-	## https://github.com/MonteShaffer/humanVerseWSU/archive/refs/heads/master.zip
-	## unzip ... look for github.repo ... humanVerse.Rproj ... or /R /man DESCRIPTION NAMESPACE in folder to figure out which folder ... maybe '.Rbuildignore'
-	## build ...  ?build vs ?devtools::build
-	## just build a .tar.gz from github ...
-
-
-	# .git.ignore is not allowing the other ...
-	# build-source ==> .tar.gz
-	# build-binary ==> .zip  [WINDOZE]
-	# maybe ==> .tgz
-	# ?install.packages
-	github.df = listGithubFiles(github.user=github.user, github.repo=github.repo, github.path=github.path, ...);
-
-	idx.zips = grep("\\.zip$", github.df$links);
-	idx.tars = NULL;
-	# idx.tars = grep("\\.tar.giz$", github.df$links);
-
-
-	github.idx = c(idx.zips, idx.tars);
-	if(length(github.idx) == 0)
-		{
-		stop("no candidates");
-		}
-
-	github.candidates = github.df[github.idx,] ;
-	##
-
-	cat("\n\n =-=-=-=-=-=-=-=-=-=- CANDIDATES =-=-=-=-=-=-=-=-=-=- \n\n");
-	cat("\n\n", "  [ latest ---> ]", paste(github.candidates$name, collapse="\n\t"), "\n\n\n");
-
-	github.zip = github.candidates[1,];  # these are sorted by latest ...
-
-	if(github.version != "latest")
-		{
-		# github.version is wildcard, grab first ...
-		grx = utils::glob2rx(github.version);
-		grx.grep = grep(grx, github.candidates$links);
-			if(length(github.grep) > 0)
-				{
-				my.idx = grx.grep[1]; # first match
-				github.zip = github.candidates[my.idx,];
-				}
-		}
-
-	cat("\n\n", paste( github.zip[c(1,2)], collapse = "\t\t"), "\n\n\n");
-	zip.url = as.character(github.zip[8]);
-
-	cat("\n\n", "\t\t", "      FROM: ", as.character(github.zip[8]), "\n\n");
-	myzip = getRemoteAndCache(zip.url, ...);
-
-	cat("\n\n", "\t\t", "TO INSTALL: ", as.character(github.zip[1]), "\n\n");
-	install.packages(myzip, repos=NULL, type="source");
-		# unzips into folder 'C:/Users/Alexander Nevsky/Documents/R/win-library/4.0'
-	}
-
-
-buildGithubPath = function(github.user="MonteShaffer", github.repo="humanVerse", which="http")
-	{
-	if(which == "raw")
-		{
-		paste0("https://raw.githubusercontent.com/", github.user, "/", github.repo, "/");
-		} else 	{
-				paste0("https://github.com/", github.user, "/", github.repo, "/");
-				}
-	}
-
-
-
-
-parseGithubList = function(url, force.download = FALSE)
-	{
-	html.local = getRemoteAndCache(url, force.download = force.download);
-	html.cache = str_replace(".html", ".cache", html.local);
-
-	github.base = "https://github.com/";
-	github.raw 	= "https://raw.githubusercontent.com/";
-
-	### Could we do API/JSON instead of HTML CACHING?
-		### github.api = "https://api.github.com/";
-		## https://api.github.com/repos/MonteShaffer/humanVerse/git/trees/main
-		##  ==> https://api.github.com/repos/MonteShaffer/humanVerse/git/trees/75741912434181b468b761303eaa3ec312998e1d
-		### if(type == "blob") AND extension = ".R" ... include ...
-		### less to parse with HTML
-
-	if(file.exists(html.cache) && !force.download)
-		{
-		cat("\n", "============", "GRABBING FROM CACHE", "============", "\n");
-		# results = as.character( unlist( readFromPipe(html.cache) ) );
-		# results = readFromPipe(html.cache);
-		results = readRDS(html.cache);
-		} else {
-		    cat("\n", "============", "DOWNLOADING DIRECTORY PAGE", "============", "\n");
-				html.str = readStringFromFile(html.local);
-
-				page.info = sliceDiceContent(html.str, start='<div class="js-details-container Details">', end='<div class="Details-content--shown', strip=FALSE, direction="start");
-
-				results = NULL;
-				page.rows = explodeMe('<div role="row"', page.info);
-				nr = length(page.rows);
-				for(i in 2:nr)
-					{
-					row = explodeMe('<span', page.rows[i]);
-						row.dt = explodeMe("T", sliceDiceContent(row[3], start='datetime="', end='"', strip=TRUE, direction="start") );
-
-
-
-						row.link = sliceDiceContent(row[2], start='href="', end='"', strip=TRUE, direction="start");
-							tmp = explodeMe("/", row.link); ntmp = length(tmp);
-						row.name = tmp[ntmp];
-						row.commit = sliceDiceContent(row[3], start='href="', end='"', strip=TRUE, direction="start");
-						row.commit.info = sliceDiceContent(row[3], start="\n", end='<a>', strip=TRUE, direction="start");
-
-						row.time = paste0(row.dt[1], " ", str_replace("Z", "", row.dt[2]) );
-
-						# install_github("Displayr/flipTime")
-						# https://github.com/Displayr/flipTime/blob/master/R/asdatetime.R
-
-
-					rinfo = c(row.name, row.time, row.link, row.commit, row.commit.info);
-
-					results = rbind(results, rinfo);
-					}
-
-				results = as.data.frame(results);
-					colnames(results) = c("name", "when", "url", "commit", "commit.info");
-					# rownames(results) = results$name; # should be unique
-					rownames(results) = NULL;
-				results$when.time = asDateTime(results$when);
-				results = sortDataFrameByNumericColumns(results,"when.time","DESC"); # newest first
-				results$folder = !is.substring(results$url, "/blob/"); # blobs are files ...
-
-					links = cleanup.url( paste0(github.raw, results$url) );
-					links = str_replace("/blob/", "/", links);
-				results$links = "";
-				results$links[ which(!results$folder) ] = links [ which(!results$folder) ];
-
-				# pipe loses "attributes" ...
-				zipclone = sliceDiceContent(html.str, start='data-open-app="link" href="', end='">', strip=FALSE, direction="start");
-				zipclone = cleanup.url( paste0(github.base, zipclone) );
-
-				results = setAttribute("zipclone", zipclone, results);
-
-				# writeToPipe(results, html.cache);
-				writeRDS(results, html.cache);
-				}
-	results;
-	}
-
-
 
 
 
@@ -586,30 +181,7 @@ isForceDownload = function(args)
 	}
 
 
-#' includeGithubFolder
-#'
-#' @param url
-#' @param ...
-#'
-#' @return
-#' @export
-#'
-#' @examples
-includeGithubFolder = function(url, ...)  # pattern = "[.][RrSsQq]$",
-	{
-	args = getFunctionParameters();
-	##cat("\n\n === MY-ARGS === \n\n");	# print(args);	# dput(args);
 
-	force.download = isForceDownload(args);
-	cat("\n", "force.download ... ", force.download, "\n\n");
-
-	github.df = parseGithubList(url, force.download = force.download);
-	github.df = subsetDataFrame(github.df, "folder", "==", FALSE);
-
-	links = na.omit(github.df$links);
-
-	includeRemoteFiles(links, ...);
-	}
 
 
 
@@ -645,18 +217,7 @@ readStringFromFile = function(myFile, n = NULL, method ="readChar", source = "lo
 	}
 
 
-#' deleteLocalCacheFolder
-#'
-#' @param folder
-#'
-#' @return
-#' @export
-#'
-#' @examples
-deleteLocalCacheFolder = function(folder)
-  {
-# TODO
-  }
+
 
 
 
@@ -826,6 +387,20 @@ moveFile = function(src, dest, unlink=TRUE)
 	}
 
 
+#' deleteLocalCacheFolder
+#'
+#' @param folder
+#'
+#' @return
+#' @export
+#'
+#' @examples
+deleteLocalCacheFolder = function(folder)
+  {
+# TODO
+  }
+  
+  
 #' downloadFile
 #'
 #' @param remote

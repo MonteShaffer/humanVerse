@@ -1,23 +1,28 @@
 
 
-#' get.last.error
+
+#' sourceMe
+#'
+#' @param myfile
+#' @param key
+#' @param indexFunctions
 #'
 #' @return
 #' @export
-get.last.error = function()
+#'
+#' @examples
+sourceMe = function(myfile, key = "local", indexFunctions = TRUE)
 	{
-  # ls(".GlobalEnv");
-  # geterrmessage()
-  # https://stackoverflow.com/questions/36966036/how-to-get-the-last-error
-  # options(error = function() {traceback(2, max.lines=100); if(!interactive()) quit(save="no", status=1, runLast=T)})
-  # https://stackoverflow.com/questions/7485514/can-you-make-r-print-more-detailed-error-messages
+  # source('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-get-set.R')
+# mySource('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-get-set.R')
 
-  tr = .traceback()  # Not a typo! .traceback is like traceback except that it doesn't force printing the stack. –
-	  if(length(tr) == 0)
-  	  {
-  		return(NULL);
-  	  }
-  tryCatch(eval(parse(text = tr[[1]])), error = identity);
+	if(!indexFunctions)
+		{
+		source(myfile);
+		} else  {
+				indexFunctionsInFile(myfile, key=key); # this will store to cache
+				source(myfile);
+				}
 	}
 
 

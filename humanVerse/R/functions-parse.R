@@ -1,6 +1,75 @@
 
 
 
+#' cleanup.local
+#'
+#' @param myfile The original filename, may be a URL with ? = & symbols
+#'
+#' @return A windoze-friendly filename
+#' @export
+#'
+#' @examples
+#' cleanup.local("index.html?endYear=1920&amount=1000000");
+#'
+cleanup.local = function(myfile, append="")
+	{
+	myfile = str_replace("//", "/",   myfile);
+	myfile = str_replace("?", "^-QUESTION-^",   myfile);
+	myfile = str_replace("&", "^-AND-^",   myfile);
+	myfile = str_replace("=", "^-EQUAL-^",   myfile);
+
+	if(append != "")
+	  {
+	  # append .html
+	  s = strlen(append);
+	  last.s = .substr(str, -1*s);
+	  if(last.s != append)
+	    {
+	    myfile = paste0(myfile, append);
+	    }
+	  }
+	myfile;
+	}
+
+
+#' cleanup.url
+#'
+#' @param url URL to be cleansed
+#'
+#' @return cleansed URL
+#' @export
+#'
+#' @examples
+#' cleanup.url("https://www.myprofiletraits.com//");
+#' cleanup.url("https:/www.mshaffer.com//arizona//");
+#'
+cleanup.url = function(url)
+	{
+	url = str_replace("///", "/",   url);
+	url = str_replace("//", "/",   url);
+	url = str_replace(":/", "://", url); # https://
+	url;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # parseTable = function(str)
 # 	{
 # 	# TODO
