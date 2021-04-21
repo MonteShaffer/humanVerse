@@ -22,7 +22,7 @@ github.buildFromRepo = function(github.user="MonteShaffer", github.repo="humanVe
 			# url = github.buildPath(github.user, github.repo);
 			# res = github.parseList(url, force.download = force.download);
 
-			https://codeload.github.com/MonteShaffer/humanVerse/legacy.tar.gz/main
+			# https://codeload.github.com/MonteShaffer/humanVerse/legacy.tar.gz/main
 
 			# zip.url = getAttribute("zipclone", res);
 			# if(is.null(zip.url))

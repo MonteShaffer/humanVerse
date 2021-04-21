@@ -487,6 +487,7 @@ matrix.computeEigenRank = function(A, method="linear", norm="min-1", ...)
 		# should we consider "multiply.cpp" as option?
 		} else {
 				# TODO ...
+				# let's just solve without partitioning ?
 
 				# block partition
 				}
