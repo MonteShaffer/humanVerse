@@ -316,6 +316,12 @@ buildTarFromGithubRepo = function(github.user="MonteShaffer", github.repo="human
 	url = buildGithubPath(github.user, github.repo);	
 	res = parseGithubList(url, force.download = force.download);
 	
+	## curl -L http://github.com/zoul/Finch/tarball/master/
+	
+	## curl -L http://github.com/MonteShaffer/humanVerse/tarball/master/
+	
+	# https://codeload.github.com/MonteShaffer/humanVerse/legacy.tar.gz/main
+	
 	zip.url = getAttribute("zipclone", res);
 	if(is.null(zip.url))
 		{
@@ -337,8 +343,48 @@ buildTarFromGithubRepo = function(github.user="MonteShaffer", github.repo="human
 	## maybe add this to below function
 	
 #	myzip = getRemoteAndCache(zip.url, force.download=force.download);
+
+zipme = "https://codeload.github.com/MonteShaffer/humanVerse/legacy.tar.gz/main"
+myzip = getRemoteAndCache(zipme, force.download=force.download);
 	
-	
+tar.gz = paste0( as.character(myzip), ".tar.gz");	
+moveFile( myzip, tar.gz);
+
+# gzfile(tar.gz);
+outpath = cleanup.local( paste0(dirname(tar.gz), "/untar-", basename(tar.gz), "/") ); 
+	createDirectoryRecursive(outpath);
+untar(tar.gz, exdir = outpath); # will uncompress
+
+myfiles = list.files(outpath, pattern = "\\.Rbuildignore$", full.names = TRUE, recursive = TRUE, ignore.case = TRUE, all.files = TRUE);
+
+if(length(myfiles) == 0)
+	{
+	stop("no eligible candidate with '.Rbuildignore' found!");
+	}
+
+ 
+buildpath = cleanup.local( dirname(myfiles[1]) ); 
+
+setwd(buildpath);
+
+shell("dir", intern=T)
+
+# R CMD check [options] pkgdirs
+# R CMD build [options] pkgdirs
+
+
+# package.gz = paste0(outpath,"package.tar.gz");
+
+# tar(package.gz, files = buildpath);
+
+setwd(buildpath);
+# shell( paste0("R CMD check ",buildpath,"/"), intern=T)
+# shell( paste0("R CMD check", package.gz), intern=T)
+  
+  # shell( paste0("R CMD check ./"), intern=T)  # throws error
+  
+shell( paste0("R CMD build ./"), intern=T)
+
 	
 	}
 
@@ -769,6 +815,8 @@ if(verbose)
 #' @examples
 moveFile = function(src, dest, unlink=TRUE)
 	{
+		src 	= as.character(src);
+		dest 	= as.character(dest);
 	file.copy(src, dest);  # there is no file.move ???
 	unlink(src);
 	}
