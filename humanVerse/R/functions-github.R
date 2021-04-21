@@ -16,19 +16,25 @@ github.listFiles = function(github.user="MonteShaffer", github.repo="humanVerse"
 
 
 
-github.buildTarFromRepo = function(github.user="MonteShaffer", github.repo="humanVerse", force.download=FALSE)
+github.buildFromRepo = function(github.user="MonteShaffer", github.repo="humanVerse", force.download=FALSE)
 	{
-	url = buildGithubPath(github.user, github.repo);
-	res = parseGithubList(url, force.download = force.download);
+	## this will get the zip file from the webpage ...
+			# url = buildGithubPath(github.user, github.repo);
+			# res = parseGithubList(url, force.download = force.download);
 
-	# https://codeload.github.com/MonteShaffer/humanVerse/legacy.tar.gz/main
+			https://codeload.github.com/MonteShaffer/humanVerse/legacy.tar.gz/main
 
-	zip.url = getAttribute("zipclone", res);
-	if(is.null(zip.url))
-		{
-		stop("no zip.url attached to url");
-		}
+			# zip.url = getAttribute("zipclone", res);
+			# if(is.null(zip.url))
+				# {
+				# stop("no zip.url attached to url");
+				# }
 
+	
+	tarball = github.buildPath(github.user=github.user, github.repo=github.repo, which="tar.gz");
+	
+	local = getRemoteAndCache(tarball, force.download=force.download, append=".tar.gz");
+	
 	
 
 zipme = "https://codeload.github.com/MonteShaffer/humanVerse/legacy.tar.gz/main"
@@ -159,7 +165,10 @@ github.buildPath = function(github.user="", github.repo="", which="http")
             "https"    = paste0("https://github.com/", github.user, "/", github.repo, "/"),
 			"http"    = paste0("https://github.com/", github.user, "/", github.repo, "/"),
 			
-			"raw"    = paste0("https://raw.githubusercontent.com/", github.user, "/", github.repo, "/"),
+			"legacy"    = paste0("https://codeload.github.com/", github.user, "/", github.repo, "/legacy.tar.gz/main"),
+			"tar.gz"    = paste0("https://codeload.github.com/", github.user, "/", github.repo, "/legacy.tar.gz/main"),
+			
+			
 
            paste0("https://github.com/", github.user, "/", github.repo, "/") # default case of switch
           );

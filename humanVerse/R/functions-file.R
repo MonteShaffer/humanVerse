@@ -284,6 +284,7 @@ getDirectoryPath = function(file, trailing=TRUE)
 #' @param force.download
 #' @param verbose
 #' @param md5.hash
+#' @param append
 #'
 #' @return
 #' @export
@@ -291,7 +292,7 @@ getDirectoryPath = function(file, trailing=TRUE)
 #' @examples
 getRemoteAndCache = function(remote, local.file = NULL,
     tmp.folder = "/humanVerse/cache/", force.download = FALSE,
-    verbose = FALSE, md5.hash = FALSE, is.html = FALSE)
+    verbose = FALSE, md5.hash = FALSE, append = "")
   {
   remote = cleanup.url(remote);
   useTEMP = FALSE;
@@ -318,7 +319,9 @@ if(verbose)
 	subfolder = if(trailingSlash) {  folderizeURL(remote); } else { folderizeURL(dirname(remote)); }
 	filestem  = if(trailingSlash) {  "index.html" } else { basename(remote); }
 
-	if(is.html) { filestem = cleanup.local(filestem); } # this will append ".html" if necessary ... 
+	# if(!isFALSE(append.me)) { filestem = cleanup.local(filestem); } # this will append ".html" if necessary ... 
+	
+	filestem = cleanup.local(filestem, append=append)
 
     if(md5.hash) { filestem = md5(filestem); }
 
