@@ -60,24 +60,45 @@ convertDateStringToFormat = function (strvec,to="%Y",to.name="years",from="%Y-%m
 	}
 
 
+#' toSystemTime
+#'
+#' @param numvec
+#' @param which
+#' @param origin
+#'
+#' @return
+#' @export
+#'
+#' @examples
 toSystemTime = function(numvec, which="ct", origin="1970-01-01")
-	{	
-	# reverses as.numeric(Sys.time());	
-	
+	{
+	# reverses as.numeric(Sys.time());
+
 	# https://rstudio-pubs-static.s3.amazonaws.com/28038_1bcb9aa80ca84f27ace07d612872861a.html
 	# now <- Sys.time(); class(now);
 	# https://stat.ethz.ch/R-manual/R-devel/library/base/html/as.POSIXlt.html
 	# try formats ...
-	
+
 	if(which != "ct")
 		{
 		as.POSIXlt(numvec, origin=origin);
 		} else	{
 				as.POSIXct(numvec, origin=origin);
-				}	
+				}
 	}
-	
-	
+
+
+#' asDateTime
+#'
+#' @param strvec
+#' @param from
+#' @param to
+#' @param num
+#'
+#' @return
+#' @export
+#'
+#' @examples
 asDateTime = function(strvec, from="%Y-%m-%d %H:%M:%S", to="", num=TRUE)
 	{
 	# ?as.Date
@@ -86,8 +107,8 @@ asDateTime = function(strvec, from="%Y-%m-%d %H:%M:%S", to="", num=TRUE)
 	res = p.obj;
 	if(to != "") { o.obj = strftime(p.obj,  format=to); res = o.obj; }
 	if(num) { res = as.numeric(res);}
-	
-	res;	
+
+	res;
 	}
 
 

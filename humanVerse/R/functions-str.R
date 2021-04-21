@@ -1,18 +1,40 @@
 
 
+#' catMe
+#'
+#' @param lines
+#' @param pre
+#' @param post
+#' @param file
+#' @param append
+#'
+#' @return
+#' @export
+#'
+#' @examples
 catMe = function(lines, pre="\n", post="", file="", append=TRUE)
 	{
 	lines = getElementsInList(lines, 1);
 	n = length(lines);
 	for(line in lines)
 		{
-		cat(pre, line, post, file=file, append=append);		
-		}	
+		cat(pre, line, post, file=file, append=append);
+		}
 	}
 
-# s = "Alexander"; svec = strsplit(s,"",fixed=TRUE)[[1]];
+
+#' charVector
+#'
+#' @param strvec
+#' @param sep
+#'
+#' @return
+#' @export
+#'
+#' @examples
 charVector = function(strvec, sep="")
 	{
+  # s = "Alexander"; svec = strsplit(s,"",fixed=TRUE)[[1]];
 	n = length(strvec);
 	res = list();
 	for(i in 1:n)
@@ -27,11 +49,27 @@ charVector = function(strvec, sep="")
 				}
 	}
 
+#' strtolower
+#'
+#' @param str
+#'
+#' @return
+#' @export
+#'
+#' @examples
 strtolower = function(str)
 	{
 	tolower(str);
 	}
 
+#' strtoupper
+#'
+#' @param str
+#'
+#' @return
+#' @export
+#'
+#' @examples
 strtoupper = function(str)
 	{
 	toupper(str);
@@ -59,7 +97,7 @@ charAt = function(str,idx)
   {
   substr(str,idx,idx);
   }
-  
+
 #' lastChar
 #'
 #' Get the last character of a string
@@ -76,7 +114,7 @@ charAt = function(str,idx)
 #' lastChar(c("Hello","there","Alex"));
 #' lastChar("Sasha");
 #' lastChar("Alexander");
-#'  
+#'
 lastChar = function(str, trim=TRUE)
 	{
 	# this also works:: ... # .substr(str, -1)
@@ -275,31 +313,42 @@ removeWhiteSpace = function( str, replace=" ", n = 2,
   }
 
 
-removeFunnyCharacters = function(str, which="alpha-numeric", ASCII=TRUE)
+#' removeFunnyCharacters
+#'
+#' @param str
+#' @param which
+#' @param ASCII
+#'
+#' @return
+#' @export
+#'
+#' @examples
+removeFunnyCharacters = function(str, which="alpha-numeric", ASCII=TRUE, trim=TRUE)
 	{
+  method = tolower(which);  # str.toLowerCase()
 	# https://stackoverflow.com/questions/10294284/remove-all-special-characters-from-a-string-in-r
 	# str = "Ábcdêãçoàúü"; str = iconv(str, from = 'UTF-8', to = 'ASCII//TRANSLIT'); str;
 	# str = "Ábcdêãçoàúü"; str = iconv(str, from = '', to = 'ASCII//TRANSLIT'); str;
 	if(ASCII) { str = iconv(str, from = '', to = 'ASCII//TRANSLIT'); }
-	
-	# ?regex 
-	if(which == "alpha-numeric")
-		{
-		str = gsub("[^[:alnum:]]", " ", str);
-		return (str);
-		}
-	if(which == "alpha")
-		{
-		str = gsub("[^[:alpha:]]", " ", str);
-		return (str);
-		}
-	if(which == "numeric")
-		{
-		str = gsub("[^[:digit:]]", " ", str);
-		return (str);
-		}
-	
-	str; # maybe just ascii move 
+
+	# ?regex
+  # switch ...
+  str = switch(method,
+            "alpha-numeric"    = gsub("[^[:alnum:]]", " ", str),
+            "alphanumeric"    = gsub("[^[:alnum:]]", " ", str),
+
+            "alpha"    = gsub("[^[:alpha:]]", " ", str),
+
+            "numeric"    = gsub("[^[:digit:]]", " ", str),
+            "num"    = gsub("[^[:digit:]]", " ", str),
+            "number"    = gsub("[^[:digit:]]", " ", str),
+
+           str # default case of switch
+          );
+
+  if(trim) { str = trimMe(str); }
+
+	str; # maybe just ascii move
 	}
 
 #' strPadLeft
@@ -389,14 +438,26 @@ strlen = function(str)
   }
 
 
-# https://stackoverflow.com/questions/2681786/how-to-get-the-last-char-of-a-string-in-php
-# .substr = function(str,  # maybe write a PHP wrapper
-# by default, this will return the last character of a string ...
-# .substr("abcdef", 4, -4);  // returns false ... returns EMPTY ""
-## earlier called 'substr.neg'
-# PHP wrapper ... https://www.php.net/manual/en/function.substr.php
+#' .substr
+#'
+#' @param str 
+#' @param n
+#' @param length
+#' @param PHP.offset
+#'
+#' @return
+#' @export
+#'
+#' @examples
 .substr = substr.neg = function(str, n = -1, length=NULL, PHP.offset=TRUE)
 	{
+  # https://stackoverflow.com/questions/2681786/how-to-get-the-last-char-of-a-string-in-php
+  # .substr = function(str,  # maybe write a PHP wrapper
+  # by default, this will return the last character of a string ...
+  # .substr("abcdef", 4, -4);  // returns false ... returns EMPTY ""
+  ## earlier called 'substr.neg'
+  # PHP wrapper ... https://www.php.net/manual/en/function.substr.php
+
 	n = as.integer(n);
 		if(!PHP.offset) { n = n - 1; } # PHP indexes at "0"
 
@@ -437,13 +498,27 @@ strlen = function(str)
 					return ( str.final );
 					}
 	stop("humanVerse::.substr ... how did you get here?!?");
-	}
-# this is a vectorized form of .substr ... not analagous to base::substring at all?
-# x <- c("asfef", "qwerty", "yuiop[", "b", "stuff.blah.yech")
-# ? substr
-# .substring(x, 2, 5, FALSE) ... is equivalent to ... substr(x, 2, 5) ... but why?  If you want the PHP negative offsetting, just use its indexing.
+}
+
+
+#' .substring
+#'
+#' @param strvec
+#' @param n
+#' @param length
+#' @param PHP.offset
+#'
+#' @return
+#' @export
+#'
+#' @examples
 .substring = function(strvec, n = -1, length=NULL, PHP.offset=TRUE)
 	{
+  # this is a vectorized form of .substr ... not analagous to base::substring at all?
+  # x <- c("asfef", "qwerty", "yuiop[", "b", "stuff.blah.yech")
+  # ? substr
+  # .substring(x, 2, 5, FALSE) ... is equivalent to ... substr(x, 2, 5) ... but why?  If you want the PHP negative offsetting, just use its indexing.
+
 	m = length(strvec);
 	res = character(m);
 	for(i in 1:m)
@@ -456,16 +531,37 @@ strlen = function(str)
 
 
 
-# splits a string into a vector ...
+
+#' char.vec
+#'
+#' @param str
+#' @param sep
+#'
+#' @return
+#' @export
+#'
+#' @examples
 char.vec = function(str, sep="")
 	{
+  # splits a string into a vector ...
 	strsplit(str, sep, fixed=TRUE)[[1]];
 	}
 
 
-# e.g., strpos in PHP
+
+#' is.substring
+#'
+#' @param haystack
+#' @param needle
+#' @param out
+#'
+#' @return
+#' @export
+#'
+#' @examples
 is.substring = function(haystack, needle, out="BOOLEAN")
   {
+  # e.g., strpos in PHP
   out = substr(trimMe(toupper(out)),1,1);
   if(out == "B")
 	{
@@ -477,18 +573,41 @@ is.substring = function(haystack, needle, out="BOOLEAN")
 
 
 
-# https://www.php.net/manual/en/function.str-repeat.php
+
+#' str_repeat
+#'
+#' @param str
+#' @param times
+#'
+#' @return
+#' @export
+#'
+#' @examples
 str_repeat = function(str, times=1)
 	{
-	paste( rep(str, times), collapse="");	
+  # https://www.php.net/manual/en/function.str-repeat.php
+	paste( rep(str, times), collapse="");
 	}
-	
-	
-# this is "fixed" find and replace # str = gsub(find[i], replace[i], str, fixed=TRUE);
-# method = base, method = stringi
-# stringi is not performing well on this:  "{wsu.crimson}" with fixed
+
+
+#' str_replace
+#'
+#' @param find
+#' @param replace
+#' @param str
+#' @param method
+#'
+#' @return
+#' @export
+#'
+#' @examples
 str_replace = function(find, replace, str, method="base")
   {
+  # this is "fixed" find and replace # str = gsub(find[i], replace[i], str, fixed=TRUE);
+  # method = base, method = stringi
+  # stringi is not performing well on this:  "{wsu.crimson}" with fixed
+
+
   # if find/replace are longer ... if one is length one, repeat the other one
   n.find = length(find);
   n.replace = length(replace);
@@ -529,6 +648,19 @@ str_replace = function(find, replace, str, method="base")
 
 
 
+#' ascii.line
+#'
+#' @param strs
+#' @param out.length
+#' @param left
+#' @param right
+#' @param sep
+#' @param justification
+#'
+#' @return
+#' @export
+#'
+#' @examples
 ascii.line = function(strs, out.length=66, left = "## ", right = " ##", sep=" ", justification="center")
 	{
 	res = list();
@@ -536,40 +668,40 @@ ascii.line = function(strs, out.length=66, left = "## ", right = " ##", sep=" ",
 	for(i in 1:n)
 		{
 		str = strs[i];
-	
+
 		sep = charAt(sep,1); # we only allow a 1-element separator
-		
+
 		len.s = strlen(str);
 		len.l = strlen(left);
-		len.r = strlen(right);	
-			
+		len.r = strlen(right);
+
 		if(justification == "center")
 			{
 			out.left  = out.right = floor( (out.length - len.l - len.s - len.r )/2 );
-				# offset = out.length - len.l - out.left - len.s - out.right - len.r;		
+				# offset = out.length - len.l - out.left - len.s - out.right - len.r;
 			line = paste0(left, str_repeat(sep,out.left), str, str_repeat(sep, out.right));
-			
-			remaining = out.length - strlen(line) - len.r;			
+
+			remaining = out.length - strlen(line) - len.r;
 			if(remaining > 0)
 				{
 				line = paste0(line, str_repeat(sep, remaining));
 				}
-			line = paste0(line, right);						
+			line = paste0(line, right);
 			} else {
-					# left 
+					# left
 					line = paste0(left, str);
 					remaining = out.length - strlen(line) - len.r;
 					if(remaining > 0)
 						{
 						line = paste0(line, str_repeat(sep, remaining), right);
-						} 
-					}	
-		
+						}
+					}
+
 		res[[i]] = line;
 		}
-		
-	if(n > 1) { res; } else { res[[1]]; }	
+
+	if(n > 1) { res; } else { res[[1]]; }
 	}
-	
-	
-	
+
+
+
