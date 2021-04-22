@@ -9,6 +9,9 @@
 #' @return data.frame, invisible
 #' @export
 #' 
+#' @family Inflation
+#' 
+#' 
 #' @aliases currentInflationData
 inflation.currentData = function(store.global = TRUE)
   {

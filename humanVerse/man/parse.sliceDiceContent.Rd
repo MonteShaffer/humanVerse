@@ -2,7 +2,6 @@
 % Please edit documentation in R/functions-parse.R
 \name{parse.sliceDiceContent}
 \alias{parse.sliceDiceContent}
-\alias{sliceDiceContent}
 \title{parse.sliceDiceContent}
 \usage{
 parse.sliceDiceContent(

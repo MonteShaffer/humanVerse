@@ -169,10 +169,14 @@ github.buildPath = function(github.user="", github.repo="", which="http")
 #' @export
 #'
 #' @aliases includeGithubFolder
+#' @alias includeGithubFolder
+#' @describeIn includeGithubFolder
 #'
 #' @examples
 github.includeFolder = function(url, ...)  # pattern = "[.][RrSsQq]$",
 	{
+	## maybe make as a function of user/repo ... folder 
+	
 	args = getFunctionParameters();
 	##cat("\n\n === MY-ARGS === \n\n");	# print(args);	# dput(args);
 
