@@ -2,6 +2,8 @@
 
 IMDB.buildSocialNetwork = function(return="all", ttids=NULL, imdb=imdb.data, use.cpp="auto")
 	{	
+	## need rownames/colnames or the eigenRank won't have good indexes ...
+	
 	if(is.character(use.cpp)) 
 		{ 
 		use.cpp = requireNamespace("Rcpp", quietly = TRUE); 
@@ -131,6 +133,9 @@ IMDB.buildSocialNetwork = function(return="all", ttids=NULL, imdb=imdb.data, use
 		
 	if(is.element("AM.t", work))
 		{
+			colnames(AM.t) = net.nmids;
+			rownames(AM.t) = net.ttids;
+					
 		res$AM.t = AM.t;
 		}
 	
@@ -155,6 +160,10 @@ IMDB.buildSocialNetwork = function(return="all", ttids=NULL, imdb=imdb.data, use
 						} else 	{
 								AA = AM %*% AM.t;
 								}
+					
+					
+					colnames(AA) = rownames(AA) = net.nmids;
+					
 					cat("\n\n ########### writing AA to CACHE ########### \n\n");
 					writeRDS(AA, AA.file);  		
 					}
@@ -183,6 +192,9 @@ IMDB.buildSocialNetwork = function(return="all", ttids=NULL, imdb=imdb.data, use
 						} else 	{
 								MM = AM.t %*% (AM);
 								}
+								
+					colnames(MM) = rownames(MM) = net.ttids;
+					
 					cat("\n\n ########### writing MM to CACHE ########### \n\n");
 					writeRDS(MM, MM.file);  		
 					}
