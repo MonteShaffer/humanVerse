@@ -238,6 +238,9 @@ matrix.sortAdjacencyMatrix = function(A)
 	{
 	# A = myA;
 	
+	n = nrow(A);
+		if(is.null( colnames(A) ) ) { colnames(A) = rownames(A) = 1:n; }
+	
 	original = remaining = colnames(A);
 	new = c();
 	# A.copy = A;
@@ -359,6 +362,12 @@ fnew = c();
 	A;
 	}
 	
+
+
+
+
+
+
 	
 # myV = c(0,0,0,0,0,0,0,0,0,0,
         # 0,0,0,0,0,0,0,0,0,0,
@@ -373,12 +382,19 @@ fnew = c();
 
 # myA = matrix(myV, nrow=10, byrow=TRUE);
   # rownames(myA) = colnames(myA) = paste0("P.",1:10);
-# myA;
+# myA; myA.copy = myA;
+
+
 		# pi.lin = matrix.computeEigenRank(myA);
 		# pi.pow = matrix.computeEigenRank(myA, method="power");
 		### cor( pi.lin[sort(names(pi.lin))], pi.pow[sort(names(pi.pow))] );
 		# cor(pi.lin$eigenrank, pi.pow$eigenrank);
-	
+
+## myA.copy = myA; myA.c1c2c3 = myA.copy; myA.c1c2c3;
+## myA.copy = myA; myA.copy[1,8]=1; myA.copy[2,6]=1; myA.copy[3,9]=1; myA.copy[6,1]=1; myA.c2c3 = myA.copy;	myA.c2c3;
+## myA.c2 = myA.c2c3; myA.c2[5,10] = 1; myA.c2[7,10] = 1; myA.c2[8,7] = 1; myA.c2;
+## myA.c1c3 = matrix(0, nrow=10, ncol=10); myA.c1c3[3,8] = 1; myA.c1c3[4,8] = 1; myA.c1c3[5,9] = 1; myA.c1c3[6,10] = 1; myA.c1c3;
+## myA.c1c2 = myA.c1c2c3; myA.c1c2[6,10] = 1; myA.c1c2[8,9] = 1; myA.c1c2[10,7] = 1; myA.c1c2;
 	
 #' matrix.computeEigenRank
 #'
@@ -400,6 +416,7 @@ matrix.computeEigenRank = function(A, method="linear")
 		stop("Matrix must be square, maybe multiply by transpose."); 
 		}	
 	
+	# A = WW;
 	# A = myA;
 		A.copy = A;
 		A.copy = matrix.convertMatrixToAdjacency(A.copy);
@@ -422,8 +439,12 @@ matrix.computeEigenRank = function(A, method="linear")
 		A.copy = matrix.rowNormalize(A.copy);		
 	#Ainfo$sum.norm = sum(A.copy);
 		
-		pinfo = list();
+		pinfo = list();		
 		
+	if(c1 == 0 && c2 == 0 && c3 == 0)
+		{
+		stop("The matrix is empty! Won't work!");
+		}
 		
 	if(method == "power")
 		{
@@ -442,56 +463,109 @@ matrix.computeEigenRank = function(A, method="linear")
 		A.pow = matrix.removeSuperNode(A.pow);
 		A.vec = A.pow[1,]; # any row	
 		
+		A.vec.pow = A.vec;
+		
+		
+		
 		} else {
 				# TODO ...
 				# let's just solve without partitioning ?
 				# A.inv = solve(WWasr);  # owell.Rmd
 				# v = A.inv[,24] * A.inv[24,]
-
-				# block partition
+				# block partition				
+				# A = P.s[2:11,2:11]  # 2020-11-27_imdb-graph-ranks.Rmd			
+				# A.copy[1:10,1:10]				
+				# blocks = c(c1,c1+c2,c1+c2+c3);
+				
+				
 				# pg. 166 is example of computation
 				# pg. 80 [EQN 3.6 ... 3.10]  explains the why
 				# I think P6 is wrong in dissertation 
 				# http://www.mshaffer.com/arizona/dissertation/mjsPRINT.pdf
 				
-				# A = P.s[2:11,2:11]  # 2020-11-27_imdb-graph-ranks.Rmd
-				
-				
-				
-				
-				
-								
-				# A.copy[1:10,1:10]
-				
-				# blocks = c(c1,c1+c2,c1+c2+c3);
-				
-				Qbar.t = A.copy[(1+c1):(c1+c2), (1):(c1)];				
-				Rbar.t = A.copy[(1+c1):(c1+c2), (1+c1):(c1+c2)];				
-				Sbar.t = A.copy[(1+c1+c2):(c1+c2+c3), (1):(c1)];
-				Tbar.t = A.copy[(1+c1+c2):(c1+c2+c3), (1+c1):(c1+c2)];
-				
-				Rbar = matrix.transpose(Rbar.t);
-				Tbar = matrix.transpose(Tbar.t);
-				
-							
-				LHS = diag(1,nrow=c2) - Rbar;				
-					one.col.c2 = matrix(1, ncol=1, nrow = c2);
-				RHS = one.col.c2 + Tbar %*% one.col.c2;				
-				pi.C2 = solve(LHS,RHS);
-				
 				pi.C3 = rep(1, c3);
+				if(length(pi.C3) == 0) { pi.C3 = NULL; }
+				
+				
+				
+								rc1 = (1+c1); 		cc1 = (c1);
+								rc2 = (rc1+c2);		cc2 = (cc1+c2);
+					if(c3 == 0) { rc2 = Ainfo$n + 1; } 	
+
+				if(c2 != 0)
+					{
+					Qbar.t = as.matrix(A.copy[rc1:(rc2-1), (1):(cc1)]);				
+					Rbar.t = as.matrix(A.copy[rc1:(rc2-1), (1+cc1):(cc2)]);	
+				
+					Qbar = matrix.transpose(Qbar.t);
+					Rbar = matrix.transpose(Rbar.t);
+					} else	{
+							Qbar.t = Qbar = NULL;
+							Rbar.t = Rbar = NULL;
+							}
+				
+				if(rc2 > Ainfo$n) 
+					{ 
+					Sbar.t = Sbar = NULL;
+					Tbar.t = Tbar = NULL;
+					} else 	{
+							Sbar.t = as.matrix(A.copy[rc2:(Ainfo$n), (1):(cc1)]);
+							Tbar.t = as.matrix(A.copy[rc2:(Ainfo$n), (1+cc1):(cc2)]);				
+				
+							Sbar = matrix.transpose(Sbar.t);
+							Tbar = matrix.transpose(Tbar.t);
+							}				
+				
+				one.col.c1 = matrix(1, ncol=1, nrow = c1);
+				one.col.c2 = matrix(1, ncol=1, nrow = c2);
+				
+				
+				
+				if(c2 > 0)
+					{
+					# LHS = diag(1, nrow=c2) - Rbar;
+					# RHS = one.col.c2 + Tbar %*% one.col.c2;	
+					LHS = diag(1, nrow = c2) - Rbar;
+					if(!is.null(Tbar))
+						{
+						RHS = one.col.c2 + Tbar %*% matrix(1, nrow = dim(Tbar)[2], ncol = 1);
+						} else	{
+								RHS = one.col.c2;
+								}
 					
-				Qbar = matrix.transpose(Qbar.t);
-				Sbar = matrix.transpose(Sbar.t);
-					one.col.c1 = matrix(1, ncol=1, nrow = c1);
-				pi.C1 = one.col.c1 + Qbar %*% pi.C2 + Sbar %*% one.col.c2;
+					pi.C2 = solve(LHS,RHS);	
+					} else { pi.C2 = NULL; }
+					
+					
+				if(c1 > 0)
+					{
+					if(!is.null(pi.C2)) 
+						{
+						pi.C1 = one.col.c1 + Qbar %*% pi.C2;
+						} else 	{
+								pi.C1 = one.col.c1;								
+								if(!is.null(Qbar))
+									{
+									pi.C2.ones = matrix(1, nrow = dim(Qbar)[2], ncol = 1);
+									
+									pi.C1 = pi.C1 + Qbar %*% pi.C2.ones;
+									}
+								}
+						
+						if(!is.null(Sbar))
+							{
+							one.col.c2.ones = matrix(1, nrow = dim(Sbar)[2], ncol = 1);
+							
+							pi.C1 = pi.C1 + Sbar %*% one.col.c2.ones;
+							}
+					} else { pi.C1 = NULL;}				
 				
 				A.vec = c(pi.C1, pi.C2, pi.C3);
-					names(A.vec) = c(A.attributes$rinfo$C1, A.attributes$rinfo$C2, A.attributes$rinfo$C3);
+						names(A.vec) = c(A.attributes$rinfo$C1, A.attributes$rinfo$C2, A.attributes$rinfo$C3);
+						
 					
 				# does this make it the same as power?	
-				A.vec = A.vec / (Ainfo$n + sum(A.vec) );
-				
+				A.vec = A.vec / (Ainfo$n + sum(A.vec) );				
 				}
 
 	
