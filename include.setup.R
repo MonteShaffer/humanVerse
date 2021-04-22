@@ -36,6 +36,12 @@ source(include.me); # initSeedMemory ...
 source(include.me); # initColorMemory ... 
  	include.me = paste0(github.monte, "humanVerse/main/humanVerse/R/zzz.R");   
 source(include.me); # .onLoad ... 
+
+# manual alias?
+includeGithubFolder = function(url, ...)
+	{
+	github.includeFolder(url, ...);
+	}
 	
 	.onLoad();
 
