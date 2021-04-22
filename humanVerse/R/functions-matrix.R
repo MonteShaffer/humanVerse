@@ -376,7 +376,8 @@ fnew = c();
 # myA;
 		# pi.lin = matrix.computeEigenRank(myA);
 		# pi.pow = matrix.computeEigenRank(myA, method="power");
-		# cor( pi.lin[sort(names(pi.lin))], pi.pow[sort(names(pi.pow))] );
+		### cor( pi.lin[sort(names(pi.lin))], pi.pow[sort(names(pi.pow))] );
+		# cor(pi.lin$eigenrank, pi.pow$eigenrank);
 	
 	
 #' matrix.computeEigenRank
@@ -402,6 +403,12 @@ matrix.computeEigenRank = function(A, method="linear")
 	# A = myA;
 		A.copy = A;
 		A.copy = matrix.convertMatrixToAdjacency(A.copy);
+	Ainfo = list(); 
+	Ainfo$sum = sum(A.copy);
+	Ainfo$dim = dim(A.copy);
+	Ainfo$n = Ainfo$dim[1];
+	Ainfo$density = Ainfo$sum / prod(Ainfo$dim);  # sparseness
+		
 		A.copy = matrix.sortAdjacencyMatrix(A.copy);
 			A.attributes = getAllAttributes(A.copy);
 				c1 = length(A.attributes$rinfo$C1);
@@ -411,7 +418,9 @@ matrix.computeEigenRank = function(A, method="linear")
 			members.names = c( rep("c1", c1), rep("c2", c2), rep("c3", c3) );
 		# we lose the attributes here ... 
 		A.copy = matrix.addSuperNode(A.copy);
-		A.copy = matrix.rowNormalize(A.copy);
+	#Ainfo$sum.super = sum(A.copy);
+		A.copy = matrix.rowNormalize(A.copy);		
+	#Ainfo$sum.norm = sum(A.copy);
 		
 		pinfo = list();
 		
@@ -426,11 +435,7 @@ matrix.computeEigenRank = function(A, method="linear")
 		# maybe caching / parallelizing .... 
 		
 		# FOR BELOW:  user would have to pass in "pow = 22" or something into the MAIN of this function ...
-		##### A.copy = matrixPower(A.copy, ...);
-		
-		
-		
-		
+		##### A.copy = matrixPower(A.copy, ...);		
 		
 		A.pow = matrix.powerConvergence(A.copy);
 			pinfo = getAttribute("info", A.pow);
@@ -483,6 +488,9 @@ matrix.computeEigenRank = function(A, method="linear")
 				
 				A.vec = c(pi.C1, pi.C2, pi.C3);
 					names(A.vec) = c(A.attributes$rinfo$C1, A.attributes$rinfo$C2, A.attributes$rinfo$C3);
+					
+				# does this make it the same as power?	
+				A.vec = A.vec / (Ainfo$n + sum(A.vec) );
 				
 				}
 
@@ -495,8 +503,9 @@ matrix.computeEigenRank = function(A, method="linear")
 	A.df$eigenrank.max100 = 100* A.df$eigenrank / max(A.df$eigenrank);
 	
 		A.df = setAttribute("method", method, A.df);
+		A.df = setAttribute("ainfo", Ainfo, A.df);
 		A.df = setAttribute("pinfo", pinfo, A.df);
-		A.df = setAttribute("ainfo", A.attributes, A.df);
+		A.df = setAttribute("cinfo", A.attributes, A.df);
 		
 	# A.vec = setAttribute("members", members, A.vec);
 	
