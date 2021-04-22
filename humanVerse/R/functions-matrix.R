@@ -384,7 +384,6 @@ fnew = c();
   # rownames(myA) = colnames(myA) = paste0("P.",1:10);
 # myA; myA.copy = myA;
 
-
 		# pi.lin = matrix.computeEigenRank(myA);
 		# pi.pow = matrix.computeEigenRank(myA, method="power");
 		### cor( pi.lin[sort(names(pi.lin))], pi.pow[sort(names(pi.pow))] );
@@ -463,9 +462,7 @@ matrix.computeEigenRank = function(A, method="linear")
 		A.pow = matrix.removeSuperNode(A.pow);
 		A.vec = A.pow[1,]; # any row	
 		
-		A.vec.pow = A.vec;
-		
-		
+		A.vec.pow = A.vec;		
 		
 		} else {
 				# TODO ...
@@ -517,9 +514,7 @@ matrix.computeEigenRank = function(A, method="linear")
 							}				
 				
 				one.col.c1 = matrix(1, ncol=1, nrow = c1);
-				one.col.c2 = matrix(1, ncol=1, nrow = c2);
-				
-				
+				one.col.c2 = matrix(1, ncol=1, nrow = c2);				
 				
 				if(c2 > 0)
 					{
@@ -590,6 +585,8 @@ matrix.computeEigenRank = function(A, method="linear")
 	
 	A.df;
 	}
+
+
 
 
 
