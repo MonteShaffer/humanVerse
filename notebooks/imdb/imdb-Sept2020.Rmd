@@ -61,31 +61,32 @@ idf= currentInflationData()
 ## Will Smith Search
 
 ```{r}
-IMDB.searchPersonName("Will*Smith")
+IMDB.searchPersonName("Bruce*Willis")
 ```
 
 
 
 ```{r}
-will = list();
+bruce = list();
 
-will$nmid = "nm0000226"
+bruce$nmid = "nm0000246"
 ```
 
 
 ```{r}
 ## Will Movie Search
 
-will$bio= IMDB.getPersonInfo(will$nmid)
+bruce$bio= IMDB.getPersonInfo(bruce$nmid)
 ```
 
 
 ```{r}
-will$movies = IMDB.getMoviesForPerson(will$nmid)
+bruce$movies = IMDB.getMoviesForPerson(bruce$nmid)
 ```
 
 ```{r}
-will$movies = standardizeDollarsInDataFrame(will$movies, 2010, "millions", "year" , "millions2010")
+bruce$movies = standardizeDollarsInDataFrame(bruce$movies, 2010, "millions", "year" , "millions2010");
+
 ```
 
 

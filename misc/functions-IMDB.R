@@ -1,6 +1,6 @@
 
 
-IMDB.buildSocialNetwork = function(return="both", fill=1, ttids=NULL, imdb.data=imdb.data, use.cpp="auto")
+IMDB.buildSocialNetwork = function(return="all", ttids=NULL, imdb.data=imdb.data, use.cpp="auto")
 	{	
 	if(is.character(use.cpp)) 
 		{ 
@@ -15,6 +15,25 @@ IMDB.buildSocialNetwork = function(return="both", fill=1, ttids=NULL, imdb.data=
 						}
 					}
 				}
+	
+	if(use.cpp)
+		{
+		cpp.file = "https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/humanVerse/inst/cpp/matrix.cpp";
+		
+		cpp.local = getRemoteAndCache(cpp.file, force.download = TRUE);
+		
+		cat("\n\n ########### loading matrix.cpp FILE ########### \n\n");
+		Rcpp::sourceCpp(cpp.local);		
+		
+		# A <- matrix(rnorm(10000), 100, 100);
+		# B <- matrix(rnorm(10000), 100, 100);
+		# microbenchmark(eigenMatTrans(A), matrix.transpose(A), A%*%B, eigenMatMult(A, B), eigenMapMatMult(A, B))
+		}
+	
+	
+	work = c();
+	if(return == "all") { work = c("AM", "AM.t", "AA", "MM"); } else { work = return; }
+	
 	
 	network = imdb.data$movies.df$cast; 		
 	
@@ -36,60 +55,139 @@ IMDB.buildSocialNetwork = function(return="both", fill=1, ttids=NULL, imdb.data=
 			
 	
 	
-	# AM = actors in row, M in cols
-	AM = matrix(0, nrow=n.nmids, ncol=n.ttids);
-		rownames(AM) = net.nmids;
-		colnames(AM) = net.ttids;
-	# this does not use Matrix "sparse" class yet ...	
+	# let's cache this ...
+	AM.folder = paste0( getSourceLocation(), "IMDB/AM/");
+		createDirectoryRecursive(AM.folder);
+	
+	AM.stem = md5.object( c(net.nmids, net.ttids) );
+	AM.file = paste0( AM.folder, AM.stem, ".rds");
+	
+	res = list();
+	
+	total = nrow(net);
+	dim(AM);
+	cat("\n\n We have [ ", total, " ] elements to load into matrix. ", "\n\n");
+	
+	if(file.exists(AM.file))
+		{
+		cat("\n\n ########### reading from CACHE ########### \n\n");
+		AM = readRDS(AM.file);
+		} else 	{
+				# AM = actors in row, M in cols
+				AM = matrix(0, nrow=n.nmids, ncol=n.ttids);
+					rownames(AM) = net.nmids;
+					colnames(AM) = net.ttids;
+				# this does not use Matrix "sparse" class yet ...	
+					
+				# dim(AM);
+				# AM[1:10,1:5];		
+				
+				
+				# TODO: build functions-timer.R ... 
+					## register timers ... start, stop, print for a key
+				s.start = as.numeric(Sys.time());
+				
+				# There is likely a FASTER way, TBD
+				for(i in 1:total)
+					{
+					row = net[i,];		
+					if(i %% 5000 == 1) 
+						{ print(i); flush.console();
+						cat("\n\t\t", i, " ... ", " ttid: ", row$ttid, " => nmid: ", row$nmid, " ... name: ", row$name, "\n\n");
+						}
+					ttid = row$ttid;
+					nmid = row$nmid;
+					
+					r = which(my.nmids == nmid);
+					c = which(my.ttids == ttid);
+						AM[r,c] = 1;		
+					}
+				
+				s.end = as.numeric(Sys.time());
+				s.time = round((s.end - s.start), 3);
+				cat("\n\t\t\t", "MATRIX loaded in ", s.time, " seconds.", "\n\n");
+				
+				
+				density = sum(AM) / (prod(dim(AM)));
+				AM = setAttribute("density", paste0( round(100*density, 5), " %"), AM);
+				
+				cat("\n\n ########### writing to CACHE ########### \n\n");
+				writeRDS(AM, AM.file);  # 5 MB compressed
+				}
+	
+	if(is.element("AM", work))
+		{
+		res$AM = AM;
+		}
+	
+	if(use.cpp)
+		{
+		AM.t = eigenMatTrans(AM);
+		} else 	{
+				AM.t = matrix.transpose(AM);
+				}
 		
-	# dim(AM);
-	# AM[1:10,1:5];
+	if(is.element("AM.t", work))
+		{
+		res$AM.t = AM.t;
+		}
+	
+	# library(microbenchmark); microbenchmark( eigenMatTrans(AM), matrix.transpose(AM), times=1 );  # both take 13 seconds for a large AM 
 	
 	
 	
-
-nrow = nrow(network);
-nrow;
-
-for(i in 1:nrow)
-  {
-  if(i %% 25000 == 1) { print(i); flush.console();}
-  row = network[i,];
-  ttid = row$ttid;
-  nmid = row$nmid;
-
-  r = which(my.nmids == nmid);
-  c = which(my.ttids == ttid);
-  AM[r,c] = 1;
-  }
-
-sum(AM);
+	if(is.element("AA", work))
+		{
+		AA.file = paste0( AM.folder, AM.stem, "-AA.rds");
+		
+		if(file.exists(AA.file))
+			{
+			cat("\n\n ########### reading AA from CACHE ########### \n\n");
+			AA = readRDS(AA.file);
+			} else 	{
+					cat("\n\n ########### multiplying AA ########### \n\n");
+		
+					if(use.cpp)
+						{
+						AA = eigenMapMatMult(AM, AM.t);
+						} else 	{
+								AA = AM %*% AM.t;
+								}
+					cat("\n\n ########### writing AA to CACHE ########### \n\n");
+					writeRDS(AA, AA.file);  		
+					}
+		
+		# library(microbenchmark); microbenchmark( eigenMapMatMult(AM, AM.t), AM %*% AM.t, times=1 );  # regular takes [] seconds, eigen takes [] seconds
+		# memory is MAXED ... Outise of RStudio for large might be a good idea
+		
+		res$AA = AA;
+		}
 	
-	# nrow = nrow(network);
-# nrow;
-# 
-# for(i in 1:nrow)
-#   {
-#   if(i %% 25000 == 1) { print(i); flush.console();}
-#   row = network[i,];
-#   ttid = row$ttid;
-#   nmid = row$nmid;
-#   
-#   r = which(my.nmids == nmid);
-#   c = which(my.ttids == ttid);
-#   AM[r,c] = 1;
-#   }
-# 
-# sum(AM);
-
-#AA = AM %*% t(AM);
-#dim(AA);
-
-# MM = t(AM) %*% (AM);
-# dim(MM);
+	
+	if(is.element("MM", work))
+		{
+		MM.file = paste0( AM.folder, AM.stem, "-MM.rds");
 		
+		if(file.exists(MM.file))
+			{
+			cat("\n\n ########### reading MM from CACHE ########### \n\n");
+			MM = readRDS(MM.file);
+			} else 	{
+					cat("\n\n ########### multiplying MM ########### \n\n");
 		
+					if(use.cpp)
+						{
+						MM = eigenMapMatMult(AM.t, AM);
+						} else 	{
+								MM = AM.t %*% (AM);
+								}
+					cat("\n\n ########### writing MM to CACHE ########### \n\n");
+					writeRDS(MM, MM.file);  		
+					}
+		res$MM = MM;
+		}
 		
+	res;	
 	}
 
 IMDB.loadData = function(which="2020-Sept", store.global=TRUE)
