@@ -51,6 +51,7 @@ data.load = function(dfolder, dstem = NULL,
 			return ( readRDS.url(my.file) );
 			} else 	{
 					my.file = paste0(raw, "main/", sub, "/", dfolder, "/", dstem, ".rds", "");
+					cat("\n\n =-=-=-=-=-=-=-=-=-=- data.load =-=-=-=-=-=-=-=-=-=- \n\n");
 					local = getRemoteAndCache(my.file, force.download = force.download);
 					return( readRDS(local) );
 					}

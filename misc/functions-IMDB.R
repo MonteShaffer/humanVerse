@@ -1,6 +1,108 @@
 
 
+IMDB.buildSocialNetwork = function(return="both", fill=1, ttids=NULL, imdb.data=imdb.data, use.cpp="auto")
+	{	
+	if(is.character(use.cpp)) 
+		{ 
+		use.cpp = requireNamespace("Rcpp", quietly = TRUE); 
+		} else 	{
+				if(use.cpp) 
+					{ 
+					use.cpp = requireNamespace("Rcpp", quietly = TRUE); 
+					if(!use.cpp)
+						{
+						warning("You wanted to use 'Rcpp', but not found, using traditional");
+						}
+					}
+				}
+	
+	network = imdb.data$movies.df$cast; 		
+	
+	if(is.null(ttids)) { ttids = network.ttids; }  # all of them 
+		nids = as.data.frame(cbind(ttids)); colnames(nids) = "ttid";		
+		net = merge(network, nids, by="ttid");		
+	
+		net.ttids = sort( unique(net$ttid) );
+		net.nmids = sort( unique(net$nmid) );
+		
+		n.ttids = length(net.ttids);
+		n.nmids = length(net.nmids);
+		
+		if(n.ttids < 2)
+			{
+			print(net);
+			stop("we don't have enought data");
+			}
+			
+	
+	
+	# AM = actors in row, M in cols
+	AM = matrix(0, nrow=n.nmids, ncol=n.ttids);
+		rownames(AM) = net.nmids;
+		colnames(AM) = net.ttids;
+	# this does not use Matrix "sparse" class yet ...	
+		
+	# dim(AM);
+	# AM[1:10,1:5];
+	
+	
+	
 
+nrow = nrow(network);
+nrow;
+
+for(i in 1:nrow)
+  {
+  if(i %% 25000 == 1) { print(i); flush.console();}
+  row = network[i,];
+  ttid = row$ttid;
+  nmid = row$nmid;
+
+  r = which(my.nmids == nmid);
+  c = which(my.ttids == ttid);
+  AM[r,c] = 1;
+  }
+
+sum(AM);
+	
+	# nrow = nrow(network);
+# nrow;
+# 
+# for(i in 1:nrow)
+#   {
+#   if(i %% 25000 == 1) { print(i); flush.console();}
+#   row = network[i,];
+#   ttid = row$ttid;
+#   nmid = row$nmid;
+#   
+#   r = which(my.nmids == nmid);
+#   c = which(my.ttids == ttid);
+#   AM[r,c] = 1;
+#   }
+# 
+# sum(AM);
+
+#AA = AM %*% t(AM);
+#dim(AA);
+
+# MM = t(AM) %*% (AM);
+# dim(MM);
+		
+		
+		
+	}
+
+IMDB.loadData = function(which="2020-Sept", store.global=TRUE)
+	{
+	imdb.data = NULL;
+	if(which == "2020-Sept")
+		{
+		main = github.buildPath("DataWar", "imdb");
+		raw  = github.buildPath("DataWar", "imdb", "raw");
+		imdb.data = data.load("2020-Sept", "imdb", mode="rds", main=main, raw=raw, sub="");
+		}
+	if(store.global && !is.null(imdb.data)) { .GlobalEnv$imdb.data = imdb.data; }
+	}
 
 #' IMDB.getMovieInfoFromActorSearch
 #'
