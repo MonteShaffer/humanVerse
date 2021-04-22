@@ -23,5 +23,5 @@ lastChar("Alex");
 lastChar(c("Hello","there","Alex"));
 lastChar("Sasha");
 lastChar("Alexander");
- 
+
 }

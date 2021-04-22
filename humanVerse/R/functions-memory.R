@@ -178,7 +178,7 @@ initPathMemory = function(purge.memory = FALSE, verbose = FALSE)
 		  cat("humanVerse::initPathMemory ... initializing list '.humanVerse[[\"path\"]]'", "\n");
 		  }
 		.GlobalEnv$.humanVerse[["path"]] = list(
-												"CACHE" = getSourceLocation(),
+												"CACHE" = getSourceLocation(create=FALSE),
 												"github" = list( "main" = "https://github.com/MonteShaffer/humanVerse/",
 																 "raw"  = "https://raw.githubusercontent.com/MonteShaffer/humanVerse/"
 																 )

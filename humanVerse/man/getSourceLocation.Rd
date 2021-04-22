@@ -4,10 +4,10 @@
 \alias{getSourceLocation}
 \title{getSourceLocation}
 \usage{
-getSourceLocation(tmp.folder = "/humanVerse/cache/")
+getSourceLocation(tmp.subfolder = "/humanVerse/cache/", create = FALSE)
 }
 \arguments{
-\item{tmp.folder}{}
+\item{create}{}
 }
 \value{
 

@@ -10,11 +10,12 @@ getRemoteAndCache(
   tmp.folder = "/humanVerse/cache/",
   force.download = FALSE,
   verbose = FALSE,
-  md5.hash = FALSE
+  md5.hash = FALSE,
+  append = ""
 )
 }
 \arguments{
-\item{md5.hash}{}
+\item{append}{}
 }
 \value{
 

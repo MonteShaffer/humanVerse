@@ -226,12 +226,13 @@ readStringFromFile = function(myFile, n = NULL, method ="readChar", source = "lo
 #' getSourceLocation
 #'
 #' @param tmp.folder
+#' @param create
 #'
 #' @return
 #' @export
 #'
 #' @examples
-getSourceLocation = function(tmp.subfolder = "/humanVerse/cache/")
+getSourceLocation = function(tmp.subfolder = "/humanVerse/cache/", create=FALSE)
   {
   my.tmp = Sys.getenv("HUMANVERSE_CACHE");
 	if(trimMe(my.tmp) == "") { my.tmp = Sys.getenv("TMP"); }
@@ -245,7 +246,7 @@ getSourceLocation = function(tmp.subfolder = "/humanVerse/cache/")
   tmp = gsub("\\", "/", paste0(my.tmp,"/") , fixed=TRUE); # windoze?
   mypath = paste0(tmp, tmp.subfolder);
   mypath = cleanup.local(mypath);
-	createDirectoryRecursive(mypath);
+	if(create) { createDirectoryRecursive(mypath); }
 
   mypath;
   }

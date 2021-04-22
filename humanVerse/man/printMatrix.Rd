@@ -4,7 +4,7 @@
 \alias{printMatrix}
 \title{printMatrix}
 \usage{
-printMatrix(mat, digits = 3, zeroIsh = TRUE, z.digits = 6)
+printMatrix(mat, digits = 3, zeroIsh = TRUE, z.digits = 6, blocks = NULL)
 }
 \arguments{
 \item{mat}{numeric matrix}

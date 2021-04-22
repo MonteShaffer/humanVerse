@@ -13,7 +13,7 @@
 inflation.currentData = function(store.global = TRUE)
   {
   html = "https://www.officialdata.org/us/inflation/2000?endYear=1920&amount=1000000";
-  local = getRemoteAndCache(html, force.download = TRUE, is.html=TRUE);
+  local = getRemoteAndCache(html, force.download = TRUE, append=".html");
   cache = str_replace(".html", ".cache", as.character(local));
   
   if(file.exists(cache))
