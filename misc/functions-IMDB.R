@@ -1,6 +1,6 @@
 
 
-IMDB.buildSocialNetwork = function(return="all", ttids=NULL, imdb.data=imdb.data, use.cpp="auto")
+IMDB.buildSocialNetwork = function(return="all", ttids=NULL, imdb=imdb.data, use.cpp="auto")
 	{	
 	if(is.character(use.cpp)) 
 		{ 
@@ -35,7 +35,7 @@ IMDB.buildSocialNetwork = function(return="all", ttids=NULL, imdb.data=imdb.data
 	if(return == "all") { work = c("AM", "AM.t", "AA", "MM"); } else { work = return; }
 	
 	
-	network = imdb.data$movies.df$cast; 		
+	network = imdb$movies.df$cast; 		
 	
 	if(is.null(ttids)) { ttids = network.ttids; }  # all of them 
 		nids = as.data.frame(cbind(ttids)); colnames(nids) = "ttid";		
@@ -58,6 +58,8 @@ IMDB.buildSocialNetwork = function(return="all", ttids=NULL, imdb.data=imdb.data
 	# let's cache this ...
 	AM.folder = paste0( getSourceLocation(), "IMDB/AM/");
 		createDirectoryRecursive(AM.folder);
+		
+	cat("\n\n", AM.folder, "\n\n");
 	
 	AM.stem = md5.object( c(net.nmids, net.ttids) );
 	AM.file = paste0( AM.folder, AM.stem, ".rds");
@@ -98,8 +100,8 @@ IMDB.buildSocialNetwork = function(return="all", ttids=NULL, imdb.data=imdb.data
 					ttid = row$ttid;
 					nmid = row$nmid;
 					
-					r = which(my.nmids == nmid);
-					c = which(my.ttids == ttid);
+					r = which(net.nmids == nmid);
+					c = which(net.ttids == ttid);
 						AM[r,c] = 1;		
 					}
 				

@@ -410,7 +410,7 @@ matrix.computeEigenRank = function(A, method="linear")
 	{
 	# matrix.computeEigenRank = function(A, method="linear", norm="max-100", ...)
 	
-	if(!is.square.matrix(A)) 
+	if(!matrix.checkSquare(A)) 
 		{ 
 		stop("Matrix must be square, maybe multiply by transpose."); 
 		}	
