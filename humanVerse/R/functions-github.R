@@ -222,7 +222,7 @@ github.parseList = function(url, force.download = FALSE)
 		    cat("\n", "============", "DOWNLOADING DIRECTORY PAGE", "============", "\n");
 				html.str = readStringFromFile(html.local);
 
-				page.info = sliceDiceContent(html.str, start='<div class="js-details-container Details">', end='<div class="Details-content--shown', strip=FALSE, direction="start");
+				page.info = parse.sliceDiceContent(html.str, start='<div class="js-details-container Details">', end='<div class="Details-content--shown', strip=FALSE, direction="start");
 
 				results = NULL;
 				page.rows = explodeMe('<div role="row"', page.info);
@@ -230,15 +230,15 @@ github.parseList = function(url, force.download = FALSE)
 				for(i in 2:nr)
 					{
 					row = explodeMe('<span', page.rows[i]);
-						row.dt = explodeMe("T", sliceDiceContent(row[3], start='datetime="', end='"', strip=TRUE, direction="start") );
+						row.dt = explodeMe("T", parse.sliceDiceContent(row[3], start='datetime="', end='"', strip=TRUE, direction="start") );
 
 
 
-						row.link = sliceDiceContent(row[2], start='href="', end='"', strip=TRUE, direction="start");
+						row.link = parse.sliceDiceContent(row[2], start='href="', end='"', strip=TRUE, direction="start");
 							tmp = explodeMe("/", row.link); ntmp = length(tmp);
 						row.name = tmp[ntmp];
-						row.commit = sliceDiceContent(row[3], start='href="', end='"', strip=TRUE, direction="start");
-						row.commit.info = sliceDiceContent(row[3], start="\n", end='<a>', strip=TRUE, direction="start");
+						row.commit = parse.sliceDiceContent(row[3], start='href="', end='"', strip=TRUE, direction="start");
+						row.commit.info = parse.sliceDiceContent(row[3], start="\n", end='<a>', strip=TRUE, direction="start");
 
 						row.time = paste0(row.dt[1], " ", str_replace("Z", "", row.dt[2]) );
 
@@ -262,7 +262,7 @@ github.parseList = function(url, force.download = FALSE)
 				results$links[ which(!results$folder) ] = links [ which(!results$folder) ];
 
 				
-				zipclone = sliceDiceContent(html.str, start='data-open-app="link" href="', end='">', strip=FALSE, direction="start");
+				zipclone = parse.sliceDiceContent(html.str, start='data-open-app="link" href="', end='">', strip=FALSE, direction="start");
 				zipclone = cleanup.url( paste0(github.base, zipclone) );
 
 				results = setAttribute("zipclone", zipclone, results);

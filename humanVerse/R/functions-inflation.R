@@ -22,9 +22,9 @@ inflation.currentData = function(store.global = TRUE)
 	} else 	{
 			str = readStringFromFile(local);
 
-			  info = sliceDiceContent(str, start='<TABLE class="regular-data table-striped" style="margin: 0 auto">', end='</TABLE>');
+			  info = parse.sliceDiceContent(str, start='<TABLE class="regular-data table-striped" style="margin: 0 auto">', end='</TABLE>');
 
-			  info2 = sliceDiceContent(info, start='<TBODY>', end='</TBODY>');
+			  info2 = parse.sliceDiceContent(info, start='<TBODY>', end='</TBODY>');
 
 			  res = NULL;
 			  rows = explodeMe('</tr>',info2);

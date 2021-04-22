@@ -95,7 +95,7 @@ cleanup.url = function(url)
 #' @return
 #' @export
 #' 
-#' @aliases sliceDiceContent
+#' @aliases parse.sliceDiceContent
 parse.sliceDiceContent = function (str, start="<h2>",end="</h2>", strip=FALSE, direction="start")
 		{
     # slice and dice ... could I build this as "multivariate"?
