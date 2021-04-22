@@ -8,7 +8,7 @@ github.listFiles = function(github.user="MonteShaffer", github.repo="humanVerse"
 	url = github.buildPath(github.user, github.repo);
 	url = paste0(url, github.path);
 
-	res = buildGithubPath(url, force.download = force.download);
+	res = github.parseList(url, force.download = force.download);
 		res = setAttribute("url", url, res);
 		res = setAttribute("force.download", force.download, res);
 	res;
