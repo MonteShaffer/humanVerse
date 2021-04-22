@@ -2,6 +2,7 @@
 % Please edit documentation in R/functions-github.R
 \name{github.includeFolder}
 \alias{github.includeFolder}
+\alias{includeGithubFolder}
 \title{github.includeFolder}
 \usage{
 github.includeFolder(url, ...)

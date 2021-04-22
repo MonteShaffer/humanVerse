@@ -168,6 +168,8 @@ github.buildPath = function(github.user="", github.repo="", which="http")
 #' @return
 #' @export
 #'
+#' @aliases includeGithubFolder
+#'
 #' @examples
 github.includeFolder = function(url, ...)  # pattern = "[.][RrSsQq]$",
 	{
