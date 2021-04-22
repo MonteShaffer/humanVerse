@@ -60,8 +60,17 @@ printPaste = function(... , sep = " ", collapse = NULL, recycle0 = FALSE)
 #' printMatrix( x, 22, zeroIsh = FALSE);
 #' printMatrix( x, 22, zeroIsh = TRUE);
 #' printMatrix( x, 22, zeroIsh = TRUE, z.digits=16);
-printMatrix = function(mat, digits=3, zeroIsh=TRUE, z.digits=6) # align decimals ? ... center ... latex
+printMatrix = function(mat, digits=3, zeroIsh=TRUE, z.digits=6, blocks=NULL) # align decimals ? ... center ... latex
   {
+  # blocks for partitions, see MNIST code ...
+  myblocks = list(); myblocks$rows = myblocks$cols = NULL;
+  if(!is.null(blocks))
+	{
+	if(!is.list(blocks))
+		{
+		myblocks$rows = myblocks$cols = blocks; # only a vector, symmetric
+		} else { myblocks = blocks; }
+	}
   n.rows = nrow(mat);
   my.row.names = rownames(mat);
   my.col.names = colnames(mat);
