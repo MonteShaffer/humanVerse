@@ -190,6 +190,8 @@ IMDB.buildSocialNetwork = function(return="all", ttids=NULL, imdb.data=imdb.data
 	res;	
 	}
 
+
+
 IMDB.loadData = function(which="2020-Sept", store.global=TRUE)
 	{
 	imdb.data = NULL;
@@ -201,6 +203,8 @@ IMDB.loadData = function(which="2020-Sept", store.global=TRUE)
 		}
 	if(store.global && !is.null(imdb.data)) { .GlobalEnv$imdb.data = imdb.data; }
 	}
+
+
 
 #' IMDB.getMovieInfoFromActorSearch
 #'
