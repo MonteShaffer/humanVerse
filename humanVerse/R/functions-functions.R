@@ -586,6 +586,36 @@ grabFunctionParameters <- function() {
 }
 
 
+# https://stackoverflow.com/questions/24481868/regular-expression-to-find-function-calls-in-a-function-body
+
+
+
+
+
+# list.functions?  ls("package:microbenchmark")
+
+find.funcs <- function(f, descend=FALSE) {
+
+# we could look at list ?
+call.ignore <-c("[[", "[", "&","&&","|","||","==","!=",
+    "-","+", "*","/", "!", ">","<", ":")
+	
+	# what if "f" is a character ... ??? 
+	
+    if( is.function(f)) {
+        return(find.funcs(body(f), descend=descend))
+    } else if (is(f, "name") | is.atomic(f)) {
+        return(character(0))
+    }
+    v <- list()
+    if (is(f, "call") && !(deparse(f[[1]]) %in% call.ignore)) {
+        v[[1]] <- deparse(f)
+        if(!descend) return(v[[1]])
+    } 
+    v <- append(v, lapply(as.list(f), find.funcs, descend=descend))
+    unname(do.call(c, v))
+}
+
 
 
 #' getFunctionParameters

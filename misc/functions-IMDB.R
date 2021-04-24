@@ -1,4 +1,7 @@
 
+utils::globalVariables(c("imdb.data"));
+
+
 
 IMDB.buildSocialNetwork = function(return="all", ttids=NULL, imdb=imdb.data, use.cpp="auto")
 	{	
@@ -29,7 +32,7 @@ IMDB.buildSocialNetwork = function(return="all", ttids=NULL, imdb=imdb.data, use
 		
 		# A <- matrix(rnorm(10000), 100, 100);
 		# B <- matrix(rnorm(10000), 100, 100);
-		# microbenchmark(eigenMatTrans(A), matrix.transpose(A), A%*%B, eigenMatMult(A, B), eigenMapMatMult(A, B))
+		# library(microbenchmark); microbenchmark(eigenMatTrans(A), matrix.transpose(A), A%*%B, eigenMatMult(A, B), eigenMapMatMult(A, B))
 		}
 	
 	
@@ -142,6 +145,8 @@ IMDB.buildSocialNetwork = function(return="all", ttids=NULL, imdb=imdb.data, use
 	# library(microbenchmark); microbenchmark( eigenMatTrans(AM), matrix.transpose(AM), times=1 );  # both take 13 seconds for a large AM 
 	
 	
+	
+	## can CPP use the CSR sparse matrix 
 	
 	if(is.element("AA", work))
 		{

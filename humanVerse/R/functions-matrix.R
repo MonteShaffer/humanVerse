@@ -1,7 +1,12 @@
 
+# https://cmdlinetips.com/2019/05/introduction-to-sparse-matrices-in-r/
+# print(object.size(mat),units="auto")
 
-
-
+# https://stackoverflow.com/questions/53307953/speed-up-sparse-matrix-multiplication-in-r
+# tic/toc ... timer 
+# https://github.com/collectivemedia/tictoc
+# In addition, this package provides classes Stack (implemented as a vector) and List (implemented as a list), both of which support operations push, pop, first, last, clear and size.
+# build mine like tic/toc but using nanotime ... microtime ...
 
 
 #' matrix.rank
@@ -15,7 +20,7 @@
 #' @aliases rankMatrix matrixRank
 matrix.rank = function(A, ...)
 	{
-  # matrixcalc is boring
+  # matrixcalc is boring ... svd.inverse 
   # Matrix might have some cool stuff ... sparse matrix
   # matrixStats is also boring
 	# maybe let them pass in a method?
@@ -48,51 +53,6 @@ matrix.checkSquare = function(A)
 	nc = ncol(A);
 	return (nr == nc);
 	}
-
-#' matrix.pow
-#'
-#'
-#' Raise a matrix 'A' to a power 'pow' ... works for negatives if the inverse exists
-#'
-#' @param A a square matrix A
-#' @param pow an integer power
-#'
-#' @return an updated square matrix A^pow
-#' @export
-#' @aliases powerMatrix matrixPower
-#'
-#' @examples
-matrix.pow = function(A, pow)
-	{
-  # # should we consider "multiply.cpp" as option? ... larger matrices ... let's see in future ...
-  ## check if square ???
-  ## is.square.matrix
-	nr = nrow(A);
-	pow = as.integer(pow);
-
-	if(pow == 0) { return( diag(1, nr) ); }
-	if(pow == 1) { return( A ); }
-	if(pow < 0)
-		{
-		A.inv = solve(A);  # maybe use ginv?
-		if(pow == -1) { return ( A.inv ); }
-		A.copy = A.inv;
-		for(i in 2:(-pow))
-			{
-			A.copy = A.copy %*% A.inv;
-			}
-		return ( A.copy );
-		} else {
-				# positive
-				A.copy = A;
-				for(i in 2:pow)
-					{
-					A.copy = A.copy %*% A;
-					}
-				return ( A.copy );
-				}
-	}
-
 
 #' matrix.trace
 #'
@@ -173,6 +133,135 @@ matrix.convertMatrixToAdjacency = function(A, removeDiagonal=TRUE, scaleNegative
 
 
 
+matrix.computeDensity = function(A)
+	{
+	# sparsity is density
+	
+	# sum(A) / prod(dim(A));	# if all ones, this works
+	
+	length(which(A != 0)) / prod(dim(A));
+	}
+
+
+		
+matrix.convertTypeByDensity = function(A, format="col", sparse.tol = 0.2)
+	{	
+	info = list();
+	info$density 	= matrix.computeDensity(A);  	# density (sparsity)
+	info$o.class 	= class(A);						# original class
+	
+	if(info$density < sparse.tol)
+		{
+		A = matrix.convertToSparse(A, format);  # csc format 
+		info$n.class 	= class(A);	
+		}
+	
+	A = setAttribute("matrix.type", info, A);
+	A;
+	}
+
+
+matrix.restoreType = function(A, info=NULL)
+	{	
+	if(is.null(info)) { info = getAttribute("matrix.type", A); }
+	
+	if(!is.null(info))
+		{
+		if(exists("o.class", info))
+			{	
+			if(is.element("dgCMatrix", info$o.class))
+				{
+				A = matrix.convertToSparse(A, "dgCMatrix");
+				}
+			if(is.element("dgRMatrix", info$o.class))
+				{
+				A = matrix.convertToSparse(A, "dgRMatrix");
+				}
+			if(is.element("matrix", info$o.class))
+				{
+				A = matrix.convertFromSparse(A);
+				}
+			}
+		}		
+			
+	A = deleteAttribute("matrix.type", A);  # as-if it never happened 	
+	A;
+	}
+	
+		
+matrix.solve = function(A, ginv=FALSE)
+	{
+	# wrap in tryCatch, return NULL 
+	# # maybe use ginv? ... this is the same as svd.inverse ??? Moore-Penrose
+	## MASS::ginv 
+	
+	solve(A);
+	}
+	
+
+#' matrix.pow
+#'
+#'
+#' Raise a matrix 'A' to a power 'pow' ... works for negatives if the inverse exists
+#'
+#' @param A a square matrix A
+#' @param pow an integer power
+#'
+#' @return an updated square matrix A^pow
+#' @export
+#' @aliases powerMatrix matrixPower
+#'
+#' @examples
+matrix.pow = function(A, pow, ...)
+	{
+  # # should we consider "multiply.cpp" as option? ... larger matrices ... let's see in future ...
+  ## check if square ???
+  ## is.square.matrix	
+	
+	nr = nrow(A);
+	pow = as.integer(pow);
+
+	if(pow == 0) { return( diag(1, nr) ); }
+	if(pow == 1) { return( A ); }
+	
+	A = matrix.convertTypeByDensity(A, ...);
+		A.info = getAttribute("matrix.type", A);
+		
+	if(pow < 0)
+		{
+		A.inv = matrix.solve(A);  
+		if(is.null(A.inv)) 
+			{
+			stop("A is not invertible");
+			}
+		A.copy = A.inv;
+		
+		if(pow < -1)
+			{
+			for(i in 2:(-pow))
+				{
+				A.copy = A.copy %*% A.inv;
+				}
+			}
+		}
+		
+	if(pow > 0)
+		{
+		A.copy = A;
+		if(pow > 1)
+			{
+			for(i in 2:(pow))
+				{
+				A.copy = A.copy %*% A;
+				}
+			}		
+		}
+		
+		
+	A.copy = matrix.restoreType(A.copy, A.info);
+	
+	A.copy;
+	}
 
 
 
@@ -186,13 +275,16 @@ matrix.convertMatrixToAdjacency = function(A, removeDiagonal=TRUE, scaleNegative
 #' @aliases matrix.matrixPowerConvergence 
 #'
 #' @examples
-matrix.powerConvergence = function(A, tol=0.0001)
+matrix.powerConvergence = function(A, tol=0.0001, max.iter=100, ...)
 	{
 	# maybe create a "goal-seek" function that keeps multiplying the matrix until a threshold is met ...
 		# A = matrixPowerConvergence(A, tol=0.0001);
 		
 	# A = WWasr;  # owell.Rmd
 	
+	A = matrix.convertTypeByDensity(A, ...);
+		A.info = getAttribute("matrix.type", A);
+
 	i = 1;
 		A.copy = A;
 			row.previous = A.copy[1,];
@@ -201,6 +293,7 @@ matrix.powerConvergence = function(A, tol=0.0001)
 			row.current  = A.copy[1,];
 	
 	n = length(row.previous);
+	info = list();
 	
 	while( (mysum=sum(isClose(row.current,row.previous, tol=tol))) != n )
 		{
@@ -209,12 +302,15 @@ matrix.powerConvergence = function(A, tol=0.0001)
 			row.previous = row.current;
 			row.current  = A.copy[1,];
 		i = 1 + i;
+		if(i > max.iter) { info$max.stop = TRUE; break; }
 		}
 		#cat("\n\n", " ...",i,"... \t sum: ", mysum, "\t ... n: ", n, "\n\n");
 	
-	info = list();
+	
 		info$tol = tol;
-		info$iter = i;
+		info$iter = i;		
+		
+	A.copy = matrix.restoreType(A.copy, A.info);	
 		
 	A.copy = setAttribute("info", info, A.copy);
 	
@@ -362,9 +458,29 @@ fnew = c();
 	A;
 	}
 	
+# https://stackoverflow.com/questions/1167448/most-mature-sparse-matrix-package-for-r
 
+	# dgCMatrix ... double-sparse stored in CSC "Compressed Sparse Column"
+matrix.convertToSparse = function(A, method="col")
+	{
+	switch( method,
+		"col" 				= as(A, "dgCMatrix"),
+		"csc" 				= as(A, "dgCMatrix"),
+		"dgCMatrix" 		= as(A, "dgCMatrix"),
+		"row" 				= as(A, "dgRMatrix"),
+		"csr" 				= as(A, "dgRMatrix"),
+		"dgRMatrix" 		= as(A, "dgRMatrix"),
+		as(A, "dgCMatrix")  # default
+		);
+	}
 
+# A.csc = matrix.convertToSparse(A, "col");	
 
+matrix.convertFromSparse = function(A)
+	{
+	as(A, "matrix");	
+	}
+	
 
 
 

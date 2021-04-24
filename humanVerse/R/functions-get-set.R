@@ -147,6 +147,13 @@ getAttribute = function(myAttributes, myObj)
 	}
 
 
+deleteAttribute = function(myAttribute, myObj)
+	{
+	attributes(myObj)[[myAttribute]] = NULL;
+	myObj;  # no object referencing, so I must return
+	}
+	
+	
 
 #' setAttribute
 #'

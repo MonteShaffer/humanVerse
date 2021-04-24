@@ -116,7 +116,7 @@ asDateTime = function(strvec, from="%Y-%m-%d %H:%M:%S", to="", num=TRUE)
 #'
 #' Wrapper for 'format' function
 #'
-#' @param how See options using ?as.Date for codes
+#' @param how See options using ?as.Date [?strptime for codes]
 #' @param when You can pass in a time, or let it grab current time
 #'
 #' @return date string
@@ -126,6 +126,7 @@ asDateTime = function(strvec, from="%Y-%m-%d %H:%M:%S", to="", num=TRUE)
 #' getDate();
 #' getDate("%Y-%m-%d");
 #' getDate("%Y-%m-%d %H:%M:%S");
+#' getDate("%Y-%V");  # week ISO 8601
 #'
 #' getDate("%Y-%m-%d", strptime("23mar1973", "%d%b%Y") );
 getDate = function(how="%Y-%m", when = Sys.time())
