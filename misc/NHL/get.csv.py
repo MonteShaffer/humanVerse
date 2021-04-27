@@ -94,9 +94,12 @@ if options.open != "true":
 
 # downloaded from chromium.org, version 89
 # chromedriver.chromium.org/downloads
-driver = webdriver.Chrome(options=chrome_options, executable_path='C:/chromedriver/chromedriver.exe') 
+chrome_options.add_argument("driver_path='C:/chromedriver/chromedriver.exe'")
+driver = webdriver.Chrome(options=chrome_options)
+# driver = webdriver.Chrome(options=chrome_options, executable_path='C:/chromedriver/chromedriver.exe') 
 # driver.set_window_size(1920, 1080)
-
+# https://stackoverflow.com/questions/64717302/deprecationwarning-executable-path-has-been-deprecated-selenium-python
+# https://www.programcreek.com/python/example/100025/selenium.webdriver.ChromeOptions
 
 from selenium.common.exceptions import NoSuchElementException
 def check_exists_by_id(id):

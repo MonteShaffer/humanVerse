@@ -1,6 +1,7 @@
 library(openNLP);
 library(NLP);
 library(tm);
+library(quanteda);
 library(SentimentAnalysis);
 
 ##################### nlp.str #####################
@@ -36,7 +37,7 @@ NLP.cleanupAndPerformReadability = function(str)
   str = gsub("”",'"',str,fixed=TRUE);
   str = gsub("“",'"',str,fixed=TRUE);
   periods = length(strsplit(str,".",fixed=TRUE)[[1]]);
-  str = removePunctuationFromString(str);
+  str = NLP.removePunctuationFromString(str);
   str = removeWhiteSpace(str);
   
   
@@ -114,7 +115,7 @@ NLP.cleanupTitles = function(strvec)
 
  
 
-NLP.prepareOneStory = function(df.grimm, path.to.grimm,
+NLP.prepareOneStoryGRIMM = function(df.grimm, path.to.grimm,
                           title, title.f,
                           my.stopwords = NULL
                           )
@@ -151,13 +152,13 @@ NLP.prepareOneStory = function(df.grimm, path.to.grimm,
       
       info.s = list();
         info.s$general = list();
-        info.s$general$sentiment = doSentimentAnalysis(my.story); # expensive
-        info.s$general$readability = as.data.frame(t(unlist(cleanupAndPerformReadability(my.story))));
-        info.s$general$punctuation = countPunctuation(my.story);
-        info.s$general$case = as.data.frame(t(unlist(countWordsInString(my.story))));
-        info.s$general$PP = countPersonalPronouns(words.r);
-        info.s$general$GENDER = countGenderLanguage(words.r);
-        info.s$general$GRIM = countCustomWordList(words.r);
+        info.s$general$sentiment = NLP.doSentimentAnalysis(my.story); # expensive
+        info.s$general$readability = as.data.frame(t(unlist(NLP.cleanupAndPerformReadability(my.story))));
+        info.s$general$punctuation = NLP.countPunctuation(my.story);
+        info.s$general$case = as.data.frame(t(unlist(NLP.countWordsInString(my.story))));
+        info.s$general$PP = NLP.countPersonalPronouns(words.r);
+        info.s$general$GENDER = NLP.countGenderLanguage(words.r);
+        info.s$general$CUSTOM = NLP.countCustomWordList(words.r);
       
       timer.general = as.numeric(Sys.time());
       elapsed = round( (timer.general - timer.txt), 2);
@@ -678,7 +679,7 @@ NLP.tabularizePOS = function(apos,sub=NULL)
   {
   if(!is.null(sub))
     {
-    apos = subsetPOS(apos,sub);
+    apos = NLP.subsetPOS(apos,sub);
     }
   tags = sapply(apos$features, `[[`, "POS");
   # print(tags);
@@ -714,7 +715,7 @@ NLP.performPOS = function(str)  # preferably on a single sentence ...
   sentences.apos = subset(sentence.word.apos, type=="sentence");
   
   words.apos = subset(sentence.word.apos, type=="word");
-  my.table = tabularizePOS(words.apos);
+  my.table = NLP.tabularizePOS(words.apos);
   # tags = sapply(words.apos$features, `[[`, "POS");
   # my.table = as.data.frame( sort(table(tags),decreasing = TRUE) );
   #   colnames(my.table) = c("tags","count");
@@ -725,7 +726,7 @@ NLP.performPOS = function(str)  # preferably on a single sentence ...
 
 NLP.getRawWords = function(str, lower=TRUE)
   {
-  str = removePunctuationFromString(str);
+  str = NLP.removePunctuationFromString(str);
   if(lower){ str = tolower(str); }
   str = removeWhiteSpace(str);
   strsplit(str," ",fixed=TRUE)[[1]];
@@ -773,7 +774,7 @@ NLP.removePunctuationFromString = function(str)
 
 NLP.countWordsInString = function(str)  # preferably a sentence, this is large ...
   {
-  str = removePunctuationFromString(str);
+  str = NLP.removePunctuationFromString(str);
   words = strsplit(str," ",fixed=TRUE)[[1]];
   count.words = wc = length(words); # word count
   
@@ -929,7 +930,7 @@ NLP.setupTags = function()
           "there" = c("EX"),
           "poss" = c("POS", "PPZ", "WP$", "PRP$")
               );
-  tags.keyed = keyMyTags(tags);  # reverse keyed, faster lookup
+  tags.keyed = NLP.keyMyTags(tags);  # reverse keyed, faster lookup
   
   
   tags.info = list("stop" = stop.tags, "skip" = skip.tags,
@@ -1040,7 +1041,7 @@ NLP.countGenderLanguage = function(words) # words is vector, in order
   my.gender;
   }
 
-countPersonalPronouns = function(words) # words is vector, in order
+NLP.countPersonalPronouns = function(words) # words is vector, in order
   {
   words.lower = tolower(words);
   # bag of words, order doesn't matter
@@ -1176,7 +1177,7 @@ countPersonalPronouns = function(words) # words is vector, in order
   }
   
 
-countVowelsInString = function(strs)
+NLP.countVowelsInString = function(strs)
   {
   res = c();
   for(str in strs)
@@ -1194,7 +1195,7 @@ countVowelsInString = function(strs)
   res;
   }
 
-computeReadability = function(n.sentences, syllables=NULL)
+NLP.computeReadability = function(n.sentences, syllables=NULL)
   {
   n.words = length(syllables);
   n.syllables = 0;
@@ -1216,12 +1217,12 @@ computeReadability = function(n.sentences, syllables=NULL)
   if(n.sentences == 0) { stop("zero sentences not allowed!"); }
   if(n.words == 0) { stop("zero words not allowed!"); }
   
-  fk = computeFleshKincaid(n.sentences, n.words, n.syllables);
+  fk = NLP.computeFleshKincaid(n.sentences, n.words, n.syllables);
   
   list("FRE" = fk$FRE, "FKGL" = fk$FKGL, "syllables" = n.syllables, "words" = n.words); 
   }
 
-computeFleshKincaid = function(n.sentences, n.words, n.syllables)
+NLP.computeFleshKincaid = function(n.sentences, n.words, n.syllables)
   {
   # Flesch Reading Ease (FRE):
   FRE = 206.835 - 1.015 * (n.words/n.sentences) - 84.6 * (n.syllables/n.words);
@@ -1234,7 +1235,7 @@ computeFleshKincaid = function(n.sentences, n.words, n.syllables)
   }
 
  
-countSyllablesInWord = function(words)
+NLP.countSyllablesInWord = function(words)
   {
   # quanteda::nsyllable ... uses CMU, no syllabification 
   
@@ -1345,7 +1346,7 @@ countSyllablesInWordMonte = function(words)
 
  
   
-buildNgrams = function(str, n=5, 
+NLP.buildNgrams = function(str, n=5, 
                     do.pos = TRUE,
                     verbose = FALSE,
                     do.stemming = TRUE, # tm::stemDocument ... not hard to ADD
@@ -1368,16 +1369,16 @@ timer.start = as.numeric(Sys.time());
                         "word+.tags", "word+|simple"
                                     );
   # if POS exists, we can perform the variants by switching modifiers ...
-  grams = initGrams(n,gram.types);
+  grams = NLP.initGrams(n,gram.types);
   ####  TODO ::: after walk 
   # if we run across punctuation, we treat as a stop ...
   # what to do about contractions can't and quotations ?
 ### str = my.story;
   # str = "Can't you get anything right?";
-  str = prepStringGram(str, TRUE);
+  str = NLP.prepStringGram(str, TRUE);
   # if(do.pos)
     {
-    my.pos = performPOS(str);
+    my.pos = NLP.performPOS(str);
     }
   
   # test = "Monte's friend and son Alexander can't read well but he is not yet five years old.";
@@ -1396,7 +1397,7 @@ timer.start = as.numeric(Sys.time());
   my.words       = my.pos$words;
   n.sentences    = length(my.sentences);
 
-  tags.info = setupTags();
+  tags.info = NLP.setupTags();
                     
   # I could replace a stop-word with its generic POS
   # list$pos
@@ -1406,7 +1407,7 @@ timer.start = as.numeric(Sys.time());
   punctuation = NULL;
   PP = NULL;
   GENDER = NULL;
-  GRIMM = NULL;
+  CUSTOM = NULL;
   
   readability = NULL;
   sentiment = NULL;
@@ -1431,31 +1432,31 @@ timer.start = as.numeric(Sys.time());
   flush.console();
     
         my.words.idx = my.sentence$features[[1]]$constituents;
-    mytags[[i]] = tabularizePOS(my.words,my.words.idx); # still in unique data format
+    mytags[[i]] = NLP.tabularizePOS(my.words,my.words.idx); # still in unique data format
     # mytags.s[[i]] = simplifyPOS(mytags[[i]],tags,tags.keyed);
-    mytags.s[[i]] = simplifyPOS(mytags[[i]],tags.info);
+    mytags.s[[i]] = NLP.simplifyPOS(mytags[[i]],tags.info);
     
     # words from POS may be different than actual words; e.g., "can't"
-    words.r = getRawWords(s.sentence); 
+    words.r = NLP.getRawWords(s.sentence); 
     
     
-      sinfo = doSentimentAnalysis(s.sentence); # expensive
+      sinfo = NLP.doSentimentAnalysis(s.sentence); # expensive
     sentiment = rbind(sentiment, c(i, sinfo) );
-        rinfo.s = countSyllablesInWord(words.r);
+        rinfo.s = NLP.countSyllablesInWord(words.r);
         # print(rinfo.s);
-        rinfo = computeReadability(1,rinfo.s);
+        rinfo = NLP.computeReadability(1,rinfo.s);
         # countSyllablesInWord words
     readability = rbind(readability, c(i, unlist(rinfo)) );
-        info.c = countWordsInString(s.sentence);
+        info.c = NLP.countWordsInString(s.sentence);
     case = rbind(case, c(i, unlist(info.c)) ); 
-        info.p = countPunctuation(s.sentence);
+        info.p = NLP.countPunctuation(s.sentence);
     punctuation = rbind(punctuation, c(i, unlist(info.p)) );
-        info.pp = countPersonalPronouns(words.r);
+        info.pp = NLP.countPersonalPronouns(words.r);
     PP = rbind(PP, cbind(i, rownames(info.pp), info.pp) );
-        info.ge = cbind(i, countGenderLanguage(words.r));
+        info.ge = cbind(i, NLP.countGenderLanguage(words.r));
     GENDER = rbind(GENDER, info.ge );
-        info.gr = cbind(i, countCustomWordList(words.r));
-    GRIMM = rbind(GRIMM, info.gr );
+        info.gr = cbind(i, NLP.countCustomWordList(words.r));
+    CUSTOM = rbind(CUSTOM, info.gr );
 
     
     r = 1;
@@ -1466,7 +1467,7 @@ timer.start = as.numeric(Sys.time());
     w = 1;
     #for(w in 1:nw)
     # "Can't you get anything right?" ... 67% positive
-    my.stack = initStack(gram.types);
+    my.stack = NLP.initStack(gram.types);
     final.words = c(); # full list, unstacked ... these would allow to later matching
     final.tags = c();  # full list, unstacked
             # grams = initGrams(gram.types);       
@@ -1546,9 +1547,9 @@ if(verbose)
               if(is.element(my.feature, tags.info$stop ))
                 {
                 # hard stop ... 
-                ginfo = updateGrams(grams, my.stack, "ALL", tags.info, do.stemming);
+                ginfo = NLP.updateGrams(grams, my.stack, "ALL", tags.info, do.stemming);
                   grams = ginfo$grams;
-                my.stack = initStack(gram.types);
+                my.stack = NLP.initStack(gram.types);
                 pos.stopped = TRUE;
                 } else {
                         pos.stopped = FALSE;
@@ -1603,7 +1604,7 @@ if(verbose)
                         # and at the end do the combos ... so let's say it is 13 long
                         # I could just build all 5-grams and pairs at ends 
                         # do it this way for now ...
-                        ginfo = updateGramsIfMax(n, grams, my.stack, "ALL", tags.info, do.stemming);
+                        ginfo = NLP.updateGramsIfMax(n, grams, my.stack, "ALL", tags.info, do.stemming);
                             grams    = ginfo$grams;
                             my.stack = ginfo$my.stack;
                         
@@ -1617,29 +1618,29 @@ if(verbose)
                             for(gram.type in c("words","words.tags","words|simple",
                                                "word+","word+.tags","word+|simple"))
                               {
-                              ginfo = updateGrams(grams, my.stack, gram.type, tags.info, do.stemming);
+                              ginfo = NLP.updateGrams(grams, my.stack, gram.type, tags.info, do.stemming);
                                 grams    = ginfo$grams;
                                 my.stack = ginfo$my.stack;
-                              my.stack = resetStackElement(my.stack, gram.type);
+                              my.stack = NLP.resetStackElement(my.stack, gram.type);
                               }
                             word.stopped = TRUE;
                             
                             } else {
                                     word.stopped = FALSE;
-                                    my.stack[["words"]] = pushVector(n.word, my.stack[["words"]]$vec);
-                                    my.stack[["words.tags"]] = pushVector(paste0(n.word,f.word), my.stack[["words.tags"]]$vec);
-                                    my.stack[["words|simple"]] = pushVector(paste0(n.word,p.word), my.stack[["words|simple"]]$vec);
+                                    my.stack[["words"]] = NLP.pushVector(n.word, my.stack[["words"]]$vec);
+                                    my.stack[["words.tags"]] = NLP.pushVector(paste0(n.word,f.word), my.stack[["words.tags"]]$vec);
+                                    my.stack[["words|simple"]] = NLP.pushVector(paste0(n.word,p.word), my.stack[["words|simple"]]$vec);
                                     
                                     t.word = tm::stemDocument(n.word);
                                     # print(paste0("stemmed: ", t.word));
-                                    my.stack[["word+"]] = pushVector(t.word, my.stack[["word+"]]$vec);
-                                    my.stack[["word+.tags"]] = pushVector(paste0(t.word,f.word), my.stack[["word+.tags"]]$vec);
-                                    my.stack[["word+|simple"]] = pushVector(paste0(t.word,p.word), my.stack[["word+|simple"]]$vec);
+                                    my.stack[["word+"]] = NLP.pushVector(t.word, my.stack[["word+"]]$vec);
+                                    my.stack[["word+.tags"]] = NLP.pushVector(paste0(t.word,f.word), my.stack[["word+.tags"]]$vec);
+                                    my.stack[["word+|simple"]] = NLP.pushVector(paste0(t.word,p.word), my.stack[["word+|simple"]]$vec);
                                     }
                         # gram.types[gram.types != "words"]
                         final.tags = c(final.tags, f.word);
-                        my.stack[[".tags"]] = pushVector(f.word, my.stack[[".tags"]]$vec);
-                        my.stack[["|simple"]] = pushVector(p.word, my.stack[["|simple"]]$vec);
+                        my.stack[[".tags"]] = NLP.pushVector(f.word, my.stack[[".tags"]]$vec);
+                        my.stack[["|simple"]] = NLP.pushVector(p.word, my.stack[["|simple"]]$vec);
                                     
                         
                         
@@ -1665,9 +1666,9 @@ if(verbose)
         }
       # hard stop ... end of sentence, just to be certain ... 
       # If a POS . this was already taken care of
-      ginfo = updateGrams(grams, my.stack, "ALL", tags.info, do.stemming);
+      ginfo = NLP.updateGrams(grams, my.stack, "ALL", tags.info, do.stemming);
         grams = ginfo$grams;
-      my.stack = initStack(gram.types);
+      my.stack = NLP.initStack(gram.types);
       
 #       story = 30
 #       "Sentence [3] of 58"
@@ -1720,16 +1721,16 @@ if(verbose)
     rownames(GENDER) = NULL;
     colnames(GENDER)[1] = c("sentence");
   
-  GRIMM = as.data.frame(GRIMM);
-    rownames(GRIMM) = NULL;
-    colnames(GRIMM)[1] = c("sentence");
+  CUSTOM = as.data.frame(CUSTOM);
+    rownames(CUSTOM) = NULL;
+    colnames(CUSTOM)[1] = c("sentence");
   
   
   # case = NULL;
   # punctuation = NULL;
   # PP = NULL;
   # GENDER = NULL;
-  # GRIMM = NULL;
+  # CUSTOM = NULL;
   
    
 timer.end = as.numeric(Sys.time());
@@ -1742,7 +1743,7 @@ elapsed = round( (timer.end - timer.start), 2);
         "sentiment" = sentiment, "readability" = readability,
         "mytags" = mytags, "mytags.s" = mytags.s,
         "case" = case, "punctuation" = punctuation,  "PP" = PP,
-        "GENDER" = GENDER, "GRIMM" = GRIMM
+        "GENDER" = GENDER, "CUSTOM" = CUSTOM
         );
   }
 
@@ -1771,10 +1772,9 @@ truncateWordVector = function(words, cut = 3) # words is vector, in order
   }
 
 
-library(tm);
-library(SentimentAnalysis);
 
-doSentimentAnalysis = function(str, qdap=FALSE)
+
+NLP.doSentimentAnalysis = function(str, qdap=FALSE)
   {
   # https://opendatascience.com/sentiment-analysis-in-r-made-simple/
   sentiment = SentimentAnalysis::analyzeSentiment(str);
@@ -1807,3 +1807,267 @@ doSentimentAnalysis = function(str, qdap=FALSE)
   # doesn't capture "dark"?
   c(pos.norm, neg.norm);
   }
+
+
+
+############# NLP.STACK
+
+
+rowMaxColumn = function(df)
+  {
+  nrow = nrow(df);
+  rmax = numeric(0);
+  for(i in 1:nrow)
+    {
+    row = df[i, ];
+    rmax[i] = which.max(row); # downward biased
+    }
+  rmax;
+  }
+
+rowMax = function(df)
+  {
+  nrow = nrow(df);
+  rmax = numeric(0);
+  for(i in 1:nrow)
+    {
+    row = df[i, ];
+    rm = max(row, na.rm=TRUE);
+    rmax[i] = rm;
+    }
+  rmax;
+  }
+
+
+
+
+
+# # https://stackoverflow.com/questions/28687806/a-better-way-to-push-and-pop-to-from-lists-in-r
+                
+pushList = function(nlist, veclist, n=length(vlist))
+  {
+  
+  }
+popList = function(nlist, veclist, n=length(vlist))
+  {
+  
+  }
+
+# https://stackoverflow.com/questions/2805102/how-is-pushing-and-popping-defined
+# vec = 1: 10;
+# popVector(vec)
+# popVector(vec, method="LIFO-LILO")
+NLP.popVector = function(vec, idx=1, method="FIFO")  # Inf would work for unlimited stack
+  {
+  if(method=="FIFO")   # QUEUING
+    {
+    val = vec[idx];  
+    vec = vec[-c(idx)];
+    } else {
+            n = length(vec) + 1 - idx;
+            val = vec[n];
+            vec = vec[-c(n)];
+            }
+  list("val" = val, "vec" = vec, "popped" = NULL); # updated ...
+  }
+
+# vec = 1: 10;
+# popVector(pushVector(13, vec)$vec)
+# pushVector(13, vec, n.max=5)
+# pushVector(13, vec, n.max=5, method="LIFO-LILO")
+NLP.pushVector = function(val, vec, n.max=1+length(vec), method="FIFO")
+  {
+  # n.max is max size, so vals popped may return ...
+  n = length(vec);
+  popped = NULL;
+  if(method=="FIFO")  # in this model, new values are added to end
+    {
+    if(n < n.max)
+      {
+      vec = c(vec,val);
+      } else {
+              vec = c(vec,val);
+              nn = 1 + n;
+              nd = nn - n.max;
+              if(nd > 0)
+                {
+                popped = vec[1:nd];
+                vec = vec[(1+nd):nn];
+                }
+              }
+    } else {        # in this model, new values are added to beginning
+            if(n < n.max)
+              {
+              vec = c(val,vec);
+              } else {
+                      vec = c(val,vec);
+                      nn = 1 + n;
+                      if(nn > (1+n.max))
+                        {
+                        popped = vec[(1+n.max):nn];  # off the end ?
+                        vec = vec[1:n.max];
+                        }
+                      }
+            }
+  list("vec" = vec, "popped" = popped, "val"=val); 
+  }
+
+ 
+NLP.initGrams = function(n,gram.types)
+  {
+  grams = list();
+  
+  for(gram.type in gram.types)
+    { 
+    grams[[gram.type]] = list();
+    for(i in 1:n) 
+      {
+      grams[[gram.type]][[i]] = character();
+      }
+    }
+    # grams[[i]] = list("disjoint" = list(), 
+    #                   "inflated" = list(),
+    #                   "variants" = list(),  
+    #                   "pos" = list()
+    #   
+    #               );  # add stemmed? variants? inflation?
+    #                   # replace with GENERIC if stop word
+    
+  grams;
+  }
+    
+
+    # my.stack = c();   # words  ... we will STEM at last minute ...
+    # my.stack.t = c(); # tags  ... NN
+    # my.stack.ts = c(); # tags.simple  ... noun
+NLP.initStack = function(gram.types)
+  { 
+  my.stack = list();
+  for(gram.type in gram.types)
+    {
+    my.stack[[gram.type]] = list("vec" = NULL, "popped" = NULL, "val" = NULL);
+    }
+  my.stack;
+  }
+
+NLP.resetStackElement = function(my.stack, gram.type)
+  {
+  my.stack[[gram.type]] = list("vec" = NULL, "popped" = NULL, "val" = NULL);
+  my.stack;
+  }
+ 
+# gvec = c("monte","says","hi","to","his","son","alex");
+# gramCombinations(gvec)
+NLP.gramCombinations = function(gvec, nv = length(gvec), sep="*")
+  { 
+ # print(gvec);
+  # return all permutations ... maintain order ... create as a list of each length
+  result = list();
+  result[[1]] = gvec;
+  if(nv > 2)
+    {
+    # for(c in 2:(nv-1))
+    for(c in 2:nv)
+      {
+      # nvec = combn(1:nv, c);  # numeric ... we will subset if they are not adjacent
+      cvec = combn(gvec, c);  # loop over columns, store previous, if new, we add ...
+      #cvec;
+      
+      res = paste0(cvec[,1],collapse=sep);
+      previous = cvec[1,1];
+      nc = ncol(cvec);
+      if(nc > 1)
+        {
+        for(col in 2: nc)
+          {
+          current = cvec[1,col];
+          if(current != previous)
+            {
+            res = c(res, paste0(cvec[,col],collapse=sep) );
+            previous = current;
+            }
+          }
+        }
+      #res;
+      
+      
+      
+      result[[c]] = res;
+      }
+    }
+    # result[[nv]] = paste0(gvec,collapse=sep);
+    # print(result[[nv]]);
+  result;
+  }
+
+# if updateGrams is called, that means the current stack is good-to-go
+# therefore, we will popVector
+NLP.updateGrams = function(grams, my.stack, which="ALL", tags.info, do.stemming=TRUE)  
+  {
+  gram.types = names(my.stack);
+  if(which != "ALL") { gram.types = gram.types[ which(gram.types == which) ];}
+  for(gram.type in gram.types)  # gram.type = gram.types[1]
+    {
+    # do something here ... 
+    # print(gram.type);
+    my.vec = my.stack[[gram.type]]$vec;
+    #nv = length(my.vec);  # if 5, we want to return, 5,4,3,2,1 ... disjoint combos
+                          # or we could just return 5 ... EASIEST, largest gram found
+    
+    if(!is.null(my.vec)) # back-to-back stop words?
+      {
+      my.str = NLP.gramCombinations(my.vec); 
+      ns = length(my.str);
+      for(i in 1:ns)
+        {
+        nsd = length(my.str[[i]]);
+        for(j in 1:nsd)
+          {
+          # print(my.str[[i]][j]);
+          grams[[gram.type]][[i]] = c(grams[[gram.type]][[i]], my.str[[i]][j]);
+          }
+        }
+      
+      # popVector
+      my.stack[[gram.type]] = NLP.popVector(my.stack[[gram.type]]$vec);
+      }
+    }
+  list("grams" = grams, "my.stack" = my.stack);
+  }
+
+
+
+NLP.updateGramsIfMax = function(n, grams, my.stack, which="ALL", tags.info, do.stemming)
+  {
+  # n is maximum number of grams ...
+  gram.types = names(my.stack);
+  if(which != "ALL") { gram.types = gram.types[[which]];}
+  for(gram.type in gram.types)
+    {  
+    # do  something here ... 
+    my.vec = my.stack[[gram.type]]$vec;
+    if(length(my.vec) == n) # can't be greater than?
+      {
+      ginfo = NLP.updateGrams(grams, my.stack, which=gram.type, tags.info, do.stemming);  
+        grams    = ginfo$grams;
+        my.stack = ginfo$my.stack;
+      }
+    
+    }
+  
+  list("grams" = grams, "my.stack" = my.stack);
+  }
+                    
+
+# if(length(my.stack$vec) == n)
+#                   {
+#                   ginfo = updateGrams(grams, my.stack, "default", tags.info, do.stemming); #
+#                   grams = ginfo$grams;
+#                   pinfo = popVector(my.stack$vec);
+#                   my.stack$vec = pinfo$vec; pval = pinfo$val;
+#                   }
+
+
+
+
+
