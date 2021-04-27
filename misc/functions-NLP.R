@@ -1339,9 +1339,17 @@ countSyllablesInWordMonte = function(words)
   }
 
   
- 
-
-
+NLP.prepStopWords = function(localfile)
+  {
+  str = trimMe(readStringFromFile(localfile));
+  rows = explodeMe("\n", str);
+  for(i in 1:length(rows))
+    {
+    rows[i] = trimMe(rows[i]);
+    }
+  rows;
+  }  
+  
 ##################### nlp #####################
 
  
