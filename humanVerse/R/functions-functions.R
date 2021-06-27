@@ -20,8 +20,10 @@ sourceMe = function(myfile, key = "local", indexFunctions = TRUE)
 		{
 		source(myfile);
 		} else  {
-				indexFunctionsInFile(myfile, key=key); # this will store to cache
-				source(myfile);
+				indexFunctionsInFile(myfile, key=key, include=TRUE); 
+				# include will "source(myfile)"
+				# this will store to cache
+				# source(myfile);
 				}
 	}
 
@@ -43,7 +45,7 @@ parseFunctionFile = function(file)
 	left.braces = right.braces = c();
 	internals = comments = c();
 	fnames = c();
-	functions = NULL;
+	myfns = NULL;
 	lineno = 0;
 	for(line in lines)
 		{
@@ -93,7 +95,7 @@ parseFunctionFile = function(file)
 				fn = trimMe(tmp[1]);
 				fp = trimMe( str_replace("function", "", paste(tmp[2:n.tmp], collapse="=") ) );
 			row = c(NA, lineno, NA, NA, fn,  fp);
-			functions = rbind(functions, row);
+			myfns = rbind(myfns, row);
 
 			fnames = c(fnames, lineno);
 			next;
@@ -110,7 +112,7 @@ parseFunctionFile = function(file)
 				fn = trimMe(tmp[1]);
 				fp = trimMe( str_replace("function", "", paste(tmp[2:n.tmp], collapse="=") ) );
 			row = c(NA, lineno, NA, NA, fn,  fp);
-			functions = rbind(functions, row);
+			myfns = rbind(myfns, row);
 
 			fnames = c(fnames, lineno);
 			next;
@@ -119,12 +121,12 @@ parseFunctionFile = function(file)
 		}
 	# we have to line up "end of function" as well ...
 
-	functions = as.data.frame(functions);
+	myfns = as.data.frame(myfns);
 			# lineno.name is where the function name appears ... start is the first brace ...
-		colnames(functions) = c("lineno.pre", "lineno.name", "lineno.start", "lineno.end", "fn", "parameters");
-	functions = assignColumnsTypeInDataFrame(c("lineno.pre", "lineno.name", "lineno.start", "lineno.end"), "numeric", functions);
+		colnames(myfns) = c("lineno.pre", "lineno.name", "lineno.start", "lineno.end", "fn", "parameters");
+	myfns = assignColumnsTypeInDataFrame(c("lineno.pre", "lineno.name", "lineno.start", "lineno.end"), "numeric", myfns);
 
-		rownames(functions) = functions$lineno.name;
+		rownames(myfns) = myfns$lineno.name;
 
 	## copy ##
 	lbraces = left.braces;
@@ -137,8 +139,8 @@ parseFunctionFile = function(file)
 	### I believe I could find a REGEX to find the matching brace immediately after function ...
 	### WHAT ABOUT if PARAMETERS FLOW ACROSS MULTIPLE LINES ...
 
-	n = nrow(functions);
-	my.starts = functions$lineno.name;
+	n = nrow(myfns);
+	my.starts = myfns$lineno.name;
 	current.line = 1;
 
 	for(i in 1:n)
@@ -150,7 +152,7 @@ parseFunctionFile = function(file)
 		########### GET PREAMBLE #############
 		if(n.idx < 1)
 			{
-			functions$lineno.pre[i] = current.line;
+			myfns$lineno.pre[i] = current.line;
 			} else 	{
 					# stop("monte");
 					right.braces = right.braces[-c(1:n.idx)]; # empty right.braces list
@@ -158,15 +160,15 @@ parseFunctionFile = function(file)
 
 		########### UPDATE PARAMETERS #############
 
-		idx = which(left.braces > functions$lineno.name[i])[1];
+		idx = which(left.braces > myfns$lineno.name[i])[1];
 		next.brace = left.braces[idx];
 
-		functions$lineno.start[i] = next.brace;
+		myfns$lineno.start[i] = next.brace;
 			if( (next.brace - my.start) > 1)
 				{
 				idx = (my.start + 1) : (next.brace - 1);
 
-				functions$parameters[i] = paste0(functions$parameters[i], " \n ", paste( trimMe(lines[idx]), collapse=" \n ") );
+				myfns$parameters[i] = paste0(myfns$parameters[i], " \n ", paste( trimMe(lines[idx]), collapse=" \n ") );
 
 				# stop("monte");
 				}
@@ -183,7 +185,7 @@ parseFunctionFile = function(file)
 			n.idx = length(idx);
 			my.idx = idx[n.idx]; # last one
 			my.lineno = right.braces[my.idx];
-			functions$lineno.end[i] = my.lineno;
+			myfns$lineno.end[i] = my.lineno;
 
 			current.line = 1 + my.lineno;
 			right.braces = right.braces[-c(1:n.idx)]; # empty right.braces list
@@ -194,25 +196,12 @@ parseFunctionFile = function(file)
 					n.b = length(right.braces);
 
 
-					functions$lineno.end[i] = right.braces[n.b]; # last.brace
+					myfns$lineno.end[i] = right.braces[n.b]; # last.brace
 					# there may be extra "post" material which we ignore ... lineno from first loop ...
 
 					}
 
-
-
 		}
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -231,28 +220,28 @@ parseFunctionFile = function(file)
 			work = works[[i]];
 			# first is which function it belongs to ...
 			first = work[1];
-				idx.first = which(functions$lineno.end < first);
+				idx.first = which(myfns$lineno.end < first);
 				n.first = length(idx.first);
 				# last one is correct ...
-				my.fn = functions$fn[n.first];
+				my.fn = myfns$fn[n.first];
 
 			# last is key to getting element of last vector
 			last = work[2];
-				idx.last = which(functions$lineno.start < last);
+				idx.last = which(myfns$lineno.start < last);
 				n.last = length(idx.last);
 				# last one is correct ...
-				my.end = functions$lineno.end[n.last];
+				my.end = myfns$lineno.end[n.last];
 
 			# update
-			functions$lineno.end[n.first] = my.end;
+			myfns$lineno.end[n.first] = my.end;
 				row.idx = (n.first+1):n.last;
 
-			functions = functions[-c(row.idx),];
+			myfns = myfns[-c(row.idx),];
 
 
 			}
 		}
-	functions;
+	myfns;
 	}
 
 
@@ -276,13 +265,42 @@ indexFunctionsInAttachedPackages = function(packages = "ALL")
 
 	}
 
+# folder = 'C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/';
+indexFunctionsInFolder = function(folder, key="local", include=TRUE, pattern = "[.][RrSsQq]$")
+	{
+	files = list.files(folder, pattern=pattern);
+	for(file in files)
+		{
+		indexFunctionsInFile(file, key=key, include=include);		
+		}	
+	}
+	
 
-
+getFunctionStringFromFile = function(file, myfn)
+		{
+		lines 		= readLines(file);
+		myfns 	= parseFunctionFile(file);
+				fn 	= myfns$fn;
+		idx 		= which(fn == myfn);
+		
+		if(length(idx) < 1) { message.stop("Function: ", myfn, " \n\t not found in file: ", file, " \n\t\t from function: getFunctionStringFromFile"); }
+			
+		row = myfns[ idx[1], ];
+			row.start 	= row$lineno.name;
+			row.end 	= row$lineno.end;
+			
+		str = paste0( paste( lines[row.start:row.end], collapse="\n"), "\n");
+		# cat(str);
+		# cat(gettext(str)); # what ???
+		str;
+		}
+		
+		
 # source('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-str.R')
 # scanFunctionsInFile('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-get-set.R')
 # functions-md5.R has "INTERNAL functions"
 # don't index internals ...
-indexFunctionsInFile = function(file, key="local")
+indexFunctionsInFile = function(file, key="local", include=TRUE)
 	{
 	search = paste0(key,"-search");
 	functions = parseFunctionFile(file);
@@ -311,6 +329,11 @@ indexFunctionsInFile = function(file, key="local")
 	for(i in 1:n)
 		{
 		.GlobalEnv$.humanVerse[["functions"]][[search]][[ fn[i] ]] = str[i];
+		}
+		
+	if(include)
+		{
+		source(my.file);
 		}
 	}
 
@@ -592,30 +615,137 @@ grabFunctionParameters <- function() {
 
 
 
+functions.search = function(fstr)
+	{
+	f = eval(parse(text=fstr));
+	
+	
+	call.ignore <-c("[[", "[", "&","&&","|","||","==","!=",
+    "-","+", "*","/", "!", ">","<", ":");
+	
+	v <- list()
+    if (is(f, "call") && !(deparse(f[[1]]) %in% call.ignore)) {
+        v[[1]] <- deparse(f)
+        if(!descend) return(v[[1]])
+    } 
+    v <- append(v, lapply(as.list(f), functions.search))
+    unname(do.call(c, v))
+	
+	
+	}
+	
+	
+	
+# see "basename, we lose ".Internal" because of "body" ... 
+registered.functions.in.function = function(f.str = "shell", f.list=list(), sort=FALSE)
+	{
+	fn = eval(parse(text=f.str));
+	fn.body = paste0( paste(as.character(body(fn)), collapse="\n"), "\n");
+	
+	fn.tmp = explodeMe("(",fn.body);
+	
+	for(fn.tm in fn.tmp)
+		{
+		fn.tm = trimMe(str_replace("\n", " ", fn.tm));
+		fn.ex = explodeMe(" ",fn.tm);
+		fn.len = length(fn.ex);
+		fn.w = fn.ex[fn.len]; # last word
+		
+		# print(fn.w);
+		
+		is.fun = try( is.function( eval(parse(text=fn.w)) ), silent=TRUE);
+		
+		if(isTRUE(is.fun))
+			{
+			# print("YES");
+			if(exists(fn.w, f.list))
+				{
+				f.list[[fn.w]] = 1 + f.list[[fn.w]];
+				} else {f.list[[fn.w]] = 1; }
+			}
+		}
+	
+	
+	
+	# is.function( eval(parse(text="chartr")) );
+	# is.function( eval(parse(text="if")) );
+	
+	
+	# maybe sort list alphabetically or based on counts... currently it is the order they appeared
+	# maybe cast as dataframe to make this easier to do
+	f.list;
+	}
+
+	
+# https://stackoverflow.com/questions/39464205/how-to-get-the-list-of-in-built-functions-used-within-a-function
+	
+# https://stackoverflow.com/questions/24481868/regular-expression-to-find-function-calls-in-a-function-body
 # list.functions?  ls("package:microbenchmark")
 
-find.funcs <- function(f, descend=FALSE) {
+find.funcs = function(f, descend=FALSE) {
 
 # we could look at list ?
 call.ignore <-c("[[", "[", "&","&&","|","||","==","!=",
     "-","+", "*","/", "!", ">","<", ":")
 	
 	# what if "f" is a character ... ??? 
-	
+	if(is.character(f))
+		{
+		# fn = eval(parse(text=f));
+		# f = body(fn);
+		} 
+		
+		
     if( is.function(f)) {
         return(find.funcs(body(f), descend=descend))
     } else if (is(f, "name") | is.atomic(f)) {
         return(character(0))
     }
+
+	
     v <- list()
     if (is(f, "call") && !(deparse(f[[1]]) %in% call.ignore)) {
         v[[1]] <- deparse(f)
         if(!descend) return(v[[1]])
     } 
+	print(as.list(f));
     v <- append(v, lapply(as.list(f), find.funcs, descend=descend))
     unname(do.call(c, v))
 }
 
+# scanFunctionsInFile('C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/functions-get-set.R')
+# outpath = 'C:/_git_/github/MonteShaffer/humanVerse/';
+buildFunctionsForSetup = function(srcpath, outpath, outfile = "functions-setup.R", append.str="### ALEX ###", fns=c(".onLoad", "mySource", "getSourceLocation", "github.includeFolder", "github.installBinary", "github.buildFromRepo" ), sort=TRUE)
+	{
+	# we have to register them all, so we can later match ... 
+	# we do a while loop, for each "error", we traceback, find function, and build into master file
+	# functions.setup.R ... this file will be auto populated ... 
+	##			.onLoad();
+	##			mySource();
+	##			getSourceLocation();
+	##			includeGithubFolder();
+	##			github.includeFolder
+	## 			github.installBinary
+	## 			github.buildFromRepo
+	
+	myfile 	= paste0(outpath, outfile);
+	mystr 	= readStringFromFile(myfile);
+	nstr	= paste0(explodeMe(append.str,mystr)[1], append.str, "\n");
+	
+	# myfns = list();
+	
+	
+	## maybe SOURCE EVERYTHING, and FIND ... 
+	for(fn in fns)
+		{
+		# let's walk through and find functions, add to myfns$myfn = 1 (count)
+		# first try function called functions.traceforward ...
+		# then do a while loop with trace on errors?
+		}
+	
+	
+	
+	}
 
 
 #' getFunctionParameters

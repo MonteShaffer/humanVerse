@@ -70,6 +70,7 @@ includeRemoteFiles = function(urls, pattern = "[.][RrSsQq]$", verbose=FALSE, ...
 		if(verbose) { cat("\t", url, " ===> \n"); }
 		# source(myfile, ...);
 		  source(myfile);
+		# sourceMe(myfile);
 		if(verbose) { cat("\t ... ",myfile); } else { cat("\t ... ",basename(myfile),"\n"); }
 		}
 	}

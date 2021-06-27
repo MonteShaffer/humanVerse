@@ -56,9 +56,10 @@ which.sign.changes = function(x, na.rm=TRUE, part="Re")
 #' is.whole.number(rnorm(5));
 #' is.whole.number(rpois(5,1));
 #'
-is.whole.number = function(x, tol = sqrt(.Machine$double.eps))
+is.whole.number = function(x, ..., tol = sqrt(.Machine$double.eps))
   {
   # See ?is.integer
+  more = unlist(list(...)); x = c(x, more);
   abs(x - round(x)) < tol;
   }
 

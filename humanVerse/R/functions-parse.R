@@ -130,9 +130,9 @@ parse.sliceDiceContent = function (str, start="<h2>",end="</h2>", strip=FALSE, d
 #' @export
 #'
 #' @aliases strip.tags striptags
-strip_tags <- function(htmlString)
+strip_tags = function(htmlString)
 	{
-	return(gsub("<.*?>", "", htmlString))
+	return(gsub("<.*?>", "", htmlString));
 	}
 
 

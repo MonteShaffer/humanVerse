@@ -106,7 +106,35 @@ stats.prepareTukeyPlot = function(x.list, heresy=FALSE,
 
 
 
+plot.z.score = function(z, which="z", zrange=c(-4,4),
+									background.color 	= "#4DBF4D", background.opacity = 80,
+									overlay.color 		= "#4D4DBF", overlay.opacity = 80,
+									arrow.color 		= "#BF4D4D", arrow.opacity = 80)
+	{
+	if(which != "z")
+		{
+		# let's do PROBABILITY
+		z = qnorm(z);
+		}
+	if(z > max(abs(zrange))) 
+		{ 
+		zrange = c(-1*abs(z),abs(z)); 
+		}
+	
+################   ===   NORMAL	   ===   ################
+		fstr = paste0("Normal: ", zrange[1], " , ", zrange[2], "  ; ");
 
+			myMain = paste0("z-distribution  ");
+		fstr = paste0(fstr, " myMain='",myMain,"'; ");
+
+		# print(fstr);
+		finfo = computeNumericalIntegrationString(fstr, ylim=c(0,yMax),
+							polygon.col.pos = color.setOpacity(background.color, background.opacity)
+							);	
+	
+	
+	
+	}
 
 
 

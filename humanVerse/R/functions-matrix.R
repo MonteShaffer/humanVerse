@@ -539,6 +539,7 @@ matrix.computeEigenRank = function(A, method="linear")
 	Ainfo$sum = sum(A.copy);
 	Ainfo$dim = dim(A.copy);
 	Ainfo$n = Ainfo$dim[1];
+	Ainfo$SuperNode = Ainfo$n;
 	Ainfo$density = Ainfo$sum / prod(Ainfo$dim);  # sparseness
 		
 		A.copy = matrix.sortAdjacencyMatrix(A.copy);
@@ -549,6 +550,7 @@ matrix.computeEigenRank = function(A, method="linear")
 			members = list( "c1" = 1:c1, "c2" = (1+c1):(c1+c2), "c3" = (1+c1+c2):(c1+c2+c3) );
 			members.names = c( rep("c1", c1), rep("c2", c2), rep("c3", c3) );
 		# we lose the attributes here ... 
+		# is sum super the same as attribute SuperNode (added 06/21/2021)
 		A.copy = matrix.addSuperNode(A.copy);
 	#Ainfo$sum.super = sum(A.copy);
 		A.copy = matrix.rowNormalize(A.copy);		
@@ -576,6 +578,7 @@ matrix.computeEigenRank = function(A, method="linear")
 		A.pow = matrix.powerConvergence(A.copy);
 			pinfo = getAttribute("info", A.pow);
 		A.pow = matrix.removeSuperNode(A.pow);
+			Ainfo$SuperNode = getAttribute("SuperNode", A.pow);
 		A.vec = A.pow[1,]; # any row	
 		
 		A.vec.pow = A.vec;		
@@ -717,8 +720,11 @@ matrix.computeEigenRank = function(A, method="linear")
 #' @examples
 matrix.removeSuperNode = function(A)
 	{
-	n = nrow(A) - 1;
-	A[1:n,1:n];
+	n = nrow(A) - 1;	
+		SuperNode = A[n+1,n+1];	
+	A = A[1:n,1:n];	
+		A = setAttribute("SuperNode", SuperNode, A);	
+	A;
 	}
 
 #' matrix.addSuperNode
