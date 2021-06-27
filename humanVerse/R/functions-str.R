@@ -440,7 +440,7 @@ strlen = function(str)
 
 #' .substr
 #'
-#' @param str 
+#' @param str
 #' @param n
 #' @param length
 #' @param PHP.offset
@@ -568,6 +568,9 @@ is.substring = function(haystack, needle, out="BOOLEAN")
 	grepl(needle, haystack, fixed = TRUE);
 	} else 	{
 			# TODO, add strpos as list of places found ... multiple ?
+	    nlen = strlen(needle);
+	    arr = explodeMe(needle, haystack );
+	    # strpos starts at 1 ...
 			}
   }
 

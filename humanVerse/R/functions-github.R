@@ -30,35 +30,39 @@ github.buildFromRepo = function(github.user="MonteShaffer", github.repo="humanVe
 				# stop("no zip.url attached to url");
 				# }
 
-	
+
 	tarball = github.buildPath(github.user=github.user, github.repo=github.repo, which="tar.gz");
-	
-	cat("\n\n", "\t DOWNLOADING tarball: \n\n\t\t", tarball, "\n\n");	
-	
+
+	cat("\n\n", "\t DOWNLOADING tarball: \n\n\t\t", tarball, "\n\n");
+
 	local = getRemoteAndCache(tarball, force.download=force.download, append=".tar.gz");
-	
-	cat("\n\n", "\t LOCAL [.tar.gz]: \n\n\t\t", as.character(local), "\n\n");	
-	
+
+	cat("\n\n", "\t SLEEPING [5 seconds]: \n\n\t\t", as.character(local), "\n\n");
+
+	Sys.sleep(5);
+
+	cat("\n\n", "\t LOCAL [.tar.gz]: \n\n\t\t", as.character(local), "\n\n");
+
 	outpath = cleanup.local( paste0(dirname(local), "/", basename(local), "-untar-/") );
 		createDirectoryRecursive(outpath);
 	cat("\n\n", "\t UNPACKING ... \n\n\t\t", outpath, "\n\n");
 	untar(local, exdir = outpath); # will uncompress
-	
+
 	myfiles = list.files(outpath, pattern = "\\.Rbuildignore$", full.names = TRUE, recursive = TRUE, ignore.case = TRUE, all.files = TRUE);
-	
+
 	cat("\n\n =-=-=-=-=-=-=-=-=-=- CANDIDATES =-=-=-=-=-=-=-=-=-=- \n\n");
 	cat("\n\n", "  [ first ---> ]", paste(myfiles, collapse="\n\t"), "\n\n\n");
-	
+
 	if(length(myfiles) == 0)
 		{
 		stop("no eligible candidate with '.Rbuildignore' found!");
 		}
-	
+
 	buildpath = cleanup.local( dirname(myfiles[candidate]) );
 	cat("\n\n", "\t Build Path ... \n\n\t\t", buildpath, "\n\n");
 	setwd(buildpath);
-	
-	cat("\n\n", "\t Executing [shell] 'R CMD build ./'", "\n\n");	
+
+	cat("\n\n", "\t Executing [shell] 'R CMD build ./'", "\n\n");
 	shell( paste0("R CMD build ./"), intern=T);
 	}
 
@@ -96,9 +100,9 @@ github.installBinary = function(github.user="MonteShaffer", github.repo="humanVe
 	#idx.tars = NULL;
 	# idx.tars = grep("\\.tar.giz$", github.df$links);
 	# github.idx = c(idx.zips, idx.tars);
-	
+
 	github.idx = grep(pattern, github.df$links);
-	
+
 	if(length(github.idx) == 0)
 		{
 		stop("no candidates");
@@ -139,22 +143,22 @@ github.installBinary = function(github.user="MonteShaffer", github.repo="humanVe
 github.buildPath = function(github.user="", github.repo="", which="http")
 	{
 	method = tolower(which);
-	
+
 	str = switch(method,
             "raw"    = paste0("https://raw.githubusercontent.com/", github.user, "/", github.repo, "/"),
-			
+
             "https"    = paste0("https://github.com/", github.user, "/", github.repo, "/"),
 			"http"    = paste0("https://github.com/", github.user, "/", github.repo, "/"),
-			
+
 			"legacy"    = paste0("https://codeload.github.com/", github.user, "/", github.repo, "/legacy.tar.gz/main"),
 			"tar.gz"    = paste0("https://codeload.github.com/", github.user, "/", github.repo, "/legacy.tar.gz/main"),
-			
-			
+
+
 
            paste0("https://github.com/", github.user, "/", github.repo, "/") # default case of switch
           );
-		  
-		  
+
+
 	cleanup.url(str);
 	}
 
@@ -175,8 +179,8 @@ github.buildPath = function(github.user="", github.repo="", which="http")
 #' @examples
 github.includeFolder = function(url, ...)  # pattern = "[.][RrSsQq]$",
 	{
-	## maybe make as a function of user/repo ... folder 
-	
+	## maybe make as a function of user/repo ... folder
+
 	args = getFunctionParameters();
 	##cat("\n\n === MY-ARGS === \n\n");	# print(args);	# dput(args);
 
@@ -190,7 +194,7 @@ github.includeFolder = function(url, ...)  # pattern = "[.][RrSsQq]$",
 
 	includeRemoteFiles(links, ...);
 	}
-	
+
 
 
 
@@ -265,7 +269,7 @@ github.parseList = function(url, force.download = FALSE)
 				results$links = "";
 				results$links[ which(!results$folder) ] = links [ which(!results$folder) ];
 
-				
+
 				zipclone = parse.sliceDiceContent(html.str, start='data-open-app="link" href="', end='">', strip=FALSE, direction="start");
 				zipclone = cleanup.url( paste0(github.base, zipclone) );
 
@@ -276,4 +280,4 @@ github.parseList = function(url, force.download = FALSE)
 				writeRDS(results, html.cache);
 				}
 	results;
-	}	
+	}

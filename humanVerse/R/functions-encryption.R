@@ -112,6 +112,7 @@ md5 = function(strvec, times=1)
 
 
 
+
 #' .md5
 #'
 #' This is a univariate function ...
@@ -158,7 +159,7 @@ md5 = function(strvec, times=1)
   x[idx] = nx;
   x[L] = w;
 
-############### INTERNAL FUNCTIONS ###############
+############### .INTERNAL FUNCTIONS ###############
 # Shifting is done assuming the values represent unsigned integers.
   X = function (xx,yy)
     {
@@ -198,6 +199,8 @@ md5 = function(strvec, times=1)
 	  Y( (bitwXor(cc, (bitwOr(bb,bitwNot(dd))))),
 	      aa,bb,xi,si,ti);
 	  }
+############### INTERNAL FUNCTIONS. ###############
+
 
 ############### DIGEST ###############
   a=1732584193; b=-271733879; c=-1732584194; d=271733878;
@@ -310,6 +313,7 @@ md5 = function(strvec, times=1)
   }
 
 
+
 #' .md5_out
 #'
 #' @param xb Vector of 4 integer keys
@@ -334,6 +338,5 @@ md5 = function(strvec, times=1)
   o = setAttribute("xb", xb, o);
   o;
   }
-
 
 

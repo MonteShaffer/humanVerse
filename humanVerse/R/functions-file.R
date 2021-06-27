@@ -80,7 +80,7 @@ readRDS.url = function(file)
 #'
 #' The opposite of readRDS is writeRDS, make it so.
 #'
-#' @param obj The object to be stored 
+#' @param obj The object to be stored
 #' @param myfile The file to store the object
 #'
 #' @return
@@ -320,8 +320,8 @@ if(verbose)
 	subfolder = if(trailingSlash) {  folderizeURL(remote); } else { folderizeURL(dirname(remote)); }
 	filestem  = if(trailingSlash) {  "index.html" } else { basename(remote); }
 
-	# if(!isFALSE(append.me)) { filestem = cleanup.local(filestem); } # this will append ".html" if necessary ... 
-	
+	# if(!isFALSE(append.me)) { filestem = cleanup.local(filestem); } # this will append ".html" if necessary ...
+
 	filestem = cleanup.local(filestem, append=append)
 
     if(md5.hash) { filestem = md5(filestem); }
@@ -403,8 +403,8 @@ deleteLocalCacheFolder = function(folder)
   {
 # TODO
   }
-  
-  
+
+
 #' downloadFile
 #'
 #' @param remote
@@ -417,11 +417,11 @@ deleteLocalCacheFolder = function(folder)
 #' @export
 #'
 #' @examples
-downloadFile = function(remote, myfile, n=(2^31 - 1), quiet = TRUE, ...)  # n could be 2^31 - 1
+downloadFile = function(remote, myfile, n=(2^31 - 1), quiet = TRUE, mode="wb", ...)  # n could be 2^31 - 1
   {
   if(isTRUE(capabilities("libcurl")))
     {
-    utils::download.file(remote, myfile, quiet = quiet, ...);
+    utils::download.file(remote, myfile, quiet = quiet, mode=mode, ...);
     } else {
 			# this approach is not working ... maybe readChar
             raw.binary = readBin(remote, "raw", n);

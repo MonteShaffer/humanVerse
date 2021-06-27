@@ -3,7 +3,7 @@
 # print(object.size(mat),units="auto")
 
 # https://stackoverflow.com/questions/53307953/speed-up-sparse-matrix-multiplication-in-r
-# tic/toc ... timer 
+# tic/toc ... timer
 # https://github.com/collectivemedia/tictoc
 # In addition, this package provides classes Stack (implemented as a vector) and List (implemented as a list), both of which support operations push, pop, first, last, clear and size.
 # build mine like tic/toc but using nanotime ... microtime ...
@@ -20,7 +20,7 @@
 #' @aliases rankMatrix matrixRank
 matrix.rank = function(A, ...)
 	{
-  # matrixcalc is boring ... svd.inverse 
+  # matrixcalc is boring ... svd.inverse
   # Matrix might have some cool stuff ... sparse matrix
   # matrixStats is also boring
 	# maybe let them pass in a method?
@@ -136,39 +136,39 @@ matrix.convertMatrixToAdjacency = function(A, removeDiagonal=TRUE, scaleNegative
 matrix.computeDensity = function(A)
 	{
 	# sparsity is density
-	
+
 	# sum(A) / prod(dim(A));	# if all ones, this works
-	
+
 	length(which(A != 0)) / prod(dim(A));
 	}
 
 
-		
+
 matrix.convertTypeByDensity = function(A, format="col", sparse.tol = 0.2)
-	{	
+	{
 	info = list();
 	info$density 	= matrix.computeDensity(A);  	# density (sparsity)
 	info$o.class 	= class(A);						# original class
-	
+
 	if(info$density < sparse.tol)
 		{
-		A = matrix.convertToSparse(A, format);  # csc format 
-		info$n.class 	= class(A);	
+		A = matrix.convertToSparse(A, format);  # csc format
+		info$n.class 	= class(A);
 		}
-	
+
 	A = setAttribute("matrix.type", info, A);
 	A;
 	}
 
 
 matrix.restoreType = function(A, info=NULL)
-	{	
+	{
 	if(is.null(info)) { info = getAttribute("matrix.type", A); }
-	
+
 	if(!is.null(info))
 		{
 		if(exists("o.class", info))
-			{	
+			{
 			if(is.element("dgCMatrix", info$o.class))
 				{
 				A = matrix.convertToSparse(A, "dgCMatrix");
@@ -182,22 +182,22 @@ matrix.restoreType = function(A, info=NULL)
 				A = matrix.convertFromSparse(A);
 				}
 			}
-		}		
-			
-	A = deleteAttribute("matrix.type", A);  # as-if it never happened 	
+		}
+
+	A = deleteAttribute("matrix.type", A);  # as-if it never happened
 	A;
 	}
-	
-		
+
+
 matrix.solve = function(A, ginv=FALSE)
 	{
-	# wrap in tryCatch, return NULL 
+	# wrap in tryCatch, return NULL
 	# # maybe use ginv? ... this is the same as svd.inverse ??? Moore-Penrose
-	## MASS::ginv 
-	
+	## MASS::ginv
+
 	solve(A);
 	}
-	
+
 
 #' matrix.pow
 #'
@@ -216,26 +216,26 @@ matrix.pow = function(A, pow, ...)
 	{
   # # should we consider "multiply.cpp" as option? ... larger matrices ... let's see in future ...
   ## check if square ???
-  ## is.square.matrix	
-	
+  ## is.square.matrix
+
 	nr = nrow(A);
 	pow = as.integer(pow);
 
 	if(pow == 0) { return( diag(1, nr) ); }
 	if(pow == 1) { return( A ); }
-	
+
 	A = matrix.convertTypeByDensity(A, ...);
 		A.info = getAttribute("matrix.type", A);
-		
+
 	if(pow < 0)
 		{
-		A.inv = matrix.solve(A);  
-		if(is.null(A.inv)) 
+		A.inv = matrix.solve(A);
+		if(is.null(A.inv))
 			{
 			stop("A is not invertible");
 			}
 		A.copy = A.inv;
-		
+
 		if(pow < -1)
 			{
 			for(i in 2:(-pow))
@@ -244,7 +244,7 @@ matrix.pow = function(A, pow, ...)
 				}
 			}
 		}
-		
+
 	if(pow > 0)
 		{
 		A.copy = A;
@@ -254,12 +254,12 @@ matrix.pow = function(A, pow, ...)
 				{
 				A.copy = A.copy %*% A;
 				}
-			}		
+			}
 		}
-		
-		
+
+
 	A.copy = matrix.restoreType(A.copy, A.info);
-	
+
 	A.copy;
 	}
 
@@ -272,16 +272,16 @@ matrix.pow = function(A, pow, ...)
 #' @param tol
 #' @return
 #' @export
-#' @aliases matrix.matrixPowerConvergence 
+#' @aliases matrix.matrixPowerConvergence
 #'
 #' @examples
 matrix.powerConvergence = function(A, tol=0.0001, max.iter=100, ...)
 	{
 	# maybe create a "goal-seek" function that keeps multiplying the matrix until a threshold is met ...
 		# A = matrixPowerConvergence(A, tol=0.0001);
-		
+
 	# A = WWasr;  # owell.Rmd
-	
+
 	A = matrix.convertTypeByDensity(A, ...);
 		A.info = getAttribute("matrix.type", A);
 
@@ -291,10 +291,10 @@ matrix.powerConvergence = function(A, tol=0.0001, max.iter=100, ...)
 	i = 2;
 		A.copy = A.copy %*% A;
 			row.current  = A.copy[1,];
-	
+
 	n = length(row.previous);
 	info = list();
-	
+
 	while( (mysum=sum(isClose(row.current,row.previous, tol=tol))) != n )
 		{
 		#cat("\n\n", " ...",i,"... \t sum: ", mysum, "\t ... n: ", n, "\n\n");
@@ -305,15 +305,15 @@ matrix.powerConvergence = function(A, tol=0.0001, max.iter=100, ...)
 		if(i > max.iter) { info$max.stop = TRUE; break; }
 		}
 		#cat("\n\n", " ...",i,"... \t sum: ", mysum, "\t ... n: ", n, "\n\n");
-	
-	
+
+
 		info$tol = tol;
-		info$iter = i;		
-		
-	A.copy = matrix.restoreType(A.copy, A.info);	
-		
+		info$iter = i;
+
+	A.copy = matrix.restoreType(A.copy, A.info);
+
 	A.copy = setAttribute("info", info, A.copy);
-	
+
 	A.copy;
 	}
 
@@ -333,10 +333,10 @@ matrix.powerConvergence = function(A, tol=0.0001, max.iter=100, ...)
 matrix.sortAdjacencyMatrix = function(A)
 	{
 	# A = myA;
-	
+
 	n = nrow(A);
 		if(is.null( colnames(A) ) ) { colnames(A) = rownames(A) = 1:n; }
-	
+
 	original = remaining = colnames(A);
 	new = c();
 	# A.copy = A;
@@ -367,7 +367,7 @@ matrix.sortAdjacencyMatrix = function(A)
 			}
 
 		}
-		
+
 
 rnew = c();
 		# zero rows
@@ -424,12 +424,12 @@ fnew = c();
 						}
 					}
 				}
-	  
+
 
 
 
 	  #info = list("zeroblock" = which.tz.names, "zerocols" = which.cz.names, "zerorows" = which.rz.names);
-	  
+
 	  rinfo = list("C1" = rnew, "C3" = cnew, "C2" = fnew);
 	  # dissertation, pdf #79, pg 49
 
@@ -437,14 +437,14 @@ fnew = c();
 	  # A.copy = A.copy[, new.idx]; # update by cols
 
 	# A.copy;
-	
+
 		## shoult be good to go ...
-		
+
 		# added ...
 		new = c(rnew, fnew, cnew);
 
 	  new.idx = computeIndexFromOriginalToNew(original, new);
-	  
+
 	  sinfo = list("original" = original, "new" = new, "new.idx" = new.idx);
 
 		A = A[new.idx, ]; # update by rows
@@ -457,7 +457,7 @@ fnew = c();
 
 	A;
 	}
-	
+
 # https://stackoverflow.com/questions/1167448/most-mature-sparse-matrix-package-for-r
 
 	# dgCMatrix ... double-sparse stored in CSC "Compressed Sparse Column"
@@ -474,17 +474,17 @@ matrix.convertToSparse = function(A, method="col")
 		);
 	}
 
-# A.csc = matrix.convertToSparse(A, "col");	
+# A.csc = matrix.convertToSparse(A, "col");
 
 matrix.convertFromSparse = function(A)
 	{
-	as(A, "matrix");	
+	as(A, "matrix");
 	}
-	
 
 
 
-	
+
+
 # myV = c(0,0,0,0,0,0,0,0,0,0,
         # 0,0,0,0,0,0,0,0,0,0,
       	# 0,0,0,0,0,0,0,0,0,0,
@@ -510,7 +510,7 @@ matrix.convertFromSparse = function(A)
 ## myA.c2 = myA.c2c3; myA.c2[5,10] = 1; myA.c2[7,10] = 1; myA.c2[8,7] = 1; myA.c2;
 ## myA.c1c3 = matrix(0, nrow=10, ncol=10); myA.c1c3[3,8] = 1; myA.c1c3[4,8] = 1; myA.c1c3[5,9] = 1; myA.c1c3[6,10] = 1; myA.c1c3;
 ## myA.c1c2 = myA.c1c2c3; myA.c1c2[6,10] = 1; myA.c1c2[8,9] = 1; myA.c1c2[10,7] = 1; myA.c1c2;
-	
+
 #' matrix.computeEigenRank
 #'
 #' @param A
@@ -525,23 +525,23 @@ matrix.convertFromSparse = function(A)
 matrix.computeEigenRank = function(A, method="linear")
 	{
 	# matrix.computeEigenRank = function(A, method="linear", norm="max-100", ...)
-	
-	if(!matrix.checkSquare(A)) 
-		{ 
-		stop("Matrix must be square, maybe multiply by transpose."); 
-		}	
-	
+
+	if(!matrix.checkSquare(A))
+		{
+		stop("Matrix must be square, maybe multiply by transpose.");
+		}
+
 	# A = WW;
 	# A = myA;
 		A.copy = A;
 		A.copy = matrix.convertMatrixToAdjacency(A.copy);
-	Ainfo = list(); 
+	Ainfo = list();
 	Ainfo$sum = sum(A.copy);
 	Ainfo$dim = dim(A.copy);
 	Ainfo$n = Ainfo$dim[1];
 	Ainfo$SuperNode = Ainfo$n;
 	Ainfo$density = Ainfo$sum / prod(Ainfo$dim);  # sparseness
-		
+
 		A.copy = matrix.sortAdjacencyMatrix(A.copy);
 			A.attributes = getAllAttributes(A.copy);
 				c1 = length(A.attributes$rinfo$C1);
@@ -549,96 +549,96 @@ matrix.computeEigenRank = function(A, method="linear")
 				c3 = length(A.attributes$rinfo$C3);
 			members = list( "c1" = 1:c1, "c2" = (1+c1):(c1+c2), "c3" = (1+c1+c2):(c1+c2+c3) );
 			members.names = c( rep("c1", c1), rep("c2", c2), rep("c3", c3) );
-		# we lose the attributes here ... 
+		# we lose the attributes here ...
 		# is sum super the same as attribute SuperNode (added 06/21/2021)
 		A.copy = matrix.addSuperNode(A.copy);
 	#Ainfo$sum.super = sum(A.copy);
-		A.copy = matrix.rowNormalize(A.copy);		
+		A.copy = matrix.rowNormalize(A.copy);
 	#Ainfo$sum.norm = sum(A.copy);
-		
-		pinfo = list();		
-		
+
+		pinfo = list();
+
 	if(c1 == 0 && c2 == 0 && c3 == 0)
 		{
 		stop("The matrix is empty! Won't work!");
 		}
-		
+
 	if(method == "power")
 		{
 		# maybe create a "goal-seek" function that keeps multiplying the matrix until a threshold is met ...
 		# A = matrixPowerConvergence(A, tol=0.0001);
-		
-		
+
+
 		# should we consider "multiply.cpp" as option?
-		# maybe caching / parallelizing .... 
-		
+		# maybe caching / parallelizing ....
+
 		# FOR BELOW:  user would have to pass in "pow = 22" or something into the MAIN of this function ...
-		##### A.copy = matrixPower(A.copy, ...);		
-		
+		##### A.copy = matrixPower(A.copy, ...);
+
 		A.pow = matrix.powerConvergence(A.copy);
 			pinfo = getAttribute("info", A.pow);
 		A.pow = matrix.removeSuperNode(A.pow);
 			Ainfo$SuperNode = getAttribute("SuperNode", A.pow);
-		A.vec = A.pow[1,]; # any row	
-		
-		A.vec.pow = A.vec;		
-		
+		A.vec = A.pow[1,]; # any row
+
+		A.vec.pow = A.vec;
+
 		} else {
 				# TODO ...
 				# let's just solve without partitioning ?
 				# A.inv = solve(WWasr);  # owell.Rmd
 				# v = A.inv[,24] * A.inv[24,]
-				# block partition				
-				# A = P.s[2:11,2:11]  # 2020-11-27_imdb-graph-ranks.Rmd			
-				# A.copy[1:10,1:10]				
+				# block partition
+				# A = P.s[2:11,2:11]  # 2020-11-27_imdb-graph-ranks.Rmd
+				# A.copy[1:10,1:10]
 				# blocks = c(c1,c1+c2,c1+c2+c3);
-				
-				
+
+
 				# pg. 166 is example of computation
 				# pg. 80 [EQN 3.6 ... 3.10]  explains the why
-				# I think P6 is wrong in dissertation 
+				# I think P6 is wrong in dissertation
 				# http://www.mshaffer.com/arizona/dissertation/mjsPRINT.pdf
-				
+
 				pi.C3 = rep(1, c3);
 				if(length(pi.C3) == 0) { pi.C3 = NULL; }
-				
-				
-				
+
+
+
 								rc1 = (1+c1); 		cc1 = (c1);
 								rc2 = (rc1+c2);		cc2 = (cc1+c2);
-					if(c3 == 0) { rc2 = Ainfo$n + 1; } 	
+					if(c3 == 0) { rc2 = Ainfo$n + 1; }
 
 				if(c2 != 0)
 					{
-					Qbar.t = as.matrix(A.copy[rc1:(rc2-1), (1):(cc1)]);				
-					Rbar.t = as.matrix(A.copy[rc1:(rc2-1), (1+cc1):(cc2)]);	
-				
+					Qbar.t = as.matrix(A.copy[rc1:(rc2-1), (1):(cc1)]);
+					Rbar.t = as.matrix(A.copy[rc1:(rc2-1), (1+cc1):(cc2)]);
+
 					Qbar = matrix.transpose(Qbar.t);
 					Rbar = matrix.transpose(Rbar.t);
 					} else	{
 							Qbar.t = Qbar = NULL;
 							Rbar.t = Rbar = NULL;
 							}
-				
-				if(rc2 > Ainfo$n) 
-					{ 
+
+				if(rc2 > Ainfo$n)
+					{
 					Sbar.t = Sbar = NULL;
 					Tbar.t = Tbar = NULL;
 					} else 	{
 							Sbar.t = as.matrix(A.copy[rc2:(Ainfo$n), (1):(cc1)]);
-							Tbar.t = as.matrix(A.copy[rc2:(Ainfo$n), (1+cc1):(cc2)]);				
-				
+							Tbar.t = as.matrix(A.copy[rc2:(Ainfo$n), (1+cc1):(cc2)]);
+
 							Sbar = matrix.transpose(Sbar.t);
 							Tbar = matrix.transpose(Tbar.t);
-							}				
-				
+							}
+
 				one.col.c1 = matrix(1, ncol=1, nrow = c1);
-				one.col.c2 = matrix(1, ncol=1, nrow = c2);				
-				
+				one.col.c2 = matrix(1, ncol=1, nrow = c2);
+
 				if(c2 > 0)
 					{
 					# LHS = diag(1, nrow=c2) - Rbar;
-					# RHS = one.col.c2 + Tbar %*% one.col.c2;	
+					# RHS = one.col.c2 + Tbar %*% one.col.c2;
 					LHS = diag(1, nrow = c2) - Rbar;
 					if(!is.null(Tbar))
 						{
@@ -646,62 +646,62 @@ matrix.computeEigenRank = function(A, method="linear")
 						} else	{
 								RHS = one.col.c2;
 								}
-					
-					pi.C2 = solve(LHS,RHS);	
+
+					pi.C2 = solve(LHS,RHS);
 					} else { pi.C2 = NULL; }
-					
-					
+
+
 				if(c1 > 0)
 					{
-					if(!is.null(pi.C2)) 
+					if(!is.null(pi.C2))
 						{
 						pi.C1 = one.col.c1 + Qbar %*% pi.C2;
 						} else 	{
-								pi.C1 = one.col.c1;								
+								pi.C1 = one.col.c1;
 								if(!is.null(Qbar))
 									{
 									pi.C2.ones = matrix(1, nrow = dim(Qbar)[2], ncol = 1);
-									
+
 									pi.C1 = pi.C1 + Qbar %*% pi.C2.ones;
 									}
 								}
-						
+
 						if(!is.null(Sbar))
 							{
 							one.col.c2.ones = matrix(1, nrow = dim(Sbar)[2], ncol = 1);
-							
+
 							pi.C1 = pi.C1 + Sbar %*% one.col.c2.ones;
 							}
-					} else { pi.C1 = NULL;}				
-				
+					} else { pi.C1 = NULL;}
+
 				A.vec = c(pi.C1, pi.C2, pi.C3);
 						names(A.vec) = c(A.attributes$rinfo$C1, A.attributes$rinfo$C2, A.attributes$rinfo$C3);
-						
-					
-				# does this make it the same as power?	
-				A.vec = A.vec / (Ainfo$n + sum(A.vec) );				
+
+
+				# does this make it the same as power?
+				A.vec = A.vec / (Ainfo$n + sum(A.vec) );
 				}
 
-	
+
 	A.df = as.data.frame( cbind( names(A.vec), as.numeric(A.vec), members.names ) );
 		colnames(A.df) = c("nodes", "eigenrank", "members");
-	A.df$eigenrank = as.numeric(A.df$eigenrank);	
+	A.df$eigenrank = as.numeric(A.df$eigenrank);
 		rownames(A.df) = A.df$nodes;
 	A.df$eigenrank.min1 = A.df$eigenrank / min(A.df$eigenrank);
 	A.df$eigenrank.max100 = 100* A.df$eigenrank / max(A.df$eigenrank);
-	
+
 		A.df = setAttribute("method", method, A.df);
 		A.df = setAttribute("ainfo", Ainfo, A.df);
 		A.df = setAttribute("pinfo", pinfo, A.df);
 		A.df = setAttribute("cinfo", A.attributes, A.df);
-		
+
 	# A.vec = setAttribute("members", members, A.vec);
-	
+
 	# if(norm == "min-1") { return( A.vec / min(A.vec) ); }
 	# if(norm == "max-100") { return ( 100 * A.vec / max(A.vec) ); }
-	
+
 	# A.vec;
-	
+
 	A.df;
 	}
 
@@ -720,10 +720,10 @@ matrix.computeEigenRank = function(A, method="linear")
 #' @examples
 matrix.removeSuperNode = function(A)
 	{
-	n = nrow(A) - 1;	
-		SuperNode = A[n+1,n+1];	
-	A = A[1:n,1:n];	
-		A = setAttribute("SuperNode", SuperNode, A);	
+	n = nrow(A) - 1;
+		SuperNode = A[n+1,n+1];
+	A = A[1:n,1:n];
+		A = setAttribute("SuperNode", SuperNode, A);
 	A;
 	}
 
@@ -945,5 +945,7 @@ matrix.rotateAngle = function(x, a=0, clockwise=TRUE)
 		);
 
 	}
-	
-	
+
+
+
+
