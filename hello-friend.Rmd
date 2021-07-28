@@ -28,7 +28,9 @@ github.monte.http = "https://github.com/MonteShaffer/";
 
 github.monte.humanVerse = paste0(github.monte.http, "humanVerse/tree/main/humanVerse/R/"); # we will parse this page to get a list of the .R functions to include 
 
-includeGithubFolder(github.monte.humanVerse); # you can pass flag `force.download = TRUE` if you want to make certain it is not coming from cache
+# includeGithubFolder(github.monte.humanVerse); # you can pass flag `force.download = TRUE` if you want to make certain it is not coming from cache
+
+includeGithubFolder(github.monte.humanVerse, force.download = TRUE);
 ```
 
 ### source misc

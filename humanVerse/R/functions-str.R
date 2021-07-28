@@ -363,7 +363,7 @@ removeFunnyCharacters = function(str, which="alpha-numeric", ASCII=TRUE, trim=TR
 #' @return string
 #' @export
 #'
-#' @aliases numberPadLeft
+#' @aliases numberPadLeft str_pad_left
 #'
 #' @examples
 #' strPadLeft(33,1);
@@ -395,7 +395,7 @@ strPadLeft = function(str, final.str.len, padding="0", method="stringi")
 #' @return string
 #' @export
 #'
-#' @aliases numberPadRight
+#' @aliases numberPadRight str_pad_right
 #'
 #' @examples
 #' strPadRight("33.01",5);
