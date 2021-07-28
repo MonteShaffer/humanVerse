@@ -58,6 +58,8 @@ color.setOpacity = function(hexvec, opacity=100)
 #' # color.buildTable();
 color.buildTable = function(colvec=NULL, key=NULL, save.key=NULL)
 	{
+	args = getFunctionParameters(TRUE);
+	print(args);
   # we need to cache this in "last" memory
 	# colvec is cached as "key"  ... auto-caching
 	# the output of this function is cached as "save.key" ... must be specified to cache
@@ -76,7 +78,7 @@ color.buildTable = function(colvec=NULL, key=NULL, save.key=NULL)
 	if(is.null(key)) { key = md5.object( colvec ); } # make a "hash-table" of an un-named list
 
 
-  if(!is.character(save.key)) { save.key = md5.object(getFunctionParameters(TRUE)); }
+  if(!is.character(save.key)) { save.key = md5.object(args); }
 		  cat("\n", "save.key:", save.key, "\n\n");
 
 	if(exists(save.key, .GlobalEnv$.humanVerse[["colors"]][["dataframes"]]))
@@ -330,11 +332,13 @@ color.findNearestName = function(hex, how.many = 1, scale.me = TRUE, how="cosine
 #' @examples
 color.chromatics = function(rgb, n = 12, save.key = NULL) # mono steps of monochronic ... half on "white" / half on "black"
 	{
+	args = getFunctionParameters(TRUE);
+	print(args);
 	# we need to cache this in "last" memory
 	# accessor can get elements without having to rebuild
 	if(!is.null(save.key))
 		{
-		if(!is.character(save.key)) { save.key = md5.object(getFunctionParameters(TRUE)); }
+		if(!is.character(save.key)) { save.key = md5.object(args); }
 		cat("\n", "save.key:", save.key, "\n\n");
 		if(exists(save.key, .GlobalEnv$.humanVerse[["colors"]][["dataframes"]]))
 			{

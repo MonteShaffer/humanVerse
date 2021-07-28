@@ -1,6 +1,10 @@
 
 
-
+md5.object = function(list)
+	{
+	str = listToString(list);
+	md5(str);	
+	}
 
 #' md5.digest
 #'

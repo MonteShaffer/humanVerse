@@ -921,10 +921,15 @@ getFunctionParameters = function(global.memory = TRUE, n=1, out.dput = FALSE)
 ## cat("\n\n === MORE === \n\n");
 	# Error in match.call() : ... used in a situation where it does not exist
 	mc = match.call()[-1];
+#	print(mc);
 	more = NULL;
 	if(!is.null(mc))
 		{
-		more = eval(quote(unlist(as.character(as.list( mc )))), envir = pf);
+		# exists("mc") ??? 
+		if(is.list(mc))
+			{
+			more = eval(quote(unlist(as.character(as.list( mc )))), envir = pf);
+			}
 		}
 
 ##  print(more);

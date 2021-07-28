@@ -120,7 +120,7 @@ computeCosineSimilarity = function(a, bs)
   ## generic "match" length?
   if(n != r)
     {
-    bs = transposeMatrix(bs);
+    bs = matrix.transpose(bs);
     b.names = colnames(bs);
     nc = r;
     if(n != c)
