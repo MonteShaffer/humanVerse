@@ -59,7 +59,7 @@ color.setOpacity = function(hexvec, opacity=100)
 color.buildTable = function(colvec=NULL, key=NULL, save.key=NULL)
 	{
 	args = getFunctionParameters(TRUE);
-	print(args);
+	# print(args);
   # we need to cache this in "last" memory
 	# colvec is cached as "key"  ... auto-caching
 	# the output of this function is cached as "save.key" ... must be specified to cache
@@ -333,7 +333,7 @@ color.findNearestName = function(hex, how.many = 1, scale.me = TRUE, how="cosine
 color.chromatics = function(rgb, n = 12, save.key = NULL) # mono steps of monochronic ... half on "white" / half on "black"
 	{
 	args = getFunctionParameters(TRUE);
-	print(args);
+	# print(args);
 	# we need to cache this in "last" memory
 	# accessor can get elements without having to rebuild
 	if(!is.null(save.key))

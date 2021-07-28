@@ -517,14 +517,14 @@ This function looks for an exact match and returns it, or returns `how.many` bas
 ```{r}
 ###### R::humanVerse #####
 ( wsu.crimson.neighbors = color.findNearestName( wsu.crimson, 10, how="difference" ) );
-color.displayColorOptions( c(wsu.crimson.neighbors, wsu.crimson),
+color.displayColorOptions( c(wsu.crimson.neighbors, rep(wsu.crimson,10)),
                                                   showHEX = TRUE);
 ```
 
 ```{r}
 ###### R::humanVerse #####
 ( wsu.crimson.neighbors = color.findNearestName( wsu.crimson, 10, how="distance" ) );
-color.displayColorOptions( c(wsu.crimson.neighbors, wsu.crimson),
+color.displayColorOptions( c(wsu.crimson.neighbors, rep(wsu.crimson,10)),
                                                   showHEX = TRUE);
 ```
 
@@ -532,7 +532,7 @@ color.displayColorOptions( c(wsu.crimson.neighbors, wsu.crimson),
 ```{r}
 ###### R::humanVerse #####
 ( wsu.crimson.neighbors = color.findNearestName( wsu.crimson, 10, how="cosine" ) );
-color.displayColorOptions( c(wsu.crimson.neighbors, wsu.crimson),
+color.displayColorOptions( c(wsu.crimson.neighbors, rep(wsu.crimson,10) ),
                                                   showHEX = TRUE);
 ```
 
@@ -541,7 +541,7 @@ color.displayColorOptions( c(wsu.crimson.neighbors, wsu.crimson),
 ```{r}
 ###### R::humanVerse #####
 ( wsu.gray.neighbors = color.findNearestName( wsu.gray, 10, how="distance" ) );
-color.displayColorOptions( c(wsu.gray.neighbors, wsu.gray),
+color.displayColorOptions( c(wsu.gray.neighbors, rep(wsu.gray,10)),
                                                   showHEX = TRUE);
 ```
 
