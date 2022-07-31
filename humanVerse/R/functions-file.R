@@ -291,7 +291,7 @@ getDirectoryPath = function(file, trailing=TRUE)
 #' @export
 #'
 #' @examples
-getRemoteAndCache = function(remote, local.file = NULL,
+getRemoteAndCache = function(remote, local.file = NULL, local.pre = "TMP"
     tmp.folder = "/humanVerse/cache/", force.download = FALSE,
     verbose = FALSE, md5.hash = FALSE, append = "")
   {
@@ -305,7 +305,7 @@ getRemoteAndCache = function(remote, local.file = NULL,
     }
   if(!is.null(local.file))
     {
-    localpath = dirname(local.file);
+    localpath = paste0( dirname(local.file), "/", local.pre, "/" );  # project subfolder
 		createDirectoryRecursive(localpath);
     if(!dir.exists(localpath)) { useTEMP = TRUE; }
     } else { useTEMP = TRUE; }
@@ -322,7 +322,7 @@ if(verbose)
 
 	# if(!isFALSE(append.me)) { filestem = cleanup.local(filestem); } # this will append ".html" if necessary ...
 
-	filestem = cleanup.local(filestem, append=append)
+	filestem = cleanup.local(filestem, append=append);
 
     if(md5.hash) { filestem = md5(filestem); }
 
@@ -376,18 +376,18 @@ if(verbose)
 #'
 #' @param src
 #' @param dest
-#' @param unlink
+#' @param delete.src
 #'
 #' @return
 #' @export
 #'
 #' @examples
-moveFile = function(src, dest, unlink=TRUE)
+moveFile = function(src, dest, delete.src=TRUE)
 	{
 		src 	= as.character(src);
 		dest 	= as.character(dest);
 	file.copy(src, dest);  # there is no file.move ???
-	unlink(src);
+	if(delete.src) { unlink(src); }
 	}
 
 

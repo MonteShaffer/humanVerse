@@ -28,11 +28,11 @@ count.sign.changes = function(x, na.rm=TRUE, part="Re")
 which.sign.changes = function(x, na.rm=TRUE, part="Re")
   {
   if(part == "Im") { x = Im(x); } else { x = Re(x); }
-  if(na.rm) { x = stats::na.omit(x); }
+  if(na.rm) { x = stats::na.omit(x); }  # isn't this required to count sign changes, NA are already gone 
   which( diff(sign(x)) != 0 )
   }
 
-#' is.whole.number
+#' is.wholeNumber
 #'
 #' `is.integer` doesn't operate as you would expect, this does
 #'
@@ -44,24 +44,48 @@ which.sign.changes = function(x, na.rm=TRUE, part="Re")
 #'
 #' @examples
 #'
-#' is.whole.number(1);
-#' is.whole.number(1.1);
+#' is.wholeNumber(1);
+#' is.wholeNumber(1.1);
 #'
-#' is.whole.number(0);
-#' is.whole.number(0.1);
+#' is.wholeNumber(0);
+#' is.wholeNumber(0.1);
 #'
-#' is.whole.number(-1);
-#' is.whole.number(-1.1);
+#' is.wholeNumber(-1);
+#' is.wholeNumber(-1.1);
 #'
-#' is.whole.number(rnorm(5));
-#' is.whole.number(rpois(5,1));
+#' is.wholeNumber(rnorm(5));
+#' is.wholeNumber(rpois(5,1));
 #'
-is.whole.number = function(x, ..., tol = sqrt(.Machine$double.eps))
+# is.whole.number
+is.wholeNumber = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
   {
   # See ?is.integer
-  more = unlist(list(...)); x = c(x, more);
+  more = unlist(list(...)); x = c(x, more); 
+  x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
   abs(x - round(x)) < tol;
   }
+
+
+
+
+is.even = function(x, ..., part="Re")
+	{
+	more = unlist(list(...)); x = c(x, more); 
+	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
+	x = as.integer(x);
+	
+	( (x %% 2) == 0 );  # this implies it is a whole number ... https://stackoverflow.com/questions/6102948/why-does-modulus-division-only-work-with-integers
+	}
+
+is.odd = function(x, ..., part="Re")
+	{
+	more = unlist(list(...)); x = c(x, more); 
+	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
+	x = as.integer(x);
+	
+	( (x %% 2) == 1 );  # this implies it is a whole number
+	}
+
 
 
 #' is.positive
@@ -77,11 +101,12 @@ is.whole.number = function(x, ..., tol = sqrt(.Machine$double.eps))
 #' is.positive(1);
 #' is.positive(0);
 #' is.positive(-1);
-#' is.positive(c(-1*1:5,1:5));
+#' is.positive( c(-1*1:5,-sin(pi), 0,0, sin(pi), 1:5) );
 #'
-is.positive = function(x, ..., tol = sqrt(.Machine$double.eps))
+is.positive = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
   {
   more = unlist(list(...)); x = c(x, more);
+  x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
   x > tol;
   }
 
@@ -98,13 +123,65 @@ is.positive = function(x, ..., tol = sqrt(.Machine$double.eps))
 #' is.negative(1);
 #' is.negative(0);
 #' is.negative(-1);
-#' is.negative(c(-1*1:5,1:5));
+#' is.negative( c(-1*1:5,-sin(pi), 0,0, sin(pi), 1:5, NA, NA) );
 #'
-is.negative = function(x, ..., tol = sqrt(.Machine$double.eps))
+is.negative = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
   {
   more = unlist(list(...)); x = c(x, more);
+  x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
   x < ( -1 * tol );
   }
+
+# x = c(NULL,-1*1:5,0+2i,1+2i,-1+2i,-sin(pi), 0,0, sin(pi), 0-2i,1-2i,-1-2i, 1:5, NA, NA, NULL, NA, NULL);
+# y = c( -1*1:5,0+2i,1+2i,-1+2i,-sin(pi), 0,0, sin(pi), 0-2i,1-2i,-1-2i, 1:5, NA, NA, NA);
+# is.zero( c(NULL, -1*1:5,0+2i,1+2i,-1+2i,-sin(pi), 0,0, sin(pi), 0-2i,1-2i,-1-2i, 1:5, NA, NA, NULL) );
+is.zero = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
+	{
+	more = unlist(list(...)); x = c(x, more);
+	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
+	
+	#x < tol || x > -1 * tol;	
+	# !is.negative(x) && !is.positive(x);	
+	
+	x.pos = x < tol;
+	x.neg = x > -1 * tol;
+	
+	( (x.pos + x.neg) > 1);
+	}
+
+
+is.equal = `%==%` = function(x, y, tol = sqrt(.Machine$double.eps), part="Re")
+	{
+	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
+	y = if(part == "Im") { y = Im(y); } else { y = Re(y); }
+	
+	isTRUE( all.equal (x,y, tol) ); 
+	}
+
+
+# `%>=%` <- function(x, y) (x + epsilon > y)
+# https://stackoverflow.com/questions/2769510/numeric-comparison-difficulty-in-r
+is.ge = `%>=%` = function(x, y, tol = sqrt(.Machine$double.eps), part="Re")
+	{
+	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
+	y = if(part == "Im") { y = Im(y); } else { y = Re(y); }
+	
+	(x + tol >= y );  # what about strictly '>'? tol is taking care of "average noise"?
+	}
+
+is.le = `%<=%` = function(x, y, tol = sqrt(.Machine$double.eps), part="Re")
+	{
+	# a master function to compare both Re + Im at the same time ... 
+	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
+	y = if(part == "Im") { y = Im(y); } else { y = Re(y); }
+	
+	(y + tol >= x );  # what about strictly '>'? tol is taking care of "average noise"?
+	}
+
+
+
+
+
 
 #' get.sign
 #'
@@ -208,6 +285,7 @@ get.sign = function(xs, ..., other="NA", return="number", tol = sqrt(.Machine$do
 #' isClose(n1,n2);
 #' isClose(n2,n3);
 #' isClose(n1,n3);
+#' isClose(N);
 #'
 #' myTol = 0.00000000000000002;
 #' isClose(n1,n2, myTol);
@@ -215,70 +293,78 @@ get.sign = function(xs, ..., other="NA", return="number", tol = sqrt(.Machine$do
 #' isClose(n1,n3, myTol);
 #'
 #' a = sample(N, 5, replace=TRUE);
-#' isClose( a, n2, myTol);
+#' isClose( a, n2, tol=myTol);
 #' b = sample(N, 5, replace=TRUE);
-#' isClose( n1, b, myTol);
+#' isClose( n1, b, tol=myTol);
 #'
 #' a = sample(N, 5, replace=TRUE);
 #' b = sample(N, 5, replace=TRUE);
-#' isClose( a, b, myTol);
+#' isClose( a, b, tol=myTol);
 #'
 #' a = sample(N, 9, replace=TRUE);
 #' b = sample(N, 5, replace=TRUE);
-#' isClose( a, b, myTol);  # prints warning, returns matrix
+#' isClose( a, b, tol=myTol);  # prints warning, returns matrix
 #'
 #' sin(pi) == 0;  # Ben's example
+#' as.integer( sin(pi) ) = 0;
 #' isClose( sin(pi), 0 );
-isClose = function(a,b, tol=sqrt(.Machine$double.eps) )
+# is.close
+# https://stackoverflow.com/questions/30773762/r-functions-aliases-documentation
+isClose = function(a,b, tol=sqrt(.Machine$double.eps), comparison="==", force.pairwise=TRUE )
   {
   # we assume no issues with stats::na.omit
+  if(missing(b)) { b = a; force.pairwise=FALSE; } # this will do the matrix comparison
   a.n = length(a);
   b.n = length(b);
-
   if(a.n == b.n && b.n == 1)  # one of each
-    {
-    return ( isTRUE( all.equal (a,b, tol) ) );
+    {	
+    return ( doComparison(a,b, tol=tol, comparison=comparison ) );
     }
-  if(a.n == b.n) # parallel vector comparison (pairwise)
-    {
-    r = logical(a.n);
-    for(i in 1:a.n)
-      {
-      r[i] = isTRUE( all.equal (a[i],b[i], tol) );
-      }
-    return (r);
-    }
+	
+	
+  if(a.n == b.n && force.pairwise==TRUE) # parallel vector comparison (pairwise)
+	{
+	r = logical(a.n);
+	for(i in 1:a.n)
+	  {
+	  r[i] = doComparison(a[i],b[i], tol=tol, comparison=comparison );
+	  }
+	return (r);
+	}
+	
+	if(a.n != b.n)
+		{	
+		# could be unequal vectors, not one
+		warning("Not of Equal length ... Computing Matrix");  # cross-product [combinatorics a.n*b.n and store in matrix] of comparisons
+		}
 
-  # could be unequal vectors, not one
-  if(a.n != 1 && b.n !=1)
-    {
-    warning("Not of Equal length ... Computing Matrix");  # cross-product [combinatorics a.n*b.n and store in matrix] of comparisons
-
-    m = matrix(NA, nrow=a.n, ncol=b.n);
-    for(i in 1:a.n)
-      {
-      for(j in 1:b.n)
-        {
-        m[i,j] = isTRUE( all.equal (a[i],b[j], tol) );
-        }
-      }
-      colnames(m) = c(paste0("b.",1:b.n));
-      rownames(m) = c(paste0("a.",1:a.n));
-    return (m);
-    }
-
-  one = if(a.n > b.n) { b } else { a }
-  vec = if(a.n > b.n) { a } else { b }
-
-  r = logical(length(vec));
-  for(i in 1:length(vec))
-    {
-    r[i] = isTRUE( all.equal (one,vec[i], tol) );
-    }
-  r;
-  }
+	m = matrix(NA, nrow=a.n, ncol=b.n);
+	for(i in 1:a.n)
+	  {
+	  for(j in 1:b.n)
+		{
+		m[i,j] = doComparison(a[i],b[j], tol=tol, comparison=comparison );
+		}
+	  }
+	  colnames(m) = c(paste0("b.",1:b.n));
+	  rownames(m) = c(paste0("a.",1:a.n));
+	return (m);	
+	}
 
 
+
+doComparison = function(a, b, tol=sqrt(.Machine$double.eps), comparison="==")
+	{
+	# internal function, assumes length(a) == length(b) == 1
+	res = switch(comparison,
+							"=="    = isTRUE( all.equal (a,b, tol) ),
+							">="    = isTRUE(a + tol >= b ),
+							"<="    = isTRUE(b + tol >= a ),
+				isTRUE( all.equal (a,b, tol) ) # default case of switch
+				);
+	res;
+	}
+	
 
 
 #' zeroIsh
@@ -300,19 +386,30 @@ isClose = function(a,b, tol=sqrt(.Machine$double.eps) )
 #' x = c(sin(pi), -sin(pi));
 #' zeroIsh(x);
 #' zeroIsh(x, 8);
-zeroIsh = function(x, ..., digits=getOption("digits"))
-  {
-  more = unlist(list(...)); x = c(x, more);
-  # zapsmall has log10 feature
+#' # NOW works for a list of matrices
+zeroIsh = function(x, ..., digits=getOption("digits"), collapse=TRUE)
+	{
+	more = list(...); 	n.more = length(more);
+	xlist = list();
+	xlist[[1]] = zapZero(x, digits=digits); # univariate		
+	if(n.more == 0) { return( xlist[[1]] ); } 	# no more ...
+	for(i in 1:n.more)
+		{
+		xlist[[i+1]] = zapZero(more[[i]], digits=digits); # univariate		
+		}	
+	if(!collapse) { return( xlist); }	
+	unlist(xlist);
+	}
 
-  # positive values
-  x.pos = 1 / 10^digits
-  x[((x > 0) & (x < x.pos))] = 0L;
-  # negative values
-  x.neg = -1 * x.pos;
-  x[((x < 0) & (x > x.neg))] = 0L;
-
-  # round(x, digits=digits);
-  x;
-  }
-
+zapZero = function(x, digits=getOption("digits"))
+	{
+	# positive values
+	x.pos = 1 / 10^digits
+	x[((x > 0) & (x < x.pos))] = 0L;
+	# negative values
+	x.neg = -1 * x.pos;
+	x[((x < 0) & (x > x.neg))] = 0L;  
+	x;	
+	}
+	
+	

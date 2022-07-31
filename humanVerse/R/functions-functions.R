@@ -723,6 +723,9 @@ grabFunctionParameters <- function() {
 
 
 # grabs all functions in BODY of function, not if/else AWARE
+# add library and base functions (loaded) 
+# ls ?
+# function.traceforward
 traceforward = function(f.str = "shell", max.depth=10)
   {
   f.res = list();
@@ -767,7 +770,7 @@ find.functions.in.string = function(fn.body)
 		fn.w = fn.ex[fn.len]; # last word
 
 		# print(fn.w);
-
+# does this work for base::is.na type functions?
 		is.fun = try( is.function( eval(parse(text=fn.w)) ), silent=TRUE);
 
 		if(isTRUE(is.fun))

@@ -33,6 +33,7 @@ get.last.error = function()
 #' @export
 #'
 #' @examples
+# set.par.key
 setParKey = function(myKey, myValue)
 	{
   # save memory ... restoreState ... pdf
@@ -56,6 +57,7 @@ setParKey = function(myKey, myValue)
 #' @export
 #'
 #' @examples
+# set.par.keys
 setParKeys = function(myKeys, myValues)
 	{
 	pnames = names( graphics::par(no.readonly = TRUE) );
@@ -86,7 +88,9 @@ setParKeys = function(myKeys, myValues)
 #' @return
 #' @export
 #'
-#' @examples
+#' @
+# get.par.key
+# get.par.keys
 getParKey = function(myKeys)
 	{
 	# alias ... getParKeys
@@ -115,6 +119,7 @@ getParKey = function(myKeys)
 #' @export
 #'
 #' @examples
+# get.attributes
 getAllAttributes = function(myObj)
 	{
 	attributes(myObj);
@@ -132,6 +137,7 @@ getAllAttributes = function(myObj)
 #' @aliases getAttributes
 #'
 #' @examples
+# get.attribute
 getAttribute = function(myAttributes, myObj)
 	{
 	# maybe alias 'getAttributes'
@@ -147,6 +153,7 @@ getAttribute = function(myAttributes, myObj)
 	}
 
 
+# delete.attribute
 deleteAttribute = function(myAttribute, myObj)
 	{
 	attributes(myObj)[[myAttribute]] = NULL;
@@ -165,6 +172,7 @@ deleteAttribute = function(myAttribute, myObj)
 #' @export
 #'
 #' @examples
+# set.attribute
 setAttribute = function(myAttribute, myValue, myObj)
 	{
 	attributes(myObj)[[myAttribute]] = myValue;
@@ -181,6 +189,7 @@ setAttribute = function(myAttribute, myValue, myObj)
 #' @export
 #'
 #' @examples
+# set.attributes
 setAttributes = function(myAttributes, myValues, myObj)
 	{
 	i = 0;
@@ -213,6 +222,7 @@ setAttributes = function(myAttributes, myValues, myObj)
 #' @export
 #'
 #' @examples
+# set.option
 setOption = function(myKey, myValue)
 	{
 	options(stats::setNames(list(myValue), myKey));
@@ -227,6 +237,7 @@ setOption = function(myKey, myValue)
 #' @export
 #'
 #' @examples
+# set.options
 setOptions = function(myKeys, myValues)
 	{
 	# you can set an option that doesn't exist ...
@@ -254,6 +265,8 @@ setOptions = function(myKeys, myValues)
 #' @export
 #'
 #' @examples
+# get.option
+# get.options
 getOptions = function(myKeys)
 	{
   #  R::base has "getOption" but not "getOptions"	(multivariate)
@@ -292,4 +305,36 @@ getElementsInList = function(myList, idx)
   }
 
 
+# typeof
+# is.logical(z) 
+# typeof(z) == "logical"
+get.type = function(obj)
+	{
+	if(is.null(obj)) { return ("NULL"); }
+	
+	if(is.integer(obj)) { return ("INT"); }
+	if(is.character(obj)) { return ("CHAR"); }
+	
+	if(is.logical(obj)) { return ("BOOL"); }
+	if(is.complex(obj)) { return ("COMPLEX"); }
+	
+	if(is.infinite(obj)) { return ("INF"); }
+	if(is.nan(obj)) { return ("NaN"); }
+	
+	if(is.single(obj)) { return ("SINGLE"); }
+	if(is.double(obj)) { return ("DOUBLE"); }
+	
+	if(is.data.frame(obj)) { return ("DATAFRAME"); }
+	if(is.list(obj)) { return ("LIST"); }
+	
+	if(is.na(obj)) { return ("NA"); }
+	
+	
+	}
+	
+	
+# typeof options?
+# "logical", "integer", "double", "complex", "character", "raw" and "list", "NULL", "closure" (function), "special" and "builtin" (basic functions and operators), "environment", "S4" (some S4 objects) and others that are unlikely to be seen at user level ("symbol", "pairlist", "promise", "language", "char", "...", "any", "expression", "externalptr", "bytecode" and "weakref").
+
+# mode?
 

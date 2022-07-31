@@ -38,6 +38,7 @@ NHL.parseURL = function(which="linecombo", team="DAL", position="TF", season="20
 	}
 
 
+
 NHL.getTeams = function()
 	{
 	url = NHL.parseURL("linecombo");

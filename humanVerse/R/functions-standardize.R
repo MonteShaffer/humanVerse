@@ -111,11 +111,10 @@ standardizeToSum = function(x)  # row-normalization
 
 
 
-#' standardizeFromOneRangeToAnother
+#' convertFromOneRangeToAnother
 #'
 #' \url{https://stats.stackexchange.com/questions/281162/scale-a-number-between-a-range}
 #'
-#' @family Standardize
 #'
 #' @param x numeric vector
 #' @param onerange this is typically the current range of the vector [numeric vector of length 2]
@@ -125,12 +124,12 @@ standardizeToSum = function(x)  # row-normalization
 #' @export
 #'
 #' @examples
-#' standardizeFromOneRangeToAnother( 1:5, c(0,1) );  # map to [0,1]
-#' standardizeFromOneRangeToAnother( runif(20, min=-1, max=1), c(0,1) );  # map to [0,1]
-#' standardizeFromOneRangeToAnother( 1:5, c(1,7) );  # e.g., Likert-5 to Likert-7
-#' standardizeFromOneRangeToAnother( rep(1,10), c(0,1) );  #NaN ... division by zero
+#' convertFromOneRangeToAnother( 1:5, c(0,1) );  # map to [0,1]
+#' convertFromOneRangeToAnother( runif(20, min=-1, max=1), c(0,1) );  # map to [0,1]
+#' convertFromOneRangeToAnother( 1:5, c(1,7) );  # e.g., Likert-5 to Likert-7
+#' convertFromOneRangeToAnother( rep(1,10), c(0,1) );  #NaN ... division by zero
 #'
-standardizeFromOneRangeToAnother = function(x, another, onerange=range(x) )
+convertFromOneRangeToAnother = function(x, another, onerange=range(x) )
 	{
 	if(length(another) < 2)  { return (NULL); }
 	if(length(onerange) < 2) { return (NULL); }
@@ -147,7 +146,7 @@ standardizeFromOneRangeToAnother = function(x, another, onerange=range(x) )
 	}
 
 
-#' standardizeFromOldRangeToNew
+#' convertFromOldRangeToNew
 #'
 #' @param x numeric vector
 #' @param oldrange this is typically the current range of the vector [numeric vector of length 2]
@@ -157,12 +156,12 @@ standardizeFromOneRangeToAnother = function(x, another, onerange=range(x) )
 #' @export
 #'
 #' @examples
-#' standardizeFromOldRangeToNew( 1:5, newrange=c(0,1) );  # map to [0,1]
-#' standardizeFromOldRangeToNew( runif(20, min=-1, max=1), newrange=c(0,1) );  # map to [0,1]
-#' standardizeFromOldRangeToNew( 1:5, newrange=c(1,7) );  # e.g., Likert-5 to Likert-7
-#' standardizeFromOldRangeToNew( rep(1,10), newrange=c(0,1) );  #NaN ... division by zero
+#' convertFromOldRangeToNew( 1:5, newrange=c(0,1) );  # map to [0,1]
+#' convertFromOldRangeToNew( runif(20, min=-1, max=1), newrange=c(0,1) );  # map to [0,1]
+#' convertFromOldRangeToNew( 1:5, newrange=c(1,7) );  # e.g., Likert-5 to Likert-7
+#' convertFromOldRangeToNew( rep(1,10), newrange=c(0,1) );  #NaN ... division by zero
 #'
-standardizeFromOldRangeToNew = function(x, oldrange=range(x), newrange=NULL)
+convertFromOldRangeToNew = function(x, oldrange=range(x), newrange=NULL)
 	{
   if(length(newrange) < 2)  { return (NULL); }
 	if(length(oldrange) < 2) { return (NULL); }

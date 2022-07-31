@@ -16,14 +16,16 @@
 #'
 #' @examples
 #' rand();            # positive or negative integer
+#' rand(0);           # non-negative integer only
 #' rand(1);           # positive integer only
 #' rand(1, n=3);      # returns 3 positive integers
 #' rand(1,10, n=5, method="floor");  # Uses the floor method
 #' rand(1,10, n=5, method="sample"); # Uses the sample method (available, but why?)
 #' rand(1,10, n=5, method="sample", sample.replace=FALSE); # min, max, n must be comformable "with replacement = FALSE"
-rand = function(min = -1*as.integer(Sys.time()), max = as.integer(Sys.time()), n = 1, method = "high-low", sample.replace = TRUE, seed = NULL)
+#' rand(1,10, n=5, seed=10);  # fixed seed requires the min/max to be known
+
+rand = function(min = -1*as.integer(Sys.time()), max = as.integer(Sys.time()), n = 1, method = "high-low", sample.replace = TRUE, seed = NULL, attributes=NULL)
     {
-    # pracma::primes ... maybe seed with primes, using sieve attributed to Erasthostenes
 	# if(is.null(seed)) { setSeed(NULL, "rand"); my.seed = getSeed("rand"); } else { my.seed = seed; }
     me = substr( trimMe( tolower(method) ), 1, 2);
 	n = as.integer ( n );
@@ -32,17 +34,13 @@ rand = function(min = -1*as.integer(Sys.time()), max = as.integer(Sys.time()), n
 		warning( paste0('Bad value for n "', n, '" in function [rand]', "\n", "Setting n=1") );
 		n = 1;
 		}
-    if(me == "hi")  # high-low method
-      {
-	  if(!is.null(seed)) { set.seed(seed); }
-      return( as.integer(( (max + 1) - min) * stats::runif(n) + min) );
-      }
+	res = NULL;
     if(me == "fl")  # floor method
       {
 	  if(!is.null(seed)) { set.seed(seed); }
-      return( as.integer( floor( stats::runif(n, min = min, max = (max + 1) ) ) ) );
+      res = ( as.integer( floor( stats::runif(n, min = min, max = (max + 1) ) ) ) );
       }
-    if(me == "sa")  # sample method
+    else if(me == "sa")  # sample method
       {
       if(!sample.replace)
         {
@@ -54,9 +52,28 @@ rand = function(min = -1*as.integer(Sys.time()), max = as.integer(Sys.time()), n
           }
         }
 	  if(!is.null(seed)) { set.seed(seed); }
-      return( sample(min:max, n, replace = sample.replace) );
+      res = ( sample(min:max, n, replace = sample.replace) );
       }
-    stop( paste0('Unknown method "', method, '" in function [rand]') );
+	else
+		{
+		if(me != "hi")  # high-low method
+			{
+			warning( paste0('Bad value for method "', method, '" in function [rand]', "\n", "Setting method='high-low'") );
+			}
+		# DEFAULT will run 
+		if(!is.null(seed)) { set.seed(seed); }
+		res = ( as.integer(( (max + 1) - min) * stats::runif(n) + min) );
+		}
+		
+	if(!is.null(attributes))
+		{
+		res = setAttribute('min', min, res);
+		res = setAttribute('max', max, res);
+		res = setAttribute('seed', seed, res);
+		res = setAttribute('method', method, res);	
+		}
+	
+	res;
     }
 
 
@@ -121,9 +138,11 @@ setSeed = function(seed, key, ..., args.set = list(), print.seed = TRUE, verbose
 	{
 	cat("\n setSeed: ", seed, "\n");
 	}
-  # invisible(seed);
-
+  
+# call set.seed at very end ...
   set.seed(seed, kind=kind, normal.kind=normal.kind, sample.kind=sample.kind);
+# we don't return the seed, but we could?  getSeed will handle this ... 
+  # invisible(seed);
   }
 
 

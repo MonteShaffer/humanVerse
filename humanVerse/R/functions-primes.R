@@ -231,6 +231,7 @@ prime.findPrimes = function(n, first=FALSE)
 #'
 #' @return
 #' @export
+# is.prime 
 prime.isPrime = function(x)
 	{
 	factors = prime.factors(x);
@@ -313,7 +314,7 @@ prime.gcf = function(a, b)
 	a.factors = prime.factors(a);
 	b.factors = prime.factors(b);
 
-	gcfs = intersectMe(a.factors, b.factors);
+	gcfs = prime.intersect(a.factors, b.factors);
 
 	gcf = prod(gcfs);
 	gcf = setAttribute("factors", gcfs, gcf);
@@ -324,7 +325,7 @@ prime.gcf = function(a, b)
 
 
 
-#' intersectMe
+#' prime.intersect
 #'
 #' @param x
 #' @param y
@@ -334,7 +335,7 @@ prime.gcf = function(a, b)
 #' @export
 #'
 #' @examples
-intersectMe = function(x, y, duplicates=TRUE)
+prime.intersect = function(x, y, duplicates=TRUE)
 	{
 	xyi = intersect(x,y);
 	if(!duplicates) { return (xyi); }

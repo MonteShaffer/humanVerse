@@ -8,6 +8,7 @@
 #'
 #' @return
 #' @export
+# include.localDirectory
 includeLocalDirectory = function(path, verbose=TRUE, pattern = "[.][RrSsQq]$", ...)
   {
   # ?source
@@ -33,6 +34,7 @@ includeLocalDirectory = function(path, verbose=TRUE, pattern = "[.][RrSsQq]$", .
 #' @export
 #'
 #' @examples
+# include.localFiles
 includeLocalFiles = function(files, ...)
   {
   for(file in files)
@@ -52,6 +54,7 @@ includeLocalFiles = function(files, ...)
 #' @export
 #'
 #' @examples
+# include.remoteFiles
 includeRemoteFiles = function(urls, pattern = "[.][RrSsQq]$", verbose=FALSE, ...)
   {
   # # github.includeFolder ...

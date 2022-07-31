@@ -129,6 +129,9 @@ asDateTime = function(strvec, from="%Y-%m-%d %H:%M:%S", to="", num=TRUE)
 #' getDate("%Y-%V");  # week ISO 8601
 #'
 #' getDate("%Y-%m-%d", strptime("23mar1973", "%d%b%Y") );
+# get.date
+# date.get
+
 getDate = function(how="%Y-%m", when = Sys.time())
 	{
   # php date syntax is a bit different

@@ -877,6 +877,9 @@ stringToInteger = function(strvec, isHEX = FALSE)
 
 
 
+
+
+
 # DDEECC -> rounds to dcedcb
 # hexadecimal to decimal
 # hexdec("FF");
@@ -934,6 +937,8 @@ hexdec = function(hexstr, ...)
 #' @examples
 #' dechex(123,255,50, n=2, hash=FALSE);
 #' dechex(16581375,12581375,50, n=6, hash=TRUE);
+#' dechex(16581375,12581375,50, hash=FALSE);
+#' dechex(255,133,50, hash=FALSE);
 dechex = function(intdec, ..., n=NULL, hash=FALSE)
 	{
 	more = unlist(list(...));

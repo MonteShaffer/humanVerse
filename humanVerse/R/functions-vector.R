@@ -169,7 +169,7 @@ whichValue = function(x, value, ...)
 whichMax = function(x, ...)
 	{
 	# behaves like which.max(x) but returns multiple
-	x.max = max( x, na.rm=T ); # we remove NA to figure out what to search for, but use original to map indexes
+	x.max = max( x, na.rm=TRUE ); # we remove NA to figure out what to search for, but use original to map indexes
 	findAllIndexesWithValueInVector(x, x.max, ...);
 	}
 
@@ -192,7 +192,7 @@ whichMax = function(x, ...)
 whichMin = function(x, ...)
 	{
 	# behaves like which.min(x) but returns multiple
-	x.min = min( x, na.rm=T ); # we remove NA to figure out what to search for, but use original to map indexes
+	x.min = min( x, na.rm=TRUE ); # we remove NA to figure out what to search for, but use original to map indexes
 	findAllIndexesWithValueInVector(x, x.min, ...);
 	}
 

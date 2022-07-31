@@ -27,16 +27,16 @@
 #' @export
 #'
 #' @examples
-initMemory = function(purge.memory = FALSE, verbose = TRUE)
+initMemory = function(purge.memory = FALSE, verbose = TRUE, variable='.humanVerse')
   {
   if(!exists(".humanVerse") || purge.memory)
     {
     if(verbose)
       {
-      cat("humanVerse::initMemory ... initializing list '.humanVerse'", "\n");
+      cat("humanVerse::initMemory ... initializing list '", variable, "'", "\n");
       }
 
-	# assign(".humanVerse", list(), envir = .GlobalEnv);
+	# assign(".humanVerse", list(), envir = .GlobalEnv);  # we could assign to a different variable name (variadic), but why?
 
     .GlobalEnv$.humanVerse = list();
 		initPathMemory();
@@ -46,6 +46,7 @@ initMemory = function(purge.memory = FALSE, verbose = TRUE)
 		initFunctionMemory();
 		initSystemMemory();
 		initSeedMemory();
+		initTimerMemory();
 
 	}
   }
@@ -245,6 +246,28 @@ initSeedMemory = function(purge.memory = FALSE, verbose = FALSE)
   }
 
 
+#' initTimerMemory
+#'
+#' @param purge.memory If TRUE, this memory is erased and reset.
+#'
+#' @return NULL (nothing)
+#' @export
+#'
+#' @examples
+#' # initTimerMemory();
+#' # setTimer(); getTimer(); initTimerMemory(purge.memory = TRUE); getTimer();
+initTimerMemory = function(purge.memory = FALSE, verbose = FALSE)
+  {
+  if(!exists(".humanVerse")) { initMemory(); }
 
+  if(!exists("timer", .GlobalEnv$.humanVerse) || purge.memory)
+    {
+    if(verbose)
+      {
+	    cat("humanVerse::initTimerMemory ... initializing list '.humanVerse[[\"timer\"]]'", "\n");
+      }
+    .GlobalEnv$.humanVerse[["timer"]] = list();
+    }
+  }
 
 

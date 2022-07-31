@@ -308,6 +308,7 @@ plot.t.test = function(x, y=NULL, ..., alpha=0.05, truncate.t = 4, plotHistogram
 #'
 #' @return
 #' @export
+# x.list = list(); x.list[[1]] = rnorm(100); x.list[[2]] = rnorm(100, mean=3, sd=2);
 plot.myTukeyPlot = function(x.list, heresy=FALSE,
 							sort = TRUE,
 							margin = 0.25,
@@ -414,7 +415,7 @@ plot.myTukeyPlot = function(x.list, heresy=FALSE,
 							pos=plot.setPosition("right"),
 							col=color.setOpacity("#000000",common.opacity) );
 
-		x.niniles = standardizeFromOneRangeToAnother( as.numeric(info$niniles), xscale, data.scale);
+		x.niniles = convertFromOneRangeToAnother( as.numeric(info$niniles), xscale, data.scale);
 			for(d in 1:8)
 				{
 					graphics::segments(
@@ -426,7 +427,7 @@ plot.myTukeyPlot = function(x.list, heresy=FALSE,
 				}
 
 
-		x.IDR3 = standardizeFromOneRangeToAnother(info$IDR.3$IDR$xlim, xscale, data.scale);
+		x.IDR3 = convertFromOneRangeToAnother(info$IDR.3$IDR$xlim, xscale, data.scale);
 			graphics::rect(		x.IDR3[1],
 								y0,
 								x.IDR3[2],
@@ -434,7 +435,7 @@ plot.myTukeyPlot = function(x.list, heresy=FALSE,
 							col=color.setOpacity("#FF69B4",common.opacity), border="black");
 		x.mid = mean(x.IDR3);
 			graphics::text(		x.mid,
-								y0 + i*y.offset,
+								y0,
 							labels = "INNER TRECILE", cex=0.75,
 							pos=plot.setPosition("below"),
 							col=color.setOpacity("#000000",common.opacity) );
@@ -442,7 +443,7 @@ plot.myTukeyPlot = function(x.list, heresy=FALSE,
 
 
 
-		x.median = standardizeFromOneRangeToAnother(info$myMedian, xscale, data.scale);
+		x.median = convertFromOneRangeToAnother(info$myMedian, xscale, data.scale);
 			graphics::segments(x.median, y0, x.median, y0 + height.plot,
 							col=color.setOpacity("#3CB371",common.opacity), lwd=2);
 
@@ -451,12 +452,15 @@ plot.myTukeyPlot = function(x.list, heresy=FALSE,
 							col=color.setOpacity("#000000",common.opacity) );
 
 
-			x.ecdf = standardizeFromOneRangeToAnother(info$sorted, xscale, data.scale);
+			x.ecdf = convertFromOneRangeToAnother(info$sorted, xscale, data.scale);
 		nx = info$length.good;
 		na = info$length.na;
 			x.steps 	= height.plot / nx;
 			y.vertical 	= x.steps * 1:nx;
-		graphics::points(x.ecdf, y0 + y.vertical );
+			
+			# pch for points?
+		graphics::points(x.ecdf, y0 + y.vertical,
+							col=color.setOpacity("#000000",common.opacity) );
 		# put n =
 			graphics::text(xright, y0 + 1*border/2, labels = paste0("n = ",  nx), cex=0.75,
 						pos=plot.setPosition("left"),

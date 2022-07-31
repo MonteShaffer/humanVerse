@@ -174,6 +174,7 @@ list.element.exists = function(mylist, myelement)
 #'         print(a); print(b); print(c);
 #'
 #'
+# list.extract 
 extractList = function(myList, envir = .GlobalEnv)
     {
     n.myList = length(myList);  # maybe create an extract function ...

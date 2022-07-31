@@ -33,7 +33,7 @@ matrix.rank = function(A, ...)
 					matrixcalc::matrix.rank(A, ...);
 					}
 				}
-	stop("I need a matrix library for this!");
+	stop(paste0("I need a matrix library for this!","\n\t\t","Matrix","\n\t\t","matrixcalc","\n"));
 	}
 
 
@@ -120,7 +120,8 @@ matrix.convertMatrixToAdjacency = function(A, removeDiagonal=TRUE, scaleNegative
 	# Won't have "expected" Perron-Frobenius meaning otherwise
 	if(scaleNegatives)
 		{
-		A = standardizeFromOldRangeToNew(A, newrange=new.range); # oldrange is figured out automatically
+		A = convertFromOldRangeToNew(A, newrange=new.range); # oldrange is figured out automatically
+			# this makes it a positive matrix, yet the action is a nonlinear transformation?
 		}
 	if(removeDiagonal)
 		{

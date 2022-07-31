@@ -319,6 +319,7 @@ getQuantiles = function(x, qs, type=1)
 #'
 #' @return
 #' @export
+# should this be IXR for variable range?  custom sort range ... custom quantile range ... CQR 
 doIDR = function(x, lower = 0.25, upper = 1 - lower, type=1)
 	{
 	xx = stats::na.omit(x);
@@ -348,6 +349,7 @@ doIDR = function(x, lower = 0.25, upper = 1 - lower, type=1)
 #' doSampleVariance( c(1) ); # returns null
 #' doSampleVariance( 1:2 );
 #'
+# stats.variance
 doSampleVariance = function(x, method="two-pass")
 	{
 	x = stats::na.omit(x);
@@ -596,19 +598,21 @@ findOutliersUsingIQR = function(x, innerFenceFactor=1.5, outerFenceFactor=3)
 #' doMode( c(1, 1:9, 9) );
 #' doMode( c(1, 1:9, 9, 9) );
 #'
+# stats.mode
 doMode = function(x) # alias ?
 	{
 	whichMaxFreq(x);
 	}
 
 
-
+# stats.median
 doMedian = function(x, type=1)
   {
   xx = stats::na.omit(x);
   as.numeric(stats::quantile(xx, prob=c(0.5), type=type));
   }
 
+# stats.mean
 doMean = function(x)
   {
   xx = stats::na.omit(x);
@@ -635,6 +639,7 @@ doMean = function(x)
 #' doModeOpposite( c(1, 1:9, 9) );
 #' doModeOpposite( c(1, 1:9, 9, 9) );
 #'
+# stats.notMode
 doModeOpposite = function(x)  # alias ?
 	{
 	whichMinFreq(x);
