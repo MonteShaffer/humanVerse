@@ -197,7 +197,9 @@ charCode = function(svec)
 trimMe = function(str, side="both", method="stringi")
   {
   # sides = c("both", "left", "right")
+  # methods = c("cpp", "stringi", "base")
   side = tolower(side);
+  ###m = substr(tolower(method),1,1);  # is this slowing me down?
   # stringr::str_trim(str);
   # if(!is.element(side,sides)) { stop("option for 'side' must be one of:  both, left, right"); }
   # set default to both
@@ -212,22 +214,38 @@ trimMe = function(str, side="both", method="stringi")
 # lsf.str("package:stringi")
 # ls("package:stringi")
 
-  if( isTRUE(requireNamespace("stringi", quietly = TRUE)) && method=="stringi" )
+	if(method == "cpp" && exists("cpp_trim"))
+			{
+			res = switch(side,
+							  "left"  = cpp_ltrim(str),
+							  "right" = cpp_rtrim(str),
+							  "both"  = cpp_trim(str),
+					cpp_trim(str)
+					);
+			return (res);
+			}
+		
+		
+  if( method == "stringi" && isTRUE(requireNamespace("stringi", quietly = TRUE)) )
     {
-    switch(side,
-          "left"  = stringi::stri_trim_left(str),
-          "right" = stringi::stri_trim_right(str),
-          "both"  = stringi::stri_trim_both(str),
-          stringi::stri_trim_both(str)
-          );
-    } else {
-            switch(side,
-                  "left"  = gsub("^\\s+", "", str),
-                  "right" = gsub("\\s+$", "", str),
-                  "both"  = gsub("^\\s+|\\s+$", "", str),
+    res = switch(side,
+						  "left"  = stringi::stri_trim_left(str),
+						  "right" = stringi::stri_trim_right(str),
+						  "both"  = stringi::stri_trim_both(str),
+				stringi::stri_trim_both(str)
+				);
+	return (res);
+	}
+	
+	
+		
+    res = switch(side,
+						  "left"  = gsub("^\\s+", "", str),
+						  "right" = gsub("\\s+$", "", str),
+						  "both"  = gsub("^\\s+|\\s+$", "", str),
                   gsub("^\\s+|\\s+$", "", str)
                   );
-            }
+    return (res);
   }
 
 

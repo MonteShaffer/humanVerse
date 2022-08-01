@@ -121,14 +121,22 @@ setSeed = function(seed, key, ..., args.set = list(), print.seed = TRUE, verbose
       }
     initSeedMemory();
     }
-  .GlobalEnv$.humanVerse[["seed"]][[key]] = seed;
+  
+  if( !exists("kind", args.set) )         { kind = NULL; }
+  if( !exists("normal.kind", args.set) )  { normal.kind = NULL; }
+  if( !exists("sample.kind", args.set) )  { sample.kind = NULL; }
+  
+  my.seed = seed;
+	my.seed = setAttribute("kind", kind, my.seed);
+	my.seed = setAttribute("normal.kind", normal.kind, my.seed);
+	my.seed = setAttribute("sample.kind", sample.kind, my.seed);
+	
+  .GlobalEnv$.humanVerse[["seed"]][[key]] = my.seed;
   if(verbose)
       {
       cat("setSeed :: global value stored [key] = ",key," ... [seed] = ",seed, "\n");
       }
-  if( !exists("kind", args.set) )         { kind = NULL; }
-  if( !exists("normal.kind", args.set) )  { normal.kind = NULL; }
-  if( !exists("sample.kind", args.set) )  { sample.kind = NULL; }
+	  
   if(verbose)
       {
       cat("setSeed :: calling base::set.seed with seed ... ", seed, "\n");
@@ -155,7 +163,7 @@ setSeed = function(seed, key, ..., args.set = list(), print.seed = TRUE, verbose
 #' @export
 #'
 #' @examples
-getSeed = function(key, verbose = FALSE)
+getSeed = function(key, keep.attributes = FALSE, verbose = FALSE)
   {
   # I could create a "keyed" list of memory, not just last ...
   if( missing(key) ) { key = "last"; }
@@ -163,7 +171,9 @@ getSeed = function(key, verbose = FALSE)
   if(exists(key, .GlobalEnv$.humanVerse[["seed"]]))
     {
     if(verbose) { cat("\n\t ... found with value: ", "\t", .GlobalEnv$.humanVerse[["seed"]][[key]], "\n"); }
-    .GlobalEnv$.humanVerse[["seed"]][[key]];
+    my.seed = .GlobalEnv$.humanVerse[["seed"]][[key]];
+	if(!keep.attributes) { my.seed = as.integer(my.seed); }
+	my.seed;
     } else { FALSE; }
   }
 

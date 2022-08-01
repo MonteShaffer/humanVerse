@@ -152,10 +152,15 @@ is.zero = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
 
 is.equal = `%==%` = function(x, y, tol = sqrt(.Machine$double.eps), part="Re")
 	{
-	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
-	y = if(part == "Im") { y = Im(y); } else { y = Re(y); }
+	if(typeof(x) == "complex" || typeof(y) == "complex") 
+		{
+		x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
+		y = if(part == "Im") { y = Im(y); } else { y = Re(y); }
 	
-	isTRUE( all.equal (x,y, tol) ); 
+		res = ( ( (x + tol > y) + (y + tol > x) ) == 2);
+		return(res);
+		}
+	isClose(x,y, comparison="==", tol=tol);
 	}
 
 
@@ -163,19 +168,29 @@ is.equal = `%==%` = function(x, y, tol = sqrt(.Machine$double.eps), part="Re")
 # https://stackoverflow.com/questions/2769510/numeric-comparison-difficulty-in-r
 is.ge = `%>=%` = function(x, y, tol = sqrt(.Machine$double.eps), part="Re")
 	{
-	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
-	y = if(part == "Im") { y = Im(y); } else { y = Re(y); }
+	if(typeof(x) == "complex" || typeof(y) == "complex") 
+		{
+		x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
+		y = if(part == "Im") { y = Im(y); } else { y = Re(y); }
 	
-	(x + tol >= y );  # what about strictly '>'? tol is taking care of "average noise"?
+		res = (x + tol >= y );  # what about strictly '>'? tol is taking care of "average noise"?
+		return(res);		
+		}
+	isClose(x,y, comparison=">=", tol=tol);
 	}
 
 is.le = `%<=%` = function(x, y, tol = sqrt(.Machine$double.eps), part="Re")
 	{
-	# a master function to compare both Re + Im at the same time ... 
-	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
-	y = if(part == "Im") { y = Im(y); } else { y = Re(y); }
-	
-	(y + tol >= x );  # what about strictly '>'? tol is taking care of "average noise"?
+	if(typeof(x) == "complex" || typeof(y) == "complex") 
+		{
+		# a master function to compare both Re + Im at the same time ... 
+		x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
+		y = if(part == "Im") { y = Im(y); } else { y = Re(y); }
+		
+		res = (y + tol >= x );  # what about strictly '>'? tol is taking care of "average noise"?
+		return(res);
+		}
+	isClose(x,y, comparison=">=", tol=tol);	
 	}
 
 
@@ -312,6 +327,7 @@ get.sign = function(xs, ..., other="NA", return="number", tol = sqrt(.Machine$do
 # https://stackoverflow.com/questions/30773762/r-functions-aliases-documentation
 isClose = function(a,b, tol=sqrt(.Machine$double.eps), comparison="==", force.pairwise=TRUE )
   {
+  # comparison == works on COMPLEX numbers, others do NOT work ... 
   # we assume no issues with stats::na.omit
   if(missing(b)) { b = a; force.pairwise=FALSE; } # this will do the matrix comparison
   a.n = length(a);
@@ -353,7 +369,7 @@ isClose = function(a,b, tol=sqrt(.Machine$double.eps), comparison="==", force.pa
 
 
 
-doComparison = function(a, b, tol=sqrt(.Machine$double.eps), comparison="==")
+doComparison = function(a, b, comparison="==", tol=sqrt(.Machine$double.eps) )
 	{
 	# internal function, assumes length(a) == length(b) == 1
 	res = switch(comparison,
