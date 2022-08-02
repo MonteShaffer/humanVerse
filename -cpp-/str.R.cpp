@@ -26,5 +26,3 @@ inline std::string& cpp_trim(std::string& s, const char* t = " \t\n\r\f\v")
 
 
 
-
-

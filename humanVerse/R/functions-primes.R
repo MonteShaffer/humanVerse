@@ -240,6 +240,48 @@ prime.isPrime = function(x)
 	}
 
 
+# for(i in 1:100) { cat(i," :: ",is.prime(i), "\n"); }
+is.prime = function(x)
+	{
+	# https://www.programiz.com/cpp-programming/examples/prime-number
+	if(x == 0 || x == 1) { return(FALSE);}
+	if(x == 2 || x == 3) { return(TRUE); }
+	for(i in 2:as.integer(sqrt(x)))
+		{
+		if (x %% i == 0) { return(FALSE); }
+		}
+	TRUE;
+	}
+
+# https://dirk.eddelbuettel.com/papers/useR2019_rcpp_tutorial.pdf
+is.prime.range = function(xmin, xmax)
+	{
+	p = prime.pracmaPrimes(xmax, first=FALSE);
+	
+	p = p[(p >= xmin)];
+	p = p[(p <= xmax)];
+	
+	p;	
+	}
+	
+	
+# https://onlinegdb.com/qgvpmcpRr
+# https://onlinegdb.com/5HTxwqrS6
+# C++ variant ... 
+gcd.lcm = function(x,y)
+	{
+	a=x;
+	b=y;
+	while (b != 0)
+        {
+		t = b;
+		b = a %% b;
+		a = t;
+        }
+	list("gcd"=a, "lcm"=(x*y)/a);
+	}
+	
+
 #' prime.factors
 #'
 #' @param x
