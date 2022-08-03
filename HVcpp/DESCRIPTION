@@ -1,0 +1,20 @@
+Package: HVcpp
+Type: Package
+Title: Saving Human-Life Hours with "fast" and "accurate" Rcpp functions to stabilize base R
+Version: 0.3
+Date: 2022-08-01
+Authors@R: person( "Monte J. Shaffer", email = "monte.shaffer@gmail.com",
+  role = c("aut", "cre")  )
+Description: Faster, more standards, more accurate ...
+License: MIT + file LICENSE
+URL: https://github.com/MonteShaffer/humanVerse/HVcpp
+BugReports: https://github.com/MonteShaffer/humanVerse/issues
+Imports: Rcpp (>= 1.0.9),
+  BH,
+  RcppArmadillo,
+  RcppEigen
+LinkingTo: Rcpp
+RoxygenNote: 7.1.1
+
+
+  

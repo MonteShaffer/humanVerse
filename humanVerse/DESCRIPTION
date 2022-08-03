@@ -17,11 +17,12 @@ Suggests:
   Matrix,
   matrixStats,
   matrixcalc,
+  Rcpp,  
+  RMariaDB,
   stringi
 Imports:
   graphics,
   rjson,
-  RMariaDB,
   stats,
   utils,
   xml2
