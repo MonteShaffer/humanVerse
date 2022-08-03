@@ -364,6 +364,11 @@ std::string _md5(const std::string str)
  return md5.hexdigest();
  }
 
+//' Compute md5 of CharacterVector
+//'
+//' @param str CharacterVector of Strings
+//' @param times INTEGER on how many iterations on single string
+//' @return CharacterVector of MD5(times)
 // [[Rcpp::export]]
 CharacterVector cpp_md5(const std::vector<std::string> str, int times=1)
 {

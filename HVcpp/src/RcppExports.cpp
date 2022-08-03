@@ -22,42 +22,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// cpp_LShift
-long long cpp_LShift(long long a, int b);
-RcppExport SEXP _HVcpp_cpp_LShift(SEXP aSEXP, SEXP bSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< long long >::type a(aSEXP);
-    Rcpp::traits::input_parameter< int >::type b(bSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_LShift(a, b));
-    return rcpp_result_gen;
-END_RCPP
-}
-// computeGCD
-int computeGCD(int a, int b);
-RcppExport SEXP _HVcpp_computeGCD(SEXP aSEXP, SEXP bSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type a(aSEXP);
-    Rcpp::traits::input_parameter< int >::type b(bSEXP);
-    rcpp_result_gen = Rcpp::wrap(computeGCD(a, b));
-    return rcpp_result_gen;
-END_RCPP
-}
-// computeLCM
-int computeLCM(int a, int b);
-RcppExport SEXP _HVcpp_computeLCM(SEXP aSEXP, SEXP bSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type a(aSEXP);
-    Rcpp::traits::input_parameter< int >::type b(bSEXP);
-    rcpp_result_gen = Rcpp::wrap(computeLCM(a, b));
-    return rcpp_result_gen;
-END_RCPP
-}
 // cpp_gcd_lcm
 List cpp_gcd_lcm(long long int x, long long int y);
 RcppExport SEXP _HVcpp_cpp_gcd_lcm(SEXP xSEXP, SEXP ySEXP) {
@@ -94,53 +58,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// armaMatMult
-SEXP armaMatMult(arma::mat A, arma::mat B);
-RcppExport SEXP _HVcpp_armaMatMult(SEXP ASEXP, SEXP BSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< arma::mat >::type A(ASEXP);
-    Rcpp::traits::input_parameter< arma::mat >::type B(BSEXP);
-    rcpp_result_gen = Rcpp::wrap(armaMatMult(A, B));
-    return rcpp_result_gen;
-END_RCPP
-}
-// eigenMatTrans
-SEXP eigenMatTrans(Eigen::MatrixXd A);
-RcppExport SEXP _HVcpp_eigenMatTrans(SEXP ASEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type A(ASEXP);
-    rcpp_result_gen = Rcpp::wrap(eigenMatTrans(A));
-    return rcpp_result_gen;
-END_RCPP
-}
-// eigenMatMult
-SEXP eigenMatMult(Eigen::MatrixXd A, Eigen::MatrixXd B);
-RcppExport SEXP _HVcpp_eigenMatMult(SEXP ASEXP, SEXP BSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type A(ASEXP);
-    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type B(BSEXP);
-    rcpp_result_gen = Rcpp::wrap(eigenMatMult(A, B));
-    return rcpp_result_gen;
-END_RCPP
-}
-// eigenMapMatMult
-SEXP eigenMapMatMult(const Eigen::Map<Eigen::MatrixXd> A, Eigen::Map<Eigen::MatrixXd> B);
-RcppExport SEXP _HVcpp_eigenMapMatMult(SEXP ASEXP, SEXP BSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Eigen::Map<Eigen::MatrixXd> >::type A(ASEXP);
-    Rcpp::traits::input_parameter< Eigen::Map<Eigen::MatrixXd> >::type B(BSEXP);
-    rcpp_result_gen = Rcpp::wrap(eigenMapMatMult(A, B));
-    return rcpp_result_gen;
-END_RCPP
-}
 // cpp_md5
 CharacterVector cpp_md5(const std::vector<std::string> str, int times);
 RcppExport SEXP _HVcpp_cpp_md5(SEXP strSEXP, SEXP timesSEXP) {
@@ -165,18 +82,8 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// rcpp_hello_world
-List rcpp_hello_world();
-RcppExport SEXP _HVcpp_rcpp_hello_world() {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(rcpp_hello_world());
-    return rcpp_result_gen;
-END_RCPP
-}
 // cpp_rtrim
-inline std::string cpp_rtrim(std::string s, std::string t);
+std::string cpp_rtrim(std::string s, std::string t);
 RcppExport SEXP _HVcpp_cpp_rtrim(SEXP sSEXP, SEXP tSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -188,7 +95,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // cpp_ltrim
-inline std::string cpp_ltrim(std::string s, std::string t);
+std::string cpp_ltrim(std::string s, std::string t);
 RcppExport SEXP _HVcpp_cpp_ltrim(SEXP sSEXP, SEXP tSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -200,7 +107,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // cpp_trim
-inline std::string cpp_trim(std::string s, std::string t);
+std::string cpp_trim(std::string s, std::string t);
 RcppExport SEXP _HVcpp_cpp_trim(SEXP sSEXP, SEXP tSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -212,7 +119,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // cpp_tolower
-inline std::string cpp_tolower(std::string s);
+std::string cpp_tolower(std::string s);
 RcppExport SEXP _HVcpp_cpp_tolower(SEXP sSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -223,7 +130,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // cpp_toupper
-inline std::string cpp_toupper(std::string s);
+std::string cpp_toupper(std::string s);
 RcppExport SEXP _HVcpp_cpp_toupper(SEXP sSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -234,37 +141,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // cpp_strlen
-inline long long int cpp_strlen(std::string s);
+long long unsigned int cpp_strlen(std::string s);
 RcppExport SEXP _HVcpp_cpp_strlen(SEXP sSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string >::type s(sSEXP);
     rcpp_result_gen = Rcpp::wrap(cpp_strlen(s));
-    return rcpp_result_gen;
-END_RCPP
-}
-// cpp_charAt
-inline char cpp_charAt(std::string s, long long unsigned int w);
-RcppExport SEXP _HVcpp_cpp_charAt(SEXP sSEXP, SEXP wSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::string >::type s(sSEXP);
-    Rcpp::traits::input_parameter< long long unsigned int >::type w(wSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_charAt(s, w));
-    return rcpp_result_gen;
-END_RCPP
-}
-// cpp_explode
-std::vector<std::string> cpp_explode(std::string s, std::string sep);
-RcppExport SEXP _HVcpp_cpp_explode(SEXP sSEXP, SEXP sepSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::string >::type s(sSEXP);
-    Rcpp::traits::input_parameter< std::string >::type sep(sepSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_explode(s, sep));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -308,27 +191,17 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_HVcpp_cpp_RShift", (DL_FUNC) &_HVcpp_cpp_RShift, 2},
-    {"_HVcpp_cpp_LShift", (DL_FUNC) &_HVcpp_cpp_LShift, 2},
-    {"_HVcpp_computeGCD", (DL_FUNC) &_HVcpp_computeGCD, 2},
-    {"_HVcpp_computeLCM", (DL_FUNC) &_HVcpp_computeLCM, 2},
     {"_HVcpp_cpp_gcd_lcm", (DL_FUNC) &_HVcpp_cpp_gcd_lcm, 2},
     {"_HVcpp_cpp_gcd", (DL_FUNC) &_HVcpp_cpp_gcd, 2},
     {"_HVcpp_cpp_lcm", (DL_FUNC) &_HVcpp_cpp_lcm, 2},
-    {"_HVcpp_armaMatMult", (DL_FUNC) &_HVcpp_armaMatMult, 2},
-    {"_HVcpp_eigenMatTrans", (DL_FUNC) &_HVcpp_eigenMatTrans, 1},
-    {"_HVcpp_eigenMatMult", (DL_FUNC) &_HVcpp_eigenMatMult, 2},
-    {"_HVcpp_eigenMapMatMult", (DL_FUNC) &_HVcpp_eigenMapMatMult, 2},
     {"_HVcpp_cpp_md5", (DL_FUNC) &_HVcpp_cpp_md5, 2},
     {"_HVcpp_cpp_primes", (DL_FUNC) &_HVcpp_cpp_primes, 2},
-    {"_HVcpp_rcpp_hello_world", (DL_FUNC) &_HVcpp_rcpp_hello_world, 0},
     {"_HVcpp_cpp_rtrim", (DL_FUNC) &_HVcpp_cpp_rtrim, 2},
     {"_HVcpp_cpp_ltrim", (DL_FUNC) &_HVcpp_cpp_ltrim, 2},
     {"_HVcpp_cpp_trim", (DL_FUNC) &_HVcpp_cpp_trim, 2},
     {"_HVcpp_cpp_tolower", (DL_FUNC) &_HVcpp_cpp_tolower, 1},
     {"_HVcpp_cpp_toupper", (DL_FUNC) &_HVcpp_cpp_toupper, 1},
     {"_HVcpp_cpp_strlen", (DL_FUNC) &_HVcpp_cpp_strlen, 1},
-    {"_HVcpp_cpp_charAt", (DL_FUNC) &_HVcpp_cpp_charAt, 2},
-    {"_HVcpp_cpp_explode", (DL_FUNC) &_HVcpp_cpp_explode, 2},
     {"_HVcpp_cpp_implode", (DL_FUNC) &_HVcpp_cpp_implode, 2},
     {"_HVcpp_cpp_str_replace", (DL_FUNC) &_HVcpp_cpp_str_replace, 3},
     {"_HVcpp_cpp_str_repeat", (DL_FUNC) &_HVcpp_cpp_str_repeat, 2},

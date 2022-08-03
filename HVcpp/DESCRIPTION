@@ -14,7 +14,4 @@ Imports: Rcpp (>= 1.0.9),
   RcppArmadillo,
   RcppEigen
 LinkingTo: Rcpp
-RoxygenNote: 7.1.1
-
-
-  
+RoxygenNote: 7.2.1

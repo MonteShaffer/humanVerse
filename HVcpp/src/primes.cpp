@@ -4,6 +4,14 @@
 using namespace Rcpp;
 
 
+//' Compute NumericVector of Primes
+//'
+//' (ported from pracma::primes) with new 'n' primes functionality
+//' SLOWS above 10^7
+//'
+//' @param n How Many
+//' @param first BOOLEAN (if FALSE) returns primes <= 'n' ELSE returns 'n' primes
+//' @return NumberVector of PRIMES 
 // [[Rcpp::export]]
 NumericVector cpp_primes(long long int n, bool first=false) {
 	long long gn = n;

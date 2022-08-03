@@ -78,7 +78,7 @@ md5 = function(strvec, times=1)
   # https://cran.r-project.org/web/packages/openssl/openssl.pdf
   # md5(serialize)?
   # digest is not vector driven ... # `apply` could work ...
-  if (requireNamespace("openssl", quietly = TRUE))
+  if (isTRUE(requireNamespace("openssl", quietly = TRUE)))
     {
     nstrvec = openssl::md5(strvec);
     if(times > 1)
