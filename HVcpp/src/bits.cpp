@@ -6,7 +6,17 @@
 //' @param b int to shift
 //' @return Updated INTEGER a appropriately shifted
 // [[Rcpp::export]]
-long long cpp_RShift(long long a, int b) 
+NumericVector cpp_RShift(const std::vector<long long int> arr, int b)
+{
+	NumericVector r{};
+	for (auto& element : arr) 
+		{
+		long long unsigned int res = _RShift(element, b);
+		r.push_back(res);
+		}
+	return r;
+}
+long long _RShift(long long a, int b) 
 	{ 
 	return a >> b;
 	}
@@ -16,7 +26,18 @@ long long cpp_RShift(long long a, int b)
 //' @param a INTEGER to be manipulated
 //' @param b int to shift
 //' @return Updated INTEGER a appropriately shifted
-long long cpp_LShift(long long a, int b) 
+// [[Rcpp::export]]
+NumericVector cpp_LShift(const std::vector<long long int> arr, int b)
+{
+	NumericVector r{};
+	for (auto& element : arr) 
+		{
+		long long unsigned int res = _LShift(element, b);
+		r.push_back(res);
+		}
+	return r;
+}
+long long _LShift(long long a, int b) 
 	{ 
 	return a << b;
 	}

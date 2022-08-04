@@ -1,5 +1,31 @@
 
 
+##################################################
+#'
+#' functions.cleanKey
+#'
+#' This INTENTIONALLY uses internal base R to prevent 'recursion'
+#'
+#' @param key (what is the character string to be keyed)
+#' @param n=1 (how many characters of key to return)
+#'
+#' @return Updated key
+#' @export
+#'
+#' @examples
+functions.cleanKey = function(key, n=1)
+	{
+	substr(tolower(key),1,n);
+	}
+
+
+
+
+
+
+
+
+
 
 #' sourceMe
 #'

@@ -17,11 +17,11 @@ List cpp_gcd_lcm(long long int x, long long int y) {
 		b = a % b;
 		a = t;
 		}		
-    List L = List::create(Named("gcd") = a , Named("lcm") = (x * y ) / a );
+		List L = List::create(Named("gcd") = a , Named("lcm") = (x * y ) / a );
 	return L;
 }
 
-//' Compute gcd  (Euler Method)
+//' Compute gcd	(Euler Method)
 //'
 //' @param x first integer
 //' @param y second integer
@@ -37,17 +37,17 @@ long long int cpp_gcd(long long int x, long long int y) {
 		b = a % b;
 		a = t;
 		}
-    return a;
+		return a;
 }
 
-//' Compute lcd  (Euler Method)
+//' Compute lcd	(Euler Method)
 //'
 //' @param x first integer
 //' @param y second integer
 //' @return INTEGER (lcd)
 // [[Rcpp::export]]
 long long int cpp_lcm(long long int x, long long int y) {
-    long long int a = x;
+		long long int a = x;
 	long long int b = y;
 	long long int t = b;
 	while(b != 0)
@@ -56,5 +56,5 @@ long long int cpp_lcm(long long int x, long long int y) {
 		b = a % b;
 		a = t;
 		}
-    return (x*y)/a;
+		return (x*y)/a;
 }

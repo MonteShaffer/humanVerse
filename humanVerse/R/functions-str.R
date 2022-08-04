@@ -1,4 +1,219 @@
 
+##################################################
+#'
+#' str.tolower
+#'
+#' @param str VECTOR of strings to be case managed
+#' @param method Use C++ is library(HVcpp) or Rcpp::sourceCpp(str.cpp)
+#'
+#' @return
+#' @export
+#'
+#' @examples
+str.tolower = function(str, method="cpp", locale="en_US.UTF-8")
+	{
+# l10n_info();      # NON-TRIVIAL
+# Sys.getlocale();
+# stri_trans_tolower(string, locale = locale)
+
+	# necessary overhead
+	m = functions.cleanKey(method, 1);
+
+	if(m == "s" && is.library("stringi") )
+		{		
+		return ( stringi::stri_trans_tolower(str, locale) );
+		}
+
+	if(m == "c" && exists("cpp_strtolower"))
+		{
+		return( cpp_strtolower(str) );
+		} 
+
+
+	tolower(str);
+	}
+
+#' @rdname strtolower
+#' @export
+strtolower = str.tolower;
+
+
+##################################################
+#' str.toupper
+#'
+#' @param str VECTOR of strings to be case managed
+#' @param method Use C++ is library(HVcpp) or Rcpp::sourceCpp(str.cpp)
+#'
+#' @return
+#' @export
+#'
+#' @examples
+str.toupper = function(str, method="cpp", locale="en_US.UTF-8")
+	{
+	# necessary overhead
+	m = functions.cleanKey(method, 1);
+
+	if(m == "s" && is.library("stringi") )
+		{		
+		return ( stringi::stri_trans_toupper(str, locale) );
+		}
+
+	if(m == "c" && exists("cpp_strtoupper"))
+		{
+		return( cpp_strtoupper(str) );
+		} 
+
+	toupper(str);
+	}
+
+#' @rdname strtoupper
+#' @export
+strtoupper = str.toupper;
+
+
+##################################################
+#'
+#' str.trim
+#'
+#'
+#' library(stringi);
+#'
+#' @param str character string to be "trimmed"
+#'
+#' @return updated trimmed string
+#' @export
+#'
+#' @examples
+#'
+#' str.trim( c(" Monte", " is ", "Alexander's ", "  daddy!") );
+#'
+#' str.trim("    four   scores    and  seven      years     ");
+#' str.trim("    four   scores    and  seven      years     ", "left");
+#' str.trim("    four   scores    and  seven      years     ", "riGht");
+#' str.trim("    four   scores    and  seven      years     ", "both");
+#' str.trim("    four   scores    and  seven      years     ", "albjdskj")
+#'
+#' str.trim("\r\n    four   scores    and  seven      years   \t\t  ");
+#'
+str.trim = function(str, side="both", method="cpp", pattern="", ...)
+  {
+	# necessary overhead
+	s = functions.cleanKey(side, 1);
+	m = functions.cleanKey(method, 1);
+	
+
+	if(m == "s" && is.library("stringi") )
+		{
+		p = "\\P{Wspace}";
+		if(pattern != "") { p = pattern; }
+		res = switch(s,
+						  "l"	= stringi::stri_trim_left (str, p, ...),
+						  "r" 	= stringi::stri_trim_right(str, p, ...),
+						  "b"  	= stringi::stri_trim_both (str, p, ...),
+					stringi::stri_trim_both(str, p, ...)
+					);
+		return (res);
+		}
+
+	if(m == "c" && exists("cpp_trim"))
+		{
+		t = " \t\n\r\f\v";
+		if(pattern != "") { t = pattern; }
+		res = switch(s,
+						  "l"  	= cpp_ltrim(str, t),
+						  "r" 	= cpp_rtrim(str, t),
+						  "b"  	= cpp_trim (str, t),
+					cpp_trim(str, t)
+					);
+		return (res);
+		}
+
+	
+	
+	g = "\\s+";
+	if(pattern != "") { g = pattern; }
+	res = switch(s,
+						  "l" 	= gsub( paste0("^",g), "", str),
+						  "r" 	= gsub( paste0(g,"$"), "", str),
+						  "b"  	= gsub( paste0("^",g,"|",g,"$"), "", str),
+                  gsub( paste0("^",g,"|",g,"$"), "", str)
+                  );
+    return (res);
+	}
+
+#' @rdname trimMe
+#' @export
+trimMe = str.trim;
+
+
+
+##################################################
+#'
+#' str.split
+#'
+#' Similar to javascript.split and php.explode
+#'
+#' @param sep [separator] character(s) to delimit the split
+#' @param str a character string to be split [NOT a vector]
+#' @param n if NULL, return ALL of THEM ... otherwise just single element
+#'
+#' @return a character vector
+#' @export
+#'
+#' @examples
+str.split = function(sep = " ", str = "hello friend", method="cpp", ...)
+	{
+	# necessary overhead
+	m = functions.cleanKey(method, 1);
+
+	if(m == "s" && is.library("stringi") )
+		{
+		return (stringi::stri_split_fixed(str, sep, ...));
+		}
+
+	if(m == "c" && exists("cpp_explode"))
+		{
+		return( cpp_explode(sep, str) );
+		}
+	
+	res = strsplit(str, sep, fixed=TRUE);
+	res[[1]];
+	}
+
+#' @rdname explodeMe
+#' @export
+explodeMe = str.split;
+
+#' @rdname str.explode
+#' @export
+str.explode = str.split;
+
+
+
+
+
+
+
+
+
+
+
+# Rcpp::sourceCpp("C:\\_git_\\github\\MonteShaffer\\humanVerse\\HVcpp\\src\\str.cpp");
+# rm(list=ls())
+# rm(list=ls(all.names=TRUE)); gc();
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #' catMe
 #'

@@ -1,3 +1,84 @@
+# Sys.setenv("HUMANVERSE_CACHE" = "R:/R-humanVerse-cache");
+# Sys.setenv("HUMANVERSE_DATA" = "R:/R-humanVerse-cache");
+# maybe just have a path.set("key") ... path.get("key") ... path.print("key")
+# path can be local or HTTP
+
+
+##################################################
+#'
+#' memory.init;
+#'
+#' @param purge.memory
+#' @param verbose
+#'
+#' @return
+#' @export
+#'
+#' @examples
+memory.init; = function(purge.memory = FALSE, verbose = TRUE)
+  {
+  if(!exists(".humanVerse") || purge.memory)
+    {
+    if(verbose)
+      {
+      cat("humanVerse::memory.init; ... initializing HIDDEN list '.humanVerse'", "\n");
+      }
+
+    .GlobalEnv$.humanVerse = list();
+	}
+  }
+
+
+#' @rdname initMemory
+#' @export
+initMemory = memory.init;
+
+
+
+memory.clear = function()
+	{
+	# does this unregister loaded libraries?
+	rm(list=ls(all.names=TRUE)); gc();
+	}
+
+
+# Clear console                      Ctrl+L                     Ctrl+L
+# cat("\014")  is the code to send CTRL+L to the console and therefore will clear the screen.
+# You can also type cat("\f")
+
+
+# https://stackoverflow.com/questions/14260340/function-to-clear-the-console-in-r-and-rstudio
+# clc <- function() cat(rep("\n", 50))  ## only one that works?
+# shell("cls")
+# shell("clear")
+
+
+# https://stackoverflow.com/questions/6979917/how-to-unload-a-package-without-restarting-r
+# sessionInfo()
+# pryr::mem_used()
+# memory.size (max = F)
+# htop
+
+
+# packages.list  ... # search()
+# packages.restoreDefault ... getOption("defaultPackages")
+# unattach, detach all others that are of type=package and not element of defaultPackages
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Sys.setenv("HUMANVERSE_CACHE" = "R:/R-humanVerse-cache");
 
