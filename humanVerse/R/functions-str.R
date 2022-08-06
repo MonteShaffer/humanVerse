@@ -24,6 +24,11 @@ str.tolower = function(str, method="cpp", locale="en_US.UTF-8")
 		return ( stringi::stri_trans_tolower(str, locale) );
 		}
 
+	if(m == "b")
+		{
+		return( tolower(str) );
+		}
+
 	if(m == "c" && exists("cpp_strtolower"))
 		{
 		return( cpp_strtolower(str) );
@@ -39,6 +44,7 @@ strtolower = str.tolower;
 
 
 ##################################################
+#'
 #' str.toupper
 #'
 #' @param str VECTOR of strings to be case managed
@@ -56,6 +62,11 @@ str.toupper = function(str, method="cpp", locale="en_US.UTF-8")
 	if(m == "s" && is.library("stringi") )
 		{		
 		return ( stringi::stri_trans_toupper(str, locale) );
+		}
+
+	if(m == "b")
+		{
+		return( toupper(str) );
 		}
 
 	if(m == "c" && exists("cpp_strtoupper"))
@@ -161,24 +172,44 @@ trimMe = str.trim;
 #' @export
 #'
 #' @examples
-str.split = function(sep = " ", str = "hello friend", method="cpp", ...)
+str.split = function(sep = " ", str = "hello friend", return.list = "AUTO", method="base",  ...)
 	{
 	# necessary overhead
 	m = functions.cleanKey(method, 1);
 
-	if(m == "s" && is.library("stringi") )
+	hasResult = FALSE;
+
+	if(m == "b")
 		{
-		return (stringi::stri_split_fixed(str, sep, ...));
+		res = strsplit(str, sep, fixed=TRUE);
+		hasResult = TRUE;
 		}
 
-	if(m == "c" && exists("cpp_explode"))
+	if(!hasResult && m == "s" && is.library("stringi") )
 		{
-		return( cpp_explode(sep, str) );
+		res = (stringi::stri_split_fixed(str, sep, ...));
+		hasResult = TRUE;
+		}
+
+	if(!hasResult && m == "c" && exists("cpp_explode"))
+		{
+		res = ( cpp_explode(sep, str) );
+		hasResult = TRUE;
 		}
 	
-	res = strsplit(str, sep, fixed=TRUE);
-	res[[1]];
+	if(!hasResult)
+		{
+		res = strsplit(str, sep, fixed=TRUE);
+		}
+
+	# should be collapse into CharacterVector
+	n = length(res);
+	if(n == 1 && (return.list=="AUTO" || return.list==FALSE) ) { return(res[[1]]); }
+	if(n > 1 && (return.list==FALSE) ) { return(res[[1]]); }
+	
+	res;
 	}
+
 
 #' @rdname explodeMe
 #' @export
@@ -187,6 +218,326 @@ explodeMe = str.split;
 #' @rdname str.explode
 #' @export
 str.explode = str.split;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##################################################
+#'
+#' str.repeat
+#'
+#' @param str
+#' @param times
+#'
+#' @return
+#' @export
+#'
+#' @examples
+str.repeat = function(str, times=1, method="cpp")
+	{
+	m = functions.cleanKey(method, 1);
+
+	if(m == "c" && exists("cpp_trim"))
+		{
+		res = cpp_str_repeat(str, times);
+		return (res);
+		}
+
+
+	n = length(str);
+	res = character(n);
+	for(i in 1:n)
+		{
+		res[i] = paste( rep(str, times), collapse="");
+		}
+	res;
+	}
+
+#' @rdname str_repeat
+#' @export
+str_repeat = str.repeat;
+
+
+
+
+
+##################################################
+#'
+#' str.replace
+#'
+#' @param search
+#' @param replace
+#' @param subject
+#' @param method
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' subject = c("Four score and seven years ago", "Abraham Lincoln buoying vessel"); 
+#' search = c("a", "b", "c"); replace = str.toupper(search);
+str.replace = function(search, replace, subject, method="base")
+	{
+	m = functions.cleanKey(method, 1);
+
+	if(m == "c" && exists("cpp_trim"))
+		{
+		res = cpp_str_replace(search, replace, subject);
+		return (res);
+		}
+
+	# stringi::stri_replace_all_fixed
+	# doesn't seem to work correctly  ... 
+
+
+	n = length(subject);
+	slen = length(search);
+	rlen = length(replace);
+	mlen = max(slen, rlen);
+
+	res = character(n);
+	for(j in 1:n)
+		{
+		str = subject[j];
+		for(i in 1:mlen)
+			{
+			mysearch = ""; 
+			if(slen == 1) { mysearch = search[1];} else	if(i <= slen) { mysearch = search[i]; }
+
+			myreplace = "";
+			if(rlen == 1) { myreplace = replace[1];} else if(i <= rlen) { myreplace = replace[i]; }
+
+			str = gsub(mysearch, myreplace, str, fixed=TRUE);
+			}
+		res[j] = str;
+		}
+		
+	return (res);
+	}
+
+#' @rdname str_replace
+#' @export
+str_replace = str.replace;
+
+
+
+
+##################################################
+#'
+#' str.replaceFromList
+#'
+#' @param mylist
+#' @param mysubject
+#' @param method
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' mysubject = c("Four score and seven years ago", "Abraham Lincoln buoying vessel"); 
+#' mylist = c("a" = "A", "b" = "B", "c" = "C");
+str.replaceFromList = function(mylist, mysubject, ...)
+	{
+	str.replace( names(mylist), mylist, mysubject);
+	}
+
+
+##################################################
+#'
+#' str.pad
+#'
+#' When caching pages of content, useful for organization.
+#'  (e.g., page1.html becomes page_001.html)
+#'
+#' @param str The 'string' (can be a number)
+#' @param final.length How long the final str is to be
+#' @param padding Fill with, default is "0" (zero)
+#'
+#' @return string
+#' @export
+#'
+#'
+#' @examples
+#'
+#' str = c("1", "12", "123"); padding = "0";
+str.pad = function(str, final.length, padding="0", side="RIGHT", method="stringi")
+	{
+	str = as.character(str);
+	# necessary overhead
+	s = functions.cleanKey(side, 1);
+	m = functions.cleanKey(method, 1);
+
+	if(m == "s" && is.library("stringi") )
+		{
+		res = switch(s,
+						  "l"	= stringi::stri_pad_left (str, width=final.length, pad=padding),
+						  "r" 	= stringi::stri_pad_right (str, width=final.length, pad=padding),
+						  "b"  	= stringi::stri_pad_both (str, width=final.length, pad=padding),
+					stringi::stri_pad_both (str, width=final.length, pad=padding)
+					);
+		return (res);
+		}
+
+	ns = strlen(str);
+	rs = final.length - n;
+	n = length(str); # how many strings
+	res = character(n);
+	
+	for(i in 1:n)
+		{
+		myr = rs[i];
+		pads = str.repeat(padding, myr); 
+		if(s == "b")
+			{
+			myr_right	= ceiling(myr / 2);
+			pad_right	= str.repeat(padding, ( myr_right )	);
+			pad_left	= str.repeat(padding, ( myr - myr_right )	);
+			}
+		
+		# if padding is multiple length, may be too long
+		res[i] = switch(s,
+						  "l"	= paste0(paste( pads , collapse=""), str[i]),
+						  "r" 	= paste0(str[i], paste( pads , collapse="")),
+						  "b"  	= paste0(paste( pad_left , collapse=""), str[i], 
+											paste( pad_right , collapse="")),
+					paste0(paste( pad_left , collapse=""), str[i], 
+											paste( pad_right , collapse=""))
+					);
+		}
+
+	res;
+	}
+
+
+#' @rdname str_trim
+#' @export
+str_trim = str.trim;
+
+
+
+
+##################################################
+#'
+#' str.commentWrapper
+#'
+#' @param str This should be less than one-line long
+#' @param nchars How many characters in a line (max about 80)
+#' @param c.tag What is the single-character comment tag "#"
+#' @param r.tag What is the single-character repeat tag "-"
+#' @param s.tag What is the single-character space tag " "
+#' @param s.pad What is the padding (both left and right) for spaces
+#'
+#' @return Updated str
+#' @export
+#'
+#' @examples
+#' str.commentWrapper("LIBRARY is not found!");
+#' pname = "stringi"; pkg = paste0( "install.packages(\"",pname,"\", dependencies=TRUE ); ");
+#' str.commentWrapper( pkg, r.tag = "-", s.pad=15);
+#' 
+str.commentWrapper = function(str, nchars=0, c.tag="#", r.tag=c.tag, s.tag=" ", s.pad=5)
+	{
+	# punchcards had 80 characters, a traditional typewriter US had 72 characters per line (CPL)
+	# http://mikeyanderson.com/optimal_characters_per_line
+	# Quotes "Jakob Nielson" + 5 ... states 66 is optimal
+	# 6.5 inches (1 inch margin) x 10 per inch ... about 65 ... we would do +/- 3 in typing class ... override end
+	
+	n = length(str);
+	res = character(n);
+	mylengths = integer(n);
+	for(i in 1:n)
+		{
+		s = paste0(c.tag, r.tag, str.repeat(s.tag, s.pad), str[i], str.repeat(s.tag, s.pad), r.tag, c.tag);
+		slen = strlen(s);
+		if(slen < nchars)
+			{
+			n.tag = 1 + ceiling( (nchars - slen)/2 );
+			s = paste0(	c.tag, r.tag, str.repeat(s.tag, n.tag), 
+									str[i], 
+						str.repeat(s.tag, n.tag), r.tag, c.tag
+						);
+			slen = strlen(s);
+			}
+		res[i] = paste0(c.tag, str.repeat(r.tag, slen - 2), c.tag, "\n", 
+									s, "\n", 
+						c.tag, str.repeat(r.tag, slen - 2), c.tag, "\n"
+						);
+		mylengths[i] = slen;
+		}
+	
+	res = property.set("lengths", mylengths, res);
+	res;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## strpos ... strrpos ... reverse
+
+
+
+
+
+
+
 
 
 
@@ -667,6 +1018,7 @@ strlen = function(str)
   # https://en.wikipedia.org/wiki/C99
   # https://www.programiz.com/c-programming/library-function/string.h/strlen
   # vectorized ... already
+### Error in str.len(str) : could not find function "str.len" ... strlen, str_len, str.length, str_length
   nchar( as.character(str), type="chars");
   }
 
@@ -877,7 +1229,7 @@ str_replace = function(find, replace, str, method="base")
   str;
   }
 
-
+# str_replace_all(
 
 
 
@@ -940,4 +1292,98 @@ ascii.line = function(strs, out.length=66, left = "## ", right = " ##", sep=" ",
 	}
 
 
+
+
+
+
+#' str_replace
+#'
+#' @param find
+#' @param replace
+#' @param str
+#' @param method
+#'
+#' @return
+#' @export
+#'
+#' @examples
+str_replace = function(find, replace, str, method="base")
+  {
+  # this is "fixed" find and replace # str = gsub(find[i], replace[i], str, fixed=TRUE);
+  # method = base, method = stringi
+  # stringi is not performing well on this:  "{wsu.crimson}" with fixed
+
+
+  # if find/replace are longer ... if one is length one, repeat the other one
+  n.find = length(find);
+  n.replace = length(replace);
+  n.max = max(n.find, n.replace);
+
+  if(n.find == 1 && n.replace == 1)
+    {
+    if(n.find == 1)
+      {
+      find = rep(find, n.replace);
+      } else {
+              if(n.replace == 1)
+                {
+                find = rep(replace, n.find);
+                } else {
+                        stop("find and replace mismatch");
+                        }
+              }
+    }
+  ### let's loop and replace ...
+  for(i in 1:n.max)
+    {
+    if( isTRUE(requireNamespace("stringi", quietly = TRUE)) && method=="stringi" )
+      {
+      # I need to verify this is the correct function ...
+      str = stringi::stri_replace_first_fixed(str, find[i], replace[i]);
+      } else {
+              str = gsub(find[i], replace[i], str, fixed=TRUE);
+              }
+    }
+  str;
+  }
+
+# str_replace_all(
+
+
+
+
+
+
+
+
+
+
+
+##################################################
+#'
+#' str.contains
+#'
+#' See PHP str_contains
+#'
+#' @param haystack Can be MULTI-VARIATE
+#' @param needle is UNI-VARIATE
+#'
+#' @return TRUE or FALSE
+#' @export
+#'
+#' @examples
+str.contains = function(haystack = "hello friend", needle = " ", ...)
+	{
+	grepl(needle, haystack, fixed = TRUE);
+	# /*
+	# tmp = str.split(needle, haystack);
+	# n = length(tmp);
+	# res = logical(n);
+	# for(i in 1:n)
+		# {
+		# res[i] = if( length(tmp[[i]]) > 1 ) { TRUE } else { FALSE }
+		# }
+	# res;
+	# */
+	}
 

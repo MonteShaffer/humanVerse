@@ -1,3 +1,5 @@
+
+// need for locale for string functions 
 #include <unicode/unistr.h>
 #include <unicode/ustream.h>
 #include <unicode/locid.h>
@@ -8,8 +10,13 @@ using namespace Rcpp;
 // https://stackoverflow.com/questions/216823/how-to-trim-a-stdstring
 
 
-
-std::string _rtrim(std::string s, std::string t = " \t\n\r\f\v")
+//' String Right Trim
+//'
+//' @param s String to be trimmed
+//' @param t Trimming elements
+//' @return Updated String s, right trimmed
+// [[Rcpp::export]]
+std::string s_rtrim(std::string s, std::string t = " \t\n\r\f\v")
 	{
 	s.erase(s.find_last_not_of(t) + 1);
 	return s;
@@ -26,14 +33,19 @@ CharacterVector cpp_rtrim(const std::vector<std::string> str, std::string t = " 
 	CharacterVector r{};
 	for (auto& element : str) 
 		{
-		std::string res = _rtrim(element, t);
+		std::string res = s_rtrim(element, t);
 		r.push_back(res);
 		}
 	return r;
 }
 
-
-std::string _ltrim(std::string s, std::string t = " \t\n\r\f\v")
+//' String Left Trim
+//'
+//' @param s String to be trimmed
+//' @param t Trimming elements
+//' @return Updated String s, left trimmed
+// [[Rcpp::export]]
+std::string s_ltrim(std::string s, std::string t = " \t\n\r\f\v")
 	{
 	s.erase(0, s.find_first_not_of(t));
 	return s;
@@ -50,16 +62,22 @@ CharacterVector cpp_ltrim(const std::vector<std::string> str, std::string t = " 
 	CharacterVector r{};
 	for (auto& element : str) 
 		{
-		std::string res = _ltrim(element, t);
+		std::string res = s_ltrim(element, t);
 		r.push_back(res);
 		}
 	return r;
 }
 
 
-std::string _trim(std::string s, std::string t = " \t\n\r\f\v")
+//' String Trim
+//'
+//' @param s String to be trimmed
+//' @param t Trimming elements
+//' @return Updated String s, trimmed (both left and right)
+// [[Rcpp::export]]
+std::string s_trim(std::string s, std::string t = " \t\n\r\f\v")
 	{
-	return _ltrim(_rtrim(s, t), t);
+	return s_ltrim(s_rtrim(s, t), t);
 	}
 	
 //' String Trim
@@ -73,14 +91,19 @@ CharacterVector cpp_trim(const std::vector<std::string> str, std::string t = " \
 	CharacterVector r{};
 	for (auto& element : str) 
 		{
-		std::string res = _trim(element, t);
+		std::string res = s_trim(element, t);
 		r.push_back(res);
 		}
 	return r;
 }
 
 
-std::string cpp_tolower(std::string s, std::string locale="en_US.UTF-8")
+//' String to lower case
+//'
+//' @param s String to be transformed
+//' @return Updated String s, lower cased
+// [[Rcpp::export]]
+std::string s_tolower(std::string s, std::string locale="en_US.UTF-8")
 	{
 	// maybe locale.in ... locale.out 
 	// NONTRIVIAL
@@ -114,13 +137,18 @@ CharacterVector cpp_strtolower(const std::vector<std::string> str, std::string l
 	CharacterVector r{};
 	for (auto& element : str) 
 		{
-		std::string res = cpp_tolower(element, locale);
+		std::string res = s_tolower(element, locale);
 		r.push_back(res);
 		}
 	return r;
 }
 
-std::string cpp_toupper(std::string s, std::string locale="en_US.UTF-8")
+//' String to upper case
+//'
+//' @param s String to be transformed
+//' @return Updated String s, upper cased
+// [[Rcpp::export]]
+std::string s_toupper(std::string s, std::string locale="en_US.UTF-8")
 	{
 	std::transform(s.begin(), s.end(), s.begin(), ::toupper);
 	return s;
@@ -144,14 +172,18 @@ CharacterVector cpp_strtoupper(const std::vector<std::string> str, std::string l
 	CharacterVector r{};
 	for (auto& element : str) 
 		{
-		std::string res = cpp_toupper(element, locale);
+		std::string res = s_toupper(element, locale);
 		r.push_back(res);
 		}
 	return r;
 }
 
-
-long long unsigned int _strlen(std::string s)
+//' Get String Length
+//'
+//' @param s String to be sized
+//' @return integer length
+// [[Rcpp::export]]
+long long unsigned int s_strlen(std::string s)
 	{
 	return s.length();
 	}
@@ -165,7 +197,7 @@ NumericVector cpp_strlen(const std::vector<std::string> str)
 	NumericVector r{};
 	for (auto& element : str) 
 		{
-		long long unsigned int res = _strlen(element);
+		long long unsigned int res = s_strlen(element);
 		r.push_back(res);
 		}
 	return r;
@@ -185,7 +217,13 @@ inline char cpp_charAt(std::string s, long long int w)
 
 
 
-std::vector<std::string> _explode(std::string sep, std::string s)
+//' Explode string into array based on separator
+//'
+//' @param sep String to determine how split
+//' @param str String to be exploded (split)
+//' @return vector of strings (List array as CharacterVector)
+// [[Rcpp::export]]
+std::vector<std::string> s_explode(std::string sep, std::string s)
 	{
 	std::vector<std::string> r{};
 	if(sep == "")
@@ -223,11 +261,12 @@ List cpp_explode(std::string sep, const std::vector<std::string> str)
 	List r{};
 	for (auto& element : str) 
 		{
-		std::vector<std::string> res = _explode(sep, element);
+		std::vector<std::string> res = s_explode(sep, element);
 		r.push_back(res);
 		}
 	return r;
 }	
+
 
 
 //' Implode string array into string based on separator
@@ -236,45 +275,76 @@ List cpp_explode(std::string sep, const std::vector<std::string> str)
 //' @param sep String to determine how join
 //' @return joined String
 // [[Rcpp::export]]
-CharacterVector cpp_implode(std::string sep, List<std::string> str)
+std::string s_implode(std::string sep, std::vector<std::string> r)
+	{
+	std::string s = "";
+	int n = r.size();
+	int i = 0;
+	for (auto& element : r) 
+			{
+			s += element;
+			++i; 
+			if(i != n) { s += sep; } // no separator on last element
+			}
+	return s;
+	}
+	
+//' Implode string array into string based on separator
+//'
+//' @param vector of strings (array as CharacterVector)
+//' @param sep String to determine how join
+//' @return joined String
+// [[Rcpp::export]]
+CharacterVector cpp_implode(std::string sep, Rcpp::List str)
 {
 	CharacterVector r{};
 	for (auto& element : str) 
 		{
-		std::vector<std::string> res = _implode(sep, element);
+		std::string res = s_implode(sep, element);
 		r.push_back(res);
 		}
 	return r;
 }	
 
-std::string _implode(std::string sep, std::vector<std::string> r)
-	{
-	std::string s = "";
-	for (auto& element : r) 
-			{
-				s += element;
-				s += sep;
-				}
-				s = _rtrim(s, sep);
-		return(s);
-	}
 
 
-std::string _str_replace(const std::vector<std::string> search, const std::vector<std::string> replace, std::string subject)
+//' Search/Replace a String Subject
+//'
+//' @param String to 'search'
+//' @param String to 'replace'
+//' @param String 'subject'
+//' @return updated 'subject' String appropriate replaced ... (no REGEX here)
+// [[Rcpp::export]]
+std::string s_str_replace(const std::vector<std::string> search, const std::vector<std::string> replace, std::string subject)
 	{
-	long long unsigned int slen = search.size();
+	long long unsigned int slen = search.size();		
 	long long unsigned int rlen = replace.size();
 	long long unsigned int mlen = std::max(slen, rlen);
 	std::string res = subject;
+		/*
+		std::cout << slen;
+		std::cout << "\n";
+		std::cout << rlen;
+		std::cout << "\n";
+		std::cout << mlen;
+		std::cout << "\n";
+		std::cout << res;
+		std::cout << "\n";
+		*/
+	// std::replace( s.begin(), s.end(), 'x', 'y');
 	
 	for(long long unsigned int i = 0; i < mlen; i++)
 		{
-		std::string mysearch = (slen == 1) ? search[0] : search[i];
-		std::string myreplace = (rlen == 1) ? replace[0] : replace[i];
-		std::vector<std::string> tmp = cpp_explode(mysearch, res);
-		std::string res = cpp_implode(myreplace, tmp);
+		std::string mysearch = (slen == 1) ? search[0] : ( (i < slen) ? search[i] : "" );
+		std::string myreplace = (rlen == 1) ? replace[0] : ( (i < rlen) ? replace[i] : "" );
+		std::vector<std::string> tmp = s_explode(mysearch, res);
+		res = s_implode(myreplace, tmp);
 		}
-	
+		/*
+		std::cout << res;
+		std::cout << "\n";
+		*/
+		
 	return res;
 	}
 	
@@ -290,21 +360,28 @@ CharacterVector cpp_str_replace(const std::vector<std::string> search, const std
 	CharacterVector r{};
 	for (auto& element : subject) 
 		{
-		std::string res = _str_replace(search, replace, element);
+		std::string res = s_str_replace(search, replace, element);
 		r.push_back(res);
 		}
 	return r;
 }
 
 
-std::string _str_repeat(std::string s, int times)
+//' Repeat a String s
+//'
+//' @param String to 'repeat'
+//' @param Integer 'times' to 'repeat'
+//' @return updated String repeated 'times'	
+// [[Rcpp::export]]
+std::string s_str_repeat(std::string s, int times)
 	{
 	std::string out = "";
+	if(times < 1) { return out; }
 	for(int i = 0; i < times; i++)
 			{
 			out += s;
 			}
-		return(out); 
+	return out; 
 	}
 	
 
@@ -319,9 +396,30 @@ CharacterVector cpp_str_repeat(const std::vector<std::string> str, int times)
 	CharacterVector r{};
 	for (auto& element : str) 
 		{
-		std::string res = _str_repeat(element, times);
+		std::string res = s_str_repeat(element, times);
 		r.push_back(res);
 		}
 	return r;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// https://stackoverflow.com/questions/667183/padding-stl-strings-in-c
+// no need to do str_pad
+// https://stackoverflow.com/questions/26241085/rcpp-function-check-if-missing-value
+// TODO ... how to implement missing values as INPUTS
+// str.trim( c(1, NA), method="s"); str.trim( c(1, NA), method="c");
 

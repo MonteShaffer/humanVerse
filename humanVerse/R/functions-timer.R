@@ -11,6 +11,7 @@
 #' @examples
 timer.start = function(key="DEFAULT")
 	{
+	memory.init();
 	# this overwrites without any checks?
 	.GlobalEnv$.humanVerse[["timer"]][[key]] = list();
 	.GlobalEnv$.humanVerse[["timer"]][[key]]$start = Sys.time();  # vs. proc.time()
@@ -28,6 +29,7 @@ timer.start = function(key="DEFAULT")
 #' @examples	
 timer.stop = function(key="DEFAULT")
 	{
+	memory.init();
 	if(!exists(key, .GlobalEnv$.humanVerse[["timer"]]))
 		{
 		stop(paste0("Nothing to stop as timer.start for key: ", key, " not called yet!"));
@@ -49,8 +51,9 @@ timer.stop = function(key="DEFAULT")
 #' @export
 #'
 #' @examples
-timer.print = function(key="DEFAULT", format="seconds")
+timer.print = function(key="DEFAULT", format="seconds", digits=2)
 	{
+	memory.init();
 	# seconds, pretty-seconds, pretty ...
 	if(!exists(key, .GlobalEnv$.humanVerse[["timer"]]))
 		{
@@ -58,10 +61,12 @@ timer.print = function(key="DEFAULT", format="seconds")
 		}
 	
 	seconds = .GlobalEnv$.humanVerse[["timer"]][[key]]$diff;
+
+	# wrap into SWITCH?
 		
-	if(return == "pretty-seconds") { return( timer.formatPrettySeconds(seconds) ); }
+	if(format == "pretty-seconds") { return( timer.formatPrettySeconds(seconds, digits) ); }
 	
-	if(return == "pretty") { return( timer.formatPretty(seconds) ); }
+	if(format == "pretty") { return( timer.formatPretty(seconds, digits) ); }
 	
 	# DEFAULT
 	seconds;
@@ -79,9 +84,9 @@ timer.print = function(key="DEFAULT", format="seconds")
 #' @export
 #'
 #' @examples	
-timer.formatPrettySeconds = function(seconds)
+timer.formatPrettySeconds = function(seconds, digits=2)
 	{
-	paste0( round(seconds,2), " seconds");	
+	paste0( round(seconds, digits), " seconds");	
 	}
 
 ##################################################
@@ -96,7 +101,7 @@ timer.formatPrettySeconds = function(seconds)
 #'
 #' @examples	
 # https://stackoverflow.com/questions/572049/convert-seconds-to-days-minutes-and-hours-in-obj-c
-timer.formatPretty = function(seconds)
+timer.formatPretty = function(seconds, digits=2)
 	{
 				str = "";
 	days = floor( seconds / (60 * 60 * 24) );
@@ -112,7 +117,7 @@ timer.formatPretty = function(seconds)
 				if(days > 0 | hours > 0 | minutes > 0) { str = paste0(str, minutes," ",mstr,", "); }
 		seconds = seconds - minutes * (60);
 
-	paste0( str, round(seconds,2), " seconds");		
+	paste0( str, round(seconds, digits), " seconds");		
 	}
 
 

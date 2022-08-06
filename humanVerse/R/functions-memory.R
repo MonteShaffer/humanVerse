@@ -15,7 +15,7 @@
 #' @export
 #'
 #' @examples
-memory.init; = function(purge.memory = FALSE, verbose = TRUE)
+memory.init = function(purge.memory = FALSE, verbose = TRUE)
   {
   if(!exists(".humanVerse") || purge.memory)
     {
@@ -35,10 +35,12 @@ initMemory = memory.init;
 
 
 
-memory.clear = function()
+memory.clear = function(purge.ls=TRUE, all.names=TRUE, purge.gc=TRUE, detach.packages=TRUE)
 	{
 	# does this unregister loaded libraries?
-	rm(list=ls(all.names=TRUE)); gc();
+	if(purge.ls) { rm(list=ls(all.names=all.names)); }
+	if(purge.gc) { gc(); }
+	if(detach.packages) { }
 	}
 
 

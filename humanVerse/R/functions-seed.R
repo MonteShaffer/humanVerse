@@ -12,9 +12,9 @@
 #' # seed.init();
 #' # seed.init(1, 10^5, method="floor");
 seed.init = function(...)
-  {
-  rand(...)[1];  # if they wrongly passed in n > 1, we only return [1]
-  }
+	{
+	rand(...)[1];	# if they wrongly passed in n > 1, we only return [1]
+	}
 
 
 #' @rdname initSeed
@@ -42,18 +42,19 @@ initSeed = seed.init;
 #'
 #' @examples
 seed.get = function(key, keep.attributes = FALSE, verbose = FALSE)
-  {
-  # I could create a "keyed" list of memory, not just last ...
-  if( missing(key) ) { key = "last"; }
-  if(verbose) { cat("getSeed :: looking up key ... ", "\t", key); }
-  if(exists(key, .GlobalEnv$.humanVerse[["seed"]]))
-    {
-    if(verbose) { cat("\n\t ... found with value: ", "\t", .GlobalEnv$.humanVerse[["seed"]][[key]], "\n"); }
-    my.seed = .GlobalEnv$.humanVerse[["seed"]][[key]];
+	{
+	memory.init();
+	# I could create a "keyed" list of memory, not just last ...
+	if( missing(key) ) { key = "last"; }
+	if(verbose) { cat("getSeed :: looking up key ... ", "\t", key); }
+	if(exists(key, .GlobalEnv$.humanVerse[["seed"]]))
+		{
+		if(verbose) { cat("\n\t ... found with value: ", "\t", .GlobalEnv$.humanVerse[["seed"]][[key]], "\n"); }
+		my.seed = .GlobalEnv$.humanVerse[["seed"]][[key]];
 	if(!keep.attributes) { my.seed = as.integer(my.seed); }
 	my.seed;
-    } else { FALSE; }
-  }
+		} else { FALSE; }
+	}
 
 
 #' @rdname getSeed
@@ -86,46 +87,45 @@ seed.set = function(seed, key, ...,
 							print.seed = TRUE, 
 							verbose = FALSE 
 					)
-  {
-  if( missing(key) ) { key = "last"; }
-  if(is.null(seed))
-    {
-    seed = initSeed(...);
-    if(verbose)
-      {
-      cat("setSeed :: generating new integer seed ... ", "\t", seed, "\n");
-      }
-    initSeedMemory();
-	# memory.init("seed");
-    }
-  
-  if( !exists("kind", args.set) )         { kind = NULL; }
-  if( !exists("normal.kind", args.set) )  { normal.kind = NULL; }
-  if( !exists("sample.kind", args.set) )  { sample.kind = NULL; }
-  
-  my.seed = seed;
+	{
+	memory.init();
+	if( missing(key) ) { key = "last"; }
+	if(is.null(seed))
+		{
+		seed = initSeed(...);
+		if(verbose)
+			{
+			cat("setSeed :: generating new integer seed ... ", "\t", seed, "\n");
+			}
+		}
+	
+	if( !exists("kind", args.set) )				 { kind = NULL; }
+	if( !exists("normal.kind", args.set) )	{ normal.kind = NULL; }
+	if( !exists("sample.kind", args.set) )	{ sample.kind = NULL; }
+	
+	my.seed = seed;
 	my.seed = setAttribute("kind", kind, my.seed);
 	my.seed = setAttribute("normal.kind", normal.kind, my.seed);
 	my.seed = setAttribute("sample.kind", sample.kind, my.seed);
 	
-  .GlobalEnv$.humanVerse[["seed"]][[key]] = my.seed;
-  if(verbose)
-      {
-      cat("setSeed :: global value stored [key] = ",key," ... [seed] = ",seed, "\n");
-      }
-	  
-  if(verbose)
-      {
-      cat("setSeed :: calling base::set.seed with seed ... ", seed, "\n");
-      }
+	.GlobalEnv$.humanVerse[["seed"]][[key]] = my.seed;
+	if(verbose)
+			{
+			cat("setSeed :: global value stored [key] = ",key," ... [seed] = ",seed, "\n");
+			}
+		
+	if(verbose)
+			{
+			cat("setSeed :: calling base::set.seed with seed ... ", seed, "\n");
+			}
 
-  if(print.seed)
+	if(print.seed)
 	{
 	cat("\n setSeed: ", seed, "\n");
 	}
-  
-  set.seed(seed, kind=kind, normal.kind=normal.kind, sample.kind=sample.kind);
-  }
+	
+	set.seed(seed, kind=kind, normal.kind=normal.kind, sample.kind=sample.kind);
+	}
 
 #' @rdname setSeed
 #' @export

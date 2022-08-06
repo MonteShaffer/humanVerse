@@ -189,3 +189,35 @@ extractList = function(myList, envir = .GlobalEnv)
     }
 
 
+
+extractList = function(myList, envir = parent.env(environment()) )
+    {
+	# .GlobalEnv
+    n.myList = length(myList);  # maybe create an extract function ...
+                                  # parent.env() ...
+    if(n.myList > 0)
+      {
+      for(i in 1:n.myList)
+        {
+        assign(names(myList)[i], myList[[i]], envir = envir);
+        }
+      }
+    }
+
+# https://stackoverflow.com/questions/8771942/how-can-i-reference-the-local-environment-within-a-function-in-r
+f <- function() {
+  function() list(curEnv=environment(), parent=parent.env(environment()), 
+          grandParent=parent.env(parent.env(environment())), callStack=sys.frames(), 
+          callStackDepth=sys.nframe())
+}
+g <- function(f, n=2) if (n>2) g(f, n-1) else f()
+
+floc <- f() # generate a local function
+g(floc, 3) # call it
+
+
+# "%in%" <- function(x, table) match(x, table, nomatch = 0) > 0
+# is.element for an S-compatible equivalent of %in%.
+
+
+
