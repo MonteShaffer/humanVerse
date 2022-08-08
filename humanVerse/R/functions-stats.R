@@ -17,6 +17,7 @@
 #'
 stats.summary = function(x, tukey=TRUE, type=1, ... )
 	{
+	# maybe build internal caching mechanism based on a digest of the obj
 	# stats.summary = function(x, tukey=TRUE, type=1, signif.digits=options("digits")$digits, names = c("min", "-Q1-", "median", "Mean", "-Q3-", "max"), ... )
 				signif.digits=5; names = c("min", "-Q1-", "median", "Mean", "-Q3-", "max");
 	res = summary(x, digits=signif.digits, type=type...);
@@ -299,6 +300,54 @@ stats.mode = function(x)
 #' @rdname stats.whichMaxFrequency
 #' @export
 stats.whichMaxFrequency = stats.mode;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

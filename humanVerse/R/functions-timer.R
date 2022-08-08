@@ -27,16 +27,30 @@ timer.start = function(key="DEFAULT")
 #' @export
 #'
 #' @examples	
-timer.stop = function(key="DEFAULT")
+timer.stop = function(key="DEFAULT", marker="STOP-{n}")
 	{
 	memory.init();
 	if(!exists(key, .GlobalEnv$.humanVerse[["timer"]]))
 		{
 		stop(paste0("Nothing to stop as timer.start for key: ", key, " not called yet!"));
 		}
-	.GlobalEnv$.humanVerse[["timer"]][[key]]$stop = Sys.time();
 	
-	.GlobalEnv$.humanVerse[["timer"]][[key]]$diff = as.numeric(.GlobalEnv$.humanVerse[["timer"]][[key]]$stop)-as.numeric(.GlobalEnv$.humanVerse[["timer"]][[key]]$start);
+	now = Sys.time();
+	diff = as.numeric(now) - as.numeric(.GlobalEnv$.humanVerse[["timer"]][[key]]$start);
+
+	if(!exists("stop", .GlobalEnv$.humanVerse[["timer"]][[key]]))
+		{
+		# parallel vectors
+		.GlobalEnv$.humanVerse[["timer"]][[key]]$stop = c(now);
+		.GlobalEnv$.humanVerse[["timer"]][[key]]$diff = c(diff);
+			marker = str.replace("{n}",1, marker);
+		.GlobalEnv$.humanVerse[["timer"]][[key]]$marker = c(marker);
+		} else {
+				.GlobalEnv$.humanVerse[["timer"]][[key]]$stop = c(.GlobalEnv$.humanVerse[["timer"]][[key]]$stop, now);
+				.GlobalEnv$.humanVerse[["timer"]][[key]]$diff = c(.GlobalEnv$.humanVerse[["timer"]][[key]]$diff, diff);
+					marker = str.replace("{n}", (1 + length(.GlobalEnv$.humanVerse[["timer"]][[key]]$marker) ), marker);
+				.GlobalEnv$.humanVerse[["timer"]][[key]]$marker = c(.GlobalEnv$.humanVerse[["timer"]][[key]]$marker, marker);
+				}
 	}
 
 ##################################################
@@ -51,7 +65,7 @@ timer.stop = function(key="DEFAULT")
 #' @export
 #'
 #' @examples
-timer.print = function(key="DEFAULT", format="seconds", digits=2)
+timer.print = function(key="DEFAULT", format="seconds", names=TRUE, relative=TRUE, digits=2)
 	{
 	memory.init();
 	# seconds, pretty-seconds, pretty ...
@@ -60,7 +74,14 @@ timer.print = function(key="DEFAULT", format="seconds", digits=2)
 		stop(paste0("Nothing to print as timer.start/timer.stop for key: ", key, " not called yet!"));
 		}
 	
+	# absolute time from when you got on the bus and each STOP
 	seconds = .GlobalEnv$.humanVerse[["timer"]][[key]]$diff;
+	# relative time between STOPS
+	if(relative) { seconds = c( seconds[1], diff(seconds) ); } # 
+	
+	seconds = property.set("time.is", { if(relative) { "relative" } else { "absolute" } }, seconds);
+
+	if(names) { names(seconds) = .GlobalEnv$.humanVerse[["timer"]][[key]]$marker;}
 
 	# wrap into SWITCH?
 		
@@ -86,7 +107,9 @@ timer.print = function(key="DEFAULT", format="seconds", digits=2)
 #' @examples	
 timer.formatPrettySeconds = function(seconds, digits=2)
 	{
-	paste0( round(seconds, digits), " seconds");	
+	res = paste0( round(seconds, digits), " seconds");	
+	names(res) = names(seconds);
+	res;
 	}
 
 ##################################################
@@ -101,23 +124,33 @@ timer.formatPrettySeconds = function(seconds, digits=2)
 #'
 #' @examples	
 # https://stackoverflow.com/questions/572049/convert-seconds-to-days-minutes-and-hours-in-obj-c
-timer.formatPretty = function(seconds, digits=2)
+timer.formatPretty = function(secondsV, digits=2)
 	{
-				str = "";
-	days = floor( seconds / (60 * 60 * 24) );
-		seconds = seconds - days * (60 * 60 * 24);
-				dstr = "days"; if(days == 1) { dstr = "day"; }
-				if(days > 0) { str = paste0(str, days," ",dstr,", "); }
-	hours = floor( seconds / (60 * 60) );
-				hstr = "hours"; if(hours == 1) { hstr = "hour"; }
-				if(days > 0 | hours > 0) { str = paste0(str, hours," ",hstr,", "); }
-		seconds = seconds - hours * (60 * 60);
-	minutes = floor( seconds / 60 );
-				mstr = "minutes"; if(minutes == 1) { mstr = "minute"; }
-				if(days > 0 | hours > 0 | minutes > 0) { str = paste0(str, minutes," ",mstr,", "); }
-		seconds = seconds - minutes * (60);
+	# hack to multivariate
+	n = length(secondsV);
+	res = character(n);
+	for(i in 1:n)
+		{
+		seconds = secondsV[i];
+		str = "";
+		days = floor( seconds / (60 * 60 * 24) );
+			seconds = seconds - days * (60 * 60 * 24);
+					dstr = "days"; if(days == 1) { dstr = "day"; }
+					if(days > 0) { str = paste0(str, days," ",dstr,", "); }
+		hours = floor( seconds / (60 * 60) );
+					hstr = "hours"; if(hours == 1) { hstr = "hour"; }
+					if(days > 0 | hours > 0) { str = paste0(str, hours," ",hstr,", "); }
+			seconds = seconds - hours * (60 * 60);
+		minutes = floor( seconds / 60 );
+					mstr = "minutes"; if(minutes == 1) { mstr = "minute"; }
+					if(days > 0 | hours > 0 | minutes > 0) { str = paste0(str, minutes," ",mstr,", "); }
+			seconds = seconds - minutes * (60);
 
-	paste0( str, round(seconds, digits), " seconds");		
+		res[i] = paste0( str, round(seconds, digits), " seconds");		
+		}
+	names(res) = names(secondsV);
+	res = property.set( res, property.getAll(secondsV) );
+	res;
 	}
 
 

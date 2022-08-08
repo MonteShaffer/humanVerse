@@ -1,21 +1,5 @@
 
 
-#' http.headers
-#'
-#' @param remote A url
-#'
-#' @return a string vector [headers]
-#' @export
-#'
-#' @examples
-#' http.headers("https://www.mshaffer.com/");
-#' http.headers("https://www.myprofiletraits.com/");
-http.headers = function(remote)
-  {
-  # requires libcurl in R::base
-  curlGetHeaders(remote);
-  }
-
 
 #' http.status
 #'
@@ -26,10 +10,11 @@ http.headers = function(remote)
 #'
 #' @examples
 #' http.status(http.headers("https://www.mshaffer.com/"));
-http.status = function(headers)
+http.status = function(headers)  ## BAD connection if NULL?
   {
   # requires libcurl
-  attributes(headers)$status;  # getAttribute
+  # attributes(headers)$status;  # getAttribute
+	property.get(headers, "status");
   }
 
 
@@ -53,13 +38,13 @@ http.headerValue = function(headers, search="Content-Length:")
 
   for(cheader in rev(headers)) # reverse so we get past redirects
     {
-    cheader = trimMe(cheader);
+    cheader = str.trim(cheader);
     if(cheader != "")
       {
       # cat("\n", "header: ", cheader, " ... search: ", search, "\n");
-      if(is.substring(cheader, search))
+      if(str.contains(search, cheader))  ## haystack, needle
         {
-        value = trimMe( str_replace(search, "", cheader) );
+        value = str.trim( str.replace(search, "", cheader) );
         return( value );
         }
       }
@@ -87,5 +72,51 @@ http.size = function(headers)
   }
 
 
+
+
+
+#' http.headers
+#'
+#' @param remote A url
+#'
+#' @return a string vector [headers]
+#' @export
+#'
+#' @examples
+#' http.headers("https://www.mshaffer.com/");
+#' http.headers("https://www.myprofiletraits.com/");
+http.headers = function(remote, ...)  # maybe verify=FALSE (expired https)
+  {
+  # requires libcurl in R::base
+  	
+
+	url.info = tryCatch	(
+
+						{
+						info = curlGetHeaders(remote, ...);
+						},
+
+						warning = function(w)
+							{
+							warning(paste0("### WARNING ###  throws a warning","\n\n",w));
+							info; # let's still return the value 	.
+							},
+	
+						error = function(e)
+							{
+							# warning(paste0("### ERROR ###  throws an error","\n\n",e));
+							res = FALSE;
+							res = property.set(res, "ERROR", e);
+							return (res);
+							},
+
+						finally =
+							{
+				
+							}
+						);
+	url.info;
+	
+  }
 
 

@@ -97,7 +97,7 @@ private:
 	static inline void II(uint4 &a, uint4 b, uint4 c, uint4 d, uint4 x, uint4 s, uint4 ac);
 };
 
-std::string _md5(const std::string str);
+std::string md5_(const std::string str);
 CharacterVector cpp_md5(const std::vector<std::string> str, int times);
 
 #endif

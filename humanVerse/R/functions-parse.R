@@ -155,8 +155,12 @@ strip_tags = function(htmlString)
 #' @examples
 folderizeURL = function(url = "https://en.wikipedia.org/wiki/Columbia_Falls,_Montana")
   {
+	# could be multivariate?
   # TODO: update to explodeMe and str_replace
-  str = strsplit(url, "//", fixed=TRUE)[[1]][2];
+  info = strsplit(url, "//", fixed=TRUE);
+	str = info[[1]][2];
+	prot = str.replace(":","", info[[1]][1]);
+
     find = c("/",".",",");
     replace = c("-","^","+");
     n.find = length(find);
@@ -164,6 +168,7 @@ folderizeURL = function(url = "https://en.wikipedia.org/wiki/Columbia_Falls,_Mon
     {
     str = gsub(find[i],replace[i],str,fixed=TRUE);
     }
+	str = paste0("__",prot,"__", str);
   str;
   }
 

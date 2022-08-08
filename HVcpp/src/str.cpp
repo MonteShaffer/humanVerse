@@ -7,6 +7,61 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
+
+
+
+
+
+
+
+//' Repeat a String s
+//'
+//' @param String to 'repeat'
+//' @param Integer 'times' to 'repeat'
+//' @return updated String repeated 'times'	
+// [[Rcpp::export]]
+std::string s_str_repeat(std::string s, int times)
+	{
+	std::string out = "";
+	if(times < 1) { return out; }
+	for(int i = 0; i < times; i++)
+			{
+			out += s;
+			}
+	return out; 
+	}
+	
+
+//' Repeat a String s
+//'
+//' @param String to 'repeat'
+//' @param Integer 'times' to 'repeat'
+//' @return updated String repeated 'times'	
+// [[Rcpp::export]]
+CharacterVector cpp_str_repeat(const std::vector<std::string> str, int times)
+{
+	CharacterVector r{};
+	for (auto& element : str) 
+		{
+		std::string res = s_str_repeat(element, times);
+		r.push_back(res);
+		}
+	return r;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // https://stackoverflow.com/questions/216823/how-to-trim-a-stdstring
 
 
@@ -315,36 +370,11 @@ CharacterVector cpp_implode(std::string sep, Rcpp::List str)
 //' @param String 'subject'
 //' @return updated 'subject' String appropriate replaced ... (no REGEX here)
 // [[Rcpp::export]]
-std::string s_str_replace(const std::vector<std::string> search, const std::vector<std::string> replace, std::string subject)
+std::string s_str_replace(const std::string search, const std::string replace, const std::string subject)
 	{
-	long long unsigned int slen = search.size();		
-	long long unsigned int rlen = replace.size();
-	long long unsigned int mlen = std::max(slen, rlen);
 	std::string res = subject;
-		/*
-		std::cout << slen;
-		std::cout << "\n";
-		std::cout << rlen;
-		std::cout << "\n";
-		std::cout << mlen;
-		std::cout << "\n";
-		std::cout << res;
-		std::cout << "\n";
-		*/
-	// std::replace( s.begin(), s.end(), 'x', 'y');
-	
-	for(long long unsigned int i = 0; i < mlen; i++)
-		{
-		std::string mysearch = (slen == 1) ? search[0] : ( (i < slen) ? search[i] : "" );
-		std::string myreplace = (rlen == 1) ? replace[0] : ( (i < rlen) ? replace[i] : "" );
-		std::vector<std::string> tmp = s_explode(mysearch, res);
-		res = s_implode(myreplace, tmp);
-		}
-		/*
-		std::cout << res;
-		std::cout << "\n";
-		*/
-		
+	std::vector<std::string> tmp = s_explode(search, res);
+	res = s_implode(replace, tmp);		
 	return res;
 	}
 	
@@ -358,60 +388,120 @@ std::string s_str_replace(const std::vector<std::string> search, const std::vect
 CharacterVector cpp_str_replace(const std::vector<std::string> search, const std::vector<std::string> replace, const std::vector<std::string> subject)
 {
 	CharacterVector r{};
-	for (auto& element : subject) 
-		{
-		std::string res = s_str_replace(search, replace, element);
-		r.push_back(res);
-		}
-	return r;
-}
-
-
-//' Repeat a String s
-//'
-//' @param String to 'repeat'
-//' @param Integer 'times' to 'repeat'
-//' @return updated String repeated 'times'	
-// [[Rcpp::export]]
-std::string s_str_repeat(std::string s, int times)
-	{
-	std::string out = "";
-	if(times < 1) { return out; }
-	for(int i = 0; i < times; i++)
-			{
-			out += s;
-			}
-	return out; 
-	}
 	
-
-//' Repeat a String s
-//'
-//' @param String to 'repeat'
-//' @param Integer 'times' to 'repeat'
-//' @return updated String repeated 'times'	
-// [[Rcpp::export]]
-CharacterVector cpp_str_repeat(const std::vector<std::string> str, int times)
-{
-	CharacterVector r{};
-	for (auto& element : str) 
+	std::string str;
+	std::string mysearch;
+	std::string myreplace;
+	
+	int slen = search.size();
+	int rlen = replace.size();
+	int nlen = subject.size();
+	int si = 0;
+	int ri = 0;
+	int i;
+	int j;
+	int mlen = std::max(rlen, slen);
+	
+	// std::string res = s_str_replace(mysearch, myreplace, mysubject);
+	// r.push_back(res);
+	
+	if(slen == rlen) /// pairwise over EACH subject
 		{
-		std::string res = s_str_repeat(element, times);
-		r.push_back(res);
+		std::cout << " CASE 1 ";
+		std::cout << "\n";
+		for(j=0; j<nlen; j++)
+			{
+			str = subject[j];
+			for(i=0; i<slen; i++)
+				{
+				mysearch = search[i];
+				myreplace = replace[i];
+				str = s_str_replace(mysearch, myreplace, str);
+				}
+			r.push_back(str);
+			}
+		return r;
 		}
-	return r;
+	
+	if(rlen == 1)
+		{
+		std::cout << " CASE 2 ";
+		std::cout << "\n";
+		for(j=0; j<nlen; j++)
+			{
+			str = subject[j];
+			for(i=0; i<slen; i++)
+				{
+				mysearch = search[i];
+				myreplace = replace[0];
+				str = s_str_replace(mysearch, myreplace, str);
+				}
+			r.push_back(str);
+			}
+		return r;
+		}
+		
+	if(slen == 1 && rlen > nlen)
+		{
+		std::cout << " CASE 3 ";
+		std::cout << "\n";
+		si = 0;
+		for(j=0; j<rlen; j++)
+			{
+			str = subject[si];
+			mysearch = search[0];
+			myreplace = replace[j];
+			str = s_str_replace(mysearch, myreplace, str);
+			r.push_back(str);
+			si = 1 + si;
+			if(si > nlen) { si = 0; }  // loop over s, end, back to beginning
+			}
+		return r;
+		}
+		
+		std::cout << " CASE 4 ";
+		std::cout << "\n";
+		for(j=0; j<nlen; j++)
+			{
+			str = "";
+			str = subject[j];
+			si = 0;
+			ri = 0;
+			for(i=0; i<mlen; i++)
+				{
+		
+		std::cout << i;
+		std::cout << "\n";
+				mysearch = search[si];
+				myreplace = replace[ri];
+				
+				std::cout << mysearch;
+		std::cout << " --> ";
+				std::cout << myreplace;
+		std::cout << "\n";
+		
+				str = s_str_replace(mysearch, myreplace, str);
+				
+				std::cout << str;
+		std::cout << "\n";
+				si = 1 + si;  if(si >= slen) { si = 0; }  
+				// loop over s, end, back to beginning
+				ri = 1 + ri;  if(ri >= rlen) { ri = 0; }  
+				// loop over s, end, back to beginning
+
+				std::cout << si;
+		std::cout << "\n";
+						std::cout << ri;
+		std::cout << "\n";
+
+				}
+				
+			r.push_back(str);
+			}
+		return r;
+		
+			
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -12,18 +12,24 @@ Encoding: UTF-8
 LazyData: true
 Suggests:
   digest,
-  openssl,
   plotrix,
   Matrix,
   matrixStats,
   matrixcalc,
   Rcpp,  
   RMariaDB,
-  stringi
+	rjson,
+xml2,
+curl,
+	
+  
 Imports:
   graphics,
-  rjson,
+  jsonlite,
   stats,
-  utils,
-  xml2
+  openssl,
+  stringi,
+	utils
+	
+
 RoxygenNote: 7.1.1

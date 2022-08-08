@@ -1,5 +1,19 @@
 	
 
+obj.get = function(obj.str, ...) 
+	{
+	# get
+	get(obj.str, ...);  			## envir is in the weeds
+	} 
+
+obj.set = function(obj.str, value, ...) 
+	{
+	# assign
+	assign(obj.str, value, ...);	## envir is in the weeds
+	} 
+
+
+
 obj.fromString = function(obj.str)
 	{
 	obj.info = tryCatch	(
@@ -18,7 +32,7 @@ obj.fromString = function(obj.str)
 							{
 							# warning(paste0("### ERROR ###  throws an error","\n\n",e));
 							res = FALSE;
-							res = property.set("ERROR", "ERROR", res);
+							res = property.set(res, "ERROR", e);
 							return (res);
 							},
 
@@ -33,7 +47,18 @@ obj.fromString = function(obj.str)
 
 
 
+# x can be actual object or string
+# ... is for "more" ... but rm/remove have other options
+obj.remove = function(..., list = character(), pos = -1,
+       envir = as.environment(pos), inherits = FALSE)
+	{
 
+
+	}
+
+
+
+obj.delete = obj.remove;
 
 
 

@@ -1,4 +1,53 @@
 
+
+
+
+#' @rdname is.dir
+#' @export
+is.dir = dir.exists;
+
+#' @rdname is.file
+#' @export
+is.file = file.exists;
+
+
+##################################################
+#'
+#' is.windows
+#'
+#'
+#'
+#' @return TRUE or FALSE
+#' @export
+#'
+#' @examples
+is.windows = function()
+	{
+	str.contains("win", str.tolower(.Platform[["OS.type"]]) );
+	}
+
+
+##################################################
+#'
+#' is.url
+#'
+#'
+#' @param file (what is the character string to be searched)
+#'
+#' @return TRUE or FALSE
+#' @export
+#'
+#' @examples
+
+is.url = function(files)
+	{
+	files = str.trim(files);
+	fil = functions.cleanKey(files, 3);
+	x = (fil == "htt"); y = (fil == "ftp");  # multivariate, truth tables
+	return ( (x+y > 0) );
+	}
+
+
 ##################################################
 #'
 #' is.library
@@ -56,9 +105,6 @@ str.contains = is.substring;
 
 
 
-
-
-
 ### THESE FUNCTIONS SEEM TO BE "mono-nuclear"
 #' @rdname is.true
 #' @export
@@ -71,12 +117,12 @@ is.false = isFALSE;
 
 
 
-# isset — Determine if a variable is declared and is different than null
-
 ##################################################
 #'
 #' is.set
 #'
+#' isset — Determine if a variable is declared and is different than null
+#' https://www.php.net/manual/en/function.isset.php
 #'
 #' @param object
 #'
@@ -84,32 +130,28 @@ is.false = isFALSE;
 #' @export
 #'
 #' @examples
-is.set = function(obj)
+is.set = function(obj, allow.NULL=FALSE)
 	{
 	obj.str = deparse(substitute(obj));
 	my.obj = obj.fromString(obj.str);
-		# monte = list("1", NA_character_, jk = c(1, 243)); monte$hi = NULL;
-		# # monte$hi4980328 is also NULL
-		# # monte$nj038 is also NULL ... anything on $ because monte is list?
-		# monte = list("1", NA_character_, jk = c(1, 243), zeroes = c(0, 0, 0, 0, 0), myNA = c(NA, NA, NA), trim = c("", "", ""), mNAN = c(NaN, NaN), mbool = c(FALSE, FALSE, FALSE)); monte$hi = NULL;
 	if(isFALSE(my.obj[1])) 
 		{
-		e = property.get("ERROR", my.obj);
-		if(e == "ERROR") { return(FALSE); }
+		e = property.get( my.obj, "ERROR" );
+		if(!is.null(e)) { return(FALSE); }
 		}
+	# extend functionality, we can check  is.set(obj, TRUE) ... returns true if exists REGARDLESS of NULL ... default behavior is like php::isset
+	if(!allow.NULL && is.null(my.obj)) { return(FALSE); }
 	return(TRUE);
 	}
 
-
-# https://www.php.net/manual/en/function.empty.php
-# Determine whether a variable is empty
-# Determine whether a variable is considered to be empty. A variable is considered empty if it does not exist or if its value equals false. empty() does not generate a warning if the variable does not exist
-# 
 
 ##################################################
 #'
 #' is.empty
 #'
+#' https://www.php.net/manual/en/function.empty.php
+#' Determine whether a variable is empty
+#' Determine whether a variable is considered to be empty. A variable is considered empty if it does not exist or if its value equals false. empty() does not generate a warning if the variable does not exist
 #'
 #' @param object
 #'
@@ -119,25 +161,19 @@ is.set = function(obj)
 #' @examples
 is.empty = function(obj)
 	{
-	# TEST-1 #
 	obj.str = deparse(substitute(obj));
 	my.obj = obj.fromString(obj.str);
-		# monte = list("1", NA_character_, jk = c(1, 243)); monte$hi = NULL;
-		# # monte$hi4980328 is also NULL
-		# # monte$nj038 is also NULL ... anything on $ because monte is list?
-		# monte = list("1", NA_character_, jk = c(1, 243), zeroes = c(0, 0, 0, 0, 0), myNA = c(NA, NA, NA), trim = c("", "", ""), mNAN = c(NaN, NaN), mbool = c(FALSE, FALSE, FALSE)); monte$hi = NULL;
 	if(is.null(my.obj)) { return(TRUE); }  
 	if(isFALSE(my.obj[1])) 
 		{
-		e = property.get("ERROR", my.obj);
-		if(e == "ERROR") { return(TRUE); }
+		e = property.get( my.obj, "ERROR" );
+		if(!is.null(e)) { return(TRUE); }
 		}
 
 	n.len = length(my.obj);
 	n.type = typeof(my.obj);
 
 	if(n.type == "list" && n.len > 0) { return(FALSE); }
-
 
 	## check for all-zeros, all-str.trim "", all-na, all-nan
 
@@ -153,7 +189,6 @@ is.empty = function(obj)
 		if(all(s1)) { return(TRUE); }
 		}
 
-
 	if(!is.null( typeof(obj) ) ) { return (FALSE); }
 
 	return (TRUE);  # unknown typeof ?
@@ -162,42 +197,161 @@ is.empty = function(obj)
 
 
 
+##################################################
+#'
+#' is.wholeNumber
+#'
+#' `is.integer` doesn't operate as you would expect, this does
+#'
+#' @param x number (and vector) to evaluate
+#' @param tol tolerance of "zero"
+#'
+#' @return TRUE OR FALSE
+#' @export
+#'
+#' @examples
+#'
+#' is.wholeNumber(1);
+#' is.wholeNumber(1.1);
+#'
+#' is.wholeNumber(0);
+#' is.wholeNumber(0.1);
+#'
+#' is.wholeNumber(-1);
+#' is.wholeNumber(-1.1);
+#'
+#' is.wholeNumber(rnorm(5));
+#' is.wholeNumber(rpois(5,1));
+#'
+is.wholeNumber = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
+  {
+  # See ?is.integer
+  more = unlist(list(...)); x = c(x, more); 
+  x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
+  abs(x - round(x)) < tol;
+  }
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-access <- `$$` <- function(str)
+##################################################
+#'
+#' is.even
+#'
+#'
+#'
+#' @param x number (and vector) to evaluate
+#' @param part By default, the "Re"al part
+#'
+#' @return TRUE OR FALSE
+#' @export
+#'
+#' @examples
+#'
+is.even = function(x, ..., part="Re")
 	{
-	E = unlist( strsplit(as.character(str),"[@]") );
-		k = length(E);
-		if(k==1)
-			{
-			eval(parse(text=str));
-			} else {
-				# k = 2
-				nstr = paste("attributes(",E[1],")",sep="");
-				nstr = paste(nstr,'$',E[2],sep="");
+	more = unlist(list(...)); x = c(x, more); 
+	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
+	x = as.integer(x);	
+	( (x %% 2) == 0 );  
+	}
 
-				if(k>2) {
-					for(i in 3:k)
-						{
-						nstr = paste("attributes(",nstr,")",sep="");
-						nstr = paste(nstr,'$',E[i],sep="");
-						}
-					}
-				access(nstr);
-				}
+##################################################
+#'
+#' is.odd
+#'
+#'
+#'
+#' @param x number (and vector) to evaluate
+#' @param part By default, the "Re"al part
+#'
+#' @return TRUE OR FALSE
+#' @export
+#'
+#' @examples
+#'
+is.odd = function(x, ..., part="Re")
+	{
+	more = unlist(list(...)); x = c(x, more); 
+	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
+	x = as.integer(x);	
+	( (x %% 2) == 1 );  
+	}
+
+##################################################
+#'
+#' is.positive
+#'
+#' @param x number (and vector) to evaluate
+#' @param tol tolerance of "zero"
+#'
+#' @return TRUE OR FALSE
+#' @export
+#'
+#' @examples
+#'
+#' is.positive(1);
+#' is.positive(0);
+#' is.positive(-1);
+#' is.positive( c(-1*1:5,-sin(pi), 0,0, sin(pi), 1:5) );
+#'
+is.positive = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
+  {
+  more = unlist(list(...)); x = c(x, more);
+  x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
+  x > tol;
+  }
+
+##################################################
+#'
+#' is.negative
+#'
+#' @param x number (and vector) to evaluate
+#' @param tol tolerance of "zero"
+#'
+#' @return TRUE OR FALSE
+#' @export
+#'
+#' @examples
+#'
+#' is.negative(1);
+#' is.negative(0);
+#' is.negative(-1);
+#' is.negative( c(-1*1:5,-sin(pi), 0,0,0, sin(pi), 1:5, NA, NA) );
+#'
+is.negative = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
+  {
+  more = unlist(list(...)); x = c(x, more);
+  x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
+  x < ( -1 * tol );
+  }
+
+
+##################################################
+#'
+#' is.zero
+#'
+#' @param x number (and vector) to evaluate
+#' @param tol tolerance of "zero" [floating point]
+#'
+#' @return TRUE OR FALSE
+#' @export
+#'
+#' @examples
+#'
+#' is.zero(1);
+#' is.zero(0);
+#' is.zero(-1);
+#' is.zero( c(-1*1:5,-sin(pi), 0,0,0, sin(pi), 1:5, NA, NA) );
+#'
+is.zero = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
+	{
+	more = unlist(list(...)); x = c(x, more);
+	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
+	
+	x.pos = x < tol;
+	x.neg = x > -1 * tol;
+	
+	( (x.pos + x.neg) > 1);
 	}
 
 
@@ -209,29 +363,6 @@ access <- `$$` <- function(str)
 
 
 
-is.empty = function(obj)
-	{
-	# TEST-1 #
-	obj.str = deparse(substitute(obj));
-	my.obj = obj.fromString(obj.str);
-		# monte = list("1", NA_character_, jk = c(1, 243)); monte$hi = NULL;
-		# # monte$hi4980328 is also NULL
-		# # monte$nj038 is also NULL ... anything on $ because monte is list?
-	if(is.null(my.obj)) { return(TRUE); }  
-	if(isFALSE(my.obj[1])) 
-		{
-		e = property.get("ERROR");
-		print(e);
-		}
-
-			# obj.fromString = function(obj.str)
-
-
-
-
-
-
-print(obj.info);
 
 
 
@@ -239,59 +370,17 @@ print(obj.info);
 
 
 
-	aa = tryCatch( access(obj.str), error = identity);
-	
-	tt = tryCatch( eval(parse(text = obj.str)), error = identity);
 
-	# monte = list("1", NA_character_, jk = 243);
-	# monte[[3334]]
-	if(is.null(tt)) { return (TRUE); }
 
-	print(obj.str);
 
-	at = attributes(tt);
 
-print(typeof(tt));
 
-	if(is.list(tt) && exists("class", at))
-		{
-		if(at$class[2] == "error") { return (TRUE); }
-		}
 
-	print(tt);
-print(at);
-	str(tt);
-	return(tt);
 
-	if(!exists(obj.str)) { return (TRUE); }
 
-	# TEST-4 #
-	if(is.null(obj)) { return (TRUE); }
-	# TEST-5 #
-	if(length(obj) == 0 ) { return (TRUE); }
 
-	
-	n.len = length(obj);
 
-	# TEST-6 #
-	if(is.character(obj))
-		{
-		n.trim = str.trim(obj);
-		n.es = sum(n.trim == "");
-		if(n.es == n.len) { return (TRUE); }
-		}
 
-	## ALL "zero"
-	
-	
-	# TEST-6 #
-	n.nas = sum(is.na(obj));
-	if(n.nas == n.len) { return (TRUE); }
-
-	if(!is.null( typeof(obj) ) ) { return (FALSE); }
-
-	return (FALSE);
-	}
 
 
 

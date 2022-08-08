@@ -1,4 +1,75 @@
 
+
+
+str.getPositions = function(str, search, index=NULL)
+	{
+	n.list = length(str);
+	slen = strlen(search);
+	info = str.explode(search, str);
+
+	ss = as.relistable( str.len(info) ); # a list of lengths
+		u.info = unlist(ss);	# unlist
+		u.info = u.info + slen;  	# add	
+	ee = relist(u.info);			# relist
+	list("start" = ss, "end" = ee);
+	}
+
+
+str.between = function(str, keys=c("__B64_", "_B64__"))
+	{
+	info = str.explode(keys[1], str);
+	info2 = str.explode(keys[2], list.getElements(info, 2) );
+	list.getElements(info2, 1);
+	}
+
+
+str.len = function(str, method="stringi", locale="")
+  {
+	# if list 
+	if(is.list(str)) 
+		{ 
+		n.times = length(str);
+		res = list();
+		for(i in 1:n.times)
+			{
+			res[[i]] = str.len(str[[i]], method=method, locale=locale);
+			}
+		return( list.return(res) );
+		}
+
+# LOCALE is a TODO
+	# necessary overhead
+	m = functions.cleanKey(method, 1);
+
+	if(m == "s" && is.library("stringi") )
+		{		
+		return ( stringi::stri_length(str) );
+		}
+
+	if(m == "b")
+		{
+		return( nchar( as.character(str), type="chars") );
+		}
+
+	if(m == "c" && exists("cpp_strlen"))
+		{
+		return( cpp_strlen(str) );
+		} 
+
+
+	nchar( as.character(str), type="chars");
+	}
+
+#' @rdname str.length
+#' @export
+str.length = str.len;
+
+#' @rdname strlen
+#' @export
+strlen = str.len;
+
+
+
 ##################################################
 #'
 #' str.tolower
@@ -106,7 +177,7 @@ strtoupper = str.toupper;
 #'
 #' str.trim("\r\n    four   scores    and  seven      years   \t\t  ");
 #'
-str.trim = function(str, side="both", method="cpp", pattern="", ...)
+str.trim = function(str, side="both", method="stringi", pattern="", fixed=TRUE, ...)
   {
 	# necessary overhead
 	s = functions.cleanKey(side, 1);
@@ -128,6 +199,7 @@ str.trim = function(str, side="both", method="cpp", pattern="", ...)
 
 	if(m == "c" && exists("cpp_trim"))
 		{
+		# this is FIXED == TRUE ... I don't have REGEX built in
 		t = " \t\n\r\f\v";
 		if(pattern != "") { t = pattern; }
 		res = switch(s,
@@ -160,7 +232,7 @@ trimMe = str.trim;
 
 ##################################################
 #'
-#' str.split
+#' str.explode
 #'
 #' Similar to javascript.split and php.explode
 #'
@@ -172,7 +244,7 @@ trimMe = str.trim;
 #' @export
 #'
 #' @examples
-str.split = function(sep = " ", str = "hello friend", return.list = "AUTO", method="base",  ...)
+str.explode = function(sep = " ", str = "hello friend", method="base",  ...)
 	{
 	# necessary overhead
 	m = functions.cleanKey(method, 1);
@@ -202,22 +274,19 @@ str.split = function(sep = " ", str = "hello friend", return.list = "AUTO", meth
 		res = strsplit(str, sep, fixed=TRUE);
 		}
 
-	# should be collapse into CharacterVector
-	n = length(res);
-	if(n == 1 && (return.list=="AUTO" || return.list==FALSE) ) { return(res[[1]]); }
-	if(n > 1 && (return.list==FALSE) ) { return(res[[1]]); }
-	
-	res;
+	# will be collapsed into CharacterVector if len == 1
+	list.return(res, unlist=FALSE);
 	}
 
 
 #' @rdname explodeMe
 #' @export
-explodeMe = str.split;
+explodeMe = str.explode;
 
-#' @rdname str.explode
+#' @rdname str.split
 #' @export
-str.explode = str.split;
+str.split = str.explode;
+
 
 
 
@@ -289,12 +358,28 @@ str_repeat = str.repeat;
 #' @examples
 #' subject = c("Four score and seven years ago", "Abraham Lincoln buoying vessel"); 
 #' search = c("a", "b", "c"); replace = str.toupper(search);
+
+# str.replace("{PROTOCOL}", list.getElements(info, 1), sep.http);
+# 1, 1, 1
+# 1, 2, 1  # this will replace {} on two things ... rep(subject)
+# 2, 1, 1
+# 1, 2, 2
+# 2, 2, 1 (same as 1,1,1)
+# 1, 1, N
+# 1, 2, N
+# 2, 1, N
+# 2, 3, 1
+# 3, 2, 1
+# 2, 3, N
+# 3, 2, N  # I don't think we worry about these 
+
 str.replace = function(search, replace, subject, method="base")
 	{
 	m = functions.cleanKey(method, 1);
 
 	if(m == "c" && exists("cpp_trim"))
 		{
+		# need to update the code to MATCH the base code LOGIC below
 		res = cpp_str_replace(search, replace, subject);
 		return (res);
 		}
@@ -302,31 +387,116 @@ str.replace = function(search, replace, subject, method="base")
 	# stringi::stri_replace_all_fixed
 	# doesn't seem to work correctly  ... 
 
+ 
 
-	n = length(subject);
 	slen = length(search);
 	rlen = length(replace);
-	mlen = max(slen, rlen);
+	nlen = length(subject);
 
-	res = character(n);
-	for(j in 1:n)
+
+	if(slen == rlen)  ## pairwise over EACH subject
+		{
+		res = character(nlen);
+		for(j = 1:nlen)
+			{
+			str = subject[j];
+			for(i in 1:slen)
+				{
+				str = gsub(search[i], replace[i], str, fixed=TRUE);
+				}	
+			res[j] = str;
+			}
+		return (res);
+		}
+
+	# str.replace(c("{monte}", "{for}"), "MONTE", c("Here is {monte} template", "Here is another {for} sure template {monte}!") );
+	if(rlen == 1)
+		{
+		res = character(nlen);
+		for(j = 1:nlen)
+			{
+			str = subject[j];
+			for(i in 1:slen)
+				{
+				str = gsub(search[i], replace[1], str, fixed=TRUE);
+				}	
+			res[j] = str;
+			}
+		return (res);
+		}
+
+	# str.replace(c("{monte}"), c("MONTE","FOR"), c("Here is {monte} template", "Here is another {for} sure template {monte}!") );
+	if(slen == 1 && rlen > nlen)
+		{
+		res = character(rlen);
+		si = 1;
+		for(j = 1:rlen)
+			{
+			str = subject[si]; 
+			str = gsub(search[1], replace[j], str, fixed=TRUE);
+			res[j] = str;
+			si = 1 + si;  if(si > nlen) { si = 1; }  # loop over s, end, back to beginning
+			}
+		return (res);
+		}
+
+	# DEFAULT ... all replaces over all subjects
+	res = character(nlen);
+	for(j in 1:nlen)
 		{
 		str = subject[j];
+		mlen = max(rlen, slen);
+		si = ri = 1;
 		for(i in 1:mlen)
 			{
-			mysearch = ""; 
-			if(slen == 1) { mysearch = search[1];} else	if(i <= slen) { mysearch = search[i]; }
-
-			myreplace = "";
-			if(rlen == 1) { myreplace = replace[1];} else if(i <= rlen) { myreplace = replace[i]; }
-
+			mysearch = search[si];
+			myreplace = replace[ri];
 			str = gsub(mysearch, myreplace, str, fixed=TRUE);
+			si = 1 + si;  if(si > slen) { si = 1; }  # loop over s, end, back to beginning
+			ri = 1 + ri;  if(ri > rlen) { ri = 1; }  # loop over s, end, back to beginning
 			}
-		res[j] = str;
+		res[j] = str;			
 		}
-		
-	return (res);
+	return(res);
 	}
+
+
+
+
+
+
+
+
+for(long long unsigned int i = 0; i < mlen; i++)
+		{
+		std::string mysearch = (slen == 1) ? search[0] : ( (i < slen) ? search[i] : "" );
+		std::string myreplace = (rlen == 1) ? replace[0] : ( (i < rlen) ? replace[i] : "" );
+		
+		std::cout << mysearch;
+		std::cout << "\n";
+		std::cout << myreplace;
+		std::cout << "\n";
+		
+		std::vector<std::string> tmp = s_explode(mysearch, res);
+		res = s_implode(myreplace, tmp);
+		}
+		///*
+		std::cout << res;
+		std::cout << "\n";
+		//*/
+		
+	return res;
+	}
+	
+
+
+
+
+
+
+
+
+
 
 #' @rdname str_replace
 #' @export
@@ -427,7 +597,79 @@ str.pad = function(str, final.length, padding="0", side="RIGHT", method="stringi
 str_trim = str.trim;
 
 
+/*
+p = "\\P{Wspace}";
+		if(pattern != "") { p = pattern; }
+		res = switch(s,
+						  "l"	= stringi::stri_trim_left (str, p, ...),
+						  "r" 	= stringi::stri_trim_right(str, p, ...),
+						  "b"  	= stringi::stri_trim_both (str, p, ...),
+*/
 
+str.removeWhiteSpace = function( str, replace=" ", n = 2,
+                              pre.trim = TRUE, post.trim = TRUE, ...)
+  {
+	if(pre.trim) { str = trimMe(str, ...); }
+	# REQUIRES string?
+	if(is.library("stringi"))
+		{
+		# p = "\\P{Wspace}";
+		# p <- c("\\w", "\\d", "\\s")
+		# structure(stri_extract_all_regex(x, p), names = p)
+		regex.s = paste0("\\s{",n,",}");
+		stringi::stri_replace_all_regex(str, regex.s, replace); 
+		} else {
+				regex.s = paste0("[[:space:]]{",n,",}");
+				str = gsub( regex.s, replace, str );  # multivariate works
+				}
+	# likely not necessary, but may be an edge case out there
+	if(post.trim) { str = str.trim(str, ...); }
+  str;
+  }
+
+
+
+#' @rdname removeWhiteSpace
+#' @export
+removeWhiteSpace = str.removeWhiteSpace;
+
+# stringi::stri_trans_general(c("groß© żółć La Niña köszönöm", "Ábcdêãçoàúü", "Record high °C"), "latin-ascii")
+# get rid of temperature ??? caused a BUG before?
+
+str.translate = function(str, to="latin-ascii")
+	{
+	# to = "upper; latin-ascii"; # ALSO works, in the DOCS
+	"upper; latin-ascii"
+	stringi::stri_trans_general(str, to=to);
+	}
+
+
+
+
+## is this stringr::str_c ??
+str.push.back = function(str, sub, collapse=NULL)
+	{
+	paste0(str, sub, collapse=collapse);
+	}
+
+#' @rdname str.push.last
+#' @export
+str.push.last = str.push.back;
+
+
+str.push.front = function(str, sub, collapse=NULL)
+	{
+	paste0(sub, str, collapse=collapse);
+	}
+
+
+#' @rdname str.push.first
+#' @export
+str.push.first = str.push.front;
+
+
+
+str.wrap = function() {}
 
 ##################################################
 #'
@@ -478,7 +720,7 @@ str.commentWrapper = function(str, nchars=0, c.tag="#", r.tag=c.tag, s.tag=" ", 
 		mylengths[i] = slen;
 		}
 	
-	res = property.set("lengths", mylengths, res);
+	res = property.set(res, "lengths", mylengths);
 	res;
 	}
 
@@ -641,101 +883,6 @@ strtoupper = function(str)
 	toupper(str);
 	}
 
-
-#' charAt
-#'
-#' Get the character of a string at position [idx]
-#'
-#' @param str String
-#' @param idx position to get character
-#'
-#' @return single character
-#' @export
-#'
-#' @examples
-#'
-#' charAt("Alex", 2);
-#' charAt(c("Hello","there","Alex"), 2);
-#' charAt("Alex", 8);
-#' charAt("Alexander", 8);
-#'
-charAt = function(str,idx)
-  {
-  substr(str,idx,idx);
-  }
-
-#' lastChar
-#'
-#' Get the last character of a string
-#'
-#' @param str String
-#' @param trim should the string be trimmed first
-#'
-#' @return single character
-#' @export
-#'
-#' @examples
-#'
-#' lastChar("Alex");
-#' lastChar(c("Hello","there","Alex"));
-#' lastChar("Sasha");
-#' lastChar("Alexander");
-#'
-lastChar = function(str, trim=TRUE)
-	{
-	# this also works:: ... # .substr(str, -1)
-	if(trim){ str = trimMe(str); }
-	s.len = strlen(str);
-	charAt(str, s.len);
-	}
-
-
-#' charCodeAt
-#'
-#' Get the ASCII character code of a string at position [idx]
-#'
-#' @param str String
-#' @param idx position to get character
-#'
-#' @return
-#' @export
-#'
-#' @examples
-#'
-#' charCodeAt("Alex", 2);
-#' charCodeAt(c("Hello","there","Alex"), 2);
-#' charCodeAt("Alex", 8);
-#' charCodeAt("Alexander", 8);
-#'
-charCodeAt = function(str,idx)
-  {
-  charCode ( charAt(str,idx) ); #  as.numeric( iconv( charAt(str,idx), from="ASCII", to="unicodeFFFE", toRaw=TRUE)[[1]][2] );
-  }
-
-
-#' charCode
-#'
-#' @param svec A vector of characters
-#'
-#' @return ASCII character code for each character
-#' @export
-#'
-#' @examples
-#'
-#' s = "Alexander"; svec = strsplit(s,"",fixed=TRUE)[[1]];
-#' charCode(svec);
-#'
-charCode = function(svec)
-  {
-  # s = "monte";
-  # svec = strsplit(s,"",fixed=TRUE)[[1]];
-  r = c();
-  for(s in svec)
-    {
-    r = c(r, as.numeric( iconv( s, from="ASCII", to="unicodeFFFE", toRaw=TRUE)[[1]][2] ) );
-    }
-  r;
-  }
 
 #
 #' trimMe
@@ -1021,6 +1168,8 @@ strlen = function(str)
 ### Error in str.len(str) : could not find function "str.len" ... strlen, str_len, str.length, str_length
   nchar( as.character(str), type="chars");
   }
+
+
 
 
 #' .substr

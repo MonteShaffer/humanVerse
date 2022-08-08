@@ -99,14 +99,16 @@ seed.set = function(seed, key, ...,
 			}
 		}
 	
-	if( !exists("kind", args.set) )				 { kind = NULL; }
+	### ... can't be used twice ... throws and error if extra elements
+	if( !exists("kind", args.set) )			{ kind = NULL; }
 	if( !exists("normal.kind", args.set) )	{ normal.kind = NULL; }
 	if( !exists("sample.kind", args.set) )	{ sample.kind = NULL; }
 	
 	my.seed = seed;
-	my.seed = setAttribute("kind", kind, my.seed);
-	my.seed = setAttribute("normal.kind", normal.kind, my.seed);
-	my.seed = setAttribute("sample.kind", sample.kind, my.seed);
+	
+	# is.set ISSUE about NULL
+	vals = list("kind" = kind, "normal.kind" = normal.kind, "sample.kind" = sample.kind);	
+	my.seed = property.set( my.seed, vals );
 	
 	.GlobalEnv$.humanVerse[["seed"]][[key]] = my.seed;
 	if(verbose)

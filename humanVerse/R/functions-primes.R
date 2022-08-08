@@ -1,4 +1,14 @@
 
+## // bit for primes ...
+## https://cran.r-project.org/web/packages/bit/vignettes/bit-usage.html
+## https://www.quora.com/Which-is-the-fastest-algorithm-to-find-prime-numbers-using-C
+	
+
+
+
+### primes.storeBits
+### primes.lookupBits
+### primes.range
 
 #' prime.extendN
 #'

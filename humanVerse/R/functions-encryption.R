@@ -116,7 +116,8 @@ md5 = function(strvec, times=1)
 
 
 
-
+##################################################
+#'
 #' .md5
 #'
 #' This is a univariate function ...

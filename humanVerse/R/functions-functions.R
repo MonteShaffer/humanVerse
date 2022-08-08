@@ -20,6 +20,21 @@ functions.cleanKey = function(key, n=1)
 
 
 
+functions.getDefault = function(fn, ...)
+	{
+	list.extract( formals(fn), ... ); # by default into GLOBAL
+	}
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -2,7 +2,8 @@
 # https://cran.r-project.org/web/packages/roxygen2/vignettes/rd.html
 .onLoad = function(libname, pkgname)
   {
-  initMemory();
+  memory.init();
+  memory.smartRestore();
   invisible();
   }
 

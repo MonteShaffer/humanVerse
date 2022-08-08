@@ -13,15 +13,51 @@
 #' @export
 #'
 #' @examples
-property.set = function(key, value, obj, property.type="attributes")
+property.set = function(obj, key, value=NULL, property.type="attributes")
 	{
 	w = functions.cleanKey(property.type, 1);
+
+	if(is.null(value))
+		{
+		if(is.list(key))
+			{
+			k = names(key);
+				names(key) = NULL;
+			value = unlist(key);
+			key = k;
+			} else { stop("ERROR with key/val"); }
+		}
+
+	# allows multivariate ... keys determine the replacements
+	# if value gets to end, it will recycle to beginning
+	n.key = length(key);
+	n.val = length(value);
+	idx.v = 1;
+		
 	if(w == "a")
 		{
-		attributes(obj)[[key]] = value;
+		for(i in 1:n.key)
+			{
+			attributes(obj)[[ key[i] ]] = value[idx.v];
+			idx.v = 1 + idx.v; if(idx.v > n.val) { idx.v = 1; }  # allows for looping gracefully if UNEVEN
+			}
 		return (obj);
 		}
+	if(w == "s" || w == "e")  # System Environment
+		{
+		res = list();
+		for(i in 1:n.key)
+			{
+			str = paste0('Sys.setenv("',key[i],'" = "',value[idx.v],'")');
+					eval(parse(text=str));
+			res[i] = (Sys.getenv(key[i]));
+			idx.v = 1 + idx.v; if(idx.v > n.val) { idx.v = 1; }  # allows for looping gracefully if UNEVEN
+			}
+		return(res);
+		}
+
 	}
+
 
 
 #' @rdname setAttribute
@@ -44,31 +80,22 @@ setAttribute = property.set;
 #' @export
 #'
 #' @examples
-property.get = function(key, obj, property.type="attributes")
+property.get = function(obj, key, property.type="attributes")
 	{
 	w = functions.cleanKey(property.type, 1);
-	if(w == "a")
+	if(w == "a")  # attributes
 		{
 		res = attributes(obj)[[key]];
 		return (res);
 		}
-	}
 
-
-
-getAttribute = function(myAttributes, myObj)
-	{
-	# maybe alias 'getAttributes'
-	res = list();
-	i = 0;
-	for(myAttribute in myAttributes)
+	if(w == "s" || w == "e")  # System Environment
 		{
-		i = 1 + i;
-		res[[i]] = attributes(myObj)[[myAttribute]];
+		res = Sys.getenv(key);
+		return (res);
 		}
-
-	returnList(res);
 	}
+
 
 
 
@@ -76,3 +103,37 @@ getAttribute = function(myAttributes, myObj)
 #' @export
 getAttribute = property.get;
 
+
+
+property.getAll = function(obj, property.type="attributes")
+	{
+	w = functions.cleanKey(property.type, 1);
+	if(w == "a")  # attributes
+		{
+		res = attributes(obj);
+		return (res);
+		}
+
+	if(w == "s" || w == "e")  # System Environment
+		{
+		res = Sys.getenv();
+		return (res);
+		}
+	}
+
+
+#' @rdname getAllAttributes
+#' @export
+getAllAttributes = property.getAll;
+
+
+
+
+
+
+
+property.remove = function()
+	{
+# Sys.unsetenv(x)
+
+	}

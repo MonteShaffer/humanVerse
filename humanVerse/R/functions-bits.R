@@ -1,4 +1,118 @@
 
+
+##################################################
+#'
+#' bit.RShift
+#'
+#' This updates the built-in functions to allow for negative integers.
+#' Used for internal R 'md5_' computation, and has some issues.
+#' Maybe R::CRAN will fix this someday in the base?
+#'
+#' @param x VECTOR of integers to be shifted
+#' @param bits How far to shift [non-negative integer vector of values up to 31.]
+#' @param method Use C++ is library(HVcpp) or Rcpp::sourceCpp(str.cpp)
+#' @param unsigned USED for INTERNAL R hack
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' bit.RShift( c(1732584193,-1732584193,1732,-1732), 16, method="cpp"); # 26437, -26438, 0, -1
+#' bit.RShift( c(1732584193,-1732584193,1732,-1732), 16, method="base");		
+#' 
+bit.RShift = function(x, bits=1, method="cpp", unsigned=FALSE)
+	{
+	if(isFALSE(bits %in% 1:31))
+		{
+		msg = paste0("\n\n", str.commentWrapper(paste0(" bits = ", bits," is OUT OF RANGE ")), "\n\n",
+					"You should try an INTEGER in range 1:31 ", "\n\n",
+					"Results may be SPURIOUS", "\n");
+		warning(msg);
+		}
+
+	# necessary overhead
+	m = functions.cleanKey(method, 1);
+
+	if(m == "c" && exists("bits_RShift"))
+		{
+		return( bits_RShift(x, bits) );
+		} 
+
+		
+	res = bitwShiftR(x,bits);
+		x.w = (!is.negative(x) | unsigned);
+		x.idx = which(x.w == FALSE);
+	res[ x.idx ] = -bitwShiftR(-x[x.idx],bits) - 1;
+	res;
+	}
+
+#' @rdname bitShiftR
+#' @export
+bitShiftR = bit.RShift;
+
+
+
+
+
+
+
+##################################################
+#'
+#' bit.LShift
+#'
+#' This updates the built-in functions to allow for negative integers.
+#' Used for internal R 'md5_' computation, and has some issues.
+#' Maybe R::CRAN will fix this someday in the base?
+#'
+#' @param x VECTOR of integers to be shifted
+#' @param bits How far to shift [non-negative integer vector of values up to 31.]
+#' @param method Use C++ is library(HVcpp) or Rcpp::sourceCpp(str.cpp)
+#' @param unsigned USED for INTERNAL R hack
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' bit.LShift( c(1732584193,-1732584193,1732,-1732), 16, method="cpp"); # [1]  1.14e+14 -1.14e+14  1.14e+08 -1.14e+08
+#' bit.LShift( c(1732584193,-1732584193,1732,-1732), 16, method="base");		
+#'
+bit.LShift = function(x, bits=1, method="cpp", unsigned=FALSE)
+	{
+	if(isFALSE(bits %in% 1:31))
+		{
+		msg = paste0("\n\n", str.commentWrapper(paste0(" bits = ", bits," is OUT OF RANGE ")), "\n\n",
+					"You should try an INTEGER in range 1:31 ", "\n\n",
+					"Results may be SPURIOUS", "\n");
+		warning(msg);
+		}
+
+	# necessary overhead
+	m = functions.cleanKey(method, 1);
+
+	if(m == "c" && exists("bits_LShift"))
+		{
+		return( bits_LShift(x, bits) );
+		} 
+
+		
+	res = bitwShiftL(x,bits);
+		x.w = (!is.negative(x) | unsigned);
+		x.idx = which(x.w == FALSE);
+	res[ x.idx ] = -bitwShiftL(-x[x.idx],bits);
+	res;
+	}
+
+#' @rdname bitShiftL
+#' @export
+bitShiftL = bit.LShift;
+
+
+
+
+
+
+
+
 # https://stackoverflow.com/questions/64839024/
 # https://stackoverflow.com/questions/37121897/
 # Rcpp::cppFunction("long long RShift(long long a, int b) { return a >> b;}");
@@ -84,7 +198,7 @@ dec2bin = function(decnum)
 #' bitShiftR
 #'
 #' This updates the built-in functions to allow for negative integers.
-#' Used for manual '.md5' computation, and has some issues.
+#' Used for manual 'md5_' computation, and has some issues.
 #' Maybe R::CRAN will fix this someday in the base?
 #'
 #' @param x integer
@@ -109,7 +223,7 @@ bitShiftR = function(x, bits, unsigned=FALSE)
 #' bitShiftL
 #'
 #' This updates the built-in functions to allow for negative integers.
-#' Used for manual '.md5' computation, and has some issues.
+#' Used for manual 'md5_' computation, and has some issues.
 #' Maybe R::CRAN will fix this someday in the base?
 #'
 #' @param x integer
@@ -144,7 +258,7 @@ bitShiftL = function(x, bits, unsigned=FALSE)
 #' bitOr
 #'
 #' This updates the built-in functions to allow for negative integers.
-#' Used for manual '.md5' computation, and has some issues.
+#' Used for manual 'md5_' computation, and has some issues.
 #' Maybe R::CRAN will fix this someday in the base?
 #'
 #' Specifically, this addresses overflows ...

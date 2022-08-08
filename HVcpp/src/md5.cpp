@@ -361,7 +361,7 @@ std::ostream& operator<<(std::ostream& out, MD5 md5)
 
 //////////////////////////////
 
-std::string _md5(const std::string str)
+std::string md5_(const std::string str)
  {
  MD5 md5 = MD5(str);
  
