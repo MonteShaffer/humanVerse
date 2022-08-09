@@ -1,5 +1,8 @@
 
 # source("C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/functions-md5_.R");
+# source("https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/humanVerse/inst/R/functions-md5_.R");
+# source( system.file() );
+# system.file("inst/R/functions-md5_.R", package = "humanVerse", lib.loc = NULL, mustWork = FALSE)
 ##################################################
 #'
 #' md5_out_

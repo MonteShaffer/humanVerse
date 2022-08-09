@@ -1,4 +1,8 @@
 
+
+
+# https://www.alphr.com/how-to-get-transcript-youtube-video/#:~:text=Open%20YouTube%20and%20the%20video%20you%20want.&text=Tap%20on%20the%20three%20dots%20below%20the%20video%20to%20select%20Open%20transcript.&text=Click%20on%20the%20three%20dots%20on%20the%20transcription.&text=Select%20the%20transcription%20using%20the%20mouse.
+
 # https://github.com/eddelbuettel/gsir-te/blob/master/docs/Getting-Started-in-R.pdf
 # https://github.com/eddelbuettel/gsir-te/blob/master/docs/Getting-Started-in-R.p1p2.png
 # ?X is help(X)

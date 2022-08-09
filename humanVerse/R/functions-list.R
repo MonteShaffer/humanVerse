@@ -173,20 +173,5 @@ list.getElements = function(info, n=1)
 
 
 
-listToString = function(mylist,sep1="-",sep2="_")
-  {
-  str = c();
-  mynames = names(mylist);
-  for(myname in mynames)
-    {
-    val = mylist[[myname]];
-    str = c(str, paste0(myname,sep1,val));
-    }
-  paste0(str,collapse=sep2);
-  }
-
-
-
-
 
 

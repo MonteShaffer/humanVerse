@@ -13,90 +13,6 @@ str.fromHex = function(hexstr)
 	}
 
 
-#' str.substr
-#'
-#' @param str
-#' @param n
-#' @param length
-#' @param PHP.offset  # if true, the EXAMPLES on PHP.NET work exactly
-#'
-#' @return
-#' @export
-#'
-#' @examples
-# if offset and length are multivariate, they must EQUAL EACH OTHER and str
-# FOR NOW == NO ... multivariate str, univariate offset/length
-# if(is.negative(n)) ... multivariate is an issue 
-str.substr = function(str, offset = -1, length=NULL)
-	{
-	n = as.integer(offset);   # R indexes at "1"
-							  # PHP indexes at "0"
-	if(!is.negative(n)) { n = 1 + n; }
-
-	if(!is.null(length))
-		{
-		length = as.integer(length);
-		if(!PHP.offset && is.negative(n)) { length = length - 1; } # PHP indexes at "0"
-		}
-
-	str.len = strlen(str);  ## this is multivariate ?
-	# cat("\n", "n = ", n, "\t\t", "length = ", length, "\n");
-	# print(str.len);
-		if(is.negative(n))
-			{
-			# print(" CASE 1 ");
-			str.tmp = substr(str, start=1+(str.len + n), stop=str.len );
-				if(is.null(length)) { return (str.tmp); }
-				if(length == 0) 	{ return (str.tmp); }
-			if(is.positive(length))
-				{
-				# print(" CASE 2a ");
-				str.final = substr(str.tmp, start=1, stop = length);
-				} else {
-						# print(" CASE 2b ");
-						str.len.tmp = strlen(str.tmp);
-						str.final = substr(str.tmp, start=1, stop = str.len.tmp + length);
-						}
-			return ( str.final );
-			} else {
-					# print(" CASE 3 ");
-					# PHP allows n = 0 ... first element ...
-					# does this need if PHPOFFSET logic?
-					str.tmp = substr(str, start=1+n, stop=str.len );
-						if(is.null(length)) { return (str.tmp); }
-						if(length == 0) 	{ return (str.tmp); }
-
-
-					if(is.positive(length))
-						{
-						 print(" CASE 4a ");
-						str.final = substr(str.tmp, start=1, stop = length);
-						} else {
-								 print(" CASE 4b ");
-								str.len.tmp = strlen(str.tmp);
-								str.final = substr(str.tmp, start=1, stop = str.len.tmp + length);
-								}
-					return ( str.final );
-					}
-	stop("humanVerse::.substr ... how did you get here?!?");
-}
-
-
-
-
-#' @rdname .substr
-#' @export
-.substr = str.substr;
-
-#' @rdname substr.neg
-#' @export
-substr.neg = str.substr;
-
-#' @rdname str.substring
-#' @export
-str.substring = str.substr;
-
-
 
 str.toCharacters = function(str, sep="")
 	{
@@ -221,9 +137,67 @@ str.fromRaw = function(raw)
 		} else { rawToChar(raw); }
 	}
 
+# monte was here 
+# str = c("\n monte \n", "# says ", "hi#", "## to Alex#");
+# str.trimFromAny(str, search="#tx")
+# str.trimFromAny(str, search="#tx\n", side="left")
+str.trimFromAny = function(str, search="#me", side="both", ...)
+	{
+	search = as.character(search);
+	if(search == "") { stop("you need to enter at least one character"); }
+		s = functions.cleanKey(side, 1);
+
+	# let's explode on "" to get chars as list
+	search = str.explode("", search); # turn into a set
+	chars = str.explode("", str);
+	n = length(str);
+	res = character(n);
+	for(i in 1:n)
+		{
+		char = chars[[i]];
+		nc = length(char);
+		from.left = NULL;
+		from.right = NULL;
+		if(s == "b" || s == "l")
+			{
+			for(j in 1:nc)
+				{
+				if(char[j] %in% search) { from.left = c(from.left, j); } else { break; }
+				}
+			}
+			
+		if(s == "b" || s == "r")
+			{
+			# technically the search could reduce from PREVIOUS SEARCH
+			for(j in nc:1)
+				{
+				if(char[j] %in% search) { from.right = c(from.right, j); } else { break; }
+				}
+			}
+
+		# stop("here");
+		set = switch(s,
+						  "l"	= from.left,
+						  "r" 	= from.right,
+						  "b"  	= c(from.left, from.right),
+					c(from.left, from.right)
+					);
+		nchar = char;
+		if(!is.null(set)) { nchar = char[-c(set)]; }
+
+		res[i] = str.implode("", nchar);
+		}
+	res;
+
+
+
+
+	}
+
+
 
 # str.trimSubstring ... just check based on strinleng using substrings
-# monte was here 
+
 str.trimFromFixed = function(str, trim="#", side="both", ...)
 	{
 	s = functions.cleanKey(side, 1);
@@ -233,41 +207,37 @@ str.trimFromFixed = function(str, trim="#", side="both", ...)
 	# if x is character vector, x[1][1] should return the charAt(x[1], 1)
 	# likely the OLD SCHOOL LEGACY of multidimensional arrays?
 	
-	# first = substring(str, 1, slen);
-	# last = substring(str, -1, slen);  # FROM THE BACK ???
-	# str = c("monte", "# says ", "hi#", "## to Alex#");
+	
 	first = substring(str, 1, slen);
 	last = substring(str, str.len-slen+1, str.len);
-right = (last == trim);
 	
-	# first = str.substr(str, 1, slen);
-	# last = str.substr(str, -1, slen);
-
-	# substring("abcdef", 1:6, 2:7)
-
-	## single &
-	## first == trim & last == trim
-
+	right = (last == trim);
 	left = (first == trim);
-		offset = rep(1, n.str); # don't do anything
-		if( (s=="l" || s=="b") )
-			{
-			# since multivariate, throws error
-			# if(left) { offset = 1 + slen; }
-			offset[left] = 1 + slen;
-			}
+
+
+	start = rep(1, n.str); # don't do anything
+	if( (s=="l" || s=="b") )
+		{
+		# since multivariate, throws error
+		# if(left) { start = 1 + slen; }
+		start[left] = 1 + slen;
+		}
 
 	
 	
-		length = str.len;
-		if( (s=="r" || s=="b") )
-			{
-			length[right] = length[right] - slen;
-			}
-	substring(str, offset, length);
+	stop = str.len;
+	if( (s=="r" || s=="b") )
+		{
+		stop[right] = stop[right] - slen;
+		}
+
+
+	substring(str, start, stop);
 	
 	# both = (right & left);
 	}
+
+
 
 
 str.between = function(str, keys=c("__B64_", "_B64__"))
@@ -547,6 +517,7 @@ str.implode = function(sep, str, method="base", ...)
 	{
 	# necessary overhead
 	m = functions.cleanKey(method, 1);
+	if(!is.list(str)) { tmp = str; str = list(); str[[1]] = tmp; }
 
 	if(m == "c" && exists("cpp_implode"))
 		{
@@ -1120,6 +1091,90 @@ str.commentWrapper = function(str, nchars=0, c.tag="#", r.tag=c.tag, s.tag=" ", 
 
 
 
+
+
+#' str.substr
+#'
+#' @param str
+#' @param n
+#' @param length
+#' @param PHP.offset  # if true, the EXAMPLES on PHP.NET work exactly
+#'
+#' @return
+#' @export
+#'
+#' @examples
+# if offset and length are multivariate, they must EQUAL EACH OTHER and str
+# FOR NOW == NO ... multivariate str, univariate offset/length
+# if(is.negative(n)) ... multivariate is an issue 
+str.substr = function(str, offset = -1, length=NULL)
+	{
+	n = as.integer(offset);   # R indexes at "1"
+							  # PHP indexes at "0"
+	if(!is.negative(n)) { n = 1 + n; }
+
+	if(!is.null(length))
+		{
+		length = as.integer(length);
+		if(!PHP.offset && is.negative(n)) { length = length - 1; } # PHP indexes at "0"
+		}
+
+	str.len = strlen(str);  ## this is multivariate ?
+	# cat("\n", "n = ", n, "\t\t", "length = ", length, "\n");
+	# print(str.len);
+		if(is.negative(n))
+			{
+			# print(" CASE 1 ");
+			str.tmp = substr(str, start=1+(str.len + n), stop=str.len );
+				if(is.null(length)) { return (str.tmp); }
+				if(length == 0) 	{ return (str.tmp); }
+			if(is.positive(length))
+				{
+				# print(" CASE 2a ");
+				str.final = substr(str.tmp, start=1, stop = length);
+				} else {
+						# print(" CASE 2b ");
+						str.len.tmp = strlen(str.tmp);
+						str.final = substr(str.tmp, start=1, stop = str.len.tmp + length);
+						}
+			return ( str.final );
+			} else {
+					# print(" CASE 3 ");
+					# PHP allows n = 0 ... first element ...
+					# does this need if PHPOFFSET logic?
+					str.tmp = substr(str, start=1+n, stop=str.len );
+						if(is.null(length)) { return (str.tmp); }
+						if(length == 0) 	{ return (str.tmp); }
+
+
+					if(is.positive(length))
+						{
+						 print(" CASE 4a ");
+						str.final = substr(str.tmp, start=1, stop = length);
+						} else {
+								 print(" CASE 4b ");
+								str.len.tmp = strlen(str.tmp);
+								str.final = substr(str.tmp, start=1, stop = str.len.tmp + length);
+								}
+					return ( str.final );
+					}
+	stop("humanVerse::.substr ... how did you get here?!?");
+}
+
+
+
+
+#' @rdname .substr
+#' @export
+.substr = str.substr;
+
+#' @rdname substr.neg
+#' @export
+substr.neg = str.substr;
+
+#' @rdname str.substring
+#' @export
+str.substring = str.substr;
 
 
 

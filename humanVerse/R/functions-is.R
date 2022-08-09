@@ -1,6 +1,14 @@
 
 
 
+# > is.function(md5_)
+# [1] TRUE
+# > is.function("md5_")
+# [1] FALSE
+# exists("md5_")
+
+
+
 
 #' @rdname is.dir
 #' @export
@@ -27,6 +35,9 @@ is.windows = function()
 	# .isWindows() ... from library(digest)
 	# ??? ... from library(???)
 	}
+
+
+
 
 
 
@@ -160,6 +171,12 @@ is.set = function(obj, allow.NULL=FALSE)
 	}
 
 
+
+#' @rdname isset
+#' @export
+isset = is.set;
+
+
 ##################################################
 #'
 #' is.empty
@@ -210,6 +227,9 @@ is.empty = function(obj)
 	}
 
 
+#' @rdname empty
+#' @export
+empty = is.empty;
 
 
 ##################################################
