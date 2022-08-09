@@ -1,20 +1,52 @@
 
-base64.encode = function(obj, method="JSON", ...)
+### THIS IS MULTIVARIATE ... user has to KNOW which function to call
+base64.encode = function(objlist, method="JSON", ...)
 	{
+	# seems to convert to LIST automatically if input is vector ...
+	n = length(objlist);
+	res = character(n);
+	for(i in 1:n)
+		{
+		res[i] = base64.enc(objlist[[i]]);
+		}
+	res;
+	}
+
+### THIS IS MULTIVARIATE ... user has to KNOW which function to call
+base64.decode = function(b64.vec, method="JSON", ...)
+	{
+	n = length(b64.vec);
+	res = list();
+	for(i in 1:n)
+		{
+		res[[i]] = base64.dec(b64.vec[i]);
+		}
+	list.return(res);  # collapse on n=1
+	}
+
+
+
+
+
+
+## THIS IS UNIVARIATE
+base64.enc = function(obj, method="JSON", ...)
+	{	
 	# necessary overhead
 	m = functions.cleanKey(method, 1); 
 	if(m == "j") { obj.str = JSON.stringify(obj, ...); }
 	if(m == "s") { obj.str = serialize(obj, NULL, ascii=TRUE, ...); }
 	obj.raw = charToRaw(obj.str);
-	b64.encode(obj.raw);
+	b64.enc(obj.raw);
 	}
 
 
-base64.decode = function(b64.str, method="JSON", ...)
+## THIS IS UNIVARIATE
+base64.dec = function(b64.str, method="JSON", ...)
 	{
 	# necessary overhead
 	m = functions.cleanKey(method, 1);
-	obj.raw = b64.decode(b64.str);
+	obj.raw = b64.dec(b64.str);
 	obj.str = rawToChar(obj.raw);
 	if(m == "j") { obj = JSON.parse(obj.str); } ## no ... on this function
 	if(m == "s") { obj = unserialize(obj.raw); }
@@ -60,7 +92,7 @@ base64.decode = function(b64.str, method="JSON", ...)
 
 
 # https://coolbutuseless.github.io/2021/12/04/base64-encoding/decoding-in-plain-r/
-## b64.init, b64.encode, b64.decode are in RAW FORM
+## b64.init, b64.enc, b64.dec are in RAW FORM
 ## we will wrap into a STRING IN / OUT form
 
 
@@ -87,9 +119,9 @@ b64.init = function()
 #'
 #' @example
 #' b64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII='
-#' b64.decode(b64)
+#' b64.dec(b64)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-b64.decode = function(b64) {
+b64.dec = function(b64) {
 lookup = b64.init();
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # Get a, integer 6-bit value for each of the characters in the string
@@ -142,9 +174,9 @@ lookup = b64.init();
 #' @return single character string containing base64 encoded values
 #'
 #' @example
-#' b64.encode(as.raw(1:20))
+#' b64.enc(as.raw(1:20))
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-b64.encode <- function(raw_vec) {
+b64.enc <- function(raw_vec) {
 	lookup = b64.init();
 	char_ = names(lookup);
 	
@@ -195,14 +227,14 @@ b64.test = function()
 	for (i in seq(100)) 
 			{
 			  data    <- as.raw(sample(i))
-			  b64_me  <- b64.encode(data)
+			  b64_me  <- b64.enc(data)
 			  b64_ref <- openssl::base64_encode(data)
 			  
 			  # Does my base64 string agree with `openssl`?
 			  stopifnot(identical(b64_me, b64_ref))
 			  
 			  # Does the decoded value match the original data?
-			  decoded <- b64.decode(b64_ref)
+			  decoded <- b64.dec(b64_ref)
 			  stopifnot(identical(data, decoded))
 			}
 

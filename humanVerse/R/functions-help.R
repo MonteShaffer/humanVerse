@@ -5,6 +5,11 @@
 # examples(X)
 # apropos("rand")
 
+# > ?%in%
+# Error: unexpected SPECIAL in "?%in%"
+# > help("%in%")
+# > ?`%in%`
+
 # break out "+" ... ESCAPE key
 
 # sign(-2.9)

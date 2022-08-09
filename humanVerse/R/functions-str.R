@@ -1,18 +1,99 @@
 
-
-
-str.getPositions = function(str, search, index=NULL)
+str.toCharacters = function(str, sep="")
 	{
-	n.list = length(str);
-	slen = strlen(search);
-	info = str.explode(search, str);
-
-	ss = as.relistable( str.len(info) ); # a list of lengths
-		u.info = unlist(ss);	# unlist
-		u.info = u.info + slen;  	# add	
-	ee = relist(u.info);			# relist
-	list("start" = ss, "end" = ee);
+	# strsplit(str, sep, fixed=TRUE)[[1]];
+	res = str.explode(sep, str);
+	list.return(res);
 	}
+
+str.fromCharacters = function(chars, sep="")
+	{
+	res = chars;
+	if(!is.list(chars)) { res = list(); res[[1]] = chars; }
+	str.implode(sep, res);
+	}
+
+str.toMD5 = function(str, times=1, method="digest", ...)
+	{
+
+
+if(m == "c" && exists("cpp_strlen"))
+		{
+		return( cpp_strlen(str) );
+		}
+
+md5.digest = function(strvec, times=1, serialize=FALSE)
+
+	
+	}
+
+
+str.fromMD5 = function(str, times=1, method="digest", ...)
+	{
+	#  body(str.fromMD5);
+	msg = "\n\n tldr; \n\n\t MD5 is a hashing algorithm that digests an input into a 32-bit hexstr. \n\t\t The [times=1] feature will allow iterative MD5 hashing:  e.g., n=2 is MD5(MD5(str)) \n\t\t It would be cool if it had an inverse, but alas, it does not!  There are \n\t\t HACKERS that have rainbow tables of results, a dictionary-based INVERSION.  \n\t\t Who knows, maybe I will implement that lookup in R 'one day' \n\n\t -->  MD5 is **SAFE** to hash most things (except passwords, encryption keys, etc.)  But don't worry, in the early days FACEBOOK stored your password in the database in PLAIN TEXT form.  At least an MD5 storage requires some work. [This about how much LIFE ENERGY we waste dealing with password-type events.  Is that MKULTRA programming?!?]  The optimal storage, IMHO, is using the SJCL algorithm as it has easy-to-use client side (Javascript, n1=12346 times) and server side (PHP [or Javascript], n2=12345678 times) interfacing.  Like MD5, you don't ever know what the password is, but you can perform a handshake. \n\t\t Good coding STANDARDS requires me to include the inverse function here to send an important \n\t\t VERBOSE message to you, dear reader.  \n\t\t  THIS my friends is how choice architecture works!  Cheers and Aloha! \n\n\n\t\t\t MD5: https://en.wikipedia.org/wiki/MD5 \n\n\n\t\t\t HASHING:  https://en.wikipedia.org/wiki/Hash_function \n\n\n\t\t\t RAINBOWS: https://crackstation.net/ [Great, except NEW captch] \n\n\t\t\t\t https://md5decrypt.net/en/ \n\n\t\t\t http://md5.mshaffer.com  \n\n\n\t\t\t SJCL: https://bitwiseshiftleft.github.io/sjcl/ ";
+	
+	warning(msg, call. = TRUE, immediate. = TRUE);
+	
+	}
+
+
+
+# technically "text.toRaw"
+str.toRaw = function(str)
+	{
+	n = length(str);
+	res = list();
+	for(i in 1:n)
+		{
+		res[[i]] = charToRaw(str[i]);
+		}
+	list.return(res);
+	}
+
+str.fromRaw = function(raw)
+	{
+	if(is.list(raw))
+		{
+		n = length(raw);
+		res = character(n);
+		for(i in 1:n)
+			{
+			res[i] = rawToChar(raw[[i]]);
+			}
+		res;
+		} else { rawToChar(raw); }
+	}
+
+
+# technically "text.toHex"
+str.toHex = function(str)
+	{
+
+	}
+
+
+# str.trimSubstring ... just check based on strinleng using substrings
+
+str.trimFromFixed = function(str, trim="#", side="both")
+	{
+	s = functions.cleanKey(side, 1);
+	slen = strlen(trim);
+	# if x is character vector, x[1][1] should return the charAt(x[1], 1)
+	# likely the OLD SCHOOL LEGACY of multidimensional arrays?
+	first = substring(str, 1, slen);
+	last = substring(str, -1, slen);  # FROM THE BACK ???
+
+	## single &
+	## first == trim & last == trim
+
+	left = (first == trim);
+	right = (last == trim);
+	# both = (right & left);
+	
+	# keep a copy of [str] to do TRUE/FALSE
+	# does substring have a NOT operator ... return the INVERSE
+	sub.str = 
 
 
 str.between = function(str, keys=c("__B64_", "_B64__"))
@@ -177,7 +258,7 @@ strtoupper = str.toupper;
 #'
 #' str.trim("\r\n    four   scores    and  seven      years   \t\t  ");
 #'
-str.trim = function(str, side="both", method="stringi", pattern="", fixed=TRUE, ...)
+str.trim = function(str, side="both", method="stringi", pattern="", ...)
   {
 	# necessary overhead
 	s = functions.cleanKey(side, 1);
@@ -288,7 +369,34 @@ explodeMe = str.explode;
 str.split = str.explode;
 
 
+str.implode = function(sep, str, method="base", ...)
+	{
+	# necessary overhead
+	m = functions.cleanKey(method, 1);
 
+	if(m == "c" && exists("cpp_implode"))
+		{
+		res = ( cpp_implode(sep, str) );
+		return(res);
+		}
+
+	n = length(str);
+	res = character(n);
+	for(i in 1:n)
+		{
+		res[i] = paste0(str[[i]], collapse = sep);
+		}
+	res;
+	}
+
+
+#' @rdname implodeMe
+#' @export
+implodeMe = str.implode;
+
+#' @rdname str.unsplit
+#' @export
+str.unsplit = str.implode;
 
 
 
@@ -393,11 +501,12 @@ str.replace = function(search, replace, subject, method="base")
 	rlen = length(replace);
 	nlen = length(subject);
 
-
+	### CASE 1
 	if(slen == rlen)  ## pairwise over EACH subject
 		{
+		cat("\n", "CASE 1", "\n");
 		res = character(nlen);
-		for(j = 1:nlen)
+		for(j in 1:nlen)
 			{
 			str = subject[j];
 			for(i in 1:slen)
@@ -409,11 +518,13 @@ str.replace = function(search, replace, subject, method="base")
 		return (res);
 		}
 
+	### CASE 2
 	# str.replace(c("{monte}", "{for}"), "MONTE", c("Here is {monte} template", "Here is another {for} sure template {monte}!") );
 	if(rlen == 1)
 		{
+		cat("\n", "CASE 2", "\n");
 		res = character(nlen);
-		for(j = 1:nlen)
+		for(j in 1:nlen)
 			{
 			str = subject[j];
 			for(i in 1:slen)
@@ -425,12 +536,14 @@ str.replace = function(search, replace, subject, method="base")
 		return (res);
 		}
 
+	### CASE 3
 	# str.replace(c("{monte}"), c("MONTE","FOR"), c("Here is {monte} template", "Here is another {for} sure template {monte}!") );
 	if(slen == 1 && rlen > nlen)
 		{
+		cat("\n", "CASE 3", "\n");
 		res = character(rlen);
 		si = 1;
-		for(j = 1:rlen)
+		for(j in 1:rlen)
 			{
 			str = subject[si]; 
 			str = gsub(search[1], replace[j], str, fixed=TRUE);
@@ -440,6 +553,7 @@ str.replace = function(search, replace, subject, method="base")
 		return (res);
 		}
 
+	cat("\n", "CASE 4", "\n");
 	# DEFAULT ... all replaces over all subjects
 	res = character(nlen);
 	for(j in 1:nlen)
@@ -597,14 +711,6 @@ str.pad = function(str, final.length, padding="0", side="RIGHT", method="stringi
 str_trim = str.trim;
 
 
-/*
-p = "\\P{Wspace}";
-		if(pattern != "") { p = pattern; }
-		res = switch(s,
-						  "l"	= stringi::stri_trim_left (str, p, ...),
-						  "r" 	= stringi::stri_trim_right(str, p, ...),
-						  "b"  	= stringi::stri_trim_both (str, p, ...),
-*/
 
 str.removeWhiteSpace = function( str, replace=" ", n = 2,
                               pre.trim = TRUE, post.trim = TRUE, ...)
@@ -669,7 +775,17 @@ str.push.first = str.push.front;
 
 
 
-str.wrap = function() {}
+str.wrap = function(str) 
+	{
+
+	}
+
+
+
+msg = "tldr; \n\t R-dev believes this is poor programming practice to allow you to \n\t
+suppressError( so they have not included it in base R.  It is probably true, but 'git-r-done' first, and then figure out the minutia such as why this function is throwing an error.  That is why I have past such a VERBOSE message to you, dear reader.";
+
+
 
 ##################################################
 #'
@@ -1535,4 +1651,163 @@ str.contains = function(haystack = "hello friend", needle = " ", ...)
 	# res;
 	# */
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+str.trimFixed = function(str, trim="#", side="both")
+	{
+	s = functions.cleanKey(side, 1);
+	str.pos = str.getPositions(str, trim);
+
+	n.str = length(str);
+	res = character(n.str);
+	for(i in 1:n.str)
+		{
+		str.df = str.pos[[i]];
+		n.df = nrow(str.df);
+		df.first = str.df[1,]$string;
+		df.last = str.df[n.df,]$string;
+
+		if(df.last == trim && df.first == trim && s == "b")
+			{
+			# str.df[n.df, ] = NULL;
+			str.df = str.df[-c(1,n.df), ];
+			}
+		if(df.last == trim && s == "r")
+			{
+			str.df = str.df[-c(n.df), ];
+			}
+		if(df.first == trim && s == "l")
+			{
+			str.df = str.df[-c(1), ];
+			}
+		 
+		res[i] = paste0(str.df$string, collapse="");
+		}
+	res;	
+	}
+
+
+
+str.explodeMap = function(chars, str, search)
+	{
+	slen = strlen(search);
+	res = NULL;
+	nlen = length(chars);
+	nchars = strlen(chars);
+	clen = sum(nchars);
+	tlen = clen + nlen;  # this should be original string length
+	n = nlen;
+	idx = 1;
+	for(i in 1:n)
+		{
+		cslen = strlen(chars[i]);
+		if(cslen == 0) 
+			{ 
+			# row = c("", NA, NA);
+			row = NULL;
+			} else { 
+					row = c(chars[i], idx, idx + cslen - 1); 
+					}
+		idx = idx + cslen;
+		res = rbind(res, row);
+
+		# if(i == nlen) { break; }  # don't append last n (n - 1)
+		if((idx + slen - 1) >= tlen) { break; }
+		row = c(search, idx, idx + slen - 1);
+		res = rbind(res, row);		
+		idx = idx + slen;
+		}
+	res = data.frame(res);
+	colnames(res) = c("string", "start", "stop");
+	res$start = as.integer(res$start);
+	res$stop = as.integer(res$stop);
+
+print(str);
+cat("\n", "--- ", strlen(str), " ---", "\n");
+print(chars);
+print(res);
+	res;
+
+	}
+
+
+
+# gregexpr("B", x);
+# https://statisticsglobe.com/find-position-of-character-in-string-in-r
+# gregexpr(search, str);
+# stringr::str_locate_all(pattern = "B", x)
+# stringr::str_locate_all(pattern = search, str)
+# https://github.com/tidyverse/design/issues/13
+# recycling examples 
+# df = data.frame(matrix(  vector(), 0, 5, dimnames=list(c(), c("C1","C2","C3","C4","C5"))), stringsAsFactors=F)
+
+str.getPositions = function(str, search)
+	{
+	slen = strlen(search);
+	n.list = length(str);
+	
+	info = str.explode(search, str);  	# exploded char vectors
+										# lengths of exploded char vectors
+
+
+	res = list();
+	for(i in 1:n.list)
+		{
+		res[[i]] = str.explodeMap(info[[1]], str[1], search);
+		}
+	res;
+	# ss = as.relistable( str.len(info) ); # a list of lengths
+		# u.info = unlist(ss);	# unlist
+		# u.info = u.info + slen;  	# add	
+	# ee = relist(u.info);			# relist
+	# list("start" = ss, "end" = ee);
+	}
+
+
+
+
+
+
+#' implodeMe
+#'
+#' Similar to javascript.join and php.implode
+#'
+#' @param delimiter character(s) to unsplit with
+#' @param strvec a character string to be unsplit
+#'
+#' @return a character string
+#' @export
+#'
+#' @examples
+#' implodeMe();
+#'
+#'
+#' str = removeWhiteSpace("    four   scores    and  seven      years     ", "[s]");
+#' strvec = explodeMe("[s]", str);
+#' implodeMe(",", strvec);
+#'
+implodeMe = function(delimiter=" ", strvec = c("hello","friend") )
+  {
+  paste0(strvec, collapse = delimiter);
+  }
+
 

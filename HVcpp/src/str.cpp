@@ -463,39 +463,20 @@ CharacterVector cpp_str_replace(const std::vector<std::string> search, const std
 		std::cout << "\n";
 		for(j=0; j<nlen; j++)
 			{
-			str = "";
 			str = subject[j];
 			si = 0;
 			ri = 0;
 			for(i=0; i<mlen; i++)
 				{
-		
-		std::cout << i;
-		std::cout << "\n";
 				mysearch = search[si];
 				myreplace = replace[ri];
-				
-				std::cout << mysearch;
-		std::cout << " --> ";
-				std::cout << myreplace;
-		std::cout << "\n";
-		
 				str = s_str_replace(mysearch, myreplace, str);
 				
-				std::cout << str;
-		std::cout << "\n";
+				// loop over s, end, back to beginning
 				si = 1 + si;  if(si >= slen) { si = 0; }  
 				// loop over s, end, back to beginning
 				ri = 1 + ri;  if(ri >= rlen) { ri = 0; }  
-				// loop over s, end, back to beginning
-
-				std::cout << si;
-		std::cout << "\n";
-						std::cout << ri;
-		std::cout << "\n";
-
-				}
-				
+				}				
 			r.push_back(str);
 			}
 		return r;

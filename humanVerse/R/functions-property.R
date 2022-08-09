@@ -17,6 +17,8 @@ property.set = function(obj, key, value=NULL, property.type="attributes")
 	{
 	w = functions.cleanKey(property.type, 1);
 
+
+
 	if(is.null(value))
 		{
 		if(is.list(key))
@@ -88,6 +90,7 @@ property.get = function(obj, key, property.type="attributes")
 		res = attributes(obj)[[key]];
 		return (res);
 		}
+
 
 	if(w == "s" || w == "e")  # System Environment
 		{

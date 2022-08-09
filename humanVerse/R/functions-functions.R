@@ -20,13 +20,18 @@ functions.cleanKey = function(key, n=1)
 
 
 
-functions.getDefault = function(fn, ...)
+functions.setDefaultValues = function(fn, ...)
 	{
 	list.extract( formals(fn), ... ); # by default into GLOBAL
 	}
 
 
 
+functions.trapErrors = function(expression)
+	{
+
+
+	}
 
 
 

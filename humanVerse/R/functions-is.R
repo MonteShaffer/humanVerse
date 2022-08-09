@@ -24,6 +24,21 @@ is.file = file.exists;
 is.windows = function()
 	{
 	str.contains("win", str.tolower(.Platform[["OS.type"]]) );
+	# .isWindows() ... from library(digest)
+	# ??? ... from library(???)
+	}
+
+
+
+is.error = function(e)
+	{
+	condition = attributes(e)$condition;
+	if(is.null(condition)) { return(FALSE); }
+	# see list.fromError(e) for other ideas to improve this function
+	extra = attributes(condition)$class;
+	if("error" %in% extra) { return(TRUE); }
+	# is this necessary
+	return(FALSE);
 	}
 
 

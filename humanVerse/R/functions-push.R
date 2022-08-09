@@ -1,22 +1,22 @@
 
-
-push.back = function(vector, element)
+## vector.push_back(element) is C++
+push_back = function(element, vector)
 	{
 	c(vector, element);
 	}
 
-#' @rdname push.last
+#' @rdname push_last
 #' @export
-push.last = push.back;
+push_last = push_back;
 
-push.front = function(vector, element)
+push_front = function(element, vector)
 	{
 	c(element, vector);
 	}
 
 #' @rdname push.first
 #' @export
-push.first = push.front;
+push_first = push_front;
 
 
 

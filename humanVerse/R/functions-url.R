@@ -1,5 +1,9 @@
 
 
+# https://www.gutenberg.org/cache/epub/feeds/
+# https://stackoverflow.com/questions/24853/what-is-the-difference-between-i-and-i#:~:text=The%20only%20difference%20is%20the,the%20value%20the%20operator%20returns.&text=So%20basically%20%2B%2Bi%20returns,will%20have%20its%20value%20incremented.
+
+
 
 encode.base64 = function(obj)
 	{ 
@@ -59,16 +63,28 @@ the 62:nd + character with the minus -.
 
 
 
+# find = c("/",".",",");
+    replace = c("-","^","+");
 
+url.folderize = function(url, 	w.chars = c("://","/","?",":", "*",'"'), 
+								f.chars = c("@", "^^", "++", "^", "+", "__" ) )
+	{
+	# this could get spurious if they are not equal
+	str.replace(w.chars, f.chars, url); # this needs to be pair-wise
+	}
 
-url.folderize = function(url, 	f.chars = c("://","/","?",":", "*",'"'), 
-								w.chars = c("@", "^", ) )
-
+url.defolderize = function(url, w.chars = c("://","/","?",":", "*",'"'), 
+								f.chars = c("@", "^^", "++", "^", "+", "__" ) )
+	{
+	# this could get spurious if they are not equal
+	## order matters ^^ before ^ on replacement
+	str.replace(f.chars, w.chars, url); # this needs to be pair-wise
+	}
 
 ## https://en.wikipedia.org/wiki/Columbia_Falls,_Montana?monte=says&hi=TRUE#Demographics
 ## url ="https://en.wikipedia.org/wiki/Columbia_Falls,_Montana?monte=says&hi=TRUE#Demographics"
 ## folderize
-url.folderizeAdvanced = function(url, showGET = TRUE,
+url.stringify = function(url, showGET = TRUE,
 						sep.dir = "^DIR^",						
 						sep.get = "__GET_{DATA}_GET__",
 						sep.base64 = "__B64_{DATA}_B64__"
@@ -116,7 +132,7 @@ url.folderizeAdvanced = function(url, showGET = TRUE,
 # ALIASE:: url.toPath
 
 
-url.deFolderizeAdvanced = function(folder, showGET = TRUE,
+url.deStringify = function(folder, showGET = TRUE,
 								sep.dir 	= "^DIR^",
 								sep.get 	= "__GET_{DATA}_GET__",
 								sep.base64 	= "__B64_{DATA}_B64__"

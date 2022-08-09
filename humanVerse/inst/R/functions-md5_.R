@@ -1,101 +1,4 @@
 
-
-#' charAt
-#'
-#' Get the character of a string at position [idx]
-#'
-#' @param str String
-#' @param idx position to get character
-#'
-#' @return single character
-#' @export
-#'
-#' @examples
-#'
-#' charAt("Alex", 2);
-#' charAt(c("Hello","there","Alex"), 2);
-#' charAt("Alex", 8);
-#' charAt("Alexander", 8);
-#'
-charAt = function(str,idx)
-  {
-  substr(str,idx,idx);
-  }
-
-#' lastChar
-#'
-#' Get the last character of a string
-#'
-#' @param str String
-#' @param trim should the string be trimmed first
-#'
-#' @return single character
-#' @export
-#'
-#' @examples
-#'
-#' lastChar("Alex");
-#' lastChar(c("Hello","there","Alex"));
-#' lastChar("Sasha");
-#' lastChar("Alexander");
-#'
-lastChar = function(str, trim=TRUE)
-	{
-	# this also works:: ... # .substr(str, -1)
-	if(trim){ str = trimMe(str); }
-	s.len = strlen(str);
-	charAt(str, s.len);
-	}
-
-
-#' charCodeAt
-#'
-#' Get the ASCII character code of a string at position [idx]
-#'
-#' @param str String
-#' @param idx position to get character
-#'
-#' @return
-#' @export
-#'
-#' @examples
-#'
-#' charCodeAt("Alex", 2);
-#' charCodeAt(c("Hello","there","Alex"), 2);
-#' charCodeAt("Alex", 8);
-#' charCodeAt("Alexander", 8);
-#'
-charCodeAt = function(str,idx)
-  {
-  charCode ( charAt(str,idx) ); #  as.numeric( iconv( charAt(str,idx), from="ASCII", to="unicodeFFFE", toRaw=TRUE)[[1]][2] );
-  }
-
-
-#' charCode
-#'
-#' @param svec A vector of characters
-#'
-#' @return ASCII character code for each character
-#' @export
-#'
-#' @examples
-#'
-#' s = "Alexander"; svec = strsplit(s,"",fixed=TRUE)[[1]];
-#' charCode(svec);
-#'
-charCode = function(svec)
-  {
-  # s = "monte";
-  # svec = strsplit(s,"",fixed=TRUE)[[1]];
-  r = c();
-  for(s in svec)
-    {
-    r = c(r, as.numeric( iconv( s, from="ASCII", to="unicodeFFFE", toRaw=TRUE)[[1]][2] ) );
-    }
-  r;
-  }
-
-
 # source("C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/functions-md5_.R");
 ##################################################
 #'
@@ -426,4 +329,103 @@ bitOr = function(a, b)
   bitwOr(a,b);
   }
 
+
+
+
+
+
+#' charAt
+#'
+#' Get the character of a string at position [idx]
+#'
+#' @param str String
+#' @param idx position to get character
+#'
+#' @return single character
+#' @export
+#'
+#' @examples
+#'
+#' charAt("Alex", 2);
+#' charAt(c("Hello","there","Alex"), 2);
+#' charAt("Alex", 8);
+#' charAt("Alexander", 8);
+#'
+charAt = function(str,idx)
+  {
+  substr(str,idx,idx);
+  }
+
+#' lastChar
+#'
+#' Get the last character of a string
+#'
+#' @param str String
+#' @param trim should the string be trimmed first
+#'
+#' @return single character
+#' @export
+#'
+#' @examples
+#'
+#' lastChar("Alex");
+#' lastChar(c("Hello","there","Alex"));
+#' lastChar("Sasha");
+#' lastChar("Alexander");
+#'
+lastChar = function(str, trim=TRUE)
+	{
+	# this also works:: ... # .substr(str, -1)
+	if(trim){ str = trimMe(str); }
+	s.len = strlen(str);
+	charAt(str, s.len);
+	}
+
+
+#' charCodeAt
+#'
+#' Get the ASCII character code of a string at position [idx]
+#'
+#' @param str String
+#' @param idx position to get character
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#'
+#' charCodeAt("Alex", 2);
+#' charCodeAt(c("Hello","there","Alex"), 2);
+#' charCodeAt("Alex", 8);
+#' charCodeAt("Alexander", 8);
+#'
+charCodeAt = function(str,idx)
+  {
+  charCode ( charAt(str,idx) ); #  as.numeric( iconv( charAt(str,idx), from="ASCII", to="unicodeFFFE", toRaw=TRUE)[[1]][2] );
+  }
+
+
+#' charCode
+#'
+#' @param svec A vector of characters
+#'
+#' @return ASCII character code for each character
+#' @export
+#'
+#' @examples
+#'
+#' s = "Alexander"; svec = strsplit(s,"",fixed=TRUE)[[1]];
+#' charCode(svec);
+#'
+charCode = function(svec)
+  {
+  # s = "monte";
+  # svec = strsplit(s,"",fixed=TRUE)[[1]];
+  r = c();
+  for(s in svec)
+    {
+    r = c(r, as.numeric( iconv( s, from="ASCII", to="unicodeFFFE", toRaw=TRUE)[[1]][2] ) );
+    }
+  r;
+  }
 

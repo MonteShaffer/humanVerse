@@ -32,6 +32,81 @@ list.return = function(res, unlist=FALSE)
 #' @export
 returnList = list.return;
 
+# functions.setDefaultValues(list.toString);
+# functions.setDefaultValues("list.toString");
+list.toString = function(simpleList, 	sep.keyvalue = "`=`", 
+										sep.elements = "`:`",
+										sep.type = "`|`"
+						)
+	{
+	str = c();
+	n = length(simpleList);
+	mynames = names(simpleList); if(is.null(mynames)) { mynames = 1:n; }
+	for(i in 1:n)
+		{
+		# str = str + new;
+		element = simpleList[[i]];
+		str = c(str, paste0(mynames[i],	sep.keyvalue, 
+							element, 	sep.type,
+							typeof(element) ));		
+		}
+	paste0(str, collapse = sep.elements);
+	}
+
+list.fromError = function(e)
+	{
+	res = list();
+		res[["msg"]] 	= e[1];
+		res[["class"]] 	= class(e);
+			condition = attributes(e)$condition;
+		res[["condition"]] = condition;
+		# FROM CONDITION
+			extra = attributes(condition)$class;
+		res[["call"]] = condition$call;
+		res[["message"]] = condition$message;
+		res[["classes"]] = extra;
+	res;
+	}
+
+
+list.map = function(keys, vals, types=NULL)
+	{
+	res = list();
+	n = length(keys);
+	for(i in 1:n)
+		{
+		res[[ keys[i] ]] = as.Type(vals[i], types[i]);
+		}
+	res;
+	}
+
+list.fromString = function(str, sep.keyvalue = "`=`", 
+								sep.elements = "`:`",
+								sep.type = "`|`"
+							)
+	{
+	info = str.explode(sep.elements, str);
+	info2 = str.explode(sep.keyvalue, info);
+		keys = list.getElements(info2, 1);
+		info = list.getElements(info2, 2);
+	info2 = str.explode(sep.type, info);
+		vals = list.getElements(info2, 1);
+		types = list.getElements(info2, 2);
+	res = list.map(keys, vals, types);
+	}
+
+listToString = function(mylist,sep1="-",sep2="_")
+  {
+  str = c();
+  mynames = names(mylist);
+  for(myname in mynames)
+    {
+    val = mylist[[myname]];
+    str = c(str, paste0(myname,sep1,val));
+    }
+  paste0(str,collapse=sep2);
+  }
+
 
 
 ##################################################

@@ -1,5 +1,11 @@
 
 
+dir.getIncludes
+dir.addToIncludes
+dir.rankIncludes
+
+
+
 dir.smartPath = function(relative, base.path=NULL)
 	{
 	

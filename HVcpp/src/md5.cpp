@@ -379,12 +379,21 @@ CharacterVector cpp_md5(const std::vector<std::string> str, int times=1)
 	CharacterVector r{};
 	for (auto& element : str) 
 		{
-		std::string res = _md5(element);
-		if(times > 1) 
+		std::string res = element;
+		if(times < 1) 
+			{ 
+			std::cout << " times = ";
+			std::cout << times;
+			std::cout << "\n";
+			std::cout << " NONSENSICAL, setting times = 0 and returning ORIGINAL";
+			std::cout << "\n";
+			times = 0; 			
+			}
+		if(times > 0)
 			{
-			for(int i=2; i<= times; i++)
+			for(int i=1; i<= times; i++)
 				{
-				res = _md5(res);
+				res = md5_(res);
 				}
 			}
 		r.push_back(res);

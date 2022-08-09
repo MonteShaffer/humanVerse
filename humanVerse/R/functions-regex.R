@@ -1,7 +1,7 @@
 
 
 
-
+ 
 
 # see preg_match at PHP
 regex.match = function(pattern="(^[^:]+):(.+)", 

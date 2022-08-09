@@ -1,4 +1,63 @@
 
+# testit = function() { if(rand(0,1) == 1) {stop("ERROR");} else {return(1); }}
+# x = suppressError(testit);
+# x = suppressError(testit(), show.notice=FALSE); str(x);
+# x = suppressError(testit(), msg="-HI-"); str(x); if(is.error(x)) { list.fromError(x); }
+suppressError = function(expression, show.notice = TRUE, msg = "")
+	{
+	if(show.notice)
+		{
+		if(msg == "") 
+			{
+			msg = "\n\n tldr; \n\n\n\t R-dev believes this is poor programming practice to allow you to \n\t\t suppressError( so they have not included it in base R.  \n\t\t It is probably true, but 'git-r-done' first, and then \n\t\t figure out the minutia such as why this function is \n\t\t throwing an error.  That is why I have past such a \n\t\t VERBOSE message to you, dear reader. \n\n\t By altering this function [set msg to something else, not empty ''], \n\t\t you can reduce the length of this message.  \n\n\t Or you can set the flag show.notice=FALSE to prevent it from printing. \n\t\t  THIS my friends is how choice architecture works!  Cheers and Aloha! \n\n\n";
+			}
+		# cat(msg);
+		warning(msg, call. = FALSE, immediate. = TRUE);
+		}
+	try( expression , silent = TRUE);
+	}
+
+
+# general trap function
+# maybe in functions ... 
+# on.error 
+# digest ... errormode=c("stop","warn","silent"),
+# .errorhandler <- function(txt, obj="", mode="stop") 
+
+
+
+as.type = function(vals, types="character")
+	{
+	n = length(vals);
+	nt = length(types); if( (n != nt) && (nt != 1) ) { stop("lenghts must match or types must be of length 1;"); }
+	
+	# NULL => null
+	types = str.tolower(types);
+
+	# as.complex, as.double, as.null, as.single, as.integer 
+	# seems like it is of the form as.{typeof(vals))
+	if(nt == 1)
+		{
+		# one type on a vector
+		cmd = paste0("vals = as.",types,"(vals);");
+		} else {
+				str = character(n);
+				for(i in 1:n)
+					{
+					# pairwise
+					str[i] = paste0("vals[" , i , "] = as.",
+										types[i],"(vals[" , i , "]);");
+					}
+				# we could create a vector or one long string, parse(text is multivariate
+				cmd = paste0(str, collapse=" ");
+				}
+	# maybe trap this?
+	# maybe a function?  
+	eval(parse(text = cmd));
+	vals;
+	}
+
+
 ##################################################
 #'
 #' bindec

@@ -1,5 +1,13 @@
 	
 
+obj.toMD5 = function(obj, ...)
+	{
+	# via JSON
+	# via SERIALIZE
+
+	}
+
+
 obj.get = function(obj.str, ...) 
 	{
 	# get

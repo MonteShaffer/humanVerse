@@ -11,7 +11,6 @@ BugReports: https://github.com/MonteShaffer/humanVerse/issues
 Encoding: UTF-8
 LazyData: true
 Suggests:
-  digest,
   plotrix,
   Matrix,
   matrixStats,
@@ -21,15 +20,15 @@ Suggests:
 	rjson,
 xml2,
 curl,
-	
+  openssl,	
   
 Imports:
+  digest,
   graphics,
   jsonlite,
   stats,
-  openssl,
   stringi,
-	utils
+  utils
 	
 
 RoxygenNote: 7.1.1
