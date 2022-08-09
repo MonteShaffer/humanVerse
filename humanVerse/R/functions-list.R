@@ -69,7 +69,7 @@ list.fromError = function(e)
 	}
 
 
-list.map = function(keys, vals, types=NULL)
+list.create = function(keys, vals, types=NULL)
 	{
 	res = list();
 	n = length(keys);
@@ -94,18 +94,6 @@ list.fromString = function(str, sep.keyvalue = "`=`",
 		types = list.getElements(info2, 2);
 	res = list.map(keys, vals, types);
 	}
-
-listToString = function(mylist,sep1="-",sep2="_")
-  {
-  str = c();
-  mynames = names(mylist);
-  for(myname in mynames)
-    {
-    val = mylist[[myname]];
-    str = c(str, paste0(myname,sep1,val));
-    }
-  paste0(str,collapse=sep2);
-  }
 
 
 
@@ -135,7 +123,7 @@ list.extract = function(myList, envir = .GlobalEnv)
       {
       for(i in 1:n.myList)
         {
-        assign(names(myList)[i], myList[[i]], envir = .GlobalEnv);
+        assign(names(myList)[i], myList[[i]], envir = envir);
         }
       }
     }
@@ -161,6 +149,43 @@ list.getElements = function(info, n=1)
 		}
 	res;
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+listToString = function(mylist,sep1="-",sep2="_")
+  {
+  str = c();
+  mynames = names(mylist);
+  for(myname in mynames)
+    {
+    val = mylist[[myname]];
+    str = c(str, paste0(myname,sep1,val));
+    }
+  paste0(str,collapse=sep2);
+  }
+
+
 
 
 

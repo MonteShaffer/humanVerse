@@ -2832,3 +2832,175 @@ CharacterVector cpp_str_replace(const std::vector<std::string> search, const std
 
 
 
+
+
+
+
+
+
+listToString = function(mylist,sep1="-",sep2="_")
+  {
+  str = c();
+  mynames = names(mylist);
+  for(myname in mynames)
+    {
+    val = mylist[[myname]];
+    str = c(str, paste0(myname,sep1,val));
+    }
+  paste0(str,collapse=sep2);
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+str.substr = function(str, offset = -1, length=NULL, PHP.offset=TRUE)
+	{
+	n = as.integer(offset);
+		if(!PHP.offset) { n = n - 1; } # PHP indexes at "0"
+
+	if(!is.null(length))
+		{
+		length = as.integer(length);
+		if(!PHP.offset) { length = length - 1; } # PHP indexes at "0"
+		}
+
+	str.len = strlen(str);
+		if(is.negative(n))
+			{
+			print(" CASE 1 ");
+			str.tmp = substr(str, start=1+(str.len + n), stop=str.len );
+				if(is.null(length)) { return (str.tmp); }
+				if(length == 0) 	{ return (str.tmp); }
+			if(is.positive(length))
+				{
+				print(" CASE 2a ");
+				str.final = substr(str.tmp, start=1, stop = length);
+				} else {
+						print(" CASE 2b ");
+						str.len.tmp = strlen(str.tmp);
+						str.final = substr(str.tmp, start=1, stop = str.len.tmp + length);
+						}
+			return ( str.final );
+			} else {
+					print(" CASE 3 ");
+					# PHP allows n = 0 ... first element ...
+					# does this need if PHPOFFSET logic?
+					str.tmp = substr(str, start=1+n, stop=str.len );
+						if(is.null(length)) { return (str.tmp); }
+						if(length == 0) 	{ return (str.tmp); }
+
+
+					if(is.positive(length))
+						{
+						print(" CASE 4a ");
+						str.final = substr(str.tmp, start=1, stop = length);
+						} else {
+								print(" CASE 4b ");
+								str.len.tmp = strlen(str.tmp);
+								str.final = substr(str.tmp, start=1, stop = str.len.tmp + length);
+								}
+					return ( str.final );
+					}
+	stop("humanVerse::.substr ... how did you get here?!?");
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

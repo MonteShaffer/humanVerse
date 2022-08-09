@@ -1,4 +1,103 @@
 
+
+# technically "text.toHex"
+str.toHex = function(str)
+	{
+
+	}
+
+# technically "text.fromHex"
+str.fromHex = function(hexstr)
+	{
+
+	}
+
+
+#' str.substr
+#'
+#' @param str
+#' @param n
+#' @param length
+#' @param PHP.offset  # if true, the EXAMPLES on PHP.NET work exactly
+#'
+#' @return
+#' @export
+#'
+#' @examples
+# if offset and length are multivariate, they must EQUAL EACH OTHER and str
+# FOR NOW == NO ... multivariate str, univariate offset/length
+# if(is.negative(n)) ... multivariate is an issue 
+str.substr = function(str, offset = -1, length=NULL)
+	{
+	n = as.integer(offset);   # R indexes at "1"
+							  # PHP indexes at "0"
+	if(!is.negative(n)) { n = 1 + n; }
+
+	if(!is.null(length))
+		{
+		length = as.integer(length);
+		if(!PHP.offset && is.negative(n)) { length = length - 1; } # PHP indexes at "0"
+		}
+
+	str.len = strlen(str);  ## this is multivariate ?
+	# cat("\n", "n = ", n, "\t\t", "length = ", length, "\n");
+	# print(str.len);
+		if(is.negative(n))
+			{
+			# print(" CASE 1 ");
+			str.tmp = substr(str, start=1+(str.len + n), stop=str.len );
+				if(is.null(length)) { return (str.tmp); }
+				if(length == 0) 	{ return (str.tmp); }
+			if(is.positive(length))
+				{
+				# print(" CASE 2a ");
+				str.final = substr(str.tmp, start=1, stop = length);
+				} else {
+						# print(" CASE 2b ");
+						str.len.tmp = strlen(str.tmp);
+						str.final = substr(str.tmp, start=1, stop = str.len.tmp + length);
+						}
+			return ( str.final );
+			} else {
+					# print(" CASE 3 ");
+					# PHP allows n = 0 ... first element ...
+					# does this need if PHPOFFSET logic?
+					str.tmp = substr(str, start=1+n, stop=str.len );
+						if(is.null(length)) { return (str.tmp); }
+						if(length == 0) 	{ return (str.tmp); }
+
+
+					if(is.positive(length))
+						{
+						 print(" CASE 4a ");
+						str.final = substr(str.tmp, start=1, stop = length);
+						} else {
+								 print(" CASE 4b ");
+								str.len.tmp = strlen(str.tmp);
+								str.final = substr(str.tmp, start=1, stop = str.len.tmp + length);
+								}
+					return ( str.final );
+					}
+	stop("humanVerse::.substr ... how did you get here?!?");
+}
+
+
+
+
+#' @rdname .substr
+#' @export
+.substr = str.substr;
+
+#' @rdname substr.neg
+#' @export
+substr.neg = str.substr;
+
+#' @rdname str.substring
+#' @export
+str.substring = str.substr;
+
+
+
 str.toCharacters = function(str, sep="")
 	{
 	# strsplit(str, sep, fixed=TRUE)[[1]];
@@ -15,16 +114,73 @@ str.fromCharacters = function(chars, sep="")
 
 str.toMD5 = function(str, times=1, method="digest", ...)
 	{
-
-
-if(m == "c" && exists("cpp_strlen"))
-		{
-		return( cpp_strlen(str) );
+	# necessary overhead
+	m = functions.cleanKey(method, 1);
+	times = as.integer(times);
+	if(times < 1) 
+		{ 
+		warning("what are you doing setting the times < 1, RETURNING NULL "); 
+		return(NULL); 
 		}
 
-md5.digest = function(strvec, times=1, serialize=FALSE)
+	if(m == "c" && exists("cpp_md5"))
+		{
+		# cpp_md5( (str = c("monte","shaffer") ), 9 );
+		res = ( cpp_md5(str, times) );
+		return(res);
+		}
+
+	is.digest = (m == "d" && is.library("digest") );
+	is.openssl = (m == "o" && is.library("openssl") );
+	# we have to use the SLOW base function
+	is.hack = (!is.digest && !is.openssl); 
+
+	if(is.hack)
+		{
+		if(!is.function(md5_))
+			{
+			source("https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/humanVerse/inst/R/functions-md5_.R");
+			Sys.sleep(1); # let it settle?
+			}
+		
+		if(!is.function(md5_))
+			{
+			stop("UNABLE to load backup MD5 function");
+			}
+		}
 
 	
+	
+	n = length(str); # how many
+	res = character(n);
+	for(i in 1:n)
+		{
+		res[i] = str[i];
+		for(j in 1:times)
+			{
+			if(is.digest)
+				{
+				# vdigest ... # Dirk, I don't see it!
+				# digest::digest(str, algo="md5", serialize=FALSE);
+				if(!is.set(algo)) 		{ algo 		= "md5"; }
+				if(!is.set(serialize)) 	{ serialize = FALSE; }
+				res[i] = digest::digest(res[i], algo=algo, serialize=serialize, ...);
+				}
+			if(is.openssl)
+				{
+				# openssl::md5(strvec);
+				# could speed this up in vector form
+				res[i] = openssl::md5(res[i]);
+				}
+			if(is.hack)
+				{
+				## I could vector this if digest also is, 
+				## then I could remove one 'FOR' loop
+				res[i] = md5_(res[i]);
+				}
+			}
+		}
+	return(res);
 	}
 
 
@@ -66,34 +222,52 @@ str.fromRaw = function(raw)
 	}
 
 
-# technically "text.toHex"
-str.toHex = function(str)
-	{
-
-	}
-
-
 # str.trimSubstring ... just check based on strinleng using substrings
-
-str.trimFromFixed = function(str, trim="#", side="both")
+# monte was here 
+str.trimFromFixed = function(str, trim="#", side="both", ...)
 	{
 	s = functions.cleanKey(side, 1);
+	str.len = strlen(str);
+	n.str = length(str);
 	slen = strlen(trim);
 	# if x is character vector, x[1][1] should return the charAt(x[1], 1)
 	# likely the OLD SCHOOL LEGACY of multidimensional arrays?
+	
+	# first = substring(str, 1, slen);
+	# last = substring(str, -1, slen);  # FROM THE BACK ???
+	# str = c("monte", "# says ", "hi#", "## to Alex#");
 	first = substring(str, 1, slen);
-	last = substring(str, -1, slen);  # FROM THE BACK ???
+	last = substring(str, str.len-slen+1, str.len);
+right = (last == trim);
+	
+	# first = str.substr(str, 1, slen);
+	# last = str.substr(str, -1, slen);
+
+	# substring("abcdef", 1:6, 2:7)
 
 	## single &
 	## first == trim & last == trim
 
 	left = (first == trim);
-	right = (last == trim);
-	# both = (right & left);
+		offset = rep(1, n.str); # don't do anything
+		if( (s=="l" || s=="b") )
+			{
+			# since multivariate, throws error
+			# if(left) { offset = 1 + slen; }
+			offset[left] = 1 + slen;
+			}
+
 	
-	# keep a copy of [str] to do TRUE/FALSE
-	# does substring have a NOT operator ... return the INVERSE
-	sub.str = 
+	
+		length = str.len;
+		if( (s=="r" || s=="b") )
+			{
+			length[right] = length[right] - slen;
+			}
+	substring(str, offset, length);
+	
+	# both = (right & left);
+	}
 
 
 str.between = function(str, keys=c("__B64_", "_B64__"))
@@ -753,37 +927,60 @@ str.translate = function(str, to="latin-ascii")
 
 
 ## is this stringr::str_c ??
-str.push.back = function(str, sub, collapse=NULL)
+## C++ ... obj.push_back(element) ... element, obj
+str.push_back = function(sub, str, sub, collapse=NULL)
 	{
 	paste0(str, sub, collapse=collapse);
 	}
 
-#' @rdname str.push.last
+#' @rdname str.push_last
 #' @export
-str.push.last = str.push.back;
+str.push_last = str.push_back;
 
 
-str.push.front = function(str, sub, collapse=NULL)
+str.push_front = function(sub, str, collapse=NULL)
 	{
 	paste0(sub, str, collapse=collapse);
 	}
 
 
-#' @rdname str.push.first
+#' @rdname str.push_first
 #' @export
-str.push.first = str.push.front;
+str.push_first = str.push_front;
 
 
-
-str.wrap = function(str) 
+# https://www.php.net/manual/en/function.wordwrap.php
+str.wordWrap = function(str, width=66, 
+								break="\n", cut_long_words = FALSE, 
+								wrap_long_words_if_possible = TRUE,
+								indent = "\t",
+								hanging.indent = "\t\t",
+								use.hanging = TRUE,
+								paragraph = "_{P}_", 
+								templates = c("{2n}", "{2n2t}"),
+								replaces  = c("\n\n", "\n\n\t\t"),
+								l.tag = "", r.tag = "",
+								breaks.first = 0, breaks.last = 0,
+								tabn = 4, use.tabs = TRUE
+						) 
 	{
+	# if(cut_long_words == FALSE) ... and wrap_long==TRUE ... I will split and " " and move to next line (if the line width is enough
+	# we will use tabn to compute current width
+	# we will print RAW result ... cat(result) if you want ...
+	# paragraph will create extra space, do first-indent, then other indent
+	# r.tag may be jagged if tabn not used?
+	# if(use.tabs == FALSE) ... we replace with tabn
+	
+
+msg = "tldr; \n\t R-dev believes this is poor programming practice to allow you to \n\t
+suppressError( so they have not included it in base R.  It is probably true, but 'git-r-done' first, and then figure out the minutia such as why this function is throwing an error.  That is why I have past such a VERBOSE message to you, dear reader.";
+
 
 	}
 
 
 
-msg = "tldr; \n\t R-dev believes this is poor programming practice to allow you to \n\t
-suppressError( so they have not included it in base R.  It is probably true, but 'git-r-done' first, and then figure out the minutia such as why this function is throwing an error.  That is why I have past such a VERBOSE message to you, dear reader.";
+
 
 
 
@@ -888,6 +1085,149 @@ str.commentWrapper = function(str, nchars=0, c.tag="#", r.tag=c.tag, s.tag=" ", 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+str.substrPHP = function(str, offset = -1, length=NULL)
+	{
+	n = as.integer(offset); # PHP indexes at "0"
+
+	if(!is.null(length))
+		{
+		length = as.integer(length);
+		}
+
+	str.len = strlen(str);  ## this is multivariate ?
+	# cat("\n", "n = ", n, "\t\t", "length = ", length, "\n");
+	# print(str.len);
+		if(is.negative(n))
+			{
+			# print(" CASE 1 ");
+			str.tmp = substr(str, start=1+(str.len + n), stop=str.len );
+				if(is.null(length)) { return (str.tmp); }
+				if(length == 0) 	{ return (str.tmp); }
+			if(is.positive(length))
+				{
+				# print(" CASE 2a ");
+				str.final = substr(str.tmp, start=1, stop = length);
+				} else {
+						# print(" CASE 2b ");
+						str.len.tmp = strlen(str.tmp);
+						str.final = substr(str.tmp, start=1, stop = str.len.tmp + length);
+						}
+			return ( str.final );
+			} else {
+					# print(" CASE 3 ");
+					# PHP allows n = 0 ... first element ...
+					# does this need if PHPOFFSET logic?
+					str.tmp = substr(str, start=1+n, stop=str.len );
+						if(is.null(length)) { return (str.tmp); }
+						if(length == 0) 	{ return (str.tmp); }
+
+
+					if(is.positive(length))
+						{
+						# print(" CASE 4a ");
+						str.final = substr(str.tmp, start=1, stop = length);
+						} else {
+								# print(" CASE 4b ");
+								str.len.tmp = strlen(str.tmp);
+								str.final = substr(str.tmp, start=1, stop = str.len.tmp + length);
+								}
+					return ( str.final );
+					}
+	stop("humanVerse::.substr ... how did you get here?!?");
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## strpos ... strrpos ... reverse
 
 
@@ -910,6 +1250,42 @@ str.commentWrapper = function(str, nchars=0, c.tag="#", r.tag=c.tag, s.tag=" ", 
 # Rcpp::sourceCpp("C:\\_git_\\github\\MonteShaffer\\humanVerse\\HVcpp\\src\\str.cpp");
 # rm(list=ls())
 # rm(list=ls(all.names=TRUE)); gc();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1351,6 +1727,10 @@ strlen = function(str)
 }
 
 
+
+
+
+
 #' .substring
 #'
 #' @param strvec
@@ -1378,6 +1758,35 @@ strlen = function(str)
 		}
 	res;
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
