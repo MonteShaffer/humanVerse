@@ -4,7 +4,12 @@
 
 
 
-
+list.prep = function(input)
+	{
+	# we may have only a vector, not a list 
+	if(!is.list(input)) { res = list(); res[[1]] = input; }
+	res;
+	}
 
 
 ##################################################
@@ -51,21 +56,6 @@ list.toString = function(simpleList, 	sep.keyvalue = "`=`",
 							typeof(element) ));		
 		}
 	paste0(str, collapse = sep.elements);
-	}
-
-list.fromError = function(e)
-	{
-	res = list();
-		res[["msg"]] 	= e[1];
-		res[["class"]] 	= class(e);
-			condition = attributes(e)$condition;
-		res[["condition"]] = condition;
-		# FROM CONDITION
-			extra = attributes(condition)$class;
-		res[["call"]] = condition$call;
-		res[["message"]] = condition$message;
-		res[["classes"]] = extra;
-	res;
 	}
 
 
@@ -116,14 +106,15 @@ list.fromString = function(str, sep.keyvalue = "`=`",
 #'         print(a); print(b); print(c);
 #'
 #'
-list.extract = function(myList, envir = .GlobalEnv)
+## envir = .GlobalEnv
+list.extract = function(myList, pos = -1, envir = as.environment(pos), ...)
     {
     n.myList = length(myList);
     if(n.myList > 0)
       {
       for(i in 1:n.myList)
         {
-        assign(names(myList)[i], myList[[i]], envir = envir);
+        assign(names(myList)[i], myList[[i]], pos = pos, envir = envir, ...);
         }
       }
     }
@@ -151,6 +142,22 @@ list.getElements = function(info, n=1)
 	}
 
 
+
+
+list.fromError = function(e)
+	{
+	res = list();
+		res[["msg"]] 	= e[1];
+		res[["class"]] 	= class(e);
+			condition = attributes(e)$condition;
+		res[["condition"]] = condition;
+		# FROM CONDITION
+			extra = attributes(condition)$class;
+		res[["call"]] = condition$call;
+		res[["message"]] = condition$message;
+		res[["classes"]] = extra;
+	res;
+	}
 
 
 

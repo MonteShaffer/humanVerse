@@ -53,3 +53,27 @@ memory.restoreState = function() {}
 
 
 
+
+memory.get = function() {}
+
+
+# obj = .GlobalEnv$.humanVerse
+memory.set = function(key, ... , value, parent=NULL) 
+	{
+	if(is.null(parent)) { parent = .GlobalEnv$.humanVerse; }
+	
+	.GlobalEnv$.humanVerse[["timer"]][[key]] = list();
+	
+		within(.GlobalEnv$.humanVerse)
+		{
+		
+		}
+		
+		
+	memory.check("timer");
+	
+	}
+	
+	
+	
+

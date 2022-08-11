@@ -1,9 +1,31 @@
 	
+# x = list(); obj.exists(x[["this"]][["doesn't"]][["exist"]], "monte");
+obj.exists = function(obj, key)
+	{
+	# this traps NULL on obj 
+	# Error in as.environment(where) : using 'as.environment(NULL)' is defunct
+	# x = list(); exists("monte", x[["this"]][["doesn't"]][["exist"]]);
+	# exists("monte", 
+	if(is.null(obj)) { return(FALSE); }
+	exists(key, obj);	
+	}
+
 
 obj.toMD5 = function(obj, ...)
 	{
 	# via JSON
 	# via SERIALIZE
+	 
+
+	}
+
+
+obj.fromMD5 = function(obj, ...)
+	{
+	# via JSON
+	# via SERIALIZE
+
+	# another easter egg
 
 	}
 

@@ -1,6 +1,8 @@
 
 
 
+is.list.element = function(element, list) {}
+
 # > is.function(md5_)
 # [1] TRUE
 # > is.function("md5_")
@@ -65,12 +67,17 @@ is.error = function(e)
 #'
 #' @examples
 
-is.url = function(files)
+is.validURL = function(urls, deep=FALSE)
 	{
-	files = str.trim(files);
-	fil = functions.cleanKey(files, 3);
-	x = (fil == "htt"); y = (fil == "ftp");  # multivariate, truth tables
-	return ( (x+y > 0) );
+	urls = str.trim(urls);
+	if(!deep)
+		{
+		fil = functions.cleanKey(urls, 3);
+		x = (fil == "htt"); y = (fil == "ftp");  # multivariate, truth tables
+		return ( (x+y > 0) );
+		}
+	# is valid ???
+	stop("TODO: REGEX to filter valid URL");
 	}
 
 
@@ -386,20 +393,79 @@ is.zero = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
 	x.pos = x < tol;
 	x.neg = x > -1 * tol;
 	
-	( (x.pos + x.neg) > 1);
+	( (x.pos + x.neg) > 1);  # TWO 
 	}
 
 
+# x `~=` y 
+is.equal = function(x, y, tol = sqrt(.Machine$double.eps), part="Re")
+	{
+	check.isCompatibleLength(x, y);
+	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
+	y = if(part == "Im") { y = Im(y); } else { y = Re(y); }
+	d = x - y; 
+	is.zero(d, tol=tol, part=part);	
+	}
+ 
+# https://www.r-bloggers.com/2016/11/how-to-write-and-document-special-functions-in-r/
+# "%notin%" <- function(x, table) !(match(x, table, nomatch = 0) > 0)
+
+#' @rdname %`~=`%
+#' @export
+"%~=%" = "%eq%" = is.equal;
+
+# x `~>=` y 
+is.ge = function(x, y, tol = sqrt(.Machine$double.eps), part="Re")
+	{
+	check.isCompatibleLength(x, y);
+	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
+	y = if(part == "Im") { y = Im(y); } else { y = Re(y); }
+	d = x - y; 
+	is.positive(d, tol=tol, part=part);
+	}
+
+"%~>%" = "%ge%" = is.ge;
+
+# x `~<=` y 
+is.le = function(x, y, tol = sqrt(.Machine$double.eps), part="Re")
+	{
+	check.isCompatibleLength(x, y);
+	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
+	y = if(part == "Im") { y = Im(y); } else { y = Re(y); }
+	d = x - y; 
+	is.negative(d, tol=tol, part=part);
+	}
+	
+"%~<%" = "%le%" = is.le;
 
 
 
+check.ifConformable = function(x, y) {} # matrix?
 
-
-
-
-
-
-
+check.isCompatibleLength = function(x, y, 
+									method="equal",  # "1-1-equal"
+									action="warning", 
+									msg = " obj1 [x] and obj2 [y] are incompatible lengths, you may get spurious results."
+								)
+	{
+	met = functions.cleanKey(method, 3, keep="-");
+	acti = functions.cleanKey(action, 4);
+	xlen = length(x);
+	ylen = length(y);
+	b = (ylen == xlen);  
+		if(met == "equ") { return(TRUE); }
+		
+	xone = (xlen == 1);
+	yone = (ylen == 1);	
+		if( (met == "11e" || met == "1,1") && (xone || yone) )
+			{
+			return(TRUE);
+			}
+			
+	if(acti == "warn") { warning(msg); }
+	if(acti == "stop") { stop(msg); }
+	}
+						
 
 
 

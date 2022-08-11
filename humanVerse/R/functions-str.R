@@ -1,4 +1,20 @@
 
+nchars = nchar;
+
+
+str.toInteger = function(str, isHEX=FALSE, base=0L)
+	{
+	# FALSE means it is just normal numbers we want to convert 
+	if(!isHEX) { return (as.integer(str)); }  # e.g, strtoi(str, base=10)?
+	return( strtoi(str, base=base) );
+	}
+
+str.fromInteger = function(intstr)
+	{
+	as.character(intstr);
+	}
+
+	
 
 # technically "text.toHex"
 str.toHex = function(str)
@@ -21,10 +37,11 @@ str.toCharacters = function(str, sep="")
 	list.return(res);
 	}
 
-str.fromCharacters = function(chars, sep="")
+str.fromCharacters = function(charslist, sep="")
 	{
-	res = chars;
-	if(!is.list(chars)) { res = list(); res[[1]] = chars; }
+	# res = chars;
+	# if(!is.list(chars)) { res = list(); res[[1]] = chars; }
+	res = list.prep(charslist);
 	str.implode(sep, res);
 	}
 
@@ -188,15 +205,8 @@ str.trimFromAny = function(str, search="#me", side="both", ...)
 		res[i] = str.implode("", nchar);
 		}
 	res;
-
-
-
-
 	}
 
-
-
-# str.trimSubstring ... just check based on strinleng using substrings
 
 str.trimFromFixed = function(str, trim="#", side="both", ...)
 	{
@@ -204,16 +214,14 @@ str.trimFromFixed = function(str, trim="#", side="both", ...)
 	str.len = strlen(str);
 	n.str = length(str);
 	slen = strlen(trim);
-	# if x is character vector, x[1][1] should return the charAt(x[1], 1)
+	# if x is character vector, x[1][2] should return the charAt(x[1], 2)
 	# likely the OLD SCHOOL LEGACY of multidimensional arrays?
-	
 	
 	first = substring(str, 1, slen);
 	last = substring(str, str.len-slen+1, str.len);
 	
 	right = (last == trim);
 	left = (first == trim);
-
 
 	start = rep(1, n.str); # don't do anything
 	if( (s=="l" || s=="b") )
@@ -222,19 +230,15 @@ str.trimFromFixed = function(str, trim="#", side="both", ...)
 		# if(left) { start = 1 + slen; }
 		start[left] = 1 + slen;
 		}
-
 	
-	
+	# both = (right & left);
 	stop = str.len;
 	if( (s=="r" || s=="b") )
 		{
 		stop[right] = stop[right] - slen;
 		}
 
-
-	substring(str, start, stop);
-	
-	# both = (right & left);
+	substring(str, start, stop);	
 	}
 
 
@@ -517,7 +521,8 @@ str.implode = function(sep, str, method="base", ...)
 	{
 	# necessary overhead
 	m = functions.cleanKey(method, 1);
-	if(!is.list(str)) { tmp = str; str = list(); str[[1]] = tmp; }
+	# if(!is.list(str)) { tmp = str; str = list(); str[[1]] = tmp; }
+	str = list.prep(str);  # maybe redundant of a check from another function
 
 	if(m == "c" && exists("cpp_implode"))
 		{
@@ -899,7 +904,7 @@ str.translate = function(str, to="latin-ascii")
 
 ## is this stringr::str_c ??
 ## C++ ... obj.push_back(element) ... element, obj
-str.push_back = function(sub, str, sub, collapse=NULL)
+str.push_back = function(sub, str, sub, collapse="")
 	{
 	paste0(str, sub, collapse=collapse);
 	}
@@ -909,7 +914,7 @@ str.push_back = function(sub, str, sub, collapse=NULL)
 str.push_last = str.push_back;
 
 
-str.push_front = function(sub, str, collapse=NULL)
+str.push_front = function(sub, str, collapse="")
 	{
 	paste0(sub, str, collapse=collapse);
 	}

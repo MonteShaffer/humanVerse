@@ -13,9 +13,33 @@
 #' @export
 #'
 #' @examples
-functions.cleanKey = function(key, n=1)
+functions.cleanKey = function(key, n=1, extra = ",! #", keep="")
 	{
-	substr(tolower(key),1,n);
+	str = tolower(key); # has to be base-R (not str.tolower, recursion)
+	if(extra == "")
+		{
+		# recursion, these functions are calling cleanup 
+		# Error: node stack overflow
+		# Error: no more error handlers available (recursive errors?); invoking 'abort' restart
+		n = nchar(extra);  # nchars 
+		res = str;
+		for(i in 1:n)
+			{
+			res = gsub(strsplit(extra, "")[[1]], "", res, fixed=TRUE);
+			}
+		str = res;
+		}
+	if(keep != "")
+		{
+		tmp = strsplit(str, keep)[[1]];
+		res = paste0( substring(tmp, 1, 1), collapse=keep);
+		return(res);
+		}
+		
+	# we could explode(extra[i]).implode("") ## REMOVE
+	# if keep, explode("-"), return n elements 
+	# separated by keep ([f]irst-[s]econd-[t]hird]) ... f-s-t
+	substr(str,1,n);
 	}
 
 

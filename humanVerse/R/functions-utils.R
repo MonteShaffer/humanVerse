@@ -25,21 +25,23 @@ suppressError = function(expression, show.notice = TRUE, msg = "")
 # .errorhandler <- function(txt, obj="", mode="stop") 
 
 
-
-as.type = function(vals, types="character")
+					# Error in as.POSIXlt.numeric(vals) : 'origin' must be supplied
+as.type = function(vals, types="character", ...) # could I pass ... dots
 	{
 	n = length(vals);
 	nt = length(types); if( (n != nt) && (nt != 1) ) { stop("lenghts must match or types must be of length 1;"); }
 	
 	# NULL => null
-	types = str.tolower(types);
+		w = is.null(types);
+	# "POSIXct.POSIXlt" ... upper case 
+	types[w] = str.tolower(types[w]);
 
 	# as.complex, as.double, as.null, as.single, as.integer 
 	# seems like it is of the form as.{typeof(vals))
 	if(nt == 1)
 		{
 		# one type on a vector
-		cmd = paste0("vals = as.",types,"(vals);");
+		cmd = paste0("vals = as.",types,"(vals);"); # could I eval with ... (dots)
 		} else {
 				str = character(n);
 				for(i in 1:n)

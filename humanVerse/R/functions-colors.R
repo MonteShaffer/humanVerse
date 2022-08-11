@@ -1,4 +1,197 @@
 
+# ?convertColor 
+# ?colorConverter
+# Conversion algorithms from http://www.brucelindbloom.com.
+# ?col2rgb
+
+#' rgb2col
+#'
+#' Reverse the built-in grDevices::col2rgb function
+#' [ See grDevices::convertColor or grDevices::make.rgb ]
+#'
+#' @param x vector of colors
+#'
+#' @return vector of colors in RGB hex format
+#' @export
+#'
+#' @examples
+#'
+#' rgb2col( grDevices::col2rgb("red") );
+#' rgb2col( grDevices::col2rgb("red", alpha=TRUE) );
+#' rgb2col( grDevices::col2rgb("#FF0000FF", alpha=TRUE) );
+#' rgb2col( grDevices::col2rgb("#FF000033", alpha=TRUE) );
+#' # it's UNKNOWABLE what the input was so we will later wrap a return method.
+rgb2col = function(x)
+  {
+  # reverses grDevices::col2rgb function
+  x.rgb = t(x)/255; # transpose, norm on [0,1]
+  n = ncol(x.rgb);	# how many cols ... if 4 ... alpha = TRUE 
+  res = grDevices::rgb( x.rgb, names=rownames(x.rgb) );
+  res;
+  }
+
+
+
+
+# extends basic function by allowing 
+	# ... as list of colors
+# color.col2rgb(c("red","#FF9944",2));
+# color.col2rgb("red","#FF9944",2);
+color.col2rgb = function(colors, ..., alpha=FALSE)
+	{
+	more = unlist(list(...));
+	colors = c(colors, more);
+	# colors are "red", "#FF9944", or "i" (integer), as in `i=2; palette()[i];` 
+	# intermixed works ... grDevices::col2rgb(c("red","#FF9944",2), alpha=TRUE);
+	grDevices::col2rgb(colors, alpha=alpha);  
+	}
+
+# will map names and colors?
+color.buildSet = function(setname="base", alpha=TRUE, colors=NULL)
+	{
+	memory.init();
+	
+	if(exists(setname, .GlobalEnv$.humanVerse[["colors"]][["tables"]]))
+		{
+		return(.GlobalEnv$.humanVerse[["colors"]][["tables"]][[setname]]);
+		}
+		else {
+			if(setname == "base") 
+				{ 
+				colors = grDevices::colors()[1:10]; 
+				x = col2rgb(colors);
+				hexcolors = rgb2col(x); 
+				
+				xt = as.data.frame( t(x) );
+				if(!is.set(xt$alpha)) { xt$alpha = 255; }
+				xt$color = colors;
+				xt$hex.color = hexcolors;
+				
+				## rownames(xt) = NULL;  # DOESN'T WORK
+				## xt = property.set(xt, "row.names", NULL, as.null=TRUE); ## ALSO not working, 8/10/22 one of those days
+				
+				
+				cols = c("hex.color", "color", "red", "green", "blue", "alpha");
+				xt = df.setColumnOrder(xt, cols);
+				
+				}
+			## TODO, custom palette names 
+			if(is.null(colors)) 
+				{ 
+				stop("You need colors");
+				}			
+			}
+	
+	}
+
+# extends basic function by allowing
+	# as.names=NULL, force.nearest=TRUE, ...
+	# if(is.null(as.names)) { return(res); }
+	# by default, look in colors() palette, but we could look IN any named list
+	# if(force.nearest), map to a NAME for each color ... is the method of search (e.g., cosine similarity)
+# x = color.col2rgb("red","#FF9944",2,"#ff994466", alpha=TRUE);
+color.rgb2col = function(x, 
+							as.names=TRUE, 		# if TRUE, map to names
+							force.nearest=TRUE, # if TRUE, force the map (return all names)
+							set = "base",		# where are we looking for names?
+							...					# "base" is grDevices::colors()
+						)
+	{
+	hexstr = rgb2col(x);  # "#FF0000" "#FF9944" "#DF536B" "#FF9944"
+	search = color.buildSet(set);
+	
+	}
+
+
+if(!is.null(key))
+			{
+			if(exists(key, .GlobalEnv$.humanVerse[["colors"]][["lists"]]))
+				{
+				colvec = .GlobalEnv$.humanVerse[["colors"]][["lists"]][[key]];
+				}
+			}
+
+
+
+if(exists("monte", .GlobalEnv$.humanVerse[["colors"]][["lists"]]))
+				{
+				print("hello");
+				}
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #' .color.average
 #'
 #'
@@ -803,41 +996,6 @@ color.colorsInGradient = function(n, colvec=c("red","royalblue"), alpha=FALSE)
 
 
 
-#' rgb2col
-#'
-#' Reverse the built-in grDevices::col2rgb function
-#' [ See grDevices::convertColor or grDevices::make.rgb ]
-#'
-#' @param x vector of colors
-#'
-#' @return vector of colors in RGB hex format
-#' @export
-#'
-#' @examples
-#'
-#' rgb2col( grDevices::col2rgb("red") );
-#' rgb2col( grDevices::col2rgb("red", alpha=TRUE) );
-#' rgb2col( grDevices::col2rgb("#FF0000FF", alpha=TRUE) );
-#' rgb2col( grDevices::col2rgb("#FF000033", alpha=TRUE) );
-#'
-rgb2col = function(x)
-  {
-  # reverses grDevices::col2rgb function
-  x.n = dim(x)[1];
-  if(x.n == 4)
-    {
-    x.rgb = t(x[1:4,]) /255;
-    grDevices::rgb(   as.numeric(x.rgb[,1]),
-                      as.numeric(x.rgb[,2]),
-                      as.numeric(x.rgb[,3]),
-                      as.numeric(x.rgb[,4]),
-      names=rownames(x.rgb) );
-    } else {
-            x.rgb = t(x[1:3,]) /255;
-            grDevices::rgb( x.rgb, names=rownames(x.rgb) );
-            }
-  }
-
 
 
 
@@ -1432,6 +1590,9 @@ hsv2rgb = function(hsvs)
 #'
 #' @return
 #' @export
+# THIS FUNCTION EXISTS in base ... 
+# http://www.brucelindbloom.com/
+# Conversion algorithms from http://www.brucelindbloom.com.
 rgb2hsv = function(rgb)
 	{
   # package:grDevices

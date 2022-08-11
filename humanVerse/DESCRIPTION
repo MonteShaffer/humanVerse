@@ -25,6 +25,8 @@ curl,
 Imports:
   digest,
   graphics,
+  
+  grDevices,
   jsonlite,
   stats,
   stringi,

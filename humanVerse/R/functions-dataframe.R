@@ -1,4 +1,325 @@
 
+#' wildcardSearch
+#'
+#' By default searches a dataframe string column based on a
+#'  wildcard `*` operator.
+#'
+#' Can also just search a single character vector.
+#'
+#' @param str Search string with basic wildcard `*` operator
+#' @param col.name The column to perform search on [or a character vector]
+#' @param return.cols list of columns you want to display, by default all
+#'
+#' @param ignore.case Defaults to TRUE, matches "mont" and "Mont"
+#' @param perl Defaults to FALSE, convert string query to PERL regex?
+#' @param df Dataframe to search [column]
+
+#'
+#' @return dataframe of results, empty dataframe is possible
+#' @export
+wildcardSearch = function(str, col.name, return.cols=NULL, ignore.case=TRUE, perl=FALSE, df=NULL)
+	{
+  # if is.null(df), we are just searching a character vector ...
+  # else, we are using the df[col] to do the search ...
+    # https://stackoverflow.com/questions/5823503/
+  if(is.null(df))
+    {
+    # col.name is a character vector
+    grx = utils::glob2rx(str);
+    grx.grep = grep(grx, col.name, ignore.case=ignore.case, perl=perl);
+    rows = col.name[grx.grep];
+    if(length(rows) == 0) { return (NA); }  # empty set ... from vector
+    return (rows);
+    } else
+          {
+          grx = utils::glob2rx(str);
+          # just one column for now
+          cidx = getIndexOfDataFrameColumns(df, col.name);
+          if(is.na(cidx)) { cidx = -1; }
+          # -1 will return an empty-set on the grep call
+          grx.grep = grep(grx, df[,cidx], ignore.case=ignore.case, perl=perl);
+          rows = df[grx.grep, ];
+          if(is.null(return.cols)) { rows; } else { rows[, return.cols]; }
+          }
+  }
+
+
+# df %=?=% ( "color" %*=% "white*" );
+
+# var = (x=1) ? TRUE : FALSE;
+# var = cond %?% ( tr %:% fa )
+
+fn = function(x, 
+
+df.searchColumn = function(df, col, search="*")
+	{
+	# returns BOOLEAN true/false for special uses 
+	## ??? with(df) ... within(df)
+	
+	}
+
+df.search = function(df, search="", warning.zero=TRUE )  # colname = '*mont' AND colname2 = '*shaff' OR ... WITH PARENTHESES
+	{
+	
+	
+	}
+	
+
+#' # subsetDataFrame(iris, mycols, "==", myvals);  # not found, returns zero rows ...
+#'
+#' # dim( subsetDataFrame(iris,"Petal.Length", "==", 1.4) );
+#' # dim( subsetDataFrame(iris,"Petal.Length", "~=", 1.4) );
+# https://retester.herokuapp.com/
+# https://stackoverflow.com/questions/41749058/r-parse-nested-parentheses
+# s = "(a(a(a)(aa(a)a)a)a)((b(b)b)b)(((cc)c)c)"
+# matched <- gregexpr("\\((?>[^()]|(?R))*\\)", s, perl = T)
+# https://regex101.com/r/iqJ5Pi/1
+# THIS GETS nest, use STR, REPLACE TO FIND REMAINING ? OR/AND 
+# once in a NEST, remove outer parentheses, call REGEX again 
+# substring(s, matched[[1]], matched[[1]] + attr(matched[[1]], "match.length") - 1)
+# [1] "(a(a(a)(aa(a)a)a)a)" "((b(b)b)b)"          "(((cc)c)c)"  
+
+
+df.subset = function(df, syntax="", warning.zero=TRUE)
+	{
+	## do one at a time 
+	
+	syntax = "(color == 'white') OR (color *=* 'white*')";
+			# color == 'white'
+			# !(color == 'white') ## this is the easiest to do NOT 
+			# color `*=` 'white*' ## map to %*=% df.search(color, white*, return=BOOLEAN)
+			# color `*=` '*white'
+			# blue == 255
+			# blue `%~=%` 255 ## is.equal(a,b)
+			# blue > 255 # AS-IS
+			# blue < 255
+			# blue `%~>%` 255 ## is.ge ... 
+			# blue `%~<%` 255 ## is.le 
+			## THESE NOT are similar set ... 
+			# which(df[["color"]] != "white");
+			# which( !(df[["color"]] == "white" ) );
+			
+			
+	syntax = "(color *=* 'white*')";  # can't work in subset ... 
+	
+	## subset(df, eval(parse(text=syntax)) );
+	
+	
+	# TRUTH TABLE approach 
+	
+	which(df[["color"]] == "white");
+	
+	
+	
+	# OR means set.union
+	# AND means set.intersect
+	
+	
+	# 
+	
+	
+	
+	}
+
+
+df.applyFunctionToColumn = function() {}
+
+# maybe STACK types with BOOLEAN FLAG
+# df2 = df.setColumnType(df, c("start"), c("numeric","POSIXlt" )); str(df2);
+df.setColumnType = function(df, cols=NULL, type="numeric", ...)
+	{
+	# if cols is.integer, skip first part ??
+	# searching = set.intersect(1:n, cols) ... if length(search) != length(cols) ... STOP ... index out of bounds 
+	dfcols = colnames(df); 
+	if(is.null(cols)) { cols = dfcols; } # all the columns
+	n = length(dfcols);
+	n.cols = length(cols);
+	n.types = length(type);
+	
+	# return length is n.cols
+	searching = set.match(cols, dfcols);
+	if(anyNA(m)) { stop("one of the [cols] is not in df"); }
+	 
+	if(n.types == 1) { type = rep(type, n.cols); n.types = n.cols; }
+	check.isCompatibleLength( cols, type, "equal", 
+							"stop", "cols length != types length");
+							
+	# if(n.types != n.cols) { stop("cols length != types length"); }
+	
+	for(i in 1:n.cols)
+		{
+		idx = searching[i];
+		df[ , idx] = as.type( df[ , idx], type[i], ...);
+		}
+	return(df);
+	## pairwise, trying to avoid a clone copy
+	# return( within( df,
+					# for(i in 1:n.cols)
+						# {
+						# idx = searching[i];
+						# df[,idx] = as.type(df[,idx], type[i])
+						# }
+					# rm(i, idx);
+					# )
+			# );
+	}
+
+## df.prepStuff ... load defaults, do checks, and return list ... extract list ... 
+
+
+
+df.sortBy = function(df, cols, dir="ASC")
+	{
+	dfcols = colnames(df); 
+	n = length(dfcols);
+	n.cols = length(cols);
+	n.dirs = length(dir);
+	
+	# return length is n.cols
+	searching = set.match(cols, dfcols);
+	if(anyNA(m)) { stop("one of the [cols] is not in df"); }
+	
+	if(n.dirs == 1) { dir = rep(dir, n.cols); n.dirs = n.cols; }
+	if(n.dirs != n.cols) { stop("cols length != dir length"); }
+	
+	# JOINT sorting # do.call?
+	vecs = matrix(NA, nrow=dim(df)[1],ncol=n.cols);
+
+	for(i in 1:n.cols)
+		{
+		idx = which( names(df)== mycols[i] );
+		if(dir[i] == "ASC")
+			{
+			vecs[,i] = df[,idx];
+			} else {
+					# DESC
+					# rev(column_a)
+					# https://stackoverflow.com/a/57534718/184614
+					# if character, positive worked ...
+					if(is.character(df[1, idx])) 
+						{
+						vecs[,i] = rev(df[,idx]);
+						} else {
+								vecs[,i] = -df[,idx];
+								}
+					}
+	  }
+
+	# df[order( vecs[,1],vecs[,2],vecs[,3] ), ]; # hacked
+	# Thanks Allan
+	rows = do.call(order, split(vecs, (seq(vecs) - 1) %/% nrow(vecs)));
+	
+	df[rows, ]; 	
+	}
+
+
+df.removeALLColumnsBUT = function(df, cols)
+	{
+	dfcols = colnames(df); 
+	n = length(dfcols);
+	n.cols = length(cols);
+	
+	# return length is n.cols
+	searching = set.match(cols, dfcols);
+	if(anyNA(m)) { stop("one of the [cols] is not in df"); }
+	
+	df[,c(searching)];	
+	}
+
+df.removeColumns = function(df, cols)
+	{
+	dfcols = colnames(df); 
+	n = length(dfcols);
+	n.cols = length(cols);
+	
+	# return length is n.cols
+	searching = set.match(cols, dfcols);
+	if(anyNA(m)) { stop("one of the [cols] is not in df"); }
+	
+	df[,-c(searching)];	
+	}
+
+
+df.moveColumns = function(df, cols, where="after", anchor)
+	{
+	w = functions.cleanKey(where, 1);  # [b]efore, [a]fter
+	dfcols = colnames(df); 
+	n = length(dfcols);
+	n.cols = length(cols);
+	
+	set = 1:n;
+	# this order will be exact [reordering as necessary]
+	searching = set.match(cols, dfcols);
+	if(anyNA(m)) { stop("one of the [cols] is not in df"); }
+	
+	a = anchor;
+	if(is.character(anchor))
+		{
+		a = set.match(anchor, dfcols);
+		if(is.na(a)) { stop("the [anchor] is not in df"); }
+		}
+	
+	if(a %in% searching) 
+		{ 
+		warning("[anchor] should not be part of the [cols] to move");
+		searching = set.remove(a, searching); 
+		} # remove anchor from cols
+	
+	# split on anchor
+	set.before = NULL;
+	if(a > 2) 		{ set.before = set[1:(a-1)]; }
+		set.before.d = set.remove(searching, set.before);
+	set.after = NULL;
+	if(a < n) 	{ set.after = set[(a+1):n]; }	
+		set.after.d = set.remove(searching, set.after);  # disjoint
+	
+	if(w=="a")
+		{
+		r = c(set.before.d, a, searching, set.after.d);
+		return(df[,r]);
+		}
+	if(w=="b")
+		{
+		r = c(set.before.d, searching, a, set.after.d);
+		return(df[,r]);
+		}
+	
+	stop("How did you get here!  please check [w]here key of 'before' or 'after'");
+	}
+
+
+df.setColumnOrder = function(df, cols)
+	{
+	dfcols = colnames(df); 
+	if(identical(cols,dfcols)) { return(df); } # do nothing
+	n = length(dfcols);
+	n.cols = length(cols);
+	if(n != n.cols) { stop("column length mismatch; use removeAllBut if that is your intention to remove"); }
+	
+	idx = set.match(cols, dfcols);
+	
+	return(df[,idx]);
+	}
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #' callOrderFunctionWithMatrixInput
 #'
 #' See \url{https://stackoverflow.com/questions/63801018/}

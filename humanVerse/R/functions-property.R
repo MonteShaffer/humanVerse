@@ -10,16 +10,18 @@
 #' @param obj OBJECT to be updated
 #'
 #' @return obj UPDATED with attribute
-#' @export
+#' @export 
 #'
 #' @examples
-property.set = function(obj, key, value=NULL, property.type="attributes")
+property.set = function(obj, key, value=NULL, 
+									as.null = FALSE,
+									property.type="attributes")
 	{
 	w = functions.cleanKey(property.type, 1);
 
 
 
-	if(is.null(value))
+	if(is.null(value) && !as.null)  # you may actually want to pass the value NULL in the "setter"
 		{
 		if(is.list(key))
 			{

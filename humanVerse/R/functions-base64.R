@@ -3,7 +3,7 @@
 base64.encode = function(objlist, method="JSON", ...)
 	{
 	# seems to convert to LIST automatically if input is vector ...
-	n = length(objlist);
+	n = length(objlist); 
 	res = character(n);
 	for(i in 1:n)
 		{
