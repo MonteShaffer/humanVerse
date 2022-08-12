@@ -49,7 +49,8 @@ str.toMD5 = function(str, times=1, method="digest", ...)
 	{
 	# necessary overhead
 	m = functions.cleanKey(method, 1);
-	times = as.integer(times);
+	times = as.integer(times);  # make certain it's an integer
+	str = as.character(str);	# make certain it's a string (character)
 	if(times < 1) 
 		{ 
 		warning("what are you doing setting the times < 1, RETURNING NULL "); 
@@ -95,9 +96,22 @@ str.toMD5 = function(str, times=1, method="digest", ...)
 				{
 				# vdigest ... # Dirk, I don't see it!
 				# digest::digest(str, algo="md5", serialize=FALSE);
-				if(!is.set(algo)) 		{ algo 		= "md5"; }
-				if(!is.set(serialize)) 	{ serialize = FALSE; }
-				res[i] = digest::digest(res[i], algo=algo, serialize=serialize, ...);
+				# if(!is.set(algo)) 		{ algo 		= "md5"; }
+				### THIS is locally scoped?
+				if( !exists("algo", inherits = FALSE ) )			
+						{ 
+						algo 		= "md5"; 
+						}
+				# serialize is a FUNCTION in BASE, SCOPE issue
+				# if(!is.set(serialize)) 		{ serialize = FALSE; }
+				if( !exists("serialize", inherits = FALSE ) )	
+						{ 
+						serialize = FALSE; 
+						}
+				
+				res[i] = digest::digest(res[i], 
+											algo=algo, 
+											serialize=serialize, ...);
 				}
 			if(is.openssl)
 				{
@@ -925,9 +939,22 @@ str.push_front = function(sub, str, collapse="")
 str.push_first = str.push_front;
 
 
+# ucfirst ...
+str.capitalize = function(str) {} 
+
+str.grammaticalNumber = function(str, n=1, type="noun")
+	{
+	# 1 timer, 0 timers, 3 timers 
+	# we just return the word (input is singular) as a plural if necessary
+	
+	if(n == 1) {} else { return( paste0(str,"s", collapse="") ); }
+	
+	}
+
 # https://www.php.net/manual/en/function.wordwrap.php
 str.wordWrap = function(str, width=66, 
-								break="\n", cut_long_words = FALSE, 
+								line.break = "\n", 
+								cut_long_words = FALSE, 
 								wrap_long_words_if_possible = TRUE,
 								indent = "\t",
 								hanging.indent = "\t\t",
@@ -978,8 +1005,11 @@ suppressError( so they have not included it in base R.  It is probably true, but
 #' str.commentWrapper("LIBRARY is not found!");
 #' pname = "stringi"; pkg = paste0( "install.packages(\"",pname,"\", dependencies=TRUE ); ");
 #' str.commentWrapper( pkg, r.tag = "-", s.pad=15);
-#' 
-str.commentWrapper = function(str, nchars=0, c.tag="#", r.tag=c.tag, s.tag=" ", s.pad=5)
+#' ^ i.pad # s.pad CONTENT s.pad # $
+
+
+str.commentWrapper = function() {}
+str.commentWrapper = function(str, nchars=0, c.tag="#", r.tag=c.tag, s.tag=" ", s.pad=5, i.tag=" ", i.pad=15)
 	{
 	# punchcards had 80 characters, a traditional typewriter US had 72 characters per line (CPL)
 	# http://mikeyanderson.com/optimal_characters_per_line
@@ -989,27 +1019,45 @@ str.commentWrapper = function(str, nchars=0, c.tag="#", r.tag=c.tag, s.tag=" ", 
 	n = length(str);
 	res = character(n);
 	mylengths = integer(n);
+		i.str = str.repeat(i.tag, i.pad); i.len = strlen(i.str);
+		s.str = str.repeat(s.tag, s.pad); s.len = strlen(s.str); 
 	for(i in 1:n)
 		{
-		s = paste0(c.tag, r.tag, str.repeat(s.tag, s.pad), str[i], str.repeat(s.tag, s.pad), r.tag, c.tag);
+		s = paste0(		i.str, 
+						c.tag, 
+						r.tag, 
+						s.str, 
+					str[i], 
+						s.str, 
+						r.tag, 
+						c.tag
+					);
 		slen = strlen(s);
 		if(slen < nchars)
 			{
 			n.tag = 1 + ceiling( (nchars - slen)/2 );
-			s = paste0(	c.tag, r.tag, str.repeat(s.tag, n.tag), 
-									str[i], 
-						str.repeat(s.tag, n.tag), r.tag, c.tag
+				n.str = str.repeat(s.tag, n.tag);
+			s = paste0(		i.str,
+							c.tag, 
+							r.tag, 
+							n.str, 
+						str[i], 
+							n.str,
+							r.tag, 
+							c.tag
 						);
 			slen = strlen(s);
 			}
-		res[i] = paste0(c.tag, str.repeat(r.tag, slen - 2), c.tag, "\n", 
-									s, "\n", 
-						c.tag, str.repeat(r.tag, slen - 2), c.tag, "\n"
-						);
-		mylengths[i] = slen;
+			f.n = slen - 2*strlen(s.pad) - i.len - strlen(i.pad);
+			f.str = str.repeat(r.tag, f.n);
+			c.line = paste0(i.str, c.tag, r.tag, f.str, r.tag, c.tag, "\n");
+		res[i] = paste0(c.line, s, "\n", c.line);
+		# mylengths[i] = slen;
+		mylengths[i] = strlen(res[i]);
 		}
 	
 	res = property.set(res, "lengths", mylengths);
+	res = property.set(res, "indent", i.len);
 	res;
 	}
 

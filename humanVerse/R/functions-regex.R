@@ -1,4 +1,52 @@
 
+
+
+
+
+
+
+
+
+
+
+
+
+# str contains the wildcard operator `*` [map any chars] or `?` [map single char]
+# it wraps around START / END, options to edit
+# it will build a 
+# is INTERNAL better than PERL... default ... perl = FALSE
+regex.prepWildcard = function(search.term, ...)
+	{
+	utils::glob2rx(search.term, ...);
+	}
+	
+	
+# grep(value = FALSE) ... return's idx ... 
+regex.wildcardSearch = function(searching.what, search.term, ignore.case=TRUE, value = FALSE, ...)
+	{
+	grx = regex.prepWildcard(search.term, ...);
+	idx = grep(grx, searching.what , ignore.case = ignore.case, value = value, ... );
+	## idx of elements 
+	idx;
+	}
+
+# grx = utils::glob2rx("mon*");
+# grep(grx, c("monte", "MONTANA"), ignore.case=TRUE, perl=TRUE);
+# grep() ... shows the indexes of matches ... TRUE / FALSE 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # s = "(a(a(a)(aa(a)a)a)a)((b(b)b)b)(((cc)c)c)"
 # matched <- gregexpr("\\((?>[^()]|(?R))*\\)", s, perl = T)
 # https://regex101.com/r/iqJ5Pi/1

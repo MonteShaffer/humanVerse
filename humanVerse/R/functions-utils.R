@@ -1,4 +1,15 @@
 
+
+
+
+dots.addToKey = function(key, ...)
+	{
+	more = unlist(list(...));
+	c(key, more);
+	}
+
+
+
 # testit = function() { if(rand(0,1) == 1) {stop("ERROR");} else {return(1); }}
 # x = suppressError(testit);
 # x = suppressError(testit(), show.notice=FALSE); str(x);

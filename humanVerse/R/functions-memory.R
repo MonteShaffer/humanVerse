@@ -1,4 +1,11 @@
 
+init = function() {}  
+# this function is linked in .onLoad()
+# if we know WHERE a local config file is, go grab it ... 
+# we should check colors and store it... ENABLE 
+
+
+
 ##################################################
 #'
 #' memory.init;
@@ -21,6 +28,9 @@ memory.init = function(purge.memory = FALSE, verbose = TRUE)
 
     .GlobalEnv$.humanVerse = list();
 	}
+	# this gets called often 
+	# system...auto save ... with timer HIDDEN/INTERNAL 
+	# ["timers"] as variable ... ["timers-INTERNAL"] 
   }
 
 

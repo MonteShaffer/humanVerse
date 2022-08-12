@@ -1,4 +1,8 @@
 
+# https://github.com/derickr/timelib
+## this is PHP library for detecting ... lots of REGEX
+## https://github.com/derickr/timelib/blob/master/parse_date.re
+## 
 
 
 ## in.sol package
@@ -25,7 +29,9 @@
 # set.seed(123); day = sample(1:28, 10, replace = TRUE);
  
 # http://www.webexhibits.org/calendars/calendar-christian.html 
-## TODO ... dots.append
+## TODO ... dots.addToKey
+## unlist(  date.toJulianDay(1858,11,16) )  - 2400000
+
 date.toJulianDay = function() {}
 # date.toJulianDay(year, month, day);
 # date.toJulianDay(0, 0, 0);
@@ -44,6 +50,10 @@ date.toJulianDay = function(YMDlist, ...,
 		day = more[[1]];
 		} else { list.extract(YMDlist); }
 		# should be keyed mylist[["year"]]; mylist[["month"]]; mylist[["day"]]
+		
+		year = as.integer(year);
+		month = as.integer(month);
+		day = as.integer(day);
 	
 	inp = functions.cleanKey(input.is, 3);
 	out = functions.cleanKey(output.is, 3);
@@ -85,9 +95,9 @@ date.toJulianDay = function(YMDlist, ...,
 	JD;
 	}
 
-x = list( "year" = c(1914, 1946, 2010, 2007),
-			"month" = c(8, 4, 9, 10),
-			"day" = c(14, 18, 1, 16)
+x = list( "year" = as.integer( c(1914, 1946, 2010, 2007) ),
+			"month" = as.integer( c(8, 4, 9, 10) ),
+			"day" = as.integer( c(14, 18, 1, 16) )
 			); ( y = date.toJulianDay(x) );
 			
 # off by a bit ... date.fromJulianDay( date.toJulianDay(0,0,0) )
@@ -103,7 +113,9 @@ x = list( "year" = c(1914, 1946, 2010, 2007),
 ## unlist( date.fromJulianDay( date.toJulianDay(-1,1,1) ) )
 ## unlist( date.fromJulianDay( date.toJulianDay(-1,1,1) ) )
 ## CONVERGED ... 
-
+## Notice that there is no year zero in the Julian or Gregorian calendars. The day that precedes January 1, 1 A.D. is December 31, 1 B.C. 
+## November 16, 1858 == 2,400,000  
+## unlist( date.fromJulianDay( date.toJulianDay(1858,11,16) ) )
 
 date.fromJulianDay = function() {}
 date.fromJulianDay = function(JD, 
@@ -227,13 +239,42 @@ date.checkPOSIXct = function(datePOSIX, in.tz, origin, out.tz)
 	res;
 	}
 	
+	
+date.init = function()
+		{
+		date.setFeatures();
+		}
+		
+## key this like "timer"   [[key]]	, only univariate ... 
+	
+date.setFeatures = function(key = "DEFAULT",
+							+-in.tz  = Sys.timezone(), 
+							origin = date.getOrigin(),
+							out.tz = NULL)
+		{
+		memory.init();
+		
+		}
+		
+		# univariate ... 
+date.getFeatures = function(key)  
+		{
+		
+		}
+		
+		
 date.toUnix = function() {}	
 date.toUnix = function(datePOSIX, 
 							in.tz  = Sys.timezone(), 
 							origin = date.getOrigin(),
 							out.tz = NULL
 						)
+						
+						
+						
+date.toUnix = function(datePOSIX, ...)
 	{
+	date.defaults();  # list.extract in.tz, origin, out.tz ... 
 	res = date.checkPOSIXct(datePOSIX, in.tz, origin, out.tz);
 	as.numeric(res);
 	}
@@ -330,6 +371,11 @@ date.getDay = function(datePOSIX,
 # The Lilian day number is similar to the Julian day number, except that Lilian day number 1 started at midnight on the first day of the Gregorian calendar, that is, 15 October 1582.
 ## different OFFSETS ...
 
+# https://articles.adsabs.harvard.edu/pdf/1992JBAA..102...40M
+# refers to EPOCH 1900 for NASA?
+## Frank ... https://www.mreclipse.com/Special/quotes2.html
+## SOLAR eclipses, history
+
 # this builds a propleptic calendar 
 date.daysFromEpoch = function() {}
 date.daysFromEpoch = function(datePOSIX, 
@@ -399,7 +445,7 @@ date.daysFromEpoch = function(datePOSIX,
 # https://en.wikipedia.org/wiki/ISO_8601
 # ISO 8601:2004 fixes a reference calendar date to the Gregorian calendar of 20 May 1875 as the date the Convention du Mètre (Metre Convention) was signed in Paris
 
-# + 1 month ... "calendarMonth [anchored to modern calendar FEB 28], averageMonth, monthLengthStart [previous, current, next], monthLengthEnd [previous, current, next]
+# + 1 month ... "calendarMonth [anchored to modern calendar FEB 28], averageMonth, monthLengthStart [previous, current, next], monthLengthEnd [previous, current, next], 4 'weeks'?
 # what does PHP do with + 1 month
 # how does strftaim in PHP work?
 

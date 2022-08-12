@@ -1,12 +1,11 @@
 
 # OXY ... ALIAS will build a ALIAS.R file with the correct syntax
+# have buildONE = TRUE as default option ... inst/R/-ONE-.R 
 
 # maybe build into RDX or whatever is used by some ...
 
 
-#' @rdname is.dir
-#' @export
-is.dir = dir.exists;
+
 
 
 # allow for Family GROUPS

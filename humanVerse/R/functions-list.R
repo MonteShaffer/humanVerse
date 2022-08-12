@@ -107,14 +107,14 @@ list.fromString = function(str, sep.keyvalue = "`=`",
 #'
 #'
 ## envir = .GlobalEnv
-list.extract = function(myList, pos = -1, envir = as.environment(pos), ...)
+list.extract = function(myList, envir = .GlobalEnv, ...)
     {
     n.myList = length(myList);
     if(n.myList > 0)
       {
       for(i in 1:n.myList)
         {
-        assign(names(myList)[i], myList[[i]], pos = pos, envir = envir, ...);
+        assign(names(myList)[i], myList[[i]], ...);
         }
       }
     }

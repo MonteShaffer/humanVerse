@@ -14,7 +14,8 @@ http.status = function(headers)  ## BAD connection if NULL?
   {
   # requires libcurl
   # attributes(headers)$status;  # getAttribute
-	property.get(headers, "status");
+  # get KEY from OBJ
+	property.get("status", headers);
   }
 
 
@@ -106,7 +107,7 @@ http.headers = function(remote, ...)  # maybe verify=FALSE (expired https)
 							{
 							# warning(paste0("### ERROR ###  throws an error","\n\n",e));
 							res = FALSE;
-							res = property.set(res, "ERROR", e);
+							res = property.set("ERROR", res, e);
 							return (res);
 							},
 

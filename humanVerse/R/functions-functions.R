@@ -1,5 +1,15 @@
 
 
+
+#' @rdname function.exists
+#' @export
+function.exists = is.function;
+
+
+# https://www.youtube.com/watch?v=jZY4zR8_7eI
+# functions as mapping ... abstract algebra
+
+
 ##################################################
 #'
 #' functions.cleanKey

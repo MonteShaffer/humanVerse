@@ -13,11 +13,13 @@
 #' @export 
 #'
 #' @examples
-property.set = function(obj, key, value=NULL, 
-									as.null = FALSE,
-									property.type="attributes")
+# .get has to be key first ... SYSTEM 
+property.set = function(key, obj, value=NULL, 
+									property.type="attributes",
+									as.null = FALSE
+									)
 	{
-	w = functions.cleanKey(property.type, 1);
+	pt = functions.cleanKey(property.type, 1);
 
 
 
@@ -38,7 +40,7 @@ property.set = function(obj, key, value=NULL,
 	n.val = length(value);
 	idx.v = 1;
 		
-	if(w == "a")
+	if(pt == "a")
 		{
 		for(i in 1:n.key)
 			{
@@ -47,7 +49,7 @@ property.set = function(obj, key, value=NULL,
 			}
 		return (obj);
 		}
-	if(w == "s" || w == "e")  # System Environment
+	if(pt == "s" || pt == "e")  # System Environment
 		{
 		res = list();
 		for(i in 1:n.key)
@@ -84,19 +86,60 @@ setAttribute = property.set;
 #' @export
 #'
 #' @examples
-property.get = function(obj, key, property.type="attributes")
+# has to be "key" first, or "system" has to pass in a NULL
+property.get = function(key, obj, 
+								property.type="attributes",
+								wildcard = "keys-values"
+								
+								)
 	{
-	w = functions.cleanKey(property.type, 1);
-	if(w == "a")  # attributes
+	pt = functions.cleanKey(property.type, 1);
+	w  = functions.cleanKey(wildcard, 1, keep = "-");
+	if(pt == "a")  # attributes
 		{
 		res = attributes(obj)[[key]];
 		return (res);
 		}
 
 
-	if(w == "s" || w == "e")  # System Environment
+	if(pt == "s" || pt == "e")  # System Environment
 		{
 		res = Sys.getenv(key);
+		# w == "k-v" means we look normally, than cascade our search from keys to values ... 
+		if(res == "")
+			{
+			# let's try wildcard on Sys.getenv(keys) ... vals?
+			vals = Sys.getenv();
+			keys = names(vals);
+				idxs.keys = regex.wildcardSearch(keys, key);			
+			is.k = ( length(idxs.keys) > 0 );
+				idxs.vals = regex.wildcardSearch(vals, key);
+			is.v = ( length(idxs.vals) > 0 );
+			
+			if(!is.k && !is.v) { return(""); } # LIKE NORMAL
+				res.keys = vals[idxs.keys];
+				res.vals = vals[idxs.vals];			
+			
+			if(w == "k" && is.k) { return( res.keys ); }
+			if(w == "v" && is.v) { return( res.vals ); }
+			
+			# search keys, than vals
+			if(w == "k-v" && is.k) { return( res.keys ); }
+			if(w == "k-v" && is.v) { return( res.vals ); }
+			
+			# search vals, then keys
+			if(w == "v-k" && is.v) { return( res.vals ); }
+			if(w == "v-k" && is.k) { return( res.keys ); }
+			
+			return(""); # we tried.
+			}
+			
+		# names(s <- Sys.getenv());
+		# if key had * and res is empty, # do wildcard search on names 
+		# Sys.getenv("RSTUDIO*");
+		# s[grep("^L(C|ANG)", names(s))]
+		# property.get("RSTUDIO*", NULL, "system");
+		# res = (s = Sys.getenv() );
 		return (res);
 		}
 	}
@@ -110,16 +153,17 @@ getAttribute = property.get;
 
 
 
-property.getAll = function(obj, property.type="attributes")
+# as dataframe?
+property.getALL = function(obj=NULL, property.type="attributes")
 	{
-	w = functions.cleanKey(property.type, 1);
-	if(w == "a")  # attributes
+	pt = functions.cleanKey(property.type, 1);
+	if(pt == "a")  # attributes
 		{
 		res = attributes(obj);
 		return (res);
 		}
 
-	if(w == "s" || w == "e")  # System Environment
+	if(pt == "s" || pt == "e")  # System Environment
 		{
 		res = Sys.getenv();
 		return (res);
@@ -130,6 +174,14 @@ property.getAll = function(obj, property.type="attributes")
 #' @rdname getAllAttributes
 #' @export
 getAllAttributes = property.getAll;
+
+#' @rdname getALLAttributes
+#' @export
+getALLAttributes = property.getALL;
+
+#' @rdname property.getAll
+#' @export
+property.getAll = property.getALL;
 
 
 

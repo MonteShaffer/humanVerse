@@ -68,7 +68,7 @@ color.buildSet = function(setname="base", alpha=TRUE, colors=NULL)
 				xt$hex.color = hexcolors;
 				
 				## rownames(xt) = NULL;  # DOESN'T WORK
-				## xt = property.set(xt, "row.names", NULL, as.null=TRUE); ## ALSO not working, 8/10/22 one of those days
+				## xt = property.set("row.names", xt, NULL, as.null=TRUE); ## ALSO not working, 8/10/22 one of those days
 				
 				
 				cols = c("hex.color", "color", "red", "green", "blue", "alpha");

@@ -1,5 +1,14 @@
 
 
+
+#' @rdname is.dir
+#' @export
+is.dir = dir.exists;
+
+
+
+
+
 dir.getIncludes
 dir.addToIncludes
 dir.rankIncludes
@@ -41,7 +50,8 @@ dir.normalizePath = function(path, ..., suppressWarnings=TRUE)
 							warning = function(w)
 								{
 								warning(paste0("### WARNING ###  throws a warning","\n\n",w));
-								info = property.set(info, "WARNING", w);
+								# set KEY on INFO to w
+								info = property.set("WARNING", info, w);
 								if(!suppressWarnings) { warning(w); }
 								# info; # let's still return the value 	
 								return(info);
@@ -50,12 +60,12 @@ dir.normalizePath = function(path, ..., suppressWarnings=TRUE)
 							error = function(e)
 								{
 								# warning(paste0("### ERROR ###  throws an error","\n\n",e));
-								info = property.set(info, "ERROR", e);
+								info = property.set("ERROR", info, e);
 								if(!suppressWarnings) { warning(e); }
 								# info; # let's still return the value 
 								return(info);
 								# res = FALSE;
-								# res = property.set(res, "ERROR", e);
+								# res = property.set("ERROR", res, e);
 								# return (res);
 								},
 

@@ -1,5 +1,40 @@
 
 
+has.color <- function() 
+	{
+	# this is large function in crayon
+	 
+	# DEBIAN ... 
+	# Sys.getenv("COLORTERM"); 
+	# Sys.getenv("LS_COLORS"); 
+	# Sys.getenv("TERM");
+	#  
+	# TERM                    xterm-256color
+	# what if I pass a #F9A3EE into xterm-256, will it work ?
+	# have a flag to store in the "humanVerse" ... disable / enable ...
+	#
+	
+	
+
+	}
+
+has.emacs = function()
+	{
+	Sys.getenv("EMACS") != "" || Sys.getenv("INSIDE_EMACS") != ""	
+	}
+# property.get("EMAC*", NULL, "system")
+
+has.rstudio = function()
+	{
+	!(Sys.getenv("RSTUDIO", "") == "")
+	}
+# property.get("RSTUDIO*", NULL, "system")
+
+# requireNamespace("rstudioapi", quietly = TRUE) &&
+#    rstudioapi::isAvailable() &&
+#    rstudioapi::hasFun("getConsoleHasColor")
+
+
 
 is.list.element = function(element, list) {}
 
@@ -163,13 +198,49 @@ is.false = isFALSE;
 #' @export
 #'
 #' @examples
-is.set = function(obj, allow.NULL=FALSE)
+# works on obj, not functions ... use is.function
+# if you call it on 'serialize' I am assuming you are looking for a character vector, a boolean, and so on ...
+# maybe create a list of allowable types
+# maybe create an environment scope issue 
+## > ls("algo")
+## Error in as.environment(pos) : no item called "algo" on the search list
+
+# ?exists(x) 
+# x: a variable name (given as a character string).
+# is.set (given as an object)
+
+
+is.set = function(obj, allow.NULL=FALSE, ...)
 	{
+	mytype = suppressError( typeof(obj), show.notice=FALSE,
+							msg="debugging typeof is.set" );
+							
+	return(mytype);
+	stop("monte");
+							
+	if(is.character(obj)) { return( exists(obj, ...) ); }
 	obj.str = deparse(substitute(obj));
 	my.obj = obj.fromString(obj.str);
+	# https://stackoverflow.com/questions/9368900/how-to-check-if-object-variable-is-defined-in-r
+	# Error in my.obj[1] : object of type 'closure' is not subsettable
+	# passing in serialize which is also a function 
+	
+	# show.notice = TRUE ... debugging
+	mytype = suppressError( typeof(my.obj), show.notice=FALSE,
+							msg="debugging typeof is.set" );
+	# print(obj.str); print(x); print (my.obj);
+	
+	if(is.error(mytype)) { return(FALSE); }
+	## this doesn't solve the function issue ... 
+	## isset is operating on objs that are not classes/functions
+	## closures
+	if(mytype == "closure") { return(FALSE); }
+	## all others are good to go?
+	if( !(mytype == "logical" || mytype == "NULL") ) { return(TRUE); }
+	
 	if(isFALSE(my.obj[1])) 
 		{
-		e = property.get( my.obj, "ERROR" );
+		e = property.get( "ERROR", my.obj );
 		if(!is.null(e)) { return(FALSE); }
 		}
 	# extend functionality, we can check  is.set(obj, TRUE) ... returns true if exists REGARDLESS of NULL ... default behavior is like php::isset
@@ -203,9 +274,17 @@ is.empty = function(obj)
 	obj.str = deparse(substitute(obj));
 	my.obj = obj.fromString(obj.str);
 	if(is.null(my.obj)) { return(TRUE); }  
+	
+	# show.notice = TRUE ... debugging
+	mytype = suppressError( typeof(my.obj), show.notice=FALSE,
+							msg="debugging typeof is.empty" );	
+	if(is.error(mytype)) { return(TRUE); }
+	if(mytype == "closure") { return(FALSE); }
+	
+	
 	if(isFALSE(my.obj[1])) 
 		{
-		e = property.get( my.obj, "ERROR" );
+		e = property.get( "ERROR", my.obj );
 		if(!is.null(e)) { return(TRUE); }
 		}
 

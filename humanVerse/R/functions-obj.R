@@ -32,16 +32,36 @@ obj.fromMD5 = function(obj, ...)
 
 obj.get = function(obj.str, ...) 
 	{
-	# get
-	get(obj.str, ...);  			## envir is in the weeds
+	# get 
+	get(obj.str, ...);  			
+	## envir is in the weeds, we are inside a function, one layer up
 	} 
 
 obj.set = function(obj.str, value, ...) 
 	{
 	# assign
-	assign(obj.str, value, ...);	## envir is in the weeds
+	assign(obj.str, value, ...);	
+	## envir is in the weeds, we are inside a function, one layer up
 	} 
+	
+# e1 <- new.env()
+# unlist( mget(letters, e1, ifnotfound = unlist(as.list(LETTERS))) )
+# assign("x", 3, e1)
+# unlist( mget(letters, e1, ifnotfound = unlist(as.list(LETTERS))) )	
+## https://stackoverflow.com/questions/59491195/is-there-a-way-to-list-all-environments-environment-names-in-r
+##
+## search();
+## 
+allParents = function(env = globalenv(), result = list()) {
+  result = c(list(parent.env(env)), result)
+  if(!identical(result[[1]], emptyenv())) {
+    result <- allParents(result[[1]], result)
+  }
+  return(result)
+}
 
+## allParents()
+## environmentName( environment())
 
 
 obj.fromString = function(obj.str)

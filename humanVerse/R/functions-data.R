@@ -1,6 +1,18 @@
 
 
-
+## timelib ... store list of regex
+## is_america
+## which_correction (1572, 1752) ... original, english
+## input.calendar = "[G]regorian"
+## output.calendar = "[G]" ... bouond to which_correction ... return NA if out of bounds ... 
+## input.tz = UTC
+## output.tx = your time zone
+## origin = date.getOrigin
+## input.format = "GUESS"
+## output.formt = "%d/%Y"
+## output.type = asPOS
+## month.is = 30 days  ## DATE, INTERVAL issues ... 
+## week.is = 7 days 
 
 
 #' data.load
