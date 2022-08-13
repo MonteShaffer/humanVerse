@@ -210,42 +210,62 @@ is.false = isFALSE;
 # is.set (given as an object)
 
 
-is.set = function(obj, allow.NULL=FALSE, ...)
+is.set = function(obj, allow.NULL=FALSE, deep.scan=TRUE, ...)
 	{
-	mytype = suppressError( typeof(obj), show.notice=FALSE,
-							msg="debugging typeof is.set" );
-							
-	return(mytype);
-	stop("monte");
-							
-	if(is.character(obj)) { return( exists(obj, ...) ); }
-	obj.str = deparse(substitute(obj));
-	my.obj = obj.fromString(obj.str);
-	# https://stackoverflow.com/questions/9368900/how-to-check-if-object-variable-is-defined-in-r
-	# Error in my.obj[1] : object of type 'closure' is not subsettable
-	# passing in serialize which is also a function 
+	mytype = suppressError( typeof(obj), 
+								show.notice=FALSE,
+								msg="debugging typeof is.set" 
+							);
+	print(mytype);						
+cat("\n STEP 1 \n");	
+	if(is.error(mytype)) 	{ return(FALSE); }
 	
-	# show.notice = TRUE ... debugging
-	mytype = suppressError( typeof(my.obj), show.notice=FALSE,
-							msg="debugging typeof is.set" );
-	# print(obj.str); print(x); print (my.obj);
+cat("\n STEP 2 \n");	
+	if(!deep.scan && is.character(obj)) { return( exists(obj, ...) ); }
 	
-	if(is.error(mytype)) { return(FALSE); }
-	## this doesn't solve the function issue ... 
+	# WHAT about monte$says as input 
+	
 	## isset is operating on objs that are not classes/functions
 	## closures
+cat("\n STEP 3 \n");
 	if(mytype == "closure") { return(FALSE); }
-	## all others are good to go?
-	if( !(mytype == "logical" || mytype == "NULL") ) { return(TRUE); }
 	
+cat("\n STEP 4 \n");
+	# WE NEED TO CHECK FALSE/NULL
+	if( !(mytype == "NULL" || mytype == "character") ) { return(TRUE); }
+	
+cat("\n STEP 5 \n");
+	if(mytype == "character")
+		{
+		x = eval(parse(text = obj));
+		if(is.null(x)) { return(allow.NULL); } else { return(TRUE); }
+		}
+
+cat("\n STEP 6 \n");
+	if(is.null(my.obj)) { return(allow.NULL); }
+
+
+cat("\n STEP 5b \n");
+	obj.str = deparse(substitute(obj));
+	my.obj = obj.fromString(obj.str);
+	
+cat("\n STEP 6 \n");
+	print(obj.str);
+	print(my.obj);
 	if(isFALSE(my.obj[1])) 
 		{
 		e = property.get( "ERROR", my.obj );
 		if(!is.null(e)) { return(FALSE); }
 		}
+		
 	# extend functionality, we can check  is.set(obj, TRUE) ... returns true if exists REGARDLESS of NULL ... default behavior is like php::isset
-	if(!allow.NULL && is.null(my.obj)) { return(FALSE); }
-	return(TRUE);
+cat("\n STEP 7 \n");
+	if(is.null(my.obj)) { return(allow.NULL); }
+cat("\n STEP 8 \n");
+	if(mytype == "character") { return( exists(obj, ...) ); }
+cat("\n STEP 9 \n");	
+	# do we still have BOOLEAN
+	return(TRUE);		
 	}
 
 

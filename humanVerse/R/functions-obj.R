@@ -70,6 +70,9 @@ obj.fromString = function(obj.str)
 
 						{
 						info = eval(parse(text = obj.str));
+						cat("\n ===== MONTE ===== \n");
+						print(obj.str);
+						cat("\n"); print(info); cat("\n");
 						},
 
 						warning = function(w)
@@ -80,7 +83,7 @@ obj.fromString = function(obj.str)
 	
 						error = function(e)
 							{
-							# warning(paste0("### ERROR ###  throws an error","\n\n",e));
+							warning(paste0("### ERROR ###  throws an error","\n\n",e));
 							res = FALSE;
 							res = property.set(res, "ERROR", e);
 							return (res);
