@@ -1,85 +1,23 @@
-EQUIVALENT
+# > getwd();
+# [1] "C:/Users/Monte J. Shaffer/Documents"
 
-if( !exists("algo", inherits = FALSE ) )			
-						{ 
-						algo 		= "md5"; 
-						}
-if(!is.set(algo, deep.scan = FALSE, inherits = FALSE))
-	{
-	algo = "md5";
-	}
-					
-https://stackoverflow.com/questions/4214793/mathjax-jsmath-alternatives
+# A leap year normally occurred every four years, and the leap day was historically inserted by doubling 24 February. However, it is now customary to number the days of February sequentially with no gaps, and 29 February is typically considered the leap day. 
 
+# https://en.wikipedia.org/wiki/List_of_adoption_dates_of_the_Gregorian_calendar_by_country
+# https://en.wikipedia.org/wiki/Calendar_(New_Style)_Act_1750
 
-https://katex.org/
+# the date of the spring equinox (which determines the date of Easter) had drifted by about eleven days from its date at the time of the First Council of Nicaea, 21 March
+# m21 = subset(df, MM == 3 & DD == 21)
+# m21n = subset(df, MM == 3 & DD == 21 & (YYYY > 350 & YYYY < 400))
 
-https://www.math.union.edu/~dpvc/jsMath/welcome.html
+# https://en.wikipedia.org/wiki/First_Council_of_Nicaea
+# The feast of Easter is linked to the Jewish Passover and Feast of Unleavened Bread, as Christians believe that the crucifixion and resurrection of Jesus occurred at the time of those observances.
 
-https://www.math.union.edu/~dpvc/jsMath/examples/Henrici.html
-
-https://bookdown.org/yihui/rmarkdown-cookbook/diagrams.html
-
-https://www.spinellis.gr/sw/textproc/bib2xhtml
-
-
-
-
-months(Sys.time())
-
-month.abb
-?Constants
-pi - 4*(4*atan(1/5) - atan(1/239))
-
-format(ISOdate(2000, 1:12, 1), "%B")
-format(ISOdate(2000, 1:12, 1), "%b")
-
-MONTHS_ = format(ISOdate(2000, 1:12, 1), "%b")
-DAYS_ = format(ISOdate(2000, 1, 1:10), "%a")[1:7]
-
-format(ISOdate(2000, 1, 1:10), "%a")
-
-format(today, format="%a")
-
-julian(Sys.Date(), -2440588) # from a day
-
-julian(ISOdate(2000, 1, 1));
-
-weeks(.leap.seconds)
-months(.leap.seconds)
-
-
-> getwd();
-[1] "C:/Users/Monte J. Shaffer/Documents"
-
-
-
-
-
-
-
-
-
-
-
-
-
-# > row
-# [1] "333332" "2513"   "3"      "17"     "Mon"    "76" 
-
-
-
-
-
-
-format(ISOdate(1600, 8, 5), "%a")   # Sat
-
-
-julian(ISOdate(2000, 1, 1));
-julian(ISOdate(1970, 1, 1));
-
-julian(ISOdate(1970, 1, 1), 
-		origin=as.POSIXct("170-01-01", tz = "GMT"));
+# Wednesday, 2 September 1752, was followed by Thursday, 14 September 1752.
+# 1752	2 Sept	14 Sept	11
+# subset(df, MM == 9 & DD == 2 & (YYYY == 1752))
+#         IDX YYYY MM DD DOW DOY
+# 282459 55546 1752  9  2 Wed 246
 
 
 ########### 
@@ -102,15 +40,28 @@ MONTHS_ = format(ISOdate(2000, 1:12, 1), "%b");
 LENS_ = c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
 DAYS_ = format(ISOdate(2000, 1, 1:10), "%a")[1:7];
 
-ctype = "Julian"
-cyear = 1600;
-cleap = (cyear %%4 == 0);
-cmonth = 8; # August
+# day 0 ... Thursday, 14 September 1752
+ctype = "Gregorian"
+cyear = 1752;
+cleap = gregorian.isLeap(cyear);
+cmonth = 9; # August
 clen = LENS_[cmonth];
-cday = 5;  # Teusday
-str.cday = "Tue";
+cday = 14;  
+str.cday = "Thu";
 idx.cday = which(DAYS_ == str.cday);
-doy = 218;  # FROM https://www.timeanddate.com/date/weekday.html
+doy = 247;  # FROM https://www.timeanddate.com/date/weekday.html
+
+# 9/14/1752
+# It is day number 247 of the year, 108 days left.
+# It is Thursday number 36 out of 51 in 1752.
+# It is Thursday number 1 out of 3 in September 1752.
+# Year 1752 has 355 days.
+# 9/13/1752
+# The entered date does not exist for United States because 11 days were skipped when the Gregorian calendar was adopted
+# 9/2/1752
+# September 2, 1752 is a Wednesday
+# It is day number 246 of the year, 109 days left.
+
 
 dir = "FORWARD"
 
@@ -119,10 +70,10 @@ dir = "FORWARD"
 n = 333333;
 n = 433333;
 
-
+#n = 1500;
 
 row = c("IDX", "YYYY", "MM", "DD", "DOW", "DOY");
-file = paste0(getwd(), "/", "ruthven-",n,".txt");
+file = paste0(getwd(), "/", "british-",n,".txt");
 	cat( paste0(row, collapse="|"), "\n", sep="", 
 							file=file, append=FALSE);
 
@@ -156,7 +107,7 @@ while(i < n)
 			cmonth = 1;
 			cyear = 1 + cyear;
 			doy = 1;
-			cleap = (cyear %%4 == 0);
+			cleap = gregorian.isLeap(cyear);
 			if(cleap) { LENS_[2] = 29; } else { LENS_[2] = 28; }
 			}
 		clen = LENS_[cmonth];
@@ -230,32 +181,55 @@ ndf = subset(df, YYYY >= -7525);
 
 
 
+	
+julian.isLeap = function(cyear) 
+	{ 
+	i = (cyear %%4 == 0); 
+	i;
+	}
+
+gregorian.isLeap = function(cyear) 
+	{
+	k = (cyear %%400 == 0);		if(k) { return(TRUE); }
+	j = (cyear %%100 == 0);		if(j) { return(FALSE); }
+	i = (cyear %%4 == 0);		
+	i;
+	}
+
+
 
 
 MONTHS_ = format(ISOdate(2000, 1:12, 1), "%b");
 LENS_ = c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
 DAYS_ = format(ISOdate(2000, 1, 1:10), "%a")[1:7];
 
-ctype = "Julian"
-cyear = 1600;
-cleap = (cyear %%4 == 0);
-cmonth = 8; # August
+
+
+# day 0 ... Thursday, 14 September 1752
+ctype = "Gregorian"
+cyear = 1752;
+cleap = gregorian.isLeap(cyear);
+cmonth = 9; # August
 clen = LENS_[cmonth];
-cday = 5;  # Teusday
-str.cday = "Tue";
+cday = 14;  
+str.cday = "Thu";
 idx.cday = which(DAYS_ == str.cday);
-doy = 218;  # FROM https://www.timeanddate.com/date/weekday.html
+doy = 247;  # FROM https://www.timeanddate.com/date/weekday.html
+
+
+
+
 
 dir = "BACKWARDS"
 
 ### 154,130 days
 #n = -3222333;
-n = -3333333;
+n = -3933333;
 
-# n = -500;
+# n = -1500;
 
 row = c("IDX", "YYYY", "MM", "DD", "DOW", "DOY");
-file = paste0(getwd(), "/", "ruthvenR-",n,".txt");
+file = paste0(getwd(), "/", "britishR-",n,".txt");
 	cat( paste0(row, collapse="|"), "\n", sep="", 
 							file=file, append=FALSE);
 
@@ -291,13 +265,15 @@ while(i > n)
 			{
 			cmonth = 12;
 			cyear = cyear - 1;
-			cleap = (cyear %%4 == 0);
+			cleap = gregorian.isLeap(cyear);
 			if(cleap) { LENS_[2] = 29; } else { LENS_[2] = 28; }
 			doy = sum(LENS_);
 			}
+		
 		clen = LENS_[cmonth];
 		cday = clen;
 		}
+	if(doy < 1) { doy = sum(LENS_); }
 
 	idx.cday = idx.cday - 1;
 	if(idx.cday < 1) { idx.cday = 7;}

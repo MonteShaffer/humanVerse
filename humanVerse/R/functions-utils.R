@@ -1,6 +1,9 @@
 
 
 
+ceil = ceiling;
+
+
 
 dots.addToKey = function(key, ...)
 	{

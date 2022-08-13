@@ -1,4 +1,46 @@
 
+		# DEFAULT offset is -32045
+		# 2 other offsets
+		# Ruthven offset ... 
+# https://www.slideshare.net/chenshuo/datetime-julian-date SLIDE 8
+date.toJulianDayNumber = function(jyear, jmonth, jday, offset=0)
+	{
+	mv = length(jyear); # howMany years 
+	
+	jyear = as.integer(jyear);
+	jmonth = as.integer(jmonth);
+	jday = as.integer(jday);
+	
+	a = as.integer( (14 - jmonth)/12 );
+	y = as.integer( jyear + 4800 - a );
+	m = as.integer( jmonth + 12 * a - 3); 
+	
+	# daysBeforeMonth(March) = 0 # SLIDE 13
+	mm = as.integer( (153*m + 2)/5 );
+	# julian only
+	
+	# # if jyear < -4800
+	is.e = (jyear <= -4800); 	# I think this works to -4800 * 2
+	e = rep(0, mv);			# could expand to go further back
+	e[is.e] = -1;
+	# is leap year in the search
+	is.ly = (is.e & (jyear %% 4 == 0) );
+	e[is.ly] = e[is.ly] + 1;
+	## remaining errors are jmonth == 1 or == 2 in this OLD GROUP
+	
+	
+	
+	JDN = e + jday + mm + 365*y + as.integer( y/4 );
+	# JDN =  jday + mm + 365*y + as.integer( y/4 );
+	
+	# do offset logic here?
+	# maybe store original
+	JDN;	
+	}
+	
+	
+	
+
 # https://github.com/derickr/timelib
 ## this is PHP library for detecting ... lots of REGEX
 ## https://github.com/derickr/timelib/blob/master/parse_date.re
@@ -60,7 +102,7 @@ date.toJulianDay = function(YMDlist, ...,
 	
 	a = as.integer( (14 - month) / 12 );
 	y = year + 4800 - a;
-	m = month + 12 * a - 3;
+	m = month + 12 * a - 3; 
 
 	if(inp == "gre" || inp == "ggg" )  # Good Game Gabriel G. Gandzjuk
 		{
@@ -578,8 +620,35 @@ September 2, 1752 was followed by September 14, 1752
 
 # http://www.webexhibits.org/daylightsaving/
 
-
-
+# cyear = c(100 * 16:21)
+date.isLeapYear = function(cyear, calendar="gregorian")
+	{
+	# cyear is 1AD => 1, 1BC => 0, 2BC => -1
+	cale = functions.cleanKey(calendar, 4);
+	# calendar="julian"
+	if(cale == "juli")
+		{
+		i = (cyear %%4 == 0); 	
+		names(i) = cyear;
+		return(i);
+		}
+	if(cale == "xela")
+		{
+		stop("what, TODO::");
+		}
+	
+	
+	# gregorian is default
+	k = (cyear %%400 == 0);		# if(k) { return(TRUE); }
+	j = (cyear %%100 == 0);		# if(j) { return(FALSE); }
+	i = (cyear %%4 == 0);	
+		# multivariate, as a set 
+		r = i - j + k;
+		r = as.logical(r);
+		names(r) = cyear;
+	r;
+	}
+	
 
 date.mktime = function (sec = 0, min = 0, hour = 12, 
 						month = 10, day = 15, year = 1582, tz="")

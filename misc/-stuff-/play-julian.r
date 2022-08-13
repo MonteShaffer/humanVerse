@@ -25,6 +25,23 @@ https://www.spinellis.gr/sw/textproc/bib2xhtml
 
 
 
+
+### months 
+### daysBetween(d1, d2)... rules ... JULIAN until 9/2/1752; GREG after (as 9/14/1752) ... 11 days lost ... 9/3-9/13 should throw ALARM (NA)
+### calendar.rule[["british]][1] => "JULIAN until 1752-09-02 [ISO]
+###                          [2] => "GREG since 1752-09-14 [ISO]
+### what about FRANCE ... [1] Julian until ..., [2] Greg until [3] French until ... [n] GREG since ...
+### define the French Republic Calendar ... MAP over GREG ...
+
+
+
+
+
+
+
+
+
+
 months(Sys.time())
 
 month.abb
@@ -295,6 +312,7 @@ while(i > n)
 			if(cleap) { LENS_[2] = 29; } else { LENS_[2] = 28; }
 			doy = sum(LENS_);
 			}
+		if(doy < 1) { doy = sum(LENS_); } # need this? bug in GREG?
 		clen = LENS_[cmonth];
 		cday = clen;
 		}
@@ -382,6 +400,9 @@ saveRDS(xdf.sorted, "ruthven.rds");
 
 df = xdf.sorted; n = 6; row.idx = 338005;
 
+# get into weeds, compute strlen(cols), omit some columns
+# allow for vertical isolation as well
+# print.matrix ...
 df.printHead = function(df, n=6, row.idx=1, ...)
 	{
 	idx = row.idx;  		## offset, e.g, SKIP
@@ -390,8 +411,12 @@ df.printHead = function(df, n=6, row.idx=1, ...)
 		lower = (idx - n); 	if(lower < 1) 	 { lower = 1; }
 		upper = lower + n; 	if(upper > nrow) { upper = nrow; }
 							if(upper >= idx) { upper = idx - 1; }
-	tails = df[ lower:upper, ];  rownames(tails) = lower:upper;
-	print(tails, col.names=TRUE, col.at="top", ...);
+		diff = upper - lower; 
+	if(diff < 0) { cat("\n", "NOTHING TO PRINT", "\n"); tails = NULL; } 
+	else {
+		tails = df[ lower:upper, ];  rownames(tails) = lower:upper;
+		print(tails, col.names=TRUE, col.at="top", ...);
+		}
 	cat("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", "\n");
 	# one
 		one = df[idx, ]; rownames(one) = idx;
@@ -402,8 +427,14 @@ df.printHead = function(df, n=6, row.idx=1, ...)
 		upper = (idx + n); 	if(upper > nrow) { upper = nrow; }
 		lower = upper - n; 	if(lower < 1) { lower = 1; }
 							if(lower <= idx) { lower = idx + 1; }
-	heads = df[ lower:upper , ];	rownames(heads) = lower:upper;
-	print(heads, col.names=TRUE, col.at="bottom", ...);
+	
+	diff = upper - lower; 
+	if(diff < 0) { cat("\n", "NOTHING TO PRINT", "\n"); heads = NULL;} 
+	else {
+		heads = df[ lower:upper , ];	rownames(heads) = lower:upper;
+		print(heads, col.names=TRUE, col.at="bottom", ...);
+		}
+	
 	invisible(list("tails"=tails, "one"=one, "heads"=heads));
 	}
 	
@@ -466,6 +497,270 @@ headsAndTails.inRange(xdf.sorted, 6, 338005);
 	
 
 # heads.tails = function() ... show range ...
+
+
+
+
+
+df$leap = as.integer(df$YYYY %% 4 == 0);
+> head(df)
+     IDX YYYY MM DD DOW DOY leap
+1 338004 2525 12 31 Thu 365    0
+2 338003 2525 12 30 Wed 364    0
+3 338002 2525 12 29 Tue 363    0
+4 338001 2525 12 28 Mon 362    0
+5 338000 2525 12 27 Sun 361    0
+6 337999 2525 12 26 Sat 360    0
+
+
+IDX = f(YYYY, MM, DD, leap)
+
+df$IDX2 = df$IDX + 0.5;
+
+options(digits=22);
+## WITH leap year, R^2 == 1 ... linear relationship
+df.lm = lm(IDX2 ~ YYYY + MM + DD + leap, data = df);
+summary(df.lm);
+# why is summary slow?
+# df.lm.s = summary(df.lm);
+
+df.lm.s$coefficients
+df.lm.s$coefficients[,1]
+
+
+ x = df.lm.s$coefficients[,1]
+> dput(x)
+c(INT = -584648.838950183, YYYY = 365.25000001543, 
+MM = 30.4397976184598, DD = 0.997931853508713, leap = 0.34021685613482
+
+
+SET DD = 1, leap = 0.34, MM = 30.440, YYYY = 365.25, INT = -584648.849
+
+# classifier? ensemble
+
+SET DD = 1, leap = 0.33, YYYY = 365.25,  ... LM on MM and INT only
+
+df$DD2 = df$DD * 1;
+df$leap2 = df$leap * 0.33;
+df$YYYY2 = df$YYYY* 365.25;
+
+
+
+options(digits=22);
+## WITH leap year, R^2 == 1 ... linear relationship
+df.lm = lm(IDX2 ~ YYYY2 + MM + DD2 + leap2, data = df);
+# why is summary slow?
+( df.lm.s = summary(df.lm) );
+
+
+
+df$IDX3 = df$IDX2 + 584649;
+options(digits=22);
+## WITH leap year, R^2 == 1 ... linear relationship
+df.lm = lm(IDX3 ~ YYYY + MM + DD + leap, data = df);
+# why is summary slow?
+( df.lm.s = summary(df.lm) );
+
+df.lm.s$coefficients
+df$predict.lm = predict(df.lm, df)  # not using holdout
+df$diff.lm = df$IDX3 - df$predict.lm;
+# this break;
+# plot(df$YYYY, df$diff.lm);
+
+
+
+
+options(digits=22);
+## WITH leap year, R^2 == 1 ... linear relationship
+df.lm = lm(IDX ~ YYYY, data = df);
+# why is summary slow?
+( df.lm.s = summary(df.lm) );
+
+df.lm.s$coefficients
+df$predict.lm = predict(df.lm, df)  # not using holdout
+df$diff.lm = df$IDX - df$predict.lm;
+# this break;
+# plot(df$YYYY, df$diff.lm);
+
+
+	df$a = as.integer( (14 - df$MM) / 12 );
+	df$y = df$YYYY + 4800 - df$a;
+	df$m = df$MM + 12 * df$a - 3;
+	
+	# daysBeforeMonth ... March 1 offset ... = 0
+	df$d = as.integer( (153*df$m+2)/5 );
+
+	e = (df$YYYY <= -4800);
+	df$e = 0;
+	df$e[e] = -1;
+	
+	df$JD = df$e + df$DD + df$d + df$y * 365 + as.integer(df$y/4) - 32000 - 2305758;
+	
+# https://www.slideshare.net/chenshuo/datetime-julian-date SLIDE 19, inverse
+# https://www.slideshare.net/chenshuo/datetime-julian-date SLIDE 8
+# 
+	
+df$diff.JD = (df$JD - df$IDX)
+df0 = subset(df, diff.JD == 0)
+df1 = subset(df, diff.JD == 1)
+	# range(df1$YYYY)
+	[1] -7525 -4800
+	
+	
+
+df$JD = date.toJulianDayNumber(df$YYYY, df$MM, df$DD) - 2337758;	
+df$diff.JD = (df$JD - df$IDX);
+hist(df$diff.JD);
+
+#df0 = subset(df, diff.JD == 0);
+df1 = subset(df, diff.JD != 0);
+# range(df1$YYYY);
+
+# with e, plus leap year adjustment ... equally +/- 1 on DIFF
+## only MM = 1 or MM = 2 ... 
+ 81099
+ 
+# WITH e
+248871  # half million fixed, quarter million to go 
+		# what does df1 have in common ... hist(df1$MM) ... etc doesn't show anything obvious ...  a bit heavier on first day of month
+		# ONLY off by -1 ... 
+		# logistic regression ?
+		# if I take out my logic for e ... I have more that are off by 1
+		
+df1$log = 1;	# I can map to negative 1?
+# this seems a bit unequal ... DRILLDOWN ...  hist(df1$a)
+
+
+# let's see if PARAMS changed on subset ... only off by 1...
+options(digits=22);
+## WITH leap year, R^2 == 1 ... linear relationship
+df1.lm = lm(IDX ~ YYYY + MM + DD + leap, data = df1);
+# why is summary slow?
+( df1.lm.s = summary(df1.lm) );
+
+df1.lm.s$coefficients
+df1$predict.lm = predict(df1.lm, df1)  # not using holdout
+df1$diff.lm = df1$IDX3 - df1$predict.lm;
+# this break;
+
+# leap == 2 on the coefficient ... was 1/3 ... there it is ...
+# ALT-TAB stopped working ... 
+
+	
+
+# WITHOUT e 
+ dim( subset(df, df$YYYY <= -4800) )
+[1] 995672     28
+> dim(df1)
+[1] 746801     28
+
+
+
+	
+	
+	
+	From and including: Saturday, January 1, 2000
+To, but not including Monday, December 31, 2525
+
+Result: 192,117 days
+	
+	
+	
+	# from GREG?
+	JD =  day 	+ as.integer( (153*m+2)/5 )  + y*365 + as.integer(y/4)  - 32083;
+	
+
+
+
+
+
+
+
+
+
+df.predict = function(year, month, day, leap, return="actual")
+	{
+	res = (365.25*year + 30.440*month + 1*day + 0.34*leap - 584648.849);
+	if(return == "integer") { res = as.integer(res); }
+	if(return == "round") { res = round(res); }
+	if(return == "ceiling") { res = ceil(res); }
+	res;	
+	}
+	
+df$predict = df.predict(df$YYYY, df$MM, df$DD, df$leap);
+df$predict.int = df.predict(df$YYYY, df$MM, df$DD, df$leap, "integer");
+df$predict.r = df.predict(df$YYYY, df$MM, df$DD, df$leap, "round");
+
+df$diff = df$predict - df$IDX;
+df$diff.int = df$predict.int - df$IDX;
+df$diff.r = df$predict.r - df$IDX;
+## CAN BE OFF by +/-2 days 
+## HOW?
+	
+
+
+# https://www.machinelearningplus.com/machine-learning/complete-introduction-linear-regression-r/
+
+df$lm.predict = predict(df.lm, df)  # not using holdout
+
+
+
+df.predict = function(year, month, day, leap, return="actual")
+	{
+	
+	b = c(	INT = -584648.838950183, 
+			YYYY = 365.25000001543, 
+			MM = 30.4397976184598, 
+			DD = 0.997931853508713, 
+			leap = 0.34021685613482 );
+	B = as.data.frame(t(b)); # NAMES to list
+
+
+	res = (B$YYYY*year + B$MM*month + B$DD*day + B$leap*leap + B$INT);
+	if(return == "integer") { res = as.integer(res); }
+	if(return == "round") { res = round(res); }
+	res;	
+	}
+
+	
+df$predict = df.predict(df$YYYY, df$MM, df$DD, df$leap);
+df$predict.int = df.predict(df$YYYY, df$MM, df$DD, df$leap, "integer");
+df$predict.r = df.predict(df$YYYY, df$MM, df$DD, df$leap, "round");
+
+df$diff = df$predict - df$IDX;
+df$diff.int = df$predict.int - df$IDX;
+df$diff.r = df$predict.r - df$IDX;
+## CAN BE OFF by +/-2 days [on INT]
+range(df$diff);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## NO LEAP, still a large R^2
+df.lm = lm(IDX ~ YYYY + MM + DD, data = df);
+summary(df.lm);
+# why is summary slow?
+# df.lm.s = summary(df.lm);
+
+df.lm.s$coefficients
+options(digits=22);
+df.lm.s$coefficients[,1]
+
+
+
+
 
 
 

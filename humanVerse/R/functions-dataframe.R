@@ -1,4 +1,56 @@
 
+
+# get into weeds, compute strlen(cols), omit some columns
+# allow for vertical isolation as well
+# print.matrix ...
+df.printHead = function(df, n=6, row.idx=1, ...)
+	{
+	idx = row.idx;  		## offset, e.g, SKIP
+	nrow = nrow(df);
+	# tails 			
+		lower = (idx - n); 	if(lower < 1) 	 { lower = 1; }
+		upper = lower + n; 	if(upper > nrow) { upper = nrow; }
+							if(upper >= idx) { upper = idx - 1; }
+		diff = upper - lower; 
+	if(diff < 0) { cat("\n", "NOTHING TO PRINT", "\n"); tails = NULL; } 
+	else {
+		tails = df[ lower:upper, ];  rownames(tails) = lower:upper;
+		print(tails, col.names=TRUE, col.at="top", ...);
+		}
+	cat("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", "\n");
+	# one
+		one = df[idx, ]; rownames(one) = idx;
+	print(one, col.names=FALSE, ...);
+	cat("\n");
+	cat("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", "\n");	
+	# heads 	
+		upper = (idx + n); 	if(upper > nrow) { upper = nrow; }
+		lower = upper - n; 	if(lower < 1) { lower = 1; }
+							if(lower <= idx) { lower = idx + 1; }
+	
+	diff = upper - lower; 
+	if(diff < 0) { cat("\n", "NOTHING TO PRINT", "\n"); heads = NULL;} 
+	else {
+		heads = df[ lower:upper , ];	rownames(heads) = lower:upper;
+		print(heads, col.names=TRUE, col.at="bottom", ...);
+		}
+	
+	invisible(list("tails"=tails, "one"=one, "heads"=heads));
+	}
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
 #' wildcardSearch
 #'
 #' By default searches a dataframe string column based on a

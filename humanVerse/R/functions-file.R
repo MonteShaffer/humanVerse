@@ -590,9 +590,9 @@ writeToPipe = function(df, file, header=TRUE, quote="", sep="|", row.names=FALSE
 #'
 #' @return a dataframe
 #' @export
-readFromPipe = function(file, header=TRUE, quote="", sep="|", comment="#")
+readFromPipe = function(file, header=TRUE, quote="", sep="|", comment.char="#")
   {
-  utils::read.csv(file, header=header, quote=quote, sep=sep);
+  utils::read.csv(file, header=header, quote=quote, sep=sep, comment.char = comment.char);
   }
 
 #' file.readLines
