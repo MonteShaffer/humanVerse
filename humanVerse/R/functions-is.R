@@ -210,6 +210,7 @@ is.false = isFALSE;
 # is.set (given as an object)
 
 
+# sys.frame(0)
 is.set = function(obj, allow.NULL=FALSE, deep.scan=TRUE, ...)
 	{
 	mytype = suppressError( typeof(obj), 
@@ -244,26 +245,7 @@ cat("\n STEP 5 \n");
 cat("\n STEP 6 \n");
 	if(is.null(my.obj)) { return(allow.NULL); }
 
-
-cat("\n STEP 5b \n");
-	obj.str = deparse(substitute(obj));
-	my.obj = obj.fromString(obj.str);
-	
-cat("\n STEP 6 \n");
-	print(obj.str);
-	print(my.obj);
-	if(isFALSE(my.obj[1])) 
-		{
-		e = property.get( "ERROR", my.obj );
-		if(!is.null(e)) { return(FALSE); }
-		}
-		
-	# extend functionality, we can check  is.set(obj, TRUE) ... returns true if exists REGARDLESS of NULL ... default behavior is like php::isset
-cat("\n STEP 7 \n");
-	if(is.null(my.obj)) { return(allow.NULL); }
-cat("\n STEP 8 \n");
-	if(mytype == "character") { return( exists(obj, ...) ); }
-cat("\n STEP 9 \n");	
+cat("\n STEP X \n");
 	# do we still have BOOLEAN
 	return(TRUE);		
 	}

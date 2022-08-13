@@ -45,6 +45,9 @@ str.fromCharacters = function(charslist, sep="")
 	str.implode(sep, res);
 	}
 
+
+
+
 str.toMD5 = function(str, times=1, method="digest", ...)
 	{
 	# necessary overhead
@@ -102,6 +105,10 @@ str.toMD5 = function(str, times=1, method="digest", ...)
 						{ 
 						algo 		= "md5"; 
 						}
+				if(!is.set(algo, deep.scan = FALSE, inherits = FALSE))
+					{
+					algo = "md5";
+					}
 				# serialize is a FUNCTION in BASE, SCOPE issue
 				# if(!is.set(serialize)) 		{ serialize = FALSE; }
 				if( !exists("serialize", inherits = FALSE ) )	
@@ -129,6 +136,10 @@ str.toMD5 = function(str, times=1, method="digest", ...)
 		}
 	return(res);
 	}
+
+
+
+
 
 
 str.fromMD5 = function(str, times=1, method="digest", ...)
