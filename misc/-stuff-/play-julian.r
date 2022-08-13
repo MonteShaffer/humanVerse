@@ -614,6 +614,8 @@ hist(df$diff.JD);
 
 #df0 = subset(df, diff.JD == 0);
 df1 = subset(df, diff.JD != 0);
+dim(df1);
+table(df1$leap, df1$diff.JD);
 # range(df1$YYYY);
 
 # with e, plus leap year adjustment ... equally +/- 1 on DIFF

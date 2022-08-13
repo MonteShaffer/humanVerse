@@ -5,7 +5,7 @@
 # https://www.slideshare.net/chenshuo/datetime-julian-date SLIDE 8
 date.toJulianDayNumber = function(jyear, jmonth, jday, offset=0)
 	{
-	mv = length(jyear); # howMany years 
+	mv = length(jyear); # howMany years  
 	
 	jyear = as.integer(jyear);
 	jmonth = as.integer(jmonth);
@@ -27,8 +27,11 @@ date.toJulianDayNumber = function(jyear, jmonth, jday, offset=0)
 	is.ly = (is.e & (jyear %% 4 == 0) );
 	e[is.ly] = e[is.ly] + 1;
 	## remaining errors are jmonth == 1 or == 2 in this OLD GROUP
-	
-	
+	###### HOW TO IDENTIFY THIS GROUP ???
+	##### is.ly12 = (is.ly & (jmonth == 1 | jmonth == 2) );
+	##### e[is.ly12] = e[is.ly12] - 1;
+	##### is.ly12n = (!is.ly & (jmonth == 1 | jmonth == 2) );
+	##### e[is.ly12n] = e[is.ly12n] + 1;
 	
 	JDN = e + jday + mm + 365*y + as.integer( y/4 );
 	# JDN =  jday + mm + 365*y + as.integer( y/4 );
