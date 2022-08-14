@@ -3,10 +3,19 @@
 # get into weeds, compute strlen(cols), omit some columns
 # allow for vertical isolation as well
 # print.matrix ...
-df.printHead = function(df, n=6, row.idx=1, ...)
+df.printHead = function(df, n=5, row.idx=10, dir="DESC", ...)
 	{
-	idx = row.idx;  		## offset, e.g, SKIP
+	d = functions.cleanKey(dir, 1);		## ASC or DESC
+										## NEGATIVE offset would require REWORK
+										## calculate, then print 
+										## use my own print function 
+										
 	nrow = nrow(df);
+	idx = as.integer(row.idx);  		## offset, e.g, SKIP
+										
+	if(idx < 1) { idx = 1; }
+	if(idx > nrow) { idx = nrow; }
+		
 	# tails 			
 		lower = (idx - n); 	if(lower < 1) 	 { lower = 1; }
 		upper = lower + n; 	if(upper > nrow) { upper = nrow; }
@@ -290,6 +299,12 @@ df.removeColumns = function(df, cols)
 	
 	df[,-c(searching)];	
 	}
+
+df.removeRows = function(df, rows) {}
+df.removeDuplicates = function(df) { method="duplicates"; method="unique"; }
+# lookup by unique key, faster on larger datasets? 
+df.removeDuplicatesFromKey = function(df, key, val) { }
+
 
 
 df.moveColumns = function(df, cols, where="after", anchor)

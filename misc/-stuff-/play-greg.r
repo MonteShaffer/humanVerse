@@ -59,7 +59,7 @@ date.generateProleptic = function(n, dir="FORWARD",
 	DIRE = toupper(functions.cleanKey(dir, 4));
 	dir = "FORWARD"; if(DIRE == "BACK") { dir = "BACKWARD"; }
 		filename = str.replace( "{n}", n, filename );
-		filename = str.replace( "{dir}", DIRE, filename );
+		filename = str.replace( "{dir}", dir, filename );
 		filename = paste0(path, "/", filename);  # is trailing slash required, will it break?
 	## HEADER 		
 	row = c("IDX", "YYYY", "MM", "DD", "DOW", "DOY");
@@ -73,7 +73,7 @@ date.generateProleptic = function(n, dir="FORWARD",
 		while(i < n)
 			{
 			# write current row 
-			row = c(i, cyear, cmonth, cday, str.cday, doy);
+			row = c(i, cyear, cmonth, cday, str.cday, cdoy);
 			cat( paste0(row, collapse="|"), "\n", sep="", 
 					file=filename, append=TRUE);
 					
@@ -114,7 +114,7 @@ date.generateProleptic = function(n, dir="FORWARD",
 		i = 0;
 		while(i > n)
 			{
-			row = c(i, cyear, cmonth, cday, str.cday, doy);
+			row = c(i, cyear, cmonth, cday, str.cday, cdoy);
 			cat( paste0(row, collapse="|"), "\n", sep="", 
 					file=filename, append=TRUE);
 			

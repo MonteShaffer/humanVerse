@@ -23,7 +23,8 @@ function.exists = is.function;
 #' @export
 #'
 #' @examples
-functions.cleanKey = function(key, n=1, extra = ",! #", keep="")
+functions.cleanKey = function() {}
+functions.cleanKey = function(key, n=1, keep="", extra = ",! #")
 	{
 	str = tolower(key); # has to be base-R (not str.tolower, recursion)
 	if(extra == "")
