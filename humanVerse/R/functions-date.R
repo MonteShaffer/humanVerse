@@ -1,69 +1,172 @@
 
-		# DEFAULT offset is -32045
-		# 2 other offsets
-		# Ruthven offset ... 
+
+		#  -587094
+		# Ruthven offset ...  -4237058 
+		# Julian ... +2305675 FROM Ruthven ... -1931383
+		# MOD ... Julian - 2400000.5 ...  -4331383.5
+		# LILIAN 
+		# CUSTOM ... 
 # https://www.slideshare.net/chenshuo/datetime-julian-date SLIDE 8
-date.toJulianDayNumber = function(jyear, jmonth, jday, offset=0)
+
+# why is mod this date, BRITAIN was a different date 
+# date.toJulianDayNumber(1858, 11, 17-12, "modified"); 	# GREG 
+# date.toJulianDayNumber(1600, 8, 5, "ruthven");
+# date.toJulianDayNumber(-4712, 1, 1, "julian");		# anchor to special alignment of 3 cycles
+# date.toJulianDayNumber(1582, 10, 15-12, "lilian"); 		# GREG
+# date.toJulianDayNumber(-7, 3, 21, "equ");
+
+
+date.computeOffset = function(NUM, dir=-1, 
+								offset.for="julian", 
+								offset=NULL
+								)
 	{
-	mv = length(jyear); # howMany years  
-	
-	jyear = as.integer(jyear);
-	jmonth = as.integer(jmonth);
-	jday = as.integer(jday);
-	
-	a = as.integer( (14 - jmonth)/12 );
-	y = as.integer( jyear + 4800 - a );
-	m = as.integer( jmonth + 12 * a - 3); 
-	
-	# daysBeforeMonth(March) = 0 # SLIDE 13
-	mm = as.integer( (153*m + 2)/5 );
-	# julian only
-	
-	# # if jyear < -4800
-	is.e = (jyear <= -4800); 	# I think this works to -4800 * 2
-	e = rep(0, mv);			# could expand to go further back
-	e[is.e] = -1;
-	# is leap year in the search
-	is.ly = (is.e & (jyear %% 4 == 0) );
-	e[is.ly] = e[is.ly] + 1;
-	## remaining errors are jmonth == 1 or == 2 in this OLD GROUP
-	###### HOW TO IDENTIFY THIS GROUP ???
-	##### is.ly12 = (is.ly & (jmonth == 1 | jmonth == 2) );
-	##### e[is.ly12] = e[is.ly12] - 1;
-	##### is.ly12n = (!is.ly & (jmonth == 1 | jmonth == 2) );
-	##### e[is.ly12n] = e[is.ly12n] + 1;
-	
-	JDN = e + jday + mm + 365*y + as.integer( y/4 );
-	# JDN =  jday + mm + 365*y + as.integer( y/4 );
+	off = functions.cleanKey(offset.for, 3);
+	NUM = as.numeric(NUM);
+	# dir == -1 ... this is toJulianDayNumber
+	# dir == 1 ... this is fromJulianDayNumber
 	
 	# do offset logic here?
-	# maybe store original
-	JDN;	
+	if(off == "rut")
+		{
+		NUM = NUM + dir*4237058;
+		return(NUM);
+		}
+	if(off == "equ")
+		{
+		NUM = NUM + dir*3649964;  # EQUINOX, MARCH 21, 8BC [-7, 03, 21]
+		return(NUM);
+		}
+	if(off == "jul")
+		{
+		NUM = NUM + dir*1931383;
+		return(NUM);
+		}
+	if(off == "mod")
+		{
+		# MJD 0 thus started on 17 Nov 1858 (Gregorian) at 00:00:00 UTC.
+		NUM = NUM + dir*4331383;
+		if(dir == -1) { NUM = NUM - 0.5; } # don't do 1/2 on return 
+		return(NUM);
+		}	
+	if(off == "lil")
+		{
+		# Lilian day number 1 started at midnight 15 October 1582 (Gregorian).
+		NUM = NUM + dir*4230541;
+		if(dir == -1) { NUM = NUM - 0.5; } # don't do 1/2 on return 
+		return(NUM);
+		}
+	if(off == "cus")
+		{
+		if(is.null(offset)) { offset = dir*1931383; }
+		NUM = NUM + as.numeric(offset);
+		return(NUM);
+		}
+		
+	warning("invalid offset.for, returning NUM for offset = 0");
+	NUM;	
 	}
 	
 	
 	
+date.toJulianDayNumber = function(jyear, jmonth, jday, 
+										offset.for="julian",
+										offset = NULL
+										)
+	{	
+	jyear = as.integer(jyear);
+	jmonth = as.integer(jmonth);
+	jday = as.integer(jday);
+	
+	IN_THE_BEGINNING = 10000 	# e.g., ~10,000 BC ... 
+								# year = 1 => 1 AD/CE
+								# year = 0 => 1 BC/BCE
+								# year = -1 => 2 BC/BCE
+								# 4800 is traditional number 
+								#   --> DEFAULT offset is -32045
+								# will alter offset
+								# OLD-SCHOOL ALGO - unsigned INTEGERS
+								# New Year was March 1, JULIAN CALENDAR
+	
+	# [a] MAPS Jan/Feb as 11/12 months
+	# [y] places Jan/Feb in previous year 
+	a = as.integer( (14 - jmonth)/12 );		
+	y = as.integer( jyear + IN_THE_BEGINNING - a );
+	m = as.integer( jmonth + 12 * a - 3); 
+	
+	# https://www.slideshare.net/chenshuo/datetime-julian-date # SLIDE 13
+	# daysBeforeMonth(March) = 0 
+	mm = as.integer( (153*m + 2)/5 );
+	
+	JDN =  jday + mm + 365*y + as.integer( y/4 );  # JULIAN LEAP YEAR 
+	
+	return(date.computeOffset(JDN, -1, offset.for, offset));	
+	}
+	
+	
 
-# https://github.com/derickr/timelib
-## this is PHP library for detecting ... lots of REGEX
-## https://github.com/derickr/timelib/blob/master/parse_date.re
-## 
+date.fromJulianDayNumber = function(JDN,  
+										offset.for="julian",
+										offset = NULL
+										)
+	{	
+	JDN = as.numeric(JDN);
 
-
-## in.sol package
-		# declination(year,month,day,hour=12,minute=0,sec=0)
-		# 	valid 1901 to 2099
-		# hour = hour + minute/60 + sec/3600
-		# jd = 367*year - (7*(year+(month+9)%/%12))%/%4 + (275*month)%/%9+day+1721013.5 + hour/24
-		# if (inverse){ return(as.POSIXct((x-2440587.5)*86400,origin=ISOdate(1970,01,01,0,0,0),format="%Y-%m-%d %H:%M:%S" ))
-		# else { return(as.numeric(x)/86400 + 2440587.5)
-
-
-
-
-
-
-
+	IN_THE_BEGINNING = 10000;
+		# FOUR CENTURIES
+	CENTURY_ = 140697; # 365.25*400;  # (GREG leap days)?
+		# FOUR YEARS  
+	YEARS_   = 1461; # 365.25*4;
+	
+	a = date.computeOffset(JDN, 1, offset.for, offset) - 1; 
+	b = as.integer((4*a + 3) / CENTURY_);		# four century phase
+	c = a - as.integer((b*CENTURY_)/4);			# one century phase 
+	d = as.integer((4*c + 3) / YEARS_);			# within century phase
+	e = c - as.integer((YEARS_ * d) / 4);		# days in year 
+	m = as.integer((5*e + 2) / 153);			# shifted months
+	
+	# 8/0 should be 7/31 ... 
+	# if jday == 0; jday = 31-ish ... month = month - 1
+	jday = e - as.integer((153*m + 2)/5) + 1;					# day of month
+	is.zd = (jday == 0);
+	xtra = 0 * m;
+	xtra[is.zd] = -1;
+	
+	jmonth = xtra + m + 3 - 12 * as.integer(m / 10);					
+	# month of year
+	# if month == 0, month = 12, day = 31, year = year - 1 ... 
+	is.zm = (jmonth == 0);
+	jmonth[is.zm] = 12;
+	jday[is.zm] = 31;
+	
+	xtra2 = 0 * m;
+	xtra2[is.zm] = -1;
+	
+	jyear = xtra2 + b*100 + d - IN_THE_BEGINNING + as.integer(m / 10); 	# year
+	
+	
+	
+	# LENS_ = c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
+	# jday[is.z] = 31;
+	
+	
+	
+	# return(jyear);
+	
+	list(	jyear 	= as.integer( jyear ), 
+			jmonth 	= as.integer( jmonth ), 
+			 jday 	= as.integer( jday) 
+		);
+		
+		
+		
+		
+		
+		
+		
+	}
+	
+	
 # memory.init()
 # setOrigin, setInTZ, setOutZ
 ## less passing into functions
@@ -73,95 +176,6 @@ date.toJulianDayNumber = function(jyear, jmonth, jday, offset=0)
 # set.seed(123); month = sample(1:12, 10, replace = TRUE);
 # set.seed(123); day = sample(1:28, 10, replace = TRUE);
  
-# http://www.webexhibits.org/calendars/calendar-christian.html 
-## TODO ... dots.addToKey
-## unlist(  date.toJulianDay(1858,11,16) )  - 2400000
-
-date.toJulianDay = function() {}
-# date.toJulianDay(year, month, day);
-# date.toJulianDay(0, 0, 0);
-# date.toJulianDay( list(year = year, month = month, day = day) );
-date.toJulianDay = function(YMDlist, ...,  
-								input.is="Gregorian",
-								output.is="DEFAULT" # [L]ilian, [M]odified
-							)
-	{	
-	# year, month, day,
-	if(!is.list(YMDlist))
-		{
-		more = list(...);
-		year = YMDlist;
-		month = more[[1]];
-		day = more[[1]];
-		} else { list.extract(YMDlist); }
-		# should be keyed mylist[["year"]]; mylist[["month"]]; mylist[["day"]]
-		
-		year = as.integer(year);
-		month = as.integer(month);
-		day = as.integer(day);
-	
-	inp = functions.cleanKey(input.is, 3);
-	out = functions.cleanKey(output.is, 3);
-	
-	a = as.integer( (14 - month) / 12 );
-	y = year + 4800 - a;
-	m = month + 12 * a - 3; 
-
-	if(inp == "gre" || inp == "ggg" )  # Good Game Gabriel G. Gandzjuk
-		{
-		# JD = 	{
-				# day 	+ as.integer( (153*m+2)/5 ) 
-						# + y*365 
-						# + as.integer(y/4)		# leap year [J]
-						# - as.integer(y/100)		# [G] adjust
-						# + as.integer(y/400) 	# [G] adjust
-						# - 32045;
-				# }
-				
-		JD =  day 	+ as.integer( (153*m+2)/5 )  + y*365 + as.integer(y/4) - as.integer(y/100) + as.integer(y/400) - 32045;
-		}
-
-	if(inp == "jul")
-		{
-		# JD = 	{
-				# day  	+ as.integer( (153*m+2)/5 ) 
-						# + y*365 
-						# + as.integer(y/4)		# leap year [J]
-						# - 32083;
-				# }
-				
-		JD = day  	+ as.integer( (153*m+2)/5 )  + y*365 + as.integer(y/4) - 32083;
-		}
-		
-		
-	## do MODS here ...
-	if(!is.set(JD)) { stop("what are you doing here!"); }
-		
-	JD;
-	}
-
-x = list( "year" = as.integer( c(1914, 1946, 2010, 2007) ),
-			"month" = as.integer( c(8, 4, 9, 10) ),
-			"day" = as.integer( c(14, 18, 1, 16) )
-			); ( y = date.toJulianDay(x) );
-			
-# off by a bit ... date.fromJulianDay( date.toJulianDay(0,0,0) )
-#  year month   day 
-#    0     1    27 
-# https://www.sciencedirect.com/topics/engineering/julian-day-numbe
-
-
-## MAYBE correct ?
-## 
-## unlist( date.fromJulianDay( date.toJulianDay(0,0,0) ) )
-## unlist( date.fromJulianDay( date.toJulianDay(-1,2,30) ) )
-## unlist( date.fromJulianDay( date.toJulianDay(-1,1,1) ) )
-## unlist( date.fromJulianDay( date.toJulianDay(-1,1,1) ) )
-## CONVERGED ... 
-## Notice that there is no year zero in the Julian or Gregorian calendars. The day that precedes January 1, 1 A.D. is December 31, 1 B.C. 
-## November 16, 1858 == 2,400,000  
-## unlist( date.fromJulianDay( date.toJulianDay(1858,11,16) ) )
-
 date.fromJulianDay = function() {}
 date.fromJulianDay = function(JD, 
 								input.is="Gregorian",
@@ -970,3 +984,122 @@ date.toUnix = function(time=NULL, ...)
 	# as.POSIXlt ... class(
 	# as.numeric(time);
 	}
+	
+	
+
+# http://www.webexhibits.org/calendars/calendar-christian.html 
+## TODO ... dots.addToKey
+## unlist(  date.toJulianDay(1858,11,16) )  - 2400000
+
+date.toJulianDay = function() {}
+# date.toJulianDay(year, month, day);
+# date.toJulianDay(0, 0, 0);
+# date.toJulianDay( list(year = year, month = month, day = day) );
+date.toJulianDay = function(YMDlist, ...,  
+								input.is="Gregorian",
+								output.is="DEFAULT" # [L]ilian, [M]odified
+							)
+	{	
+	# year, month, day,
+	if(!is.list(YMDlist))
+		{
+		more = list(...);
+		year = YMDlist;
+		month = more[[1]];
+		day = more[[1]];
+		} else { list.extract(YMDlist); }
+		# should be keyed mylist[["year"]]; mylist[["month"]]; mylist[["day"]]
+		
+		year = as.integer(year);
+		month = as.integer(month);
+		day = as.integer(day);
+	
+	inp = functions.cleanKey(input.is, 3);
+	out = functions.cleanKey(output.is, 3);
+	
+	a = as.integer( (14 - month) / 12 );
+	y = year + 4800 - a;
+	m = month + 12 * a - 3; 
+
+	if(inp == "gre" || inp == "ggg" )  # Good Game Gabriel G. Gandzjuk
+		{
+		# JD = 	{
+				# day 	+ as.integer( (153*m+2)/5 ) 
+						# + y*365 
+						# + as.integer(y/4)		# leap year [J]
+						# - as.integer(y/100)		# [G] adjust
+						# + as.integer(y/400) 	# [G] adjust
+						# - 32045;
+				# }
+				
+		JD =  day 	+ as.integer( (153*m+2)/5 )  + y*365 + as.integer(y/4) - as.integer(y/100) + as.integer(y/400) - 32045;
+		}
+
+	if(inp == "jul")
+		{
+		# JD = 	{
+				# day  	+ as.integer( (153*m+2)/5 ) 
+						# + y*365 
+						# + as.integer(y/4)		# leap year [J]
+						# - 32083;
+				# }
+				
+		JD = day  	+ as.integer( (153*m+2)/5 )  + y*365 + as.integer(y/4) - 32083;
+		}
+		
+		
+	## do MODS here ...
+	if(!is.set(JD)) { stop("what are you doing here!"); }
+		
+	JD;
+	}
+
+x = list( "year" = as.integer( c(1914, 1946, 2010, 2007) ),
+			"month" = as.integer( c(8, 4, 9, 10) ),
+			"day" = as.integer( c(14, 18, 1, 16) )
+			); ( y = date.toJulianDay(x) );
+			
+# off by a bit ... date.fromJulianDay( date.toJulianDay(0,0,0) )
+#  year month   day 
+#    0     1    27 
+# https://www.sciencedirect.com/topics/engineering/julian-day-numbe
+
+
+## MAYBE correct ?
+## 
+## unlist( date.fromJulianDay( date.toJulianDay(0,0,0) ) )
+## unlist( date.fromJulianDay( date.toJulianDay(-1,2,30) ) )
+## unlist( date.fromJulianDay( date.toJulianDay(-1,1,1) ) )
+## unlist( date.fromJulianDay( date.toJulianDay(-1,1,1) ) )
+## CONVERGED ... 
+## Notice that there is no year zero in the Julian or Gregorian calendars. The day that precedes January 1, 1 A.D. is December 31, 1 B.C. 
+## November 16, 1858 == 2,400,000  
+## unlist( date.fromJulianDay( date.toJulianDay(1858,11,16) ) )
+	
+	
+	
+# MJD 0 thus started on 17 Nov 1858 (Gregorian) at 00:00:00 UTC.
+# The Lilian day number is similar to the Julian day number, except that Lilian day number 1 started at midnight on the first day of the Gregorian calendar, that is, 15 October 1582.
+	
+
+# https://github.com/derickr/timelib
+## this is PHP library for detecting ... lots of REGEX
+## https://github.com/derickr/timelib/blob/master/parse_date.re
+## 
+
+
+## in.sol package
+		# declination(year,month,day,hour=12,minute=0,sec=0)
+		# 	valid 1901 to 2099
+		# hour = hour + minute/60 + sec/3600
+		# jd = 367*year - (7*(year+(month+9)%/%12))%/%4 + (275*month)%/%9+day+1721013.5 + hour/24
+		# if (inverse){ return(as.POSIXct((x-2440587.5)*86400,origin=ISOdate(1970,01,01,0,0,0),format="%Y-%m-%d %H:%M:%S" ))
+		# else { return(as.numeric(x)/86400 + 2440587.5)
+
+
+
+
+
+
+
+

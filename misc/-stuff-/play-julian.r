@@ -607,15 +607,19 @@ df1 = subset(df, diff.JD == 1)
 	[1] -7525 -4800
 	
 	
+idx = which(df$YYYY == -4712 & df$MM == 1 & df$DD == 1);
 
-df$JD = date.toJulianDayNumber(df$YYYY, df$MM, df$DD) - 2337758;	
+idx = which(df$YYYY == -7 & df$MM == 4 & df$DD == 5);
+df.printHead(ndf, 10, idx);  # ndf with fewer cols 
+
+df$JD = date.toJulianDayNumber(df$YYYY, df$MM, df$DD) - 4237058;	
 df$diff.JD = (df$JD - df$IDX);
 hist(df$diff.JD);
 
 #df0 = subset(df, diff.JD == 0);
 df1 = subset(df, diff.JD != 0);
 dim(df1);
-table(df1$leap, df1$diff.JD);
+# table(df1$leap, df1$diff.JD);
 # range(df1$YYYY);
 
 # with e, plus leap year adjustment ... equally +/- 1 on DIFF
@@ -763,6 +767,48 @@ df.lm.s$coefficients[,1]
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ndf$a = a; ndf$b = b; ndf$c = c; ndf$d = d; ndf$e = e; ndf$m = m;
+ndf$jday = jday; ndf$jmonth = jmonth; ndf$jyear = jyear;
+
+ ndf$EQUAL = ( (ndf$YYYY == ndf$jyear) & (ndf$MM == ndf$jmonth) & (ndf$DD == ndf$jday) )
+
+neq = which(ndf$EQUAL == FALSE);
+length(neq);
+
+df.printHead(ndf, 6, neq[123]);
+
+[1] 120612
+60306 ... maybe 31 or 30 ... how should it know ?
 
 
 
