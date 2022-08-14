@@ -46,8 +46,10 @@ df.printHead(df, 8, search[1]);  # should only have one, JIK
 
 # string subtraction on filenames 
 # save to TXT and RDS
-saveRDS(		df, "RUTHVEN_(1575,1625).rds");
+# saveRDS(		df, "RUTHVEN_(1575,1625).rds");
 writeToPipe(	df, "RUTHVEN_(1575,1625).txt");
+Sys.sleep(1);
+zip("RUTHVEN_(1575,1625).zip", "RUTHVEN_(1575,1625).txt");
 ##saveRDS(	df, "RUTHVEN_(-7575,2525).rds");
 ##writeToPipe(df, "RUTHVEN_(-7575,2525).txt");
 

@@ -51,9 +51,9 @@ date.generateProleptic = function(n, dir="FORWARD",
 		filename = paste0(path, "/", filename);  # is trailing slash required, will it break?
 	## HEADER 
 	recovery = FALSE;
-	if(file.exists(filename))
+	#if(file.exists(filename))
 		{
-		recovery = TRUE;
+	#	recovery = TRUE;
 		# read last line to know what the values were 
 		# start writing again once they are reach ...
 		}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{cpp_lcm}
 \alias{cpp_lcm}
-\title{Compute lcd  (Euler Method)}
+\title{Compute lcd	(Euler Method)}
 \usage{
 cpp_lcm(x, y)
 }
@@ -15,5 +15,5 @@ cpp_lcm(x, y)
 INTEGER (lcd)
 }
 \description{
-Compute lcd  (Euler Method)
+Compute lcd	(Euler Method)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{cpp_gcd}
 \alias{cpp_gcd}
-\title{Compute gcd  (Euler Method)}
+\title{Compute gcd	(Euler Method)}
 \usage{
 cpp_gcd(x, y)
 }
@@ -15,5 +15,5 @@ cpp_gcd(x, y)
 INTEGER (gcd)
 }
 \description{
-Compute gcd  (Euler Method)
+Compute gcd	(Euler Method)
 }

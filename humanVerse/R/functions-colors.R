@@ -1,4 +1,10 @@
 
+
+# http://c.mshaffer.com/js/colorpicker/colorpicker.colors.js
+# other color tables 
+
+
+
 # ?convertColor 
 # ?colorConverter
 # Conversion algorithms from http://www.brucelindbloom.com.

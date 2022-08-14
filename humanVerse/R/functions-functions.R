@@ -679,6 +679,7 @@ function.getKeyFromString = function(str)
 	}
 
 
+# MASS\R\misc.R has the ginv function ... would be nice to load library, build -ONE- and then read -ONE- that reminds filename/line numbers
 #' function.whereIs
 #'
 #' Sometimes we include lots of functions in lots of files.
