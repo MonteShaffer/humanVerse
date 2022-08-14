@@ -571,7 +571,7 @@ writeRDS = function(obj, myfile)
 #' @return NOTHING, it writes
 #' @export
 #'
-#' @aliases storeToPipe
+#' @aliases storeToPipe 
 writeToPipe = function(df, file, header=TRUE, quote="", sep="|", row.names=FALSE)
   {
   if(quote == "") { quote = FALSE; }
@@ -590,6 +590,7 @@ writeToPipe = function(df, file, header=TRUE, quote="", sep="|", row.names=FALSE
 #'
 #' @return a dataframe
 #' @export
+readFromPipe = function() {}
 readFromPipe = function(file, header=TRUE, quote="", sep="|", comment.char="#")
   {
   utils::read.csv(file, header=header, quote=quote, sep=sep, comment.char = comment.char);

@@ -79,7 +79,7 @@ date.generateProleptic = function(n, dir="FORWARD",
 					cmonth = 1;
 					cyear = 1 + cyear;
 					cdoy = 1;
-					cleap = date.calculateLeapDays(cyear, ctype, "integer");
+					cleapdays = date.calculateLeapDays(cyear, ctype, "integer");
 					LENS_[2] = 28 + cleapdays; # 28 or 29 .. 
 					}
 				clen = LENS_[cmonth];
@@ -138,6 +138,40 @@ date.generateProleptic = function(n, dir="FORWARD",
 		cat("\n RESULTS are STORED HERE: \n\n\t", filename, "\n\n");
 	invisible(filename);
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #  date.calculateLeapDays(100*15:18, "julian", "integer");
