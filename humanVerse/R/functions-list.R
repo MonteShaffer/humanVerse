@@ -102,22 +102,22 @@ list.fromString = function(str, sep.keyvalue = "`=`",
 #' @examples
 #'
 #' mylist = list("a" = 1, "b" = 2, "c" = 3);
-#'         list.extract(mylist);
-#'         print(a); print(b); print(c);
+#'		 list.extract(mylist);
+#'		 print(a); print(b); print(c);
 #'
 #'
 ## envir = .GlobalEnv
 list.extract = function(myList, envir = .GlobalEnv, ...)
-    {
-    n.myList = length(myList);
-    if(n.myList > 0)
-      {
-      for(i in 1:n.myList)
-        {
-        assign(names(myList)[i], myList[[i]], ...);
-        }
-      }
-    }
+	{
+	n.myList = length(myList);
+	if(n.myList > 0)
+	  {
+	  for(i in 1:n.myList)
+		{
+		assign(names(myList)[i], myList[[i]], ...);
+		}
+	  }
+	}
 
 
 #' @rdname extractList
@@ -125,7 +125,21 @@ list.extract = function(myList, envir = .GlobalEnv, ...)
 extractList = list.extract;
 
 
+list.getLengths = function(info) 
+	{
+	n.info = length(info)
+	if (!is.list(info)) { return(length(info)); }
+	if (n.info == 0) { return(NULL); }
+	res = NULL;
+	for (i in 1:n.info) 
+		{
+		res[i] = length(info[[i]]);
+		}
+	res;
+	}
+	
 # https://stackoverflow.com/questions/44176908/
+# get elements at same key
 list.getElements = function(info, n=1)
 	{
 	n.info = length(info);

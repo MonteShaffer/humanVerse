@@ -5,6 +5,9 @@
 # print.matrix ...
 df.printHead = function(df, n=5, row.idx=10, dir="DESC", ...)
 	{
+	# a 'nibble' ... 
+	# a 'pipple' ... amazon funny stories, pizza pipple eagle
+	# <chr> <dbl>  6x5
 	d = functions.cleanKey(dir, 1);		## ASC or DESC
 										## NEGATIVE offset would require REWORK
 										## calculate, then print 

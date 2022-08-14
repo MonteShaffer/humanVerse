@@ -1,7 +1,15 @@
 
+# library(humanVerse);
+# source( github/humanVerse/-ONE- );
+# github.install("humanVerse");  # this is hardcoded as first, HVcpp also
+## TODO: add timers 
+
+# n = 433333; n = -3933333; 
+## file.fR = date.generateProleptic(433333);
+## file.bR = date.generateProleptic(-3933333); 
 # fR = forwardRUTHVEN; bR = backwardRUTHVEN;
 file.fR = date.generateProleptic(9914); 
-file.bR = date.generateProleptic(9914, "BACKWARDS"); 
+file.bR = date.generateProleptic(-9914); 
 
 df.fR = readFromPipe(file.fR);
 df.bR = readFromPipe(file.bR);
@@ -12,6 +20,8 @@ range(df.bR$YYYY);
 LOWER = 1575;  # we looped on days = 9914
 UPPER = 1625;  # let's truncate the date to have nice START/END in RANGE
 
+## LOWER = -7575;
+## UPPER = 2525;
 
 df.bRn = subset(df.bR, YYYY >= LOWER); head(df.bRn); tail(df.bRn);
 df.fRn = subset(df.fR, YYYY <= UPPER); head(df.fRn); tail(df.fRn);
@@ -19,7 +29,7 @@ df.fRn = subset(df.fR, YYYY <= UPPER); head(df.fRn); tail(df.fRn);
 df.bfRn = rbind(df.bRn, df.fRn);  dim(df.bfRn);
 # df.sortBy() may be easier ... 
 df.bfRns = df.bfRn[with(df.bfRn, order(-YYYY, -MM, -DD)), ];
-	rownames(xdf.sorted) = 1:dim(xdf.sorted)[1];
+	rownames(df.bfRns) = 1:dim(df.bfRns)[1];
 	head(df.bfRns); tail(df.bfRns);  
 
 # MY DUPLICATE is just one element, has the same IDX of 0
@@ -36,9 +46,10 @@ df.printHead(df, 8, search[1]);  # should only have one, JIK
 
 # string subtraction on filenames 
 # save to TXT and RDS
-saveRDS(	df, "RUTHVEN_(1575,1625).rds");
-writeToPipe(df, "RUTHVEN_(1575,1625).txt");
-
+saveRDS(		df, "RUTHVEN_(1575,1625).rds");
+writeToPipe(	df, "RUTHVEN_(1575,1625).txt");
+##saveRDS(	df, "RUTHVEN_(-7575,2525).rds");
+##writeToPipe(df, "RUTHVEN_(-7575,2525).txt");
 
 # do proleptic number checks ... this was JULIAN PROLEPTIC
 

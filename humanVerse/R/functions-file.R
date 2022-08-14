@@ -1,5 +1,81 @@
 
 
+#' writeRDS
+#'
+#' The opposite of readRDS is writeRDS, make it so.
+#'
+#' @param obj The object to be stored
+#' @param myfile The file to store the object
+#'
+#' @return
+#' @export
+#'
+writeRDS = function(obj, myfile)
+	{
+	saveRDS(obj, file=myfile);
+	}
+
+
+
+#' @rdname file.writeRDS
+#' @export
+file.writeRDS = writeRDS;
+
+
+#' @rdname file.readRDS
+#' @export
+file.readRDS = readRDS;
+
+
+#' writeToPipe
+#'
+#' This is the inverse of 'readFromPipe'
+#'
+#' @param df dataframe to be stored
+#' @param file filename and path
+#' @param header whether or not to add a header
+#' @param quote whether or not to add quotes
+#' @param sep "pipe" means sep="|" but you could change
+#' @param row.names whether or not to include row names
+#'
+#' @return NOTHING, it writes
+#' @export
+#'
+#' @aliases storeToPipe 
+writeToPipe = function(df, file, header=TRUE, quote="", sep="|", row.names=FALSE)
+  {
+  if(quote == "") { quote = FALSE; }
+  utils::write.table(df, file=file, quote=quote, col.names=header, row.names=row.names, sep=sep);
+  }
+
+#' @rdname file.writeToPipe
+#' @export
+file.writeToPipe = writeToPipe;
+
+#' readFromPipe
+#'
+#' This is the inverse of 'writeToPipe'
+#'
+#' @param file filename and path
+#' @param header whether or not to add a header
+#' @param quote whether or not to add quotes
+#' @param sep "pipe" means sep="|" but you could change
+#'
+#' @return a dataframe
+#' @export
+readFromPipe = function() {}
+readFromPipe = function(file, header=TRUE, quote="", sep="|", comment.char="#")
+  {
+  utils::read.csv(file, header=header, quote=quote, sep=sep, comment.char = comment.char);
+  }
+  
+#' @rdname file.readFromPipe
+#' @export
+file.readFromPipe = readFromPipe;
+
+
+
+
 
 #' @rdname is.dir
 #' @export
@@ -47,7 +123,7 @@ dir.normalizePath = function(path, ..., suppressWarnings=TRUE)
 							info = normalizePath(path, ...);
 							},
 
-							warning = function(w)
+							warning = function(w) #
 								{
 								warning(paste0("### WARNING ###  throws a warning","\n\n",w));
 								# set KEY on INFO to w
@@ -57,7 +133,7 @@ dir.normalizePath = function(path, ..., suppressWarnings=TRUE)
 								return(info);
 								},
 		
-							error = function(e)
+							error = function(e) #
 								{
 								# warning(paste0("### ERROR ###  throws an error","\n\n",e));
 								info = property.set("ERROR", info, e);
@@ -194,7 +270,7 @@ dir.createDirectoryRecursive = function(folder, verbose=TRUE)
   if(dir.exists(folder))
 	{
 	if(verbose) { cat(msg$EXISTS); }
-    }
+	}
 	else
 		{
 		if(verbose) { cat(msg$ATTEMPT); }
@@ -209,7 +285,7 @@ dir.createDirectoryRecursive = function(folder, verbose=TRUE)
 					}
 		}
 	return(TRUE);
-    }
+	}
 
 #' @rdname createDirectoryRecursive
 #' @export
@@ -366,7 +442,7 @@ repro <- function(n) {
   done <- function(data) cat("status:", data$status_code, "\n")
 
   for(u in urls)
-    multi_add(make_handle(u), done=done, fail=fail, pool=pool)
+	multi_add(make_handle(u), done=done, fail=fail, pool=pool)
 
   stat <- multi_run(timeout=10, pool=pool)
 
@@ -456,7 +532,7 @@ createDirectoryRecursive = function(folder, verbose=TRUE)
   if(dir.exists(folder))
 	{
 	if(verbose) { print(msg$EXISTS); }
-    }
+	}
 	else
 		{
 		if(verbose) { print(msg$ATTEMPT); }
@@ -471,7 +547,7 @@ createDirectoryRecursive = function(folder, verbose=TRUE)
 					}
 		}
 	
-    }
+	}
 
 
 
@@ -498,12 +574,21 @@ createDirectoryRecursive = dir.createDirectoryRecursive;
 #' @examples
 #' # writeLine("hello there", file="R:/monte/says/hi/again/my.log", append=FALSE);
 #' # writeLine("hi again", file="R:/monte/says/hi/again/my.log");
+#  'append' is missing in base::writeLines
 writeLine = function(str, file, append=TRUE, end="\n")
   {
-  cat( paste(str,end,sep=""),
-      file=file,
-        sep="", append=append );
+  cat( paste(str, end, sep=""),
+		file=file,
+		sep="", append=append );
   }
+
+
+#' @rdname file.writeLine
+#' @export
+file.writeLine = writeLine;
+
+
+
 
 #' storeToFile
 #'
@@ -514,10 +599,24 @@ writeLine = function(str, file, append=TRUE, end="\n")
 #'
 #' @return
 #' @export
-storeToFile = function (str, file)
+storeToFile = function (str, file, method="cat", ...)
 	{
-	cat(str, file=file, append=FALSE);
+	mmm = functions.cleanKey(method, 3);
+	if(mmm == "cha") { writeChar(str, file, ... ); }
+	if(mmm == "cat") { cat(str, file=file, append=FALSE); }	
 	}
+
+
+#' @rdname file.storeToFile
+#' @export
+file.storeToFile = storeToFile;
+
+
+
+
+# readChar(con, nchars, useBytes = FALSE)
+
+# writeChar(object, con, nchars = nchar(object, type = "chars"),	   eos = "", useBytes = FALSE)
 
 
 
@@ -532,7 +631,7 @@ storeToFile = function (str, file)
 #'
 readRDS.url = function(file)
 	{
-
+	# update this function based on functions-url.R 
 	file = cleanup.url(file);
 	# kudos to antonio
 	readRDS( url(file) );
@@ -541,60 +640,9 @@ readRDS.url = function(file)
 	}
 
 
-#' writeRDS
-#'
-#' The opposite of readRDS is writeRDS, make it so.
-#'
-#' @param obj The object to be stored
-#' @param myfile The file to store the object
-#'
-#' @return
-#' @export
-#'
-writeRDS = function(obj, myfile)
-	{
-	saveRDS(obj, file=myfile);
-	}
 
 
-#' writeToPipe
-#'
-#' This is the inverse of 'readFromPipe'
-#'
-#' @param df dataframe to be stored
-#' @param file filename and path
-#' @param header whether or not to add a header
-#' @param quote whether or not to add quotes
-#' @param sep "pipe" means sep="|" but you could change
-#' @param row.names whether or not to include row names
-#'
-#' @return NOTHING, it writes
-#' @export
-#'
-#' @aliases storeToPipe 
-writeToPipe = function(df, file, header=TRUE, quote="", sep="|", row.names=FALSE)
-  {
-  if(quote == "") { quote = FALSE; }
-  utils::write.table(df, file=file, quote=quote, col.names=header, row.names=row.names, sep=sep);
-  }
 
-
-#' readFromPipe
-#'
-#' This is the inverse of 'writeToPipe'
-#'
-#' @param file filename and path
-#' @param header whether or not to add a header
-#' @param quote whether or not to add quotes
-#' @param sep "pipe" means sep="|" but you could change
-#'
-#' @return a dataframe
-#' @export
-readFromPipe = function() {}
-readFromPipe = function(file, header=TRUE, quote="", sep="|", comment.char="#")
-  {
-  utils::read.csv(file, header=header, quote=quote, sep=sep, comment.char = comment.char);
-  }
 
 #' file.readLines
 #'
@@ -611,6 +659,7 @@ file.readLines = function(file, n=-1, skip=NULL)
 	# why base::readLines doesn't have skip ?!?
 	# where did the fopen/fread stuff go ... that would enable skip
 	content = readLines(file, n=n);
+	# fopen is "open" connection, I can rework this ...
 	nlen = length(content); # how many lines ?
 	if(!is.null(skip))
 		{
@@ -758,31 +807,31 @@ getDirectoryPath = function(file, trailing=TRUE)
 #'
 #' @examples
 getRemoteAndCache = function(remote, local.file = NULL, local.pre = "TMP"
-    tmp.folder = "/humanVerse/cache/", force.download = FALSE,
-    verbose = FALSE, md5.hash = FALSE, append = "")
+	tmp.folder = "/humanVerse/cache/", force.download = FALSE,
+	verbose = FALSE, md5.hash = FALSE, append = "")
   {
   remote = cleanup.url(remote);
   useTEMP = FALSE;
   trailingSlash = ( lastChar(remote) == "/");
   if(verbose)
-    {
-    cat("\n", "remote ... ", remote, "\n\n");
-    cat("\n", "force.download ... ", force.download, "\n\n");
-    }
+	{
+	cat("\n", "remote ... ", remote, "\n\n");
+	cat("\n", "force.download ... ", force.download, "\n\n");
+	}
   if(!is.null(local.file))
-    {
-    localpath = paste0( dirname(local.file), "/", local.pre, "/" );  # project subfolder
+	{
+	localpath = paste0( dirname(local.file), "/", local.pre, "/" );  # project subfolder
 		createDirectoryRecursive(localpath);
-    if(!dir.exists(localpath)) { useTEMP = TRUE; }
-    } else { useTEMP = TRUE; }
+	if(!dir.exists(localpath)) { useTEMP = TRUE; }
+	} else { useTEMP = TRUE; }
 
 if(verbose)
-    {
-    cat("\n", "useTEMP ... ", useTEMP, "\n\n");
-    }
+	{
+	cat("\n", "useTEMP ... ", useTEMP, "\n\n");
+	}
 
   if(useTEMP)
-    {
+	{
 	subfolder = if(trailingSlash) {  folderizeURL(remote); } else { folderizeURL(dirname(remote)); }
 	filestem  = if(trailingSlash) {  "index.html" } else { basename(remote); }
 
@@ -790,50 +839,50 @@ if(verbose)
 
 	filestem = cleanup.local(filestem, append=append);
 
-    if(md5.hash) { filestem = md5(filestem); }
+	if(md5.hash) { filestem = md5(filestem); }
 
 	mypath = getSourceLocation(subfolder);
 		createDirectoryRecursive(mypath);
-    myfile = paste0(mypath,"/",filestem);
-    } else {
+	myfile = paste0(mypath,"/",filestem);
+	} else {
 			mypath 		= dirname(local.file);
 				createDirectoryRecursive(mypath);
 			filestem 	= basename(local.file);
 			myfile 		= local.file;
-            }
+			}
 
 
 	myfile 		= cleanup.local(myfile);
 	mypath 		= cleanup.local(mypath);
 	filestem 	= cleanup.local(filestem);
 
-    myfile = setAttribute("path", 		mypath, 	myfile);
-    myfile = setAttribute("filestem", 	filestem, 	myfile);
+	myfile = setAttribute("path", 		mypath, 	myfile);
+	myfile = setAttribute("filestem", 	filestem, 	myfile);
 
   if(verbose)
-    {
-    cat("\n", "myfile ... ", myfile, "\n\n");
-    }
+	{
+	cat("\n", "myfile ... ", myfile, "\n\n");
+	}
 
   # cat("\n", "mypath ... ", mypath, "\n\n");
 
   if(force.download)
-    {
-    if(file.exists(myfile))
-      {
-	    mypath.b = paste0(mypath, "/.backup/");  createDirectoryRecursive(mypath.b);
-	    myfile.b = paste0(mypath.b, "/", filestem, "-", as.integer(Sys.time()) );
+	{
+	if(file.exists(myfile))
+	  {
+		mypath.b = paste0(mypath, "/.backup/");  createDirectoryRecursive(mypath.b);
+		myfile.b = paste0(mypath.b, "/", filestem, "-", as.integer(Sys.time()) );
 
-      # file.copy(myfile, myfile.b);  # this is not file.move, doesn't exist
+	  # file.copy(myfile, myfile.b);  # this is not file.move, doesn't exist
 	  # unlink(myfile);
 
-	    moveFile(myfile, myfile.b);
-      }
-    }
+		moveFile(myfile, myfile.b);
+	  }
+	}
   if(!file.exists(myfile))
-    {
-    downloadFile(remote, myfile, cacheOK = !force.download);
-    }
+	{
+	downloadFile(remote, myfile, cacheOK = !force.download);
+	}
   myfile;
   }
 
@@ -886,20 +935,20 @@ deleteLocalCacheFolder = function(folder)
 downloadFile = function(remote, myfile, n=(2^31 - 1), quiet = TRUE, mode="wb", ...)  # n could be 2^31 - 1
   {
   if(isTRUE(capabilities("libcurl")))
-    {
-    utils::download.file(remote, myfile, quiet = quiet, mode=mode, ...);
-    } else {
+	{
+	utils::download.file(remote, myfile, quiet = quiet, mode=mode, ...);
+	} else {
 			# this approach is not working ... maybe readChar
-            raw.binary = readBin(remote, "raw", n);
-            # what if I don't have stringi ???   ... encoding = "UTF-8"
-            url.encoding = "UTF-8";
+			raw.binary = readBin(remote, "raw", n);
+			# what if I don't have stringi ???   ... encoding = "UTF-8"
+			url.encoding = "UTF-8";
 			if( isTRUE(requireNamespace("stringi", quietly = TRUE)) )
 				{
 				url.encoding = stringi::stri_enc_detect(raw.binary)[[1]]$Encoding[1];
 				}
-            raw.out = iconv( readBin(raw.binary, character()), from = url.encoding, to = "UTF-8");
-            writeChar(raw.out, myfile);
-            }
+			raw.out = iconv( readBin(raw.binary, character()), from = url.encoding, to = "UTF-8");
+			writeChar(raw.out, myfile);
+			}
   }
 
 
@@ -907,4 +956,54 @@ downloadFile = function(remote, myfile, n=(2^31 - 1), quiet = TRUE, mode="wb", .
 
 
 
+file.readTailPipe = function( filename,
+								n.end = 1,
+								return = "string",
+								adaptive = TRUE)
+	{
+	buffer = 1024;
+	file.size = file.info(filename)$size;
+	if (file.size < buffer) 
+		{
+		buffer = file.size;
+		}
+	fp = file(filename, "rb");
+		on.exit(close(fp));
+		
+	SEEK_END = "end";
+	pos = 1;
+	fragment = "";
+	out = NULL;
+	
+	fs = seek(fp, -1 * pos * buffer, origin = SEEK_END);
+	info = readChar(fp, nchars = buffer);
+	lines = str.explode("\r\n", info);
+		n.lines = length(lines);
+		n.pipes = str.count("|", lines);
+		n.mode = stats.mode(n.pipes);
+		n.bad = which(n.pipes != n.mode);
+	if (length(n.bad) > 0) 
+		{
+		fragment = lines[n.bad[1]];
+		lines = lines[-c(n.bad[1])];
+		}
+		
+		out = c(out, lines);
+		n.out = length(out);
+		if (n.out > n.end) 
+			{
+			return(out[(n.out - n.end + 1):n.out]);
+			}
+			
+			
+	stop("monte :: TODO")
+	pos = 1 + pos
+	fs2 = seek(fp, -1 * pos * buffer, origin = SEEK_END)
+	info2 = readChar(fp, nchars = buffer)
+	lines2 = str.explode("\r\n", info2)
+	n.lines2 = length(lines2)
+	n.pipes = str.count("|", lines2)
+	n.bad = which(n.pipes != n.mode)
+	
+	}	
 

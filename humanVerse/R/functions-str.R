@@ -2,6 +2,13 @@
 nchars = nchar;
 
 
+str.count = function(what="|", str)
+	{
+	info = str.explode(what, str);
+	list.getLengths(info);
+	}
+	
+
 str.toInteger = function(str, isHEX=FALSE, base=0L)
 	{
 	# FALSE means it is just normal numbers we want to convert 

@@ -46,8 +46,9 @@ timer.init = function(purge.memory = FALSE,
 		# have append final length, and left, pad ...
 		
 
-		cat( msg; );
+		cat( msg );
 		cat("\n", "The [timer] module is ready and currently has started a SESSION timer named '", key, "' \n\n\t", "In total, there are currently [", n , "] ", str.grammaticalNumber(str,n), " running", "\n");
+		
 		}
 	}
 	

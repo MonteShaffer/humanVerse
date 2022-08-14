@@ -39,17 +39,34 @@ date.generateProleptic = function(n, dir="FORWARD",
 	
 	DIRE = toupper(functions.cleanKey(dir, 4));
 	dir = "FORWARD"; if(DIRE == "BACK") { dir = "BACKWARD"; }
+	if(is.negative(n)) 
+		{ 
+		n = -1* n;  # n is POSITIVE
+		# REVERSE FORWARD/BACKWARD ...
+		dir = if(dir == "FORWARD") { "BACKWARD"; } else { "FORWARD"; }
+		}  
+	DIRE = toupper(functions.cleanKey(dir, 4));
 		filename = str.replace( "{n}", n, filename );
 		filename = str.replace( "{dir}", dir, filename );
 		filename = paste0(path, "/", filename);  # is trailing slash required, will it break?
-	## HEADER 		
-	row = c("IDX", "YYYY", "MM", "DD", "DOW", "DOY");
-	cat( paste0(row, collapse="|"), "\n", sep="", 
-			file=filename, append=FALSE);
+	## HEADER 
+	recovery = FALSE;
+	if(file.exists(filename))
+		{
+		recovery = TRUE;
+		# read last line to know what the values were 
+		# start writing again once they are reach ...
+		}
+	if(!recovery)
+		{
+		row = c("IDX", "YYYY", "MM", "DD", "DOW", "DOY");
+		cat( paste0(row, collapse="|"), "\n", sep="", 
+				file=filename, append=FALSE);
+		}
 			
 	if(DIRE == "FORW") # FORWARD in TIME, ASCENDING
 		{
-		if(is.negative(n)) { n = -1* n; }  # n is POSITIVE
+		
 		i = 0;
 		while(i < n)
 			{
@@ -63,7 +80,8 @@ date.generateProleptic = function(n, dir="FORWARD",
 			cdoy = 1 + cdoy;
 			if(i %% 365 == 0) 
 				{ 
-				cat("\n =====   ", cyear, " ===== \n"); 
+				percent = str.pad( round( 100* abs(i/n), 4 ), 5);
+				cat("\n =====   ", cyear, "   ::   ", percent, "% ===== \n"); 
 				flush.console(); 
 				}
 				
@@ -106,7 +124,8 @@ date.generateProleptic = function(n, dir="FORWARD",
 			cdoy = cdoy-1;
 			if(i %% 365 == 0) 
 				{ 
-				cat("\n =====   ", cyear, " ===== \n"); 
+				percent = str.pad( round( 100* abs(i/n), 4 ), 5);
+				cat("\n =====   ", cyear, "   ::   ", percent, "% ===== \n"); 
 				flush.console(); 
 				}
 				

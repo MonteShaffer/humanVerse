@@ -285,12 +285,14 @@ stats.whichMinFrequency = function(x)
 #' stats.mode( c(1, 1:9, 9, 9) );
 #' stats.mode( c("monte", "says", "hi", "Alex", "likes", "and", "says", "hi", "monte") );
 #'
-stats.mode = function(x)
+stats.mode = function(x, force.numeric=TRUE)
 	{
+	# NA?
 	x.table = as.data.frame( table(x) );
 		freq.max = max( x.table$Freq );
 	x.list = x.table[x.table$Freq==freq.max,];
 	xs = as.vector (x.list$x);
+	if(force.numeric){ xs = as.numeric(xs);}
 	xs;
 	}
 

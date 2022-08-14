@@ -1,4 +1,9 @@
 
+library(humanVerse);
+# source( github/humanVerse/-ONE- );
+# github.install("humanVerse");  # this is hardcoded as first, HVcpp also
+
+
 # fR = forwardRUTHVEN; bR = backwardRUTHVEN;
 file.fR = date.generateProleptic(9914); 
 file.bR = date.generateProleptic(9914, "BACKWARDS"); 
