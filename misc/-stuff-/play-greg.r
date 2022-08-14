@@ -1,3 +1,177 @@
+
+
+# day 0 ... Thursday, 14 September 1752
+ctype = "Gregorian"
+cyear = 1752;
+cleap = gregorian.isLeap(cyear);
+cmonth = 9; # August
+clen = LENS_[cmonth];
+cday = 14;  
+str.cday = "Thu";
+idx.cday = which(DAYS_ == str.cday);
+doy = 247;  # FROM https://www.timeanddate.com/date/weekday.html
+
+cyear = 1600;
+cleap = (cyear %%4 == 0);
+cmonth = 8; # August
+clen = LENS_[cmonth];
+cday = 5;  # Teusday
+str.cday = "Tue";
+idx.cday = which(DAYS_ == str.cday);
+doy = 218;
+
+# DEFAULT anchors to JULIAN CALENDAR DATE: 
+#				August 5, 1600 (Tuesday) ==> RUTHVEN EPOCH 
+# Historical Date Found in Documents (saying Tuesday)
+# cdoy (Current Day of Year) ... important for first year calculations 
+# 		## FROM https://www.timeanddate.com/date/weekday.html
+# Above link also has Aug 5, 1600 as a Tuesday 
+#
+date.generateProleptic = function() {}
+date.generateProleptic = function(n, dir="FORWARD", 
+									path = getwd(),
+									filename = "RUTHVEN_{n}_{dir}.txt",
+									ctype="julian", 
+									cyear = 1600,
+									cmonth = 8,   # August 
+									cday = 5,
+									str.cday = "Tue",
+									cdoy = 218 
+								)
+	{	
+	ctyp = functions.cleanKey(ctype, 1);
+	# Jan, Feb, Mar, ...
+	MONTHS_ = format(ISOdate(2000, 1:12, 1), "%b");
+	LENS_ = c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
+	# Mon, Tue, Wed, ...
+	DAYS_ = format(ISOdate(2000, 1, 1:10), "%a")[1:7];
+
+	
+	# current idx of str.cday (name in week)
+	idx.cday = which(DAYS_ == str.cday);
+	# current leap year day (0 or 1)... extensible to allow others
+	cleapdays = date.calculateLeapDays(cyear, ctype, "integer");
+	LENS_[2] = 28 + cleapdays; # 28 or 29 .. 
+	# current length of a month
+	clen = LENS_[cmonth];
+	
+	
+	DIRE = toupper(functions.cleanKey(dir, 4));
+	dir = "FORWARD"; if(DIRE == "BACK") { dir = "BACKWARD"; }
+		filename = str.replace( "{n}", n, filename );
+		filename = str.replace( "{dir}", DIRE, filename );
+		filename = paste0(path, "/", filename);  # is trailing slash required, will it break?
+	## HEADER 		
+	row = c("IDX", "YYYY", "MM", "DD", "DOW", "DOY");
+	cat( paste0(row, collapse="|"), "\n", sep="", 
+			file=filename, append=FALSE);
+			
+	if(DIRE == "FORW") # FORWARD in TIME, ASCENDING
+		{
+		if(is.negative(n)) { n = -1* n; }  # n is POSITIVE
+		i = 0;
+		while(i < n)
+			{
+			# write current row 
+			row = c(i, cyear, cmonth, cday, str.cday, doy);
+			cat( paste0(row, collapse="|"), "\n", sep="", 
+					file=filename, append=TRUE);
+					
+			# increment	
+			i = 1+i;
+			cdoy = 1 + cdoy;
+			if(i %% 365 == 0) 
+				{ 
+				cat("\n =====   ", cyear, " ===== \n"); 
+				flush.console(); 
+				}
+				
+			cday = 1 + cday;
+			if(cday > clen) 
+				{ 
+				cday = 1; 
+				cmonth = 1 + cmonth;
+				if(cmonth > 12)
+					{
+					cmonth = 1;
+					cyear = 1 + cyear;
+					cdoy = 1;
+					cleap = date.calculateLeapDays(cyear, ctype, "integer");
+					LENS_[2] = 28 + cleapdays; # 28 or 29 .. 
+					}
+				clen = LENS_[cmonth];
+				}
+			# day name of week [DOW] on continuous 7-day loop	
+			idx.cday = 1 + idx.cday;
+			if(idx.cday > 7) { idx.cday = 1;}
+			str.cday = DAYS_[idx.cday];
+			}		
+		}
+		
+	if(DIRE == "BACK") # BACKWARD in TIME, DESCENDING
+		{
+		if(is.positive(n)) { n = -1* n; }  # n is NEGATIVE
+		i = 0;
+		while(i > n)
+			{
+			row = c(i, cyear, cmonth, cday, str.cday, doy);
+			cat( paste0(row, collapse="|"), "\n", sep="", 
+					file=filename, append=TRUE);
+			
+			# DECREMENT 
+			i = i-1;
+			cdoy = cdoy-1;
+			if(i %% 365 == 0) 
+				{ 
+				cat("\n =====   ", cyear, " ===== \n"); 
+				flush.console(); 
+				}
+				
+			cday = cday - 1;
+			if(cday < 1) 
+				{ 
+				# cday = 1;
+				cmonth = cmonth - 1;
+				if(cmonth < 1)
+					{
+					cmonth = 12;
+					cyear = cyear - 1;
+					cleap = date.calculateLeapDays(cyear, ctype, "integer");
+					LENS_[2] = 28 + cleapdays; # 28 or 29 .. 
+					cdoy = sum(LENS_);
+					}				
+				clen = LENS_[cmonth];
+				cday = clen;  # last day of given month 
+				}
+			if(cdoy < 1) { cdoy = sum(LENS_); }  ## why again?
+
+			idx.cday = idx.cday - 1;
+			if(idx.cday < 1) { idx.cday = 7;}
+			str.cday = DAYS_[idx.cday];
+			}		
+		}
+
+		cat("\n RESULTS are STORED HERE: \n\n\t", filename, "\n\n");	
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # > getwd();
 # [1] "C:/Users/Monte J. Shaffer/Documents"
 
@@ -22,19 +196,9 @@
 
 ########### 
 	
-julian.isLeap = function(cyear) 
-	{ 
-	i = (cyear %%4 == 0); 
-	i;
-	}
 
-gregorian.isLeap = function(cyear) 
-	{
-	k = (cyear %%400 == 0);		if(k) { return(TRUE); }
-	j = (cyear %%100 == 0);		if(j) { return(FALSE); }
-	i = (cyear %%4 == 0);		
-	i;
-	}
+
+
 
 MONTHS_ = format(ISOdate(2000, 1:12, 1), "%b");
 LENS_ = c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);

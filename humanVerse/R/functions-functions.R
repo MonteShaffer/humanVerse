@@ -50,7 +50,7 @@ functions.cleanKey = function(key, n=1, extra = ",! #", keep="")
 	# if keep, explode("-"), return n elements 
 	# separated by keep ([f]irst-[s]econd-[t]hird]) ... f-s-t
 	substr(str,1,n);
-	}
+	} 
 
 
 

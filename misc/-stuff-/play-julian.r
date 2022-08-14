@@ -798,7 +798,7 @@ df.lm.s$coefficients[,1]
 
 
 ndf$a = a; ndf$b = b; ndf$c = c; ndf$d = d; ndf$e = e; ndf$m = m;
-ndf$jday = jday; ndf$jmonth = jmonth; ndf$jyear = jyear;
+ndf$jyear = jyear; ndf$jmonth = jmonth; ndf$jday = jday; 
 
  ndf$EQUAL = ( (ndf$YYYY == ndf$jyear) & (ndf$MM == ndf$jmonth) & (ndf$DD == ndf$jday) )
 

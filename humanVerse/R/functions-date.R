@@ -1,4 +1,43 @@
 
+#  date.calculateLeapDays(100*15:18, "julian", "integer");
+#  date.calculateLeapDays(100*15:18);
+
+date.calculateLeapDays = function() {}
+date.calculateLeapDays = function(cyear, 
+									ctype="gregorian",
+									return = "logical"  # boolean
+									)
+	{
+	# cyear is 1AD => 1, 1BC => 0, 2BC => -1
+	ctyp = functions.cleanKey(ctype, 4);
+	ret = functions.cleanKey(return, 3);
+	# ctype="julian"
+	if(ctyp == "juli")
+		{
+		i = (cyear %%4 == 0); 			
+		if(ret == "int") { i = as.integer(i); } # removes names 
+		names(i) = cyear;
+		return(i);
+		}
+	if(ctyp == "xela")
+		{
+		stop("what, TODO::");
+		}
+	
+	
+	# gregorian is default
+	k = (cyear %%400 == 0);		
+	j = (cyear %%100 == 0);		
+	i = (cyear %%4 == 0);	
+		# multivariate, as a set 
+		r = i - j + k;
+		r = as.logical(r);
+		if(ret == "int") { r = as.integer(r); }
+		names(r) = cyear;
+	r;
+	}
+	
+
 
 		#  -587094
 		# Ruthven offset ...  -4237058 
@@ -69,7 +108,7 @@ date.computeOffset = function(NUM, dir=-1,
 	
 	
 	
-date.toJulianDayNumber = function(jyear, jmonth, jday, 
+date.toJulianProlepticNumber = function(jyear, jmonth, jday, 
 										offset.for="julian",
 										offset = NULL
 										)
@@ -98,60 +137,42 @@ date.toJulianDayNumber = function(jyear, jmonth, jday,
 	# daysBeforeMonth(March) = 0 
 	mm = as.integer( (153*m + 2)/5 );
 	
-	JDN =  jday + mm + 365*y + as.integer( y/4 );  # JULIAN LEAP YEAR 
+	JPN =  jday + mm + 365*y + as.integer( y/4 );  # JULIAN LEAP YEAR 
 	
-	return(date.computeOffset(JDN, -1, offset.for, offset));	
+	return(date.computeOffset(JPN, -1, offset.for, offset));	
 	}
 	
 	
 
-date.fromJulianDayNumber = function(JDN,  
+date.fromJulianProlepticNumber = function(JPN,  
 										offset.for="julian",
 										offset = NULL
 										)
 	{	
-	JDN = as.numeric(JDN);
+	JPN = as.numeric(JPN);
 
 	IN_THE_BEGINNING = 10000;
 		# FOUR CENTURIES
-	CENTURY_ = 140697; # 365.25*400;  # (GREG leap days)?
+	CENTURY_ = 365.25*400;  # (GREG leap days)?  140697; # 
 		# FOUR YEARS  
-	YEARS_   = 1461; # 365.25*4;
+	YEARS_   = 365.25*4;	#  1461; # 
 	
-	a = date.computeOffset(JDN, 1, offset.for, offset) - 1; 
+	a = date.computeOffset(JPN, 1, offset.for, offset) - 1; 
 	b = as.integer((4*a + 3) / CENTURY_);		# four century phase
 	c = a - as.integer((b*CENTURY_)/4);			# one century phase 
 	d = as.integer((4*c + 3) / YEARS_);			# within century phase
 	e = c - as.integer((YEARS_ * d) / 4);		# days in year 
 	m = as.integer((5*e + 2) / 153);			# shifted months
+
+	# day of month (offset - 1), now + 1
+	jday = e - as.integer((153*m + 2)/5) + 1;	
 	
-	# 8/0 should be 7/31 ... 
-	# if jday == 0; jday = 31-ish ... month = month - 1
-	jday = e - as.integer((153*m + 2)/5) + 1;					# day of month
-	is.zd = (jday == 0);
-	xtra = 0 * m;
-	xtra[is.zd] = -1;
-	
-	jmonth = xtra + m + 3 - 12 * as.integer(m / 10);					
 	# month of year
-	# if month == 0, month = 12, day = 31, year = year - 1 ... 
-	is.zm = (jmonth == 0);
-	jmonth[is.zm] = 12;
-	jday[is.zm] = 31;
+	jmonth =  m + 3 - 12 * as.integer(m / 10);					
 	
-	xtra2 = 0 * m;
-	xtra2[is.zm] = -1;
-	
-	jyear = xtra2 + b*100 + d - IN_THE_BEGINNING + as.integer(m / 10); 	# year
-	
-	
-	
-	# LENS_ = c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
-	# jday[is.z] = 31;
-	
-	
-	
-	# return(jyear);
+	# year
+	jyear = b*100 + d - IN_THE_BEGINNING + as.integer(m / 10); 	
+
 	
 	list(	jyear 	= as.integer( jyear ), 
 			jmonth 	= as.integer( jmonth ), 
@@ -165,6 +186,9 @@ date.fromJulianDayNumber = function(JDN,
 		
 		
 	}
+	
+	
+	
 	
 	
 # memory.init()
