@@ -1,4 +1,14 @@
 
+
+is.prime = function(x)
+	{
+	factors = prime.factors(x);
+	nf = list.getLengths(factors);
+	return( ( nf == 1 ) );
+	}
+
+
+
 # is.function only works on non-string?
 # exists is the reverse, only on a string, not a non-string 
 is.function = function(fn)

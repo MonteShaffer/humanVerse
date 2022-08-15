@@ -110,11 +110,12 @@ list.fromString = function(str, sep.keyvalue = "`=`",
 list.extract = function(myList, envir = .GlobalEnv, ...)
 	{
 	n.myList = length(myList);
+	myNames = names(myList);
 	if(n.myList > 0)
 	  {
 	  for(i in 1:n.myList)
 		{
-		assign(names(myList)[i], myList[[i]], ...);
+		assign(myNames[i], myList[[i]]);
 		}
 	  }
 	}
@@ -123,7 +124,7 @@ list.extract = function(myList, envir = .GlobalEnv, ...)
 #' @rdname extractList
 #' @export
 extractList = list.extract;
-
+ 
 
 list.getLengths = function(info) 
 	{

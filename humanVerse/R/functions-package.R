@@ -23,26 +23,66 @@
 # tolower on both ... "stringr" %in% my_packages;
 # packageVersion()
 #
+# df.panelize ... key|val|comment
+#  CL( = C( ... count left parenthes, CL{, CL[, CPIPE (saving as piped)
+#  C= ... C<- ... C% ... C'#, C#, C++, C+, C-, C*, C/, C\\, C%%, C%*%, C%in%
+#  count string length of comments at header, inline, and code strlen 
+#  count number of parameters, C... , C. , C; , C_, Clower, Cupper
+#  C!, C^, C~, C`, C&, C&&, C|, C|| [how to remove pipe] ... C!^, C!^^
+#  C[dsp], C[sp], C[\t], C[\n], C", C', C@, C$, 
+#  C:::, C::, C: [do cascading, so : isn't inflated] , same with ...
+#  count aliases, number of parameters in a function, strlen of non comment
+#  count number of examples, has vignette?
+######## do hclust on these features ... store features in key|val|comment
+######## by function (filename) ... scan from source files as processing -ONE-
+######## pkg|function|key|val|comment ... 
+######## separately,  store   (comment line #, formal line #, body line number
+########       pkg|filename|function|cline.s/e|fline.s/e|bline.s/e
+# count strlen after @
+# count lines in comment body (how many consecutive lines with #'
+# count lines after examples
+# HCLUST will be very interesting ...
+# count function calls ... store as base::fn or base:::fn ... search / lookup
+#  TOKYO DB would be good to speed this up ... 
+## dcf parse ... # of chars in file, lengths of all keys, # authors, # depends, # imports, etc.
+#' @return numeric vector that contains the indexes of *all* min FREQ elements, not just the *first*
+#' @export
+#'
+#' @examples
 
-# https://stackoverflow.com/questions/1567718/getting-a-function-name-as-a-string
-# as.character(substitute(package))
-# assign(function.names[2], get(function.names[2]))
-# deparse(quote(foo.bar))
-#  as.character(substitute(f))
-# deparse(substitute(fn));
-#function.getName = function(fn)
-#	{
-#	fn.str = as.character(substitute(fn));
-#	fn.str;	
-#	}
+
+# https://statsandr.com/blog/an-efficient-way-to-install-and-load-r-packages/
+
+package.install = function(pkg, ...)
+	{
+	if(!is.character(pkg)) { pkg = as.character(substitute(pkg)); }
+	#package.installed ... 
+	# library woroks on pkg/pkg.str 
+	# install.packages() only on pkg.str not pkg ... 
+	#github wrapper here ???
 	
-###' @rdname obj.getName
-###' @export
-##obj.getName = function.getName;
+	}
+	
+	
+package.version = function(pkg)
+	{
+	# allow str or obj for pkg
+	}
+	
+	
+# plural intentional, but make aliases 	
+packages.areInstalled = function()
+	{
+	library()$results[,1];
+	}
+	
+packages.areAttached = function()
+	{
+	(.packages());
+	}
+	
+## eigenRank at package, attached, installed levels ...
 
-## ====> moved to str 
-
-# https://stackoverflow.com/questions/1567718/getting-a-function-name-as-a-string
 
 ## HOW often do they call parse() in base, utils, etc.
 ## THEY are allowed, we are not ... GOOSE and GANDER
@@ -57,10 +97,7 @@
 
 
 
-package.listALL = function()
-	{
-	
-	}
+
 	
 	
 	

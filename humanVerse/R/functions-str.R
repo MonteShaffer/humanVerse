@@ -322,13 +322,14 @@ str.len = function(str, method="stringi", locale="")
 	nchar( as.character(str), type="chars");
 	}
 
-#' @rdname str.length
-#' @export
-str.length = str.len;
 
 #' @rdname strlen
 #' @export
 strlen = str.len;
+
+#' @rdname str.length
+#' @export
+str.length = str.len;
 
 
 
@@ -606,7 +607,7 @@ str.unsplit = str.implode;
 #' @export
 #'
 #' @examples
-str.repeat = function(str, times=1, method="cpp")
+str.repeat = function(str, times=1, method="base")
 	{
 	m = functions.cleanKey(method, 1);
 
@@ -943,6 +944,7 @@ str.grammaticalNumber = function(str, n=1, type="noun")
 	
 	}
 
+
 # https://www.php.net/manual/en/function.wordwrap.php
 str.wordWrap = function(str, width=66, 
 								line.break = "\n", 
@@ -1001,7 +1003,13 @@ suppressError( so they have not included it in base R.  It is probably true, but
 
 
 str.commentWrapper = function() {}
-str.commentWrapper = function(str, nchars=0, c.tag="#", r.tag=c.tag, s.tag=" ", s.pad=5, i.tag=" ", i.pad=15)
+str.commentWrapper = function(str="Welcome to the {humanVerse}", 
+									nchars=0, 
+									c.tag="#", 
+									r.tag=c.tag, 
+									s.tag=" ", s.pad=5, 
+									i.tag=" ", i.pad=15
+							)
 	{
 	# punchcards had 80 characters, a traditional typewriter US had 72 characters per line (CPL)
 	# http://mikeyanderson.com/optimal_characters_per_line

@@ -94,10 +94,12 @@ function.arguments <- function() {
 # so we can "step into" function for debugging
 functions.setDefaultValues = function(fn, ...)
 	{
+	if(is.character(fn)) { fn = str.toObject(fn); }
+	# not working in RSTUDIO, CLI ... why ?
 	list.extract( formals(fn), ... ); # by default into GLOBAL
 	}
 
-
+functions.stepInto = functions.setDefaultValues
 
 functions.trapErrors = function(expression)
 	{

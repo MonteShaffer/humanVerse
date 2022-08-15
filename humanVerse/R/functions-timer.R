@@ -102,6 +102,7 @@ timer.start = function(key="DEFAULT", ...,
 #' @export
 #'
 #' @examples	# marker is not multivariate ... 
+## TODO:: can I shorten with `with`
 timer.stop = function(key="DEFAULT", ..., marker="STOP-{n}", 
 							as.internal = FALSE)
 	{
@@ -129,6 +130,7 @@ timer.stop = function(key="DEFAULT", ..., marker="STOP-{n}",
 			{
 			# parallel vectors
 			.GlobalEnv$.humanVerse[[TIMER]][[key]]$stop = c(now);
+			# absolute difference 
 			.GlobalEnv$.humanVerse[[TIMER]][[key]]$diff = c(diff);
 				mark = str.replace("{n}",1, marker);
 			.GlobalEnv$.humanVerse[[TIMER]][[key]]$marker = c(mark);
@@ -140,7 +142,17 @@ timer.stop = function(key="DEFAULT", ..., marker="STOP-{n}",
 						mark = str.replace("{n}", howMany, marker);
 					.GlobalEnv$.humanVerse[[TIMER]][[key]]$marker = c(.GlobalEnv$.humanVerse[[TIMER]][[key]]$marker, mark);
 					}
-		}	
+		}
+	nstops = length(.GlobalEnv$.humanVerse[[TIMER]][[key]]$stop);
+	if(nstops == 1 ) 
+		{ 
+		relative = diff; 
+		} else {
+				relative = as.numeric(.GlobalEnv$.humanVerse[[TIMER]][[key]]$stop[nstops] - .GlobalEnv$.humanVerse[[TIMER]][[key]]$stop[nstops - 1]);
+				}
+	res = timer.formatPrettyUnits(relative, "seconds");
+	cat("\n", "RELATIVE TIME AT [",mark,"] \t ", res, "\n");
+	invisible(relative);
 	}
 
 
@@ -294,7 +306,7 @@ timer.printALL = function(format="seconds",
 
 ##################################################
 #'
-#' timer.formatPrettySeconds
+#' timer.formatPrettyUnits
 #'
 #'
 #' @param seconds 
@@ -303,7 +315,7 @@ timer.printALL = function(format="seconds",
 #' @export
 #'
 #' @examples	
-timer.formatPrettySeconds = function(vals, vkey="seconds", digits=2)
+timer.formatPrettyUnits = function(vals, vkey="seconds", digits=2)
 	{
 	res = paste0( round(vals, digits), " ", vkey);	
 	names(res) = names(vals);
