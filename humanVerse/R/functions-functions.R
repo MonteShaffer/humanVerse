@@ -65,71 +65,9 @@ functions.cleanupKey = functions.cleanKey;
 functions.cleanUpKey = functions.cleanKey;
 
 
-functions.getParameters = function()
-	{
-	# https://stackoverflow.com/questions/66329835/
-    # nice work :: B. Christian Kamgang
-    
+
 	
-	}
-
-functions.organize = function(args)
-	{
-	main = list();
-	n = length(args$.keys.);
-	if(n > 0)
-		{
-		for(i in 1:n)
-			{
-			key = args$.keys.[i];
-			val = args$.vals.[[i]];
-			main[[key]] = val;
-			}
-		}
-	dots = list();
-	n = length(args$.dot.keys.);
-	if(n > 0)
-		{
-		for(i in 1:n)
-			{
-			key = args$.dot.keys.[i];
-			val = args$.dot.vals.[[i]];
-			dots[[key]] = val;
-			}
-		}
-	return(list("main"=main,"dots"=dots));
-	}
- 
- 
-test = function(x, ..., monte="says")
-	{
-	args = functions.getParameterInfo();
-	dput(args);
-	
-	}
-	
-test(x=3, y=4, z=5, monte="hi");
-
-list(fn = "test", pf = <environment>, main = list(x = 3, monte = "hi"), 
-    dots = list(y = 4, z = 5))
-		
-
-x=1:3; y=4:5; z=9:3;
-
-test(x, y, z, monte="again");  
-
-list(fn = "test", pf = <environment>, main = list(x = 1:3, monte = "again"), 
-    dots = list(4:5, 9:3))
- 
-test(x, y, z, a=3, monte="again"); 
-
-list(fn = "test", pf = <environment>, main = list(x = 1:3, monte = "again"), 
-    dots = list(4:5, 9:3, a = 3))
-	
-
-
-
-function.getScope = function() 
+functions.getScope = function() 
 	{
 	parent.frame(1);  # calling this inside 
 	}
@@ -161,29 +99,6 @@ functions.getParameterInfo = function()
 	
 	
 	
-    pf <- parent.frame()
-    args_names <- ls(envir = pf, all.names = TRUE, sorted = FALSE)
-    if("..." %in% args_names) {
-    dots <- eval(quote(list(...)), envir = pf)
-    }  else {
-    dots = list()
-    }
-    args_names <- sapply(setdiff(args_names, "..."), as.name)
-    if(length(args_names)) {
-    not_dots <- lapply(args_names, eval, envir = pf)
-    } else {
-    not_dots <- list()
-    }
-dput(dots);
-   idx <- names(dots) != "";
-   list(.keys. = names(not_dots), 
-   .vals. = unname(not_dots), 
-   .fn. = as.character(sys.call(1L)[[1L]]), 
-   .scope. = pf, 
-   .dot.keys. = names(dots[idx]), 
-   .dot.vals. = unname(dots[idx]));
-}
-
 
 
 

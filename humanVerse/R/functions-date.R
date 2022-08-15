@@ -556,12 +556,13 @@ date.toUnix = function(datePOSIX = date.now(),
 
 # args = list(.dot.keys. = c("in.tz","out.tz", "origin"), .dot.vals. = list("monte", "natalya", "alex"));
 	
-date.defaults = function(args)
+date.defaults = function(dots)
 	{
-	cat("\n ==== DEFAULTS ===== \n");
-	print(args);
-	dput(args);  # dput breaks on <environment> object 
-	w.tz = which($.dot.keys. == "in.tz")[1];
+	cat("\n\n ==== DEFAULTS ===== \n\n");
+	# print(args);
+	dput(dots);  # dput breaks on <environment> object 
+	cat("\n\n ==== DEFAULTS ===== \n\n");
+	# w.tz = which($.dot.keys. == "in.tz")[1];
 	
 	if( !exists("in.tz", inherits = FALSE ) ) { in.tz = Sys.timezone(); }
 	if( !exists("out.tz", inherits = FALSE ) ) { out.tz = NULL; }	
@@ -573,12 +574,18 @@ date.defaults = function(args)
 					
 date.toUnix = function(datePOSIX = date.now(), ...)
 	{
-	args = function.arguments();  # why is this not directly built in ??? JS 1995
+	args = functions.getParameterInfo();  # why is this not directly built in ??? JS 1995
 	# date.defaults will choose the default, or value from dots ... 
-	list.extract( date.defaults(args), envir = parent.frame(1) );
+	date.defaults(args$dots); # assign in date.defaults return here ... 
+	
+	
+	# list.extract( date.defaults(args), envir = parent.frame(1) );
 	res = date.checkPOSIXct(datePOSIX, in.tz, origin, out.tz);
 	as.numeric(res);
 	}
+	
+	
+	
 	
 toSystemTime = function(numvec, which="ct", origin="1970-01-01")
 	{
