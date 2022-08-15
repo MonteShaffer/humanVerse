@@ -17,7 +17,7 @@ List cpp_gcd_lcm(long long int x, long long int y) {
 		b = a % b;
 		a = t;
 		}		
-		List L = List::create(Named("gcd") = a , Named("lcm") = (x * y ) / a );
+		List L = List::create(Named("gcd") = a , Named("lcm") = (x / a * y ) );
 	return L;
 }
 
@@ -56,5 +56,5 @@ long long int cpp_lcm(long long int x, long long int y) {
 		b = a % b;
 		a = t;
 		}
-		return (x*y)/a;
+		return (x / a * y);
 }

@@ -474,21 +474,7 @@ is.prime.range = function(xmin, xmax)
 	}
 	
 	
-# https://onlinegdb.com/qgvpmcpRr
-# https://onlinegdb.com/5HTxwqrS6
-# C++ variant ... 
-gcd.lcm = function(x,y)
-	{
-	a=x;
-	b=y;
-	while (b != 0)
-        {
-		t = b;
-		b = a %% b;
-		a = t;
-        }
-	list("gcd"=a, "lcm"=(x*y)/a);
-	}
+
 	
 
 #' prime.factors
