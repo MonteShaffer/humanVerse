@@ -144,7 +144,7 @@ is.error = function(e)
 #' @export
 #'
 #' @examples
-
+# format or test connection 
 is.validURL = function(urls, deep=FALSE)
 	{
 	urls = str.trim(urls);

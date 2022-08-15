@@ -552,11 +552,17 @@ date.toUnix = function(datePOSIX = date.now(),
 	res = date.checkPOSIXct(datePOSIX, in.tz, origin, out.tz);
 	as.numeric(res);	
 	}
-						
+	
+
+# args = list(.dot.keys. = c("in.tz","out.tz", "origin"), .dot.vals. = list("monte", "natalya", "alex"));
+	
 date.defaults = function(args)
 	{
-	cat("\n DEFAULTS \n");
+	cat("\n ==== DEFAULTS ===== \n");
 	print(args);
+	dput(args);  # dput breaks on <environment> object 
+	w.tz = which($.dot.keys. == "in.tz")[1];
+	
 	if( !exists("in.tz", inherits = FALSE ) ) { in.tz = Sys.timezone(); }
 	if( !exists("out.tz", inherits = FALSE ) ) { out.tz = NULL; }	
 	if( !exists("origin", inherits = FALSE ) ) { origin = date.getOrigin(); }	
