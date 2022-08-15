@@ -559,15 +559,18 @@ date.toUnix = function(datePOSIX = date.now(),
 date.defaults = function(dots)
 	{
 	cat("\n\n ==== DEFAULTS ===== \n\n");
-	# print(args);
-	dput(dots);  # dput breaks on <environment> object 
+	dput(dots);  
 	cat("\n\n ==== DEFAULTS ===== \n\n");
-	# w.tz = which($.dot.keys. == "in.tz")[1];
 	
-	if( !exists("in.tz", inherits = FALSE ) ) { in.tz = Sys.timezone(); }
-	if( !exists("out.tz", inherits = FALSE ) ) { out.tz = NULL; }	
-	if( !exists("origin", inherits = FALSE ) ) { origin = date.getOrigin(); }	
-	list("in.tz" = in.tz, "out.tz" = out.tz, "origin" = origin);
+	
+	in.tz = if(is.set(dots$in.tz)) { dots$in.tz; } else { Sys.timezone(); }
+	out.tz = if(is.set(dots$out.tz)) { dots$out.tz; } else { NULL; }
+	origin = if(is.set(dots$origin)) { dots$origin; } else { date.getOrigin(); }
+	
+	pf = parent.frame(1);
+	assign("in.tz", in.tz, envir=pf);
+	assign("out.tz", out.tz, envir=pf);
+	assign("origin", origin, envir=pf);
 	}
 				
 ### TODO ... date.defaults() ... list extract ... set like str.MD5
@@ -578,8 +581,6 @@ date.toUnix = function(datePOSIX = date.now(), ...)
 	# date.defaults will choose the default, or value from dots ... 
 	date.defaults(args$dots); # assign in date.defaults return here ... 
 	
-	
-	# list.extract( date.defaults(args), envir = parent.frame(1) );
 	res = date.checkPOSIXct(datePOSIX, in.tz, origin, out.tz);
 	as.numeric(res);
 	}
