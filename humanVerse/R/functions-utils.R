@@ -1,5 +1,16 @@
 
 
+# works like library, but scans all functions/files
+# /R ... MAYBE future ... and /inst /src ???
+# builds and caches a -ONE.R- file stored in CACHE /R-libraries/
+# advanced dynamics can grab info from CRAN
+# if CRAN links to GITHUB, grab info from GITHUB
+# cache with date YYYYMMDDHHMMSS ... and most recent (two copies)
+# by default, just grab most recent 
+# but can rebuild ... 
+HV.library = function() {}
+
+
 
 ceil = ceiling;
 

@@ -505,7 +505,7 @@ date.checkPOSIXct = function(datePOSIX, in.tz, origin, out.tz)
 	{
 	# recasting, or actually check elementwise?
 	# if(multivariate) ... could do which but doesn't seem to work on a partial vector ... 
-	
+	res = datePOSIX;
 	if(!is.POSIXct(datePOSIX[1]))
 		{	
 		res = as.POSIXct(datePOSIX, tz = in.tz,  origin=origin);
@@ -571,7 +571,7 @@ date.fromUnix = function(unixNumeric,
 	}
 
 date.get = function() {}	
-date.get = function(datePOSIX, 
+date.get = function(datePOSIX = date.now(), 
 							in.tz  = Sys.timezone(), 
 							origin = date.getOrigin(),
 							out.tz = NULL,
@@ -586,8 +586,30 @@ date.get = function(datePOSIX,
 	res;
 	}
 
+
+# my_date_unformatted <- "10-07-2023 11:38:55"    # Create date with different format
+# my_date_3 <- strptime(my_date_unformatted,      # Convert to POSIXlt class
+                      format = "%m-%d-%Y %H:%M:%S")
+					  
+# YYYYMMDDHHMMSS
+date.getYMDHMS = function() {}
+date.getYMDHMS = function(datePOSIX = date.now(), 
+							in.tz  = Sys.timezone(), 
+							origin = date.getOrigin(),
+							out.tz = NULL,
+
+						use.numeric = FALSE,
+						format = "%Y%m%d%H%M%S",
+						formatter="R")
+	{
+	res = date.checkPOSIXct(datePOSIX, in.tz, origin, out.tz);
+	res = format(res, format = format);
+	if(use.numeric) { res = as.numeric(res); }
+	res;
+	}
+
 date.getYear = function() {}	
-date.getYear = function(datePOSIX, 
+date.getYear = function(datePOSIX = date.now(), 
 							in.tz  = Sys.timezone(), 
 							origin = date.getOrigin(),
 							out.tz = NULL,
@@ -611,7 +633,7 @@ date.getYear = function(datePOSIX,
 # %u	Weekday 1-7 Monday is 1
 
 	
-date.getMonth = function(datePOSIX, 
+date.getMonth = function(datePOSIX = date.now(), 
 							in.tz  = Sys.timezone(), 
 							origin = date.getOrigin(),
 							out.tz = NULL,
@@ -626,7 +648,7 @@ date.getMonth = function(datePOSIX,
 	res;
 	}
 	
-date.getDay = function(datePOSIX, 
+date.getDay = function(datePOSIX = date.now(), 
 							in.tz  = Sys.timezone(), 
 							origin = date.getOrigin(),
 							out.tz = NULL,
@@ -1084,7 +1106,7 @@ convertDateStringToFormat = function (strvec,to="%Y",to.name="years",from="%Y-%m
 date.now = function(format="MySQL", tz="")
 	{
 	now = Sys.time();
-	
+	now;
 	}
 
 

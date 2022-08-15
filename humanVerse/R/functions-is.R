@@ -1,5 +1,9 @@
 
 
+is.POSIXt = function(x) { inherits(x, "POSIXt"); }
+is.POSIXlt = function(x) { inherits(x, "POSIXlt"); }
+is.POSIXct = function(x) { inherits(x, "POSIXct"); }
+
 
 
 
