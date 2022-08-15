@@ -256,39 +256,58 @@ is.false = isFALSE;
 # sys.frame(0)
 is.set = function(obj, allow.NULL=FALSE, deep.scan=TRUE, ...)
 	{
+	
+	debug = FALSE;
+	
 	mytype = suppressError( typeof(obj), 
-								show.notice=FALSE,
+								show.notice=debug,
 								msg="debugging typeof is.set" 
 							);
+							
+
+if(debug) {	
 	print(mytype);						
-cat("\n STEP 1 \n");	
+cat("\n STEP 1 \n");
+		}
 	if(is.error(mytype)) 	{ return(FALSE); }
 	
-cat("\n STEP 2 \n");	
+if(debug) {	
+cat("\n STEP 2 \n");
+}	
 	if(!deep.scan && is.character(obj)) { return( exists(obj, ...) ); }
 	
 	# WHAT about monte$says as input 
 	
 	## isset is operating on objs that are not classes/functions
 	## closures
+if(debug) {
 cat("\n STEP 3 \n");
+}
 	if(mytype == "closure") { return(FALSE); }
 	
+if(debug) {	
 cat("\n STEP 4 \n");
+}
 	# WE NEED TO CHECK FALSE/NULL
 	if( !(mytype == "NULL" || mytype == "character") ) { return(TRUE); }
 	
+if(debug) {	
 cat("\n STEP 5 \n");
+}
 	if(mytype == "character")
 		{
 		x = eval(parse(text = obj));
 		if(is.null(x)) { return(allow.NULL); } else { return(TRUE); }
 		}
 
+if(debug) {	
 cat("\n STEP 6 \n");
+}
 	if(is.null(obj)) { return(allow.NULL); }
 
+if(debug) {	
 cat("\n STEP X \n");
+}
 	# do we still have BOOLEAN
 	return(TRUE);		
 	}

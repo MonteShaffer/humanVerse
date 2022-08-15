@@ -563,7 +563,7 @@ date.defaults = function(dots)
 	cat("\n\n ==== DEFAULTS ===== \n\n");
 	
 	
-	in.tz = if(is.set(dots$in.tz)) { dots$in.tz; } else { Sys.timezone(); }
+	in.tz = if("in.tz" %in% dots) { dots$in.tz; } else { Sys.timezone(); }
 	out.tz = if(is.set(dots$out.tz)) { dots$out.tz; } else { NULL; }
 	origin = if(is.set(dots$origin)) { dots$origin; } else { date.getOrigin(); }
 	
