@@ -36,11 +36,23 @@ ceil = ceiling;
 
 
 
-dots.addToKey = function(key, ...)
+dots.addTo = function(key, ...)
 	{
 	more = unlist(list(...));
 	c(key, more);
 	}
+	
+
+
+#' @rdname dots.addToKey
+#' @export
+dots.addToKey = dots.addTo;
+
+
+
+
+
+
 
 
 

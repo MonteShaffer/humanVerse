@@ -71,12 +71,12 @@ package.version = function(pkg)
 	
 	
 # plural intentional, but make aliases 	
-packages.areInstalled = function()
+packages.installed = function()
 	{
 	library()$results[,1];
 	}
 	
-packages.areAttached = function()
+packages.attached = function()
 	{
 	(.packages());
 	}

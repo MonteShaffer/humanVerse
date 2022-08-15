@@ -1,12 +1,24 @@
 
 
-is.prime = function(x)
+is.prime = function(x, ..., optimus=FALSE)
 	{
-	factors = prime.factors(x);
-	nf = list.getLengths(factors);
-	return( ( nf == 1 ) );
+	# I could do bits.prime and do a "match" ...
+	# this is saying "include optimus in search"
+	# NA will be a problem 
+	x = dots.addTo(x, ...);
+	idx = 1; if(optimus) { idx = 2; }
+	factors = prime.factors(x, optimus=optimus);
+	nf = length(factors);
+	if(is.list(factors))
+		{		
+		return( list.getProperty("prime", factors) );
+		}
+	# if one, 
+	if(x == 1) { return(optimus); }
+	return( (nf == idx) ); 
 	}
-
+	
+	
 
 
 # is.function only works on non-string?

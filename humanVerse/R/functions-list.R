@@ -110,7 +110,7 @@ list.fromString = function(str, sep.keyvalue = "`=`",
 list.extract = function(myList, envir = .GlobalEnv, ...)
 	{
 	n.myList = length(myList);
-	myNames = names(myList);
+	myNames = names(myList);  # if names are NULL
 	if(n.myList > 0)
 	  {
 	  for(i in 1:n.myList)
@@ -120,15 +120,32 @@ list.extract = function(myList, envir = .GlobalEnv, ...)
 	  }
 	}
 
+# keyed of names or idx?
 
 #' @rdname extractList
 #' @export
 extractList = list.extract;
  
 
+
+list.getProperty = function(key, info) 
+	{
+	n.info = length(info);
+	if (!is.list(info)) { return( property.get(key, info) ); }
+	if (n.info == 0) { return(NULL); }
+	myNames = names(info);
+	res = NULL;
+	for (i in 1:n.info) 
+		{
+		res[i] = property.get(key, info[[i]]);
+		}
+	res;
+	}
+	
+	
 list.getLengths = function(info) 
 	{
-	n.info = length(info)
+	n.info = length(info);
 	if (!is.list(info)) { return(length(info)); }
 	if (n.info == 0) { return(NULL); }
 	res = NULL;
