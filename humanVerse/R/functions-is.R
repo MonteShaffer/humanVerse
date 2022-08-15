@@ -1,4 +1,18 @@
 
+# is.function only works on non-string?
+# exists is the reverse, only on a string, not a non-string 
+is.function = function(fn)
+	{
+	if(is.character(fn)) { if(exists(fn)) { return(TRUE); } else { return(FALSE); } }
+	base::is.function(fn);
+	}
+	
+#' @rdname function.exists
+#' @export
+function.exists = is.function;
+
+
+
 
 is.POSIXt = function(x) { inherits(x, "POSIXt"); }
 is.POSIXlt = function(x) { inherits(x, "POSIXlt"); }
@@ -250,7 +264,7 @@ cat("\n STEP 5 \n");
 		}
 
 cat("\n STEP 6 \n");
-	if(is.null(my.obj)) { return(allow.NULL); }
+	if(is.null(obj)) { return(allow.NULL); }
 
 cat("\n STEP X \n");
 	# do we still have BOOLEAN

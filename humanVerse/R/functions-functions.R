@@ -1,10 +1,12 @@
 
-
-
-#' @rdname function.exists
-#' @export
-function.exists = is.function;
-
+	
+	
+function.whereIs(fn)
+	{
+	# how to cast as character if it is the fn obj ...
+	# 
+	
+	}
 
 # https://www.youtube.com/watch?v=jZY4zR8_7eI
 # functions as mapping ... abstract algebra
@@ -54,7 +56,42 @@ functions.cleanKey = function(key, n=1, keep="", extra = ",! #")
 	} 
 
 
+#' @rdname functions.cleanupKey
+#' @export
+functions.cleanupKey = functions.cleanKey;
 
+#' @rdname functions.cleanUpKey
+#' @export
+functions.cleanUpKey = functions.cleanKey;
+
+
+function.arguments <- function() {
+    # https://stackoverflow.com/questions/66329835/
+    # nice work :: B. Christian Kamgang
+    # .GlobalEnv$.function.args.memory ... key memory on last function call ... so I could reference outside the function
+    # grabFunctionParameters #
+    pf <- parent.frame()
+    args_names <- ls(envir = pf, all.names = TRUE, sorted = FALSE)
+    if("..." %in% args_names) {
+    dots <- eval(quote(list(...)), envir = pf)
+    }  else {
+    dots = list()
+    }
+    args_names <- sapply(setdiff(args_names, "..."), as.name)
+    if(length(args_names)) {
+    not_dots <- lapply(args_names, eval, envir = pf)
+    } else {
+    not_dots <- list()
+    }
+   idx <- names(dots) != "";
+   list(.keys. = names(not_dots), .vals. = unname(not_dots), .fn. = as.character(sys.call(1L)[[1L]]), .scope. = pf, .dot.keys. = names(dots[idx]), .dot.vals. = unname(dots[idx]));
+}
+
+
+
+
+
+# so we can "step into" function for debugging
 functions.setDefaultValues = function(fn, ...)
 	{
 	list.extract( formals(fn), ... ); # by default into GLOBAL
@@ -813,7 +850,7 @@ traceforward = function(f.str = "shell", max.depth=10)
   f.res = list();
   f.res[[1]] = f.todo = f.list = registered.functions.in.function(f.str);
   depth = 1;
-  while(length(f.todo) > 0) # this is "recursive"
+  while(length(f.todo) > 0) # this is "recursive" ?
     {
     if(depth >= max.depth) { break; }
     depth = 1 + depth;
@@ -837,6 +874,7 @@ traceforward = function(f.str = "shell", max.depth=10)
 
   f.list;
   }
+
 
 
 find.functions.in.string = function(fn.body)

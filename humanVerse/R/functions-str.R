@@ -758,48 +758,21 @@ str.replace = function(search, replace, subject, method="base")
 	}
 
 
-
-
-
-
-
-
-for(long long unsigned int i = 0; i < mlen; i++)
-		{
-		std::string mysearch = (slen == 1) ? search[0] : ( (i < slen) ? search[i] : "" );
-		std::string myreplace = (rlen == 1) ? replace[0] : ( (i < rlen) ? replace[i] : "" );
-		
-		std::cout << mysearch;
-		std::cout << "\n";
-		std::cout << myreplace;
-		std::cout << "\n";
-		
-		std::vector<std::string> tmp = s_explode(mysearch, res);
-		res = s_implode(myreplace, tmp);
-		}
-		///*
-		std::cout << res;
-		std::cout << "\n";
-		//*/
-		
-	return res;
-	}
-	
-
-
-
-
-
-
-
-
-
-
 #' @rdname str_replace
 #' @export
 str_replace = str.replace;
 
-
+# eval ... parse 
+str.toObject = function(obj.str) 
+	{ 
+	eval(parse(text = obj.str));  # as-is, no checks?
+	}  
+# as.character substitute ... doesn't have to exist ... 
+str.fromObject = function(obj) 
+	{ 
+	if( is.set(obj, TRUE) ) { return(as.character(substitute(obj)));	}
+	return("");
+	}  
 
 
 ##################################################

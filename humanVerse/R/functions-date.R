@@ -553,8 +553,10 @@ date.toUnix = function(datePOSIX = date.now(),
 	as.numeric(res);	
 	}
 						
-date.defaults = function(...)
+date.defaults = function(args)
 	{
+	cat("\n DEFAULTS \n");
+	print(args);
 	if( !exists("in.tz", inherits = FALSE ) ) { in.tz = Sys.timezone(); }
 	if( !exists("out.tz", inherits = FALSE ) ) { out.tz = NULL; }	
 	if( !exists("origin", inherits = FALSE ) ) { origin = date.getOrigin(); }	
@@ -565,19 +567,9 @@ date.defaults = function(...)
 					
 date.toUnix = function(datePOSIX = date.now(), ...)
 	{
-	# parent.frame(n) is a convenient shorthand for sys.frame(sys.parent(n)) (implemented slightly more efficiently).
-	
-	cat("\n", " === toUnix sys.frames === ", "\n");
-	print(sys.frames());
-	cat("\n", " === toUnix sys.parents === ", "\n");
-	print(sys.parents());
-	cat("\n", " === toUnix sys.calls === ", "\n");
-	print(sys.calls());
-	# e = new.env(); e$defaults = date.defaults();	
-	# list.extract(e$defaults, envir = e);  # list.extract in.tz, origin, out.tz ... 
-	list.extract( date.defaults(), envir = parent.frame(1) );
-	cat("\n", " ===== ", as.character(origin), " ===== ", "\n");
-	
+	args = function.arguments();  # why is this not directly built in ??? JS 1995
+	# date.defaults will choose the default, or value from dots ... 
+	list.extract( date.defaults(args), envir = parent.frame(1) );
 	res = date.checkPOSIXct(datePOSIX, in.tz, origin, out.tz);
 	as.numeric(res);
 	}

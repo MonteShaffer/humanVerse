@@ -24,6 +24,8 @@ obj.keyExists = function(key, obj)
 	if(is.null(obj)) { return(FALSE); }
 	exists(key, obj);	
 	}
+	
+
 
 
 obj.toMD5 = function(obj, ...)
