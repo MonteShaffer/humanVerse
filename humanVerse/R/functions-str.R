@@ -107,21 +107,14 @@ str.toMD5 = function(str, times=1, method="digest", ...)
 				{
 				# vdigest ... # Dirk, I don't see it!
 				# digest::digest(str, algo="md5", serialize=FALSE);
-				# if(!is.set(algo)) 		{ algo 		= "md5"; }
 				### THIS is locally scoped?
 				if( !exists("algo", inherits = FALSE ) )			
 						{ 
 						algo 		= "md5"; 
 						}
-				if(!is.set(algo, deep.scan = FALSE, inherits = FALSE))
-					{
-					algo = "md5";
-					}
-				# serialize is a FUNCTION in BASE, SCOPE issue
-				# if(!is.set(serialize)) 		{ serialize = FALSE; }
 				if( !exists("serialize", inherits = FALSE ) )	
 						{ 
-						serialize = FALSE; 
+						serialize 	= FALSE; 
 						}
 				
 				res[i] = digest::digest(res[i], 

@@ -487,9 +487,24 @@ date.getDaysInTropicalYear = function()
 	}
 
 
-date.getOrigin = function() {} 
-date.getOrigin = function(method="R", o.tz = Sys.timezone())
+## everything to "UTC" than back to your format 
+## sometimes UTC is tz.in, sometimes tz.out 
+
+date.getTimeZone = function(tz="in")
 	{
+	tz = functions.cleanKey(method, 2);
+	# if from INIT, we have other parameters, use them 
+	
+	
+	# CURRENTLY
+	if(tz == "ou") { return("UTC"); }
+	Sys.timezone();
+	}
+
+date.getOrigin = function() {} 
+date.getOrigin = function()
+	{
+	# if from INIT, we have other parameters, use them 
 	origin = structure(0, class = c("POSIXt", "POSIXct") );
 	origin;
 	}
@@ -519,27 +534,6 @@ date.checkPOSIXct = function(datePOSIX, in.tz, origin, out.tz)
 	}
 	
 	
-date.init = function()
-		{
-		date.setFeatures();
-		}
-		
-## key this like "timer"   [[key]]	, only univariate ... 
-	
-date.setFeatures = function(key = "DEFAULT",
-							+-in.tz  = Sys.timezone(), 
-							origin = date.getOrigin(),
-							out.tz = NULL)
-		{
-		memory.init();
-		
-		}
-		
-		# univariate ... 
-date.getFeatures = function(key)  
-		{
-		
-		}
 		
 		
 date.toUnix = function() {}	
@@ -558,14 +552,14 @@ date.toUnix = function(datePOSIX = date.now(),
 	
 date.defaults = function(dots)
 	{
-	cat("\n\n ==== DEFAULTS ===== \n\n");
-	dput(dots);  
-	cat("\n\n ==== DEFAULTS ===== \n\n");
+	# cat("\n\n ==== DEFAULTS ===== \n\n");
+	# dput(dots);  
+	# cat("\n\n ==== DEFAULTS ===== \n\n");
 	
 	
-	in.tz = if("in.tz" %in% dots) { dots$in.tz; } else { Sys.timezone(); }
-	out.tz = if(is.set(dots$out.tz)) { dots$out.tz; } else { NULL; }
-	origin = if(is.set(dots$origin)) { dots$origin; } else { date.getOrigin(); }
+	in.tz = if("in.tz" %in% dots) { dots$in.tz; } else { date.getTimeZone("in"); }
+	out.tz = if("out.tz" %in% dots) { dots$out.tz; } else { date.getTimeZone("out"); }
+	origin = if("origin" %in% dots) { dots$origin; } else { date.getOrigin(); }
 	
 	pf = parent.frame(1);
 	assign("in.tz", in.tz, envir=pf);
@@ -585,7 +579,114 @@ date.toUnix = function(datePOSIX = date.now(), ...)
 	as.numeric(res);
 	}
 	
+# https://stackoverflow.com/questions/10699511/difference-between-as-posixct-as-posixlt-and-strptime-for-converting-character-v
+# First, there are two internal implementations of date/time: POSIXct, which stores seconds since UNIX epoch (+some other data), and POSIXlt, which stores a list of day, month, year, hour, minute, second, etc.
+# strptime is a function to directly convert character vectors (of a variety of formats) to POSIXlt format.
 	
+date.fromUnix = function(unixNumeric, ..., return="lt")
+	{
+	args = functions.getParameterInfo();  # why is this not directly built in ??? JS 1995
+	# date.defaults will choose the default, or value from dots ... 
+	date.defaults(args$dots); # assign in date.defaults return here ... 
+	
+	re = functions.cleanKey(return, 2);  # "lt" or "ct"
+	
+	if(re == "ct") 
+		{ 
+		res = as.POSIXlt(unixNumeric, tz=in.tz, origin=origin);
+		# rollback to in.tz / out.tz [REVERSE?]
+		return(res);
+		}
+	
+	res = as.POSIXct(numvec, tz=in.tz, origin=origin);
+	
+	if(which != "ct")
+		{
+		as.POSIXlt(numvec, origin=origin);
+		} else	{
+				as.POSIXct(numvec, origin=origin);
+				}
+	}
+	
+	
+	
+	
+
+toSystemTime = function(numvec, which="ct", origin="1970-01-01")
+	{
+	# reverses as.numeric(Sys.time());
+
+	# https://rstudio-pubs-static.s3.amazonaws.com/28038_1bcb9aa80ca84f27ace07d612872861a.html
+	# now <- Sys.time(); class(now);
+	# https://stat.ethz.ch/R-manual/R-devel/library/base/html/as.POSIXlt.html
+	# try formats ...
+
+	if(which != "ct")
+		{
+		as.POSIXlt(numvec, origin=origin);
+		} else	{
+				as.POSIXct(numvec, origin=origin);
+				}
+	}
+
+
+
+
+date.fromUnix = function() {} 
+date.fromUnix = function(unixNumeric, 
+							in.tz  = Sys.timezone(), 
+							origin = date.getOrigin(),
+							out.tz = NULL
+							)
+	{
+	# https://www.epochconverter.com/
+	res = date.checkPOSIXct(datePOSIX, in.tz, origin, out.tz);
+	res;
+	}	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+date.init = function()
+		{
+		date.setFeatures();
+		}
+		
+## key this like "timer"   [[key]]	, only univariate ... 
+	## FEATURES get stored in .humanVerse ... my getOrigin(), getTimeZone() look there ... 
+date.setFeatures = function(key = "DEFAULT",
+							+-in.tz  = Sys.timezone(), 
+							origin = date.getOrigin(),
+							out.tz = NULL)
+		{
+		memory.init();
+		
+		}
+		
+		# univariate ... 
+date.getFeatures = function(key)  
+		{
+		
+		}	
 	
 	
 toSystemTime = function(numvec, which="ct", origin="1970-01-01")
