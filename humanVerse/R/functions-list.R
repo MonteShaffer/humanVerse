@@ -109,6 +109,12 @@ list.fromString = function(str, sep.keyvalue = "`=`",
 ## envir = .GlobalEnv
 list.extract = function(myList, envir = .GlobalEnv, ...)
 	{
+	cat("\n", " === list.extract sys.frames === ", "\n");
+	print(sys.frames());
+	cat("\n", " === list.extract sys.parents === ", "\n");
+	print(sys.parents());
+	cat("\n", " === list.extract sys.calls === ", "\n");
+	print(sys.calls());
 	n.myList = length(myList);
 	if(n.myList > 0)
 	  {

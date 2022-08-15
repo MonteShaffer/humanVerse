@@ -543,21 +543,65 @@ date.getFeatures = function(key)
 		
 		
 date.toUnix = function() {}	
-date.toUnix = function(datePOSIX, 
+date.toUnix = function(datePOSIX = date.now(), 
 							in.tz  = Sys.timezone(), 
 							origin = date.getOrigin(),
 							out.tz = NULL
 						)
-						
-						
-						
-date.toUnix = function(datePOSIX, ...)
 	{
-	date.defaults();  # list.extract in.tz, origin, out.tz ... 
+	res = date.checkPOSIXct(datePOSIX, in.tz, origin, out.tz);
+	as.numeric(res);	
+	}
+						
+date.defaults = function(...)
+	{
+	if( !exists("in.tz", inherits = FALSE ) ) { in.tz = Sys.timezone(); }
+	if( !exists("out.tz", inherits = FALSE ) ) { out.tz = NULL; }	
+	if( !exists("origin", inherits = FALSE ) ) { origin = date.getOrigin(); }	
+	list("in.tz" = in.tz, "out.tz" = out.tz, "origin" = origin);
+	}
+				
+### TODO ... date.defaults() ... list extract ... set like str.MD5
+					
+date.toUnix = function(datePOSIX = date.now(), ...)
+	{
+	# parent.frame(n) is a convenient shorthand for sys.frame(sys.parent(n)) (implemented slightly more efficiently).
+	
+	cat("\n", " === toUnix sys.frames === ", "\n");
+	print(sys.frames());
+	cat("\n", " === toUnix sys.parents === ", "\n");
+	print(sys.parents());
+	cat("\n", " === toUnix sys.calls === ", "\n");
+	print(sys.calls());
+	# e = new.env(); e$defaults = date.defaults();	
+	# list.extract(e$defaults, envir = e);  # list.extract in.tz, origin, out.tz ... 
+	list.extract( date.defaults(), envir = parent.frame(1) );
+	cat("\n", " ===== ", as.character(origin), " ===== ", "\n");
+	
 	res = date.checkPOSIXct(datePOSIX, in.tz, origin, out.tz);
 	as.numeric(res);
 	}
 	
+toSystemTime = function(numvec, which="ct", origin="1970-01-01")
+	{
+	# reverses as.numeric(Sys.time());
+
+	# https://rstudio-pubs-static.s3.amazonaws.com/28038_1bcb9aa80ca84f27ace07d612872861a.html
+	# now <- Sys.time(); class(now);
+	# https://stat.ethz.ch/R-manual/R-devel/library/base/html/as.POSIXlt.html
+	# try formats ...
+
+	if(which != "ct")
+		{
+		as.POSIXlt(numvec, origin=origin);
+		} else	{
+				as.POSIXct(numvec, origin=origin);
+				}
+	}
+
+
+
+
 date.fromUnix = function() {} 
 date.fromUnix = function(unixNumeric, 
 							in.tz  = Sys.timezone(), 
@@ -1154,6 +1198,7 @@ out <- if (!is.POSIXct(time)) as.POSIXct(time) else time
 #' @export
 #'
 #' @examples
+
 toSystemTime = function(numvec, which="ct", origin="1970-01-01")
 	{
 	# reverses as.numeric(Sys.time());
