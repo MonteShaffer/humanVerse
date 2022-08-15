@@ -196,6 +196,7 @@ timer.print = function(key="DEFAULT", ...,
 	res = list();  # don't know the format yet
 	for(key in keys)
 		{
+		#if(!obj.keyExists(key, .GlobalEnv$.humanVerse[[TIMER]]))
 		if(!exists(key, .GlobalEnv$.humanVerse[[TIMER]]))
 			{
 			warning(paste0("Nothing to print as timer.start/timer.stop for key: ", key, " not called yet!"));

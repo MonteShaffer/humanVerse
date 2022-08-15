@@ -1,5 +1,8 @@
 
 
+
+
+
 has.color <- function() 
 	{
 	# this is large function in crayon

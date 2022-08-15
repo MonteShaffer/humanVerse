@@ -1,6 +1,21 @@
+
+
+
+
+	
+obj.dput = function(obj, ...)
+	{
+	if( !exists("control", inherits = FALSE ) )			
+		{ 
+		control = "all"; 
+		}
+	dput(obj, control=control, ...);
+	}
+	
+	
 	
 # x = list(); obj.exists(x[["this"]][["doesn't"]][["exist"]], "monte");
-obj.exists = function(obj, key)
+obj.keyExists = function(key, obj)
 	{
 	# this traps NULL on obj 
 	# Error in as.environment(where) : using 'as.environment(NULL)' is defunct

@@ -81,6 +81,7 @@ str.toMD5 = function(str, times=1, method="digest", ...)
 
 	if(is.hack)
 		{
+		## first look in system /inst/R/functions-md5_.R 
 		if(!is.function(md5_))
 			{
 			source("https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/humanVerse/inst/R/functions-md5_.R");

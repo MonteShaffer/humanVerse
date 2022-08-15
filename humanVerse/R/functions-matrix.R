@@ -1,4 +1,24 @@
 
+
+## eigen 
+## https://eigen.tuxfamily.org/dox/group__SVD__Module.html
+## two flavors of SVD 
+## GINV, INV, SVD, TRANSPOSE, RANK, ... 
+## https://stackoverflow.com/questions/31041921/how-to-get-rank-of-a-matrix-in-eigen-library
+## https://stattrek.com/matrix-algebra/matrix-rank
+## TAKE eigen ... 
+## if(library(MATRIX), loop over RANK options, report all results
+## rankMatrix <- function(x, tol = NULL,
+##                      method = c("tolNorm2", "qr.R", "qrLINPACK", "qr",
+##                                  "useGrad", "maybeGrad"),
+
+## https://stackoverflow.com/questions/13033694/eigen-convert-dense-matrix-to-sparse-one
+
+## matrix.isDense ... density as %, nonzero ~= nrows or ncols 
+## https://eigen.tuxfamily.org/dox/group__SparseQuickRefPage.html
+
+
+
 # https://cmdlinetips.com/2019/05/introduction-to-sparse-matrices-in-r/
 # print(object.size(mat),units="auto")
 

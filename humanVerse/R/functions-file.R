@@ -5,14 +5,14 @@
 #' The opposite of readRDS is writeRDS, make it so.
 #'
 #' @param obj The object to be stored
-#' @param myfile The file to store the object
+#' @param filename The file to store the object
 #'
 #' @return
 #' @export
 #'
-writeRDS = function(obj, myfile)
+writeRDS = function(obj, filename)
 	{
-	saveRDS(obj, file=myfile);
+	saveRDS(obj, file=filename);
 	}
 
 
@@ -42,10 +42,17 @@ file.readRDS = readRDS;
 #' @export
 #'
 #' @aliases storeToPipe 
-writeToPipe = function(df, file, header=TRUE, quote="", sep="|", row.names=FALSE)
+writeToPipe = function(df, filename, header=TRUE, quote="", sep="|", row.names=FALSE)
   {
   if(quote == "") { quote = FALSE; }
-  utils::write.table(df, file=file, quote=quote, col.names=header, row.names=row.names, sep=sep);
+  # fp = file(filename, open="wt");
+  # writeLines("# comments #");
+  # write.csv(df, fp);
+  # close(fp);
+  # open connection, write # comment header #, nearest data, write 
+  # date types ... if row.names = TRUE, do what ... if they wanted row.names, make it a column
+  # so I restore types ... as-is on dataframe 
+  utils::write.table(df, file=filename, quote=quote, col.names=header, row.names=row.names, sep=sep);
   }
 
 #' @rdname file.writeToPipe
@@ -64,9 +71,16 @@ file.writeToPipe = writeToPipe;
 #' @return a dataframe
 #' @export
 readFromPipe = function() {}
-readFromPipe = function(file, header=TRUE, quote="", sep="|", comment.char="#")
+readFromPipe = function(filename, header=TRUE, quote="", sep="|", 
+									comment.char="#", as.is=TRUE, ...)
   {
-  utils::read.csv(file, header=header, quote=quote, sep=sep, comment.char = comment.char);
+ # as.is to BYPASS the "factors" issue 
+  df = utils::read.csv(filename, header=header, quote=quote, sep=sep, 
+								comment.char = comment.char, as.is=as.is, ...);
+	# get comments and append as attribute
+	# search comments for typeof elements ... 
+	# call type of ... if not that type already
+df;
   }
   
 #' @rdname file.readFromPipe
@@ -306,37 +320,40 @@ createDirectoryRecursive = dir.createDirectoryRecursive;
 #'
 #' @examples
 #' WARNING:  OneDrive, DropBox may have file-lock ... CACHE, DATA, CODE are separate
-file.readFrom = function(file, ..., method="stringi")
+file.readFrom = function(filename, ..., method="stringi")
 	{
 	mmm = functions.cleanKey(method, 3);
 
 	if(mmm == "csv" || mmm == "pip")
 		{
 		# PIPE / CSV with allowed comments
-		if(missing(header) ) 		{ header = TRUE;}
-		if(missing(quote) )  		{ quote = ""; 	}
-		if(missing(sep) )			{ sep = "|";	}
-		if(missing(comment.char) )	{ comment.char = "#"; }
-		return( utils::read.csv(file, header=header, sep=sep, quote=quote, 
+		# not missing, but exists, see MD5 ===> is.missing 
+		if( !exists("header", inherits = FALSE ) ) { header = TRUE; }
+		if( !exists("quote", inherits = FALSE ) ) { quote = ""; }
+		if( !exists("sep", inherits = FALSE ) ) { sep = "|"; }
+		if( !exists("comment.char", inherits = FALSE ) ) { comment.char = "#"; }
+						
+		# read.csv is a fairly thin wrapper around read.table;
+		return( utils::read.csv(filename, header=header, sep=sep, quote=quote, 
 									comment.char=comment.char, ...) );
 		}
 
 	if(mmm == "tab")  # table
 		{
-		return( utils::read.table(file, ...) );
+		return( utils::read.table(filename, ...) );
 		}
 
 	if(mmm == "rds")
 		{
-		return( readRDS(file) );
+		return( readRDS(filename) );
 		}
 
 	if(mmm == "jso")  # JSON
 		{
 		# maybe call this function again with "str" to get the stringi form.
-		# json 	= rjson::fromJSON(json_str = readChar(file, file.info(file)$size), ...);
+		# json 	= rjson::fromJSON(json_str = readChar(filename, file.info(filename)$size), ...);
 		# switch to jsonlite ???
-		return( jsonlite::read_json(file=file, ...) );
+		return( jsonlite::read_json(file=filename, ...) );
 		}
 
 	# readChar is one long string; readLines is a vector broken on "\n"
@@ -344,7 +361,7 @@ file.readFrom = function(file, ..., method="stringi")
 	if(mmm == "str")  # stringi
 		{
 		# file:///C:/Users/Monte%20J.%20Shaffer/Desktop/v103i02.pdf
-		x = stringi::stri_read_raw(file);
+		x = stringi::stri_read_raw(filename);
 		if(!is.set(from))
 			{
 			y = stringi::stri_enc_detect(x);
@@ -360,28 +377,29 @@ file.readFrom = function(file, ..., method="stringi")
 
 	if(mmm == "cha")  # readChar
 		{
-		return( readChar(file, file.info(file)$size) );
+		return( readChar(filename, file.info(filename)$size) );
 		}
 
 	if(mmm == "lin")  # readLines
 		{
-		if(missing(n) ) 		{ n = 10^5;} # guessing [pass in the value]
-		return( readLines(myFile, n) );
+		if( !exists("n", inherits = FALSE ) ) { n = 10^5;} # guessing [pass in the value]
+		return( readLines(filename, n) );
 		}
 
 	if(mmm == "bin")  # binary
 		{
-		if(missing(what) ) 		{ what = "raw";}
-		if(missing(n) ) 		{ n = 10^5;} # guessing [pass in the value]
-		return( readBin(file, what, n=n, ...) );
+		if( !exists("what", inherits = FALSE ) )		{ what = "raw";}
+		if( !exists("n", inherits = FALSE ) ) { n = 10^5;} # guessing [pass in the value]
+		return( readBin(filename, what, n=n, ...) );
 		}
 
 	if(mmm == "dcf" || mmm =="deb")  # debian
 		{
-		return( read.dcf(file, ...) );
+		return( read.dcf(filename, ...) );
 		}
 
 	stop(paste0("Appropriate Method [",method,"] was not found!"));
+	# SPSS, SAV, STATA, MINITAB ... 
 
 	}
 
