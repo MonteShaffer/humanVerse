@@ -10,6 +10,8 @@
 # Conversion algorithms from http://www.brucelindbloom.com.
 # ?col2rgb
 
+
+
 #' rgb2col
 #'
 #' Reverse the built-in grDevices::col2rgb function

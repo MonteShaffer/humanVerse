@@ -1,7 +1,11 @@
 
 nchars = nchar;
 
-
+##################################################
+#'
+#' str.count
+#'
+#'
 str.count = function(what="|", str)
 	{
 	info = str.explode(what, str);
@@ -9,6 +13,11 @@ str.count = function(what="|", str)
 	}
 	
 
+##################################################
+#'
+#' str.toInteger
+#'
+#'
 str.toInteger = function(str, isHEX=FALSE, base=0L)
 	{
 	# FALSE means it is just normal numbers we want to convert 
@@ -16,6 +25,11 @@ str.toInteger = function(str, isHEX=FALSE, base=0L)
 	return( strtoi(str, base=base) );
 	}
 
+##################################################
+#'
+#' str.fromInteger
+#'
+#'
 str.fromInteger = function(intstr)
 	{
 	as.character(intstr);
@@ -23,12 +37,22 @@ str.fromInteger = function(intstr)
 
 	
 
+##################################################
+#'
+#' str.toHex
+#'
+#'
 # technically "text.toHex"
 str.toHex = function(str)
 	{
 
 	}
 
+##################################################
+#'
+#' str.fromHex
+#'
+#'
 # technically "text.fromHex"
 str.fromHex = function(hexstr)
 	{
@@ -36,7 +60,11 @@ str.fromHex = function(hexstr)
 	}
 
 
-
+##################################################
+#'
+#' str.fromCharacters
+#'
+#'
 str.toCharacters = function(str, sep="")
 	{
 	# strsplit(str, sep, fixed=TRUE)[[1]];
@@ -44,6 +72,11 @@ str.toCharacters = function(str, sep="")
 	list.return(res);
 	}
 
+##################################################
+#'
+#' str.fromCharacters
+#'
+#'
 str.fromCharacters = function(charslist, sep="")
 	{
 	# res = chars;
@@ -55,6 +88,11 @@ str.fromCharacters = function(charslist, sep="")
 
 
 
+##################################################
+#'
+#' str.toMD5
+#'
+#'
 str.toMD5 = function(str, times=1, method="digest", ...)
 	{
 	# necessary overhead
@@ -142,7 +180,11 @@ str.toMD5 = function(str, times=1, method="digest", ...)
 
 
 
-
+##################################################
+#'
+#' str.fromMD5
+#'
+#'
 str.fromMD5 = function(str, times=1, method="digest", ...)
 	{
 	#  body(str.fromMD5);
@@ -153,7 +195,11 @@ str.fromMD5 = function(str, times=1, method="digest", ...)
 	}
 
 
-
+##################################################
+#'
+#' str.toRaw
+#'
+#'
 # technically "text.toRaw"
 str.toRaw = function(str)
 	{
@@ -166,6 +212,11 @@ str.toRaw = function(str)
 	list.return(res);
 	}
 
+##################################################
+#'
+#' str.fromRaw
+#'
+#'
 str.fromRaw = function(raw)
 	{
 	if(is.list(raw))
@@ -180,6 +231,12 @@ str.fromRaw = function(raw)
 		} else { rawToChar(raw); }
 	}
 
+
+##################################################
+#'
+#' str.trimFromAny
+#'
+#'
 # monte was here 
 # str = c("\n monte \n", "# says ", "hi#", "## to Alex#");
 # str.trimFromAny(str, search="#tx")
@@ -234,6 +291,11 @@ str.trimFromAny = function(str, search="#me", side="both", ...)
 	}
 
 
+##################################################
+#'
+#' str.trimFromFixed
+#'
+#'
 str.trimFromFixed = function(str, trim="#", side="both", ...)
 	{
 	s = functions.cleanKey(side, 1);
@@ -270,6 +332,11 @@ str.trimFromFixed = function(str, trim="#", side="both", ...)
 
 
 
+##################################################
+#'
+#' str.between
+#'
+#'
 str.between = function(str, keys=c("__B64_", "_B64__"))
 	{
 	info = str.explode(keys[1], str);
@@ -278,6 +345,12 @@ str.between = function(str, keys=c("__B64_", "_B64__"))
 	}
 
 
+
+##################################################
+#'
+#' str.len
+#'
+#'
 str.len = function(str, method="stringi", locale="")
   {
 	# if list 
@@ -544,6 +617,11 @@ explodeMe = str.explode;
 str.split = str.explode;
 
 
+##################################################
+#'
+#' str.implode
+#'
+#'
 str.implode = function(sep, str, method="base", ...)
 	{
 	# necessary overhead
@@ -756,12 +834,25 @@ str.replace = function(search, replace, subject, method="base")
 #' @export
 str_replace = str.replace;
 
+
+##################################################
+#'
+#' str.toObject
+#'
+#'
 # eval ... parse 
 str.toObject = function(obj.str) 
 	{ 
 	eval(parse(text = obj.str));  # as-is, no checks?
 	}  
-# as.character substitute ... doesn't have to exist ... 
+	
+##################################################
+#'
+#' str.fromObject
+#'
+#'
+# as.character substitute ... doesn't have to exist ...
+# this does require the object to exist ...  
 str.fromObject = function(obj) 
 	{ 
 	if( is.set(obj, TRUE) ) { return(as.character(substitute(obj)));	}
@@ -861,11 +952,15 @@ str.pad = function(str, final.length, padding="0", side="RIGHT", method="stringi
 str_trim = str.trim;
 
 
-
+##################################################
+#'
+#' str.removeWhiteSpace
+#'
+#'
 str.removeWhiteSpace = function( str, replace=" ", n = 2,
                               pre.trim = TRUE, post.trim = TRUE, ...)
   {
-	if(pre.trim) { str = trimMe(str, ...); }
+	if(pre.trim) { str = str.trim(str, ...); }
 	# REQUIRES string?
 	if(is.library("stringi"))
 		{
@@ -889,9 +984,15 @@ str.removeWhiteSpace = function( str, replace=" ", n = 2,
 #' @export
 removeWhiteSpace = str.removeWhiteSpace;
 
+
+
+##################################################
+#'
+#' str.translate
+#'
+#'
 # stringi::stri_trans_general(c("groß© żółć La Niña köszönöm", "Ábcdêãçoàúü", "Record high °C"), "latin-ascii")
 # get rid of temperature ??? caused a BUG before?
-
 str.translate = function(str, to="latin-ascii")
 	{
 	# to = "upper; latin-ascii"; # ALSO works, in the DOCS
@@ -901,7 +1002,11 @@ str.translate = function(str, to="latin-ascii")
 
 
 
-
+##################################################
+#'
+#' str.push_back
+#'
+#'
 ## is this stringr::str_c ??
 ## C++ ... obj.push_back(element) ... element, obj
 str.push_back = function(sub, str, sub, collapse="")
@@ -914,6 +1019,11 @@ str.push_back = function(sub, str, sub, collapse="")
 str.push_last = str.push_back;
 
 
+##################################################
+#'
+#' str.push_front
+#'
+#'
 str.push_front = function(sub, str, collapse="")
 	{
 	paste0(sub, str, collapse=collapse);
@@ -928,6 +1038,12 @@ str.push_first = str.push_front;
 # ucfirst ...
 str.capitalize = function(str) {} 
 
+
+##################################################
+#'
+#' str.grammaticalNumber
+#'
+#'
 str.grammaticalNumber = function(str, n=1, type="noun")
 	{
 	# 1 timer, 0 timers, 3 timers 
@@ -938,6 +1054,12 @@ str.grammaticalNumber = function(str, n=1, type="noun")
 	}
 
 
+
+##################################################
+#'
+#' str.wordWrap
+#'
+#'
 # https://www.php.net/manual/en/function.wordwrap.php
 str.wordWrap = function(str, width=66, 
 								line.break = "\n", 
@@ -993,8 +1115,6 @@ suppressError( so they have not included it in base R.  It is probably true, but
 #' pname = "stringi"; pkg = paste0( "install.packages(\"",pname,"\", dependencies=TRUE ); ");
 #' str.commentWrapper( pkg, r.tag = "-", s.pad=15);
 #' ^ i.pad # s.pad CONTENT s.pad # $
-
-
 str.commentWrapper = function() {}
 str.commentWrapper = function(str="Welcome to the {humanVerse}", 
 									nchars=0, 
@@ -1137,8 +1257,9 @@ str.commentWrapper = function(str="Welcome to the {humanVerse}",
 
 
 
-
-
+##################################################
+#'
+#'
 #' str.substr
 #'
 #' @param str
