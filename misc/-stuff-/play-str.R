@@ -1119,3 +1119,36 @@ str.contains = function(haystack = "hello friend", needle = " ", ...)
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+i = 3;
+while(i < n.sqrt)
+  {
+  if(i %% 1000 == 0) { cat("\n", "THREES::  i ", i, " of ", n.sqrt, " ==> ", round(100*i/n.sqrt, 2), "\n");  flush.console(); }
+  if(bits.prime[i] == TRUE)
+            {
+            k = i * 2;
+            j = i * i;
+            while(j < n)
+              {
+              if(j %% 1000 == 0) { cat("\n", "INNER::  j ", j, " of ", n, " ==> ", round(100*j/n, 2), "\n");  flush.console(); }
+              bits.prime[j] = FALSE;
+              j = k + j;
+              }
+            }
+  i = 2+i;
+  }
+

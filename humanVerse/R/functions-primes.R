@@ -1,26 +1,52 @@
 
+
 ##################################################
 #'
 #' primes.bit
 #'
+#' Uses library(bit) to perform SIEVE on bits 
+#'   See bit::bitwhich
 #'
+#'   A TODO: bit-storage of primes with an index lookup
+#'             accessible by idx lookups (ranges)
+#'                maybe an RDS of bits with first million primes ... 
+#'
+#'
+#' @param n {INTEGER:  how many _what_ ??? }
+#' @param first {TRUE: returns first 'n' primes; FALSE returns primes <= 'n' }
+#' @param optimus {TRUE: include 1 as prime}
+#'
+#' @return NumericVector (of primes)
+#' @export
+#'
+#' @examples
+#' x = primes.bit(100, TRUE, FALSE); length(x);		# gets 100 primes 
+#' x = primes.bit(100, FALSE, FALSE); length(x);	# gets primes <= 100
+#' x = primes.bit(100, TRUE, TRUE); length(x);
+#' x = primes.bit(100, FALSE, FALSE); length(x);
 primes.bit = function(n, first=TRUE, optimus=FALSE)
 	{
+# timer.start("bits"); x = prime.bits((1*1000)); length(x); max(x); timer.stop("bits");
 	# you could build a bits-table, and search primes within 
 	if(!is.library("bit")) { stop("requires library(bit); ... "); }
 	gn = n; if(n > 10^6) { stop("such a large [n] may tax the system"); }
 	if(first) { gn = ceiling( n * log(n) + n * log(log(n)) ); }
 	gn.sqrt = ceiling( sqrt(gn) );
+	# to get 1,000,000 primes; gn = 16,441,303
 	
 	bits.prime = bit::bitwhich(gn, TRUE);  # set all to TRUE, including 1
 	
 	## IS.EVEN ##
 	i = 4;
-	while(i < gn)
-		{
-		bits.prime[i] = FALSE;
-		i = 2 + i; 
-		}
+	# is it faster to load all the idxs of EVEN numbers?
+	idx = which( (1:gn %% 2 == 0) & (1:gn > 3) );
+	bits.prime[idx] = FALSE;
+	
+	# while(i < gn)
+		# {
+		# bits.prime[i] = FALSE;
+		# i = 2 + i; 
+		# }
 
 	## SIEVE  p is (6k +/- 1) ## 	
 	i = 3;
@@ -30,14 +56,22 @@ primes.bit = function(n, first=TRUE, optimus=FALSE)
 			{
 			k = i * 2;
 			j = i * i;
+			js = c(j);
 			while(j < gn)
 				{
-				bits.prime[j] = FALSE;
+				# bits.prime[j] = FALSE;
 				j = k + j;
+				js = c(js, j);
 				}
+			js = js[js <= gn];
+			bits.prime[js] = FALSE;
 			}
 		i = 2+i;
 		}
+	
+	# , file.out=NULL
+	# #' @param file.out {file.path + file.name to save bits as RDS}
+saveRDS(bits.prime, file=paste0("primes-",n,".rds") );
 		
 	p = which(bits.prime == TRUE); # indexes are primes (zero indexed???)
 	if(first) { p = p[2:(n+1)];  if(optimus) { p = c(1,p); } }
@@ -45,11 +79,38 @@ primes.bit = function(n, first=TRUE, optimus=FALSE)
 	return(p);
 	}
 	
+
+#' @rdname primes.bits
+#' @export
+primes.bits = primes.bit;
+
+#' @rdname prime.bits
+#' @export
+prime.bits = primes.bit;
+
+#' @rdname prime.bits
+#' @export
+prime.bits = primes.bit;
+	
 ##################################################
 #'
 #' primes.pracma
 #'
-#'	
+#' Modified pracma::primes algorithm for efficiency and to allow first/optimus.
+#'
+#'
+#' @param n {INTEGER:  how many _what_ ??? }
+#' @param first {TRUE: returns first 'n' primes; FALSE returns primes <= 'n' }
+#' @param optimus {TRUE: include 1 as prime}
+#'
+#' @return NumericVector (of primes)
+#' @export
+#'
+#' @examples
+#' x = primes.pracma(100, TRUE, FALSE); length(x);		# gets 100 primes 
+#' x = primes.pracma(100, FALSE, FALSE); length(x); 	# gets primes <= 100
+#' x = primes.pracma(100, TRUE, TRUE); length(x);
+#' x = primes.pracma(100, FALSE, FALSE); length(x);	
 primes.pracma = function(n, first=TRUE, optimus=FALSE)
 	{
 	# this duplicates the primary logic of pracma::primes
@@ -89,11 +150,28 @@ primes.pracma = function(n, first=TRUE, optimus=FALSE)
 	}
 
 
+
 ##################################################
 #'
 #' primes.inRange
 #'
-#'	
+#' Finds the prime numbers in a range (xmin, xmax).
+#'   Current algorithm has to compute to xmax, and truncate.
+#'   A TODO: bit-storage of primes with an index lookup
+#'             accessible by idx lookups (ranges)
+#'                maybe an RDS with first million primes ... 
+#'
+#' @param xmin {INTEGER:  lower bound }
+#' @param xmax {INTEGER:  upper bound }
+#' @param ... {Allows parameters: first=TRUE/FALSE, optimus = TRUE/FALSE
+#'					and "method" from humanVerse::primes.get
+#'
+#' @return NumericVector (of primes)
+#' @export
+#'
+#' @examples
+#' x = primes.inRange(1, 100); length(x);
+#' x = primes.inRange(2015, 2525); length(x);	
 primes.inRange = function(xmin, xmax, ...)
 	{
 	# primes.default function would be nice, still would have to compare
@@ -109,8 +187,23 @@ primes.inRange = function(xmin, xmax, ...)
 #'
 #' primes.get
 #'
-#'	
-primes.get = function(n, first=TRUE, method="base", optimus=FALSE)
+#'
+#' Wrapper function to perform prime calculations using various methods.
+#'
+#'
+#' @param n {INTEGER:  how many _what_ ??? }
+#' @param first {TRUE: returns first 'n' primes; FALSE returns primes <= 'n' }
+#' @param optimus {TRUE: include 1 as prime}
+#'
+#' @return NumericVector (of primes)
+#' @export
+#'
+#' @examples
+#' x = primes.get(100, TRUE, FALSE); length(x);  	# gets 100 primes 
+#' x = primes.get(100, FALSE, FALSE); length(x);	# gets primes <= 100
+#' x = primes.get(100, TRUE, TRUE); length(x);
+#' x = primes.get(100, FALSE, FALSE); length(x);	
+primes.get = function(n, first=TRUE, optimus=FALSE, method="base", )
 	{
 	m = functions.cleanKey(method, 1);
 		

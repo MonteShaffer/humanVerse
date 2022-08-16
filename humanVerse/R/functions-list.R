@@ -146,11 +146,33 @@ list.getProperty = function(key, info)
 list.getLengths = function(info) 
 	{
 	n.info = length(info);
-	if (!is.list(info)) { return(length(info)); }
+	if (!is.list(info)) { return(n.info); }
 	if (n.info == 0) { return(NULL); }
 	res = NULL;
 	for (i in 1:n.info) 
 		{
+		res[i] = length(info[[i]]);
+		}
+	res;
+	}
+
+
+list.truncateLength(info, n)
+	{	
+	n.info = length(info);
+	if (!is.list(info)) 
+		{ 
+		# vector 
+		n.t = n; 
+		if(n.t > n.info) { n.t = n.info;}
+		return(info[1:n.t]); 
+		}
+	if (n.info == 0) { return(NULL); }
+	n.lengths = list.getLengths(info);
+	res = NULL;
+	for (i in 1:n.info) 
+		{
+		
 		res[i] = length(info[[i]]);
 		}
 	res;

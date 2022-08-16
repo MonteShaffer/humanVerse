@@ -64,6 +64,14 @@ memory.restoreState = function() {}
 
 
 
+
+memory.defaults = function() {}
+
+memory.getDefaults
+memory.setDefaults
+
+
+
 memory.get = function() {}
 
 

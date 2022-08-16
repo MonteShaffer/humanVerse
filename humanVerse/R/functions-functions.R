@@ -72,7 +72,7 @@ functions.getScope = function()
 	parent.frame(1);  # calling this inside 
 	}
 	
-functions.getParameterInfo = function()
+functions.getParameterInfo = function(return="dots", truncate=10)
 	{
 	pf = parent.frame(1);
 	fn = as.character(sys.call(1L)[[1L]]);
@@ -83,6 +83,7 @@ functions.getParameterInfo = function()
 		{ 
 		dots = eval(quote(list(...)), envir = pf); 
 		}
+	dots = list.truncateLength(dots, truncate);
 	
 	# remove dots, remaining is main
 	arg.names = sapply(setdiff(arg.names, "..."), as.name)
@@ -92,7 +93,14 @@ functions.getParameterInfo = function()
 		{
 		main = lapply(arg.names, eval, envir = pf)
 		}
+	main = list.truncateLength(main, truncate);
 	
+	r = functions.cleanKey(return, 1);
+	if(r == "f") { return(fn); }
+	if(r == "p") { return(pf); }
+	if(r == "m") { return(main); }
+	if(r == "d") { return(dots); }
+	# default is ALL
 	list("fn" = fn, "pf" = pf, "main" = main, "dots" = dots);
 	}
 	
