@@ -42,6 +42,28 @@ is.POSIXct = function(x) { inherits(x, "POSIXct"); }
 
 
 
+##################################################
+#'
+#' 
+#'
+#'
+#' is.substring
+#'
+#' @param haystack
+#' @param needle
+#' @param out
+#'
+#' @return
+#' @export
+#'
+#' @examples
+is.substring = function(haystack, needle)
+  {  
+  grepl(needle, haystack, fixed = TRUE);
+  }
+
+
+
 
 has.color <- function() 
 	{
@@ -120,8 +142,9 @@ is.windows = function()
 
 
 
-
-is.error = function(e)
+# mytype = suppressError(
+# may be different for tryCatch(
+is.error = function(e, where="suppressError")
 	{
 	condition = attributes(e)$condition;
 	if(is.null(condition)) { return(FALSE); }
@@ -132,31 +155,6 @@ is.error = function(e)
 	return(FALSE);
 	}
 
-
-##################################################
-#'
-#' is.url
-#'
-#'
-#' @param file (what is the character string to be searched)
-#'
-#' @return TRUE or FALSE
-#' @export
-#'
-#' @examples
-# format or test connection 
-is.validURL = function(urls, deep=FALSE)
-	{
-	urls = str.trim(urls);
-	if(!deep)
-		{
-		fil = functions.cleanKey(urls, 3);
-		x = (fil == "htt"); y = (fil == "ftp");  # multivariate, truth tables
-		return ( (x+y > 0) );
-		}
-	# is valid ???
-	stop("TODO: REGEX to filter valid URL");
-	}
 
 
 ##################################################
@@ -180,6 +178,11 @@ is.library = function(str = "stringi", suggestion=TRUE)
 					"You could try installing the package: ", "\n\n",
 					str.commentWrapper( pkg, r.tag = "-", s.pad=15), "\n");
 		warning(msg);
+		# cat.me(msg, "warning"); 	# does color removal if in place
+									# <b><i><u><br>ight, <color fg= bg=>
+									# I think I wrote a downloader once, overwrite with this?
+									# RGUI windows?
+		
 		}
 	res;
 	}

@@ -49,6 +49,10 @@ dots.addTo = function(key, ...)
 dots.addToKey = dots.addTo;
 
 
+#' @rdname nchars
+#' @export
+nchars = nchar;
+
 
 
 

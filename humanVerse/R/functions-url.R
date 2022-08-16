@@ -318,3 +318,32 @@ url.test = function(urls, stati = NULL, ... )
 	res;
 	}
 
+
+
+
+##################################################
+#'
+#' is.url
+#'
+#'
+#' @param file (what is the character string to be searched)
+#'
+#' @return TRUE or FALSE
+#' @export
+#'
+#' @examples
+# format or test connection 
+is.validURL = function(urls, deep=FALSE)
+	{
+	urls = str.trim(urls);
+	if(!deep)
+		{
+		fil = functions.cleanKey(urls, 3);
+		x = (fil == "htt"); y = (fil == "ftp");  # multivariate, truth tables
+		return ( (x+y > 0) );
+		}
+	# is valid ???
+	stop("TODO: REGEX to filter valid URL");
+	}
+
+

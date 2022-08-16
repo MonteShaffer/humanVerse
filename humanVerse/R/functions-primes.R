@@ -1,4 +1,9 @@
 
+##################################################
+#'
+#' primes.bit
+#'
+#'
 primes.bit = function(n, first=TRUE, optimus=FALSE)
 	{
 	# you could build a bits-table, and search primes within 
@@ -40,7 +45,11 @@ primes.bit = function(n, first=TRUE, optimus=FALSE)
 	return(p);
 	}
 	
-	
+##################################################
+#'
+#' primes.pracma
+#'
+#'	
 primes.pracma = function(n, first=TRUE, optimus=FALSE)
 	{
 	# this duplicates the primary logic of pracma::primes
@@ -80,7 +89,11 @@ primes.pracma = function(n, first=TRUE, optimus=FALSE)
 	}
 
 
-	
+##################################################
+#'
+#' primes.inRange
+#'
+#'	
 primes.inRange = function(xmin, xmax, ...)
 	{
 	# primes.default function would be nice, still would have to compare
@@ -92,6 +105,11 @@ primes.inRange = function(xmin, xmax, ...)
 	p;
 	}
 	
+##################################################
+#'
+#' primes.get
+#'
+#'	
 primes.get = function(n, first=TRUE, method="base", optimus=FALSE)
 	{
 	m = functions.cleanKey(method, 1);
@@ -136,6 +154,11 @@ primes.get = function(n, first=TRUE, method="base", optimus=FALSE)
 	return(res);
 	}
 
+##################################################
+#'
+#' prime.factors
+#'
+#'
 # multivariate is currently a mess 
 prime.factors = function(x, ..., list.format="factors.{n}", optimus=FALSE)
 	{
