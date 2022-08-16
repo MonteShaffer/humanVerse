@@ -1,5 +1,14 @@
 
 
+df.decomposeDateColumn = function(df, col, format.col = "%m/%d/%Y %H:%M",
+									new.cols = c("year","week","day"),
+									format.new = c("%Y","%W","%j") 
+									)
+	{
+	
+	
+	}
+
 # get into weeds, compute strlen(cols), omit some columns
 # allow for vertical isolation as well
 # print.matrix ...
@@ -372,7 +381,8 @@ df.setColumnOrder = function(df, cols)
 	}
 
 
-	
+
+# df.insertColumnBetween / Row	
 
 
 

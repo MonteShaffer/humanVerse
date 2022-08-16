@@ -74,14 +74,14 @@ memory.setDefaults
 
 memory.get = function(key, MEMORY="BASE") 
 	{	
-	.GlobalEnv$.humanVerse[[MEMORY]][[key]];
+	.GlobalEnv$.humanVerse["."][[MEMORY]][[key]];
 	}
 
 
 
 memory.set = function(key, value, MEMORY="BASE") 
 	{
-	.GlobalEnv$.humanVerse[[MEMORY]][[key]] = value;	
+	.GlobalEnv$.humanVerse["."][[MEMORY]][[key]] = value;	
 	}
 	
 	

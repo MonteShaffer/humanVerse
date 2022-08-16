@@ -1,5 +1,14 @@
 
 
+#check-tables ...
+#if not local, RDS
+
+#go grab from web ... 
+
+#setwd("C:/_git_/github/MonteShaffer/humanVerse/-data-/-colors-")
+
+
+
 # http://c.mshaffer.com/js/colorpicker/colorpicker.colors.js
 # other color tables 
 
@@ -1207,11 +1216,11 @@ hex2rgb = function(hexvec, ...)
 #' @export
 #'
 #' @examples
-#' checkHEX("ABC");  # returns an updated 3-digit form
+#' checkHEX("ABC");  # returns an updated 3-digit form, unless override??
 #' checkHEX("ABCDEF");
 #' checkHEX("123456");
 #'
-#' checkHEX("red"); # looks this up
+#' checkHEX("red"); # looks this up, colorlibrary?
 #' checkHEX("alex"); # can't find anything in the lookup
 #'
 checkHEX = function(hex)

@@ -1,4 +1,6 @@
 
+is.leapYear = date.calculateLeapDays;
+
 
 is.prime = function(x, ..., optimus=FALSE)
 	{
@@ -583,6 +585,7 @@ is.le = function(x, y, tol = sqrt(.Machine$double.eps), part="Re")
 	}
 	
 "%~<%" = "%le%" = is.le;
+
 
 
 

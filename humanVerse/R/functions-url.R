@@ -192,8 +192,11 @@ folderizeURL = function(url = "https://en.wikipedia.org/wiki/Columbia_Falls,_Mon
 	str = info[[1]][2];
 	prot = str.replace(":","", info[[1]][1]);
 
-    find = c("/",".",",");
-    replace = c("-","^","+");
+    #find = c("/",".",",");
+    #replace = c("_-_","^","+");
+	
+	find = c("/",",");
+    replace = c("^","+");
     n.find = length(find);
   for(i in 1:n.find)
     {

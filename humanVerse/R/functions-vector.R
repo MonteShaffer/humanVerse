@@ -1,5 +1,15 @@
 
 
+.begin = function(x)
+	{
+	1;
+	}
+
+.end = function(x)
+	{
+	length(x);
+	}
+
 
 #' getNearestIndex
 #'
