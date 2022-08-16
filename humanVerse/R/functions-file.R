@@ -70,13 +70,13 @@ file.writeToPipe = writeToPipe;
 #'
 #' @return a dataframe
 #' @export
-readFromPipe = function() {}
-readFromPipe = function(filename, header=TRUE, quote="", sep="|", 
-									comment.char="#", as.is=TRUE, ...)
+readFromPipe = function() {}  
+								# , as.is=TRUE
+								# comment.char="#" ... hexdata
+readFromPipe = function(filename, header=TRUE, quote="", sep="|",  ...)
   {
  # as.is to BYPASS the "factors" issue 
-  df = utils::read.csv(filename, header=header, quote=quote, sep=sep, 
-								comment.char = comment.char, as.is=as.is, ...);
+  df = utils::read.csv(filename, header=header, quote=quote, sep=sep, ...);
 	# get comments and append as attribute
 	# search comments for typeof elements ... 
 	# call type of ... if not that type already

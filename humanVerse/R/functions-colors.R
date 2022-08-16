@@ -1,17 +1,32 @@
 
+if(FALSE)
+	{
+	#check-tables ...
+	#if not local, RDS
 
-#check-tables ...
-#if not local, RDS
+	#go grab from web ... 
 
-#go grab from web ... 
+	#setwd("C:/_git_/github/MonteShaffer/humanVerse/-data-/-colors-")
 
-#setwd("C:/_git_/github/MonteShaffer/humanVerse/-data-/-colors-")
+	files = list.files(".", "*.txt");
+	# https://github.com/MonteShaffer/humanVerse/tree/main/-data-/-colors-/
+	df = readFromPipe("X11-141.txt");
+	for(file in files)
+		{
+		if(file != "X11-141.txt")
+			{
+			tmp = readFromPipe(file); tmp$class = "";
+			df = rbind(df, tmp );
+			}
+		}
+		
+	# system(colors.rds)... web(colors.rds) ... build from files on web
+	# can I do github.listFiles(dir, wildcard);
 
 
-
-# http://c.mshaffer.com/js/colorpicker/colorpicker.colors.js
-# other color tables 
-
+	# http://c.mshaffer.com/js/colorpicker/colorpicker.colors.js
+	# other color tables 
+	}
 
 
 # ?convertColor 
