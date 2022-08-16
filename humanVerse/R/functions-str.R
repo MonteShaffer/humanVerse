@@ -938,6 +938,15 @@ str.removeWhiteSpace = function( str, replace=" ", n = 2,
 removeWhiteSpace = str.removeWhiteSpace;
 
 
+
+str.stripTags = function(str)
+	{
+	return(gsub("<.*?>", "", str));
+	}
+	
+strip.tags = str.stripTags;
+strip_tags = str.stripTags;
+
 ##################################################
 #'
 #' str.translate

@@ -1,4 +1,6 @@
 
+readChars = readChar;
+
 
 #' writeRDS
 #'

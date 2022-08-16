@@ -365,10 +365,10 @@ charAt = function(str,idx)
 #' lastChar("Sasha");
 #' lastChar("Alexander");
 #'
-lastChar = function(str, trim=TRUE)
+lastChar = function(str, trim=FALSE)
 	{
 	# this also works:: ... # .substr(str, -1)
-	if(trim){ str = trimMe(str); }
+	if(trim){ str = str.trim(str); }
 	s.len = strlen(str);
 	charAt(str, s.len);
 	}
@@ -423,3 +423,8 @@ charCode = function(svec)
 	
 	
 
+
+
+
+	
+	
