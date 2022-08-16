@@ -132,7 +132,8 @@ list.getProperty = function(key, info)
 	{
 	n.info = length(info);
 	if (!is.list(info)) { return( property.get(key, info) ); }
-	if (n.info == 0) { return(NULL); }
+	# is.list with length of zero
+	if(n.info == 0) { return( NULL ); }
 	myNames = names(info);
 	res = NULL;
 	for (i in 1:n.info) 
@@ -145,9 +146,11 @@ list.getProperty = function(key, info)
 	
 list.getLengths = function(info) 
 	{
+	dput(info);
 	n.info = length(info);
 	if (!is.list(info)) { return(n.info); }
-	if (n.info == 0) { return(NULL); }
+	# is.list with length of zero
+	if(n.info == 0) { return( NULL ); }
 	res = NULL;
 	for (i in 1:n.info) 
 		{
@@ -157,26 +160,33 @@ list.getLengths = function(info)
 	}
 
 
-list.truncateLength(info, n)
+list.truncateLength = function(info, n)
 	{	
+	dput(info);
 	n.info = length(info);
 	if (!is.list(info)) 
 		{ 
 		# vector 
-		n.t = n; 
-		if(n.t > n.info) { n.t = n.info;}
+		n.t = n.info; 
+		if(n.t > n) { n.t = n;}
 		return(info[1:n.t]); 
 		}
-	if (n.info == 0) { return(NULL); }
+	# is.list with length of zero
+	if(n.info == 0) { return( list() ); }
+	
 	n.lengths = list.getLengths(info);
+	if(is.null(n.lengths)) { return( list() ); } # shouldn't this be a list?
 	res = NULL;
 	for (i in 1:n.info) 
 		{
-		
-		res[i] = length(info[[i]]);
+		n.t = n.lengths(i);
+		if(n.t > n) { n.t = n; }
+		res[[i]] = info[[i]][1:n.t];
 		}
 	res;
 	}
+	
+	
 	
 # https://stackoverflow.com/questions/44176908/
 # get elements at same key

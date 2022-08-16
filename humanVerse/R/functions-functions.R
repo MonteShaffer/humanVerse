@@ -67,10 +67,7 @@ functions.cleanUpKey = functions.cleanKey;
 
 
 	
-functions.getScope = function() 
-	{
-	parent.frame(1);  # calling this inside 
-	}
+
 	
 functions.getParameterInfo = function(return="dots", truncate=10)
 	{
