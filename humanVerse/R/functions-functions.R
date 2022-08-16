@@ -26,7 +26,7 @@ function.whereIs(fn)
 #'
 #' @examples
 functions.cleanKey = function() {}
-functions.cleanKey = function(key, n=1, keep="", extra = ",! #")
+functions.cleanKey = function(key, n=1, keep="", extra = "! #")
 	{
 	str = tolower(key); # has to be base-R (not str.tolower, recursion)
 	if(extra == "")
@@ -44,8 +44,8 @@ functions.cleanKey = function(key, n=1, keep="", extra = ",! #")
 		}
 	if(keep != "")
 		{
-		tmp = strsplit(str, keep)[[1]];
-		res = paste0( substring(tmp, 1, 1), collapse=keep);
+		tmp = strsplit(str, keep, fixed=TRUE)[[1]];
+		res = paste0( substring(tmp, 1, n), collapse=keep);
 		return(res);
 		}
 		

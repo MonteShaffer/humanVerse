@@ -1,5 +1,8 @@
 
 
+# https://www.alexejgossmann.com/benchmarking_r/
+# microbenchmark ... C getting to nanoticker ... rbenchmark, one 'R' function by DIRK
+
 timer.init = function(purge.memory = FALSE, 
 							show.msg = TRUE, 
 							as.internal = FALSE)

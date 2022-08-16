@@ -194,8 +194,15 @@ primes.inRange = function(xmin, xmax, ...)
 #' @param n {INTEGER:  how many _what_ ??? }
 #' @param first {TRUE: returns first 'n' primes; FALSE returns primes <= 'n' }
 #' @param optimus {TRUE: include 1 as prime}
+#' @param method	{  	
+#'					[cp]p_primes from HVcpp or Rccp::source 
+#'					[pr]acma ... requires library (pracma)
+#'					[bi]t(s) ... requires library (bit)
+#'					[sf]smisc ... requires library (sfsmisc)
+#'					[ba]se ... DEFAULT ... internal enhanced `primes.pracma` 
+#'					}
 #'
-#' @return NumericVector (of primes)
+#' @return NumericVector INTEGER (of primes)
 #' @export
 #'
 #' @examples
@@ -203,18 +210,21 @@ primes.inRange = function(xmin, xmax, ...)
 #' x = primes.get(100, FALSE, FALSE); length(x);	# gets primes <= 100
 #' x = primes.get(100, TRUE, TRUE); length(x);
 #' x = primes.get(100, FALSE, FALSE); length(x);	
-primes.get = function(n, first=TRUE, optimus=FALSE, method="base", )
+#' # NOT RUN # x = primes.get(100, method="base"); 
+#' # NOT RUN # y = primes.get(100, method="pracma");	stopifnot(identical(x,y));
+#' # NOT RUN # z = primes.get(100, method="sfsmisc");	stopifnot(identical(x,z));
+primes.get = function(n, first=TRUE, optimus=FALSE, method="base")
 	{
-	m = functions.cleanKey(method, 1);
+	mm = functions.cleanKey(method, 2);
 		
-	if(m == "c" && exists("cpp_primes"))
+	if(mm == "cp" && exists("cpp_primes"))
 		{
 		res = cpp_primes(n, first);		
 		if(optimus) { res = c(1, res); }  # will be off by one 
-		return(res);
+		return(as.integer(res));
 		}
 		
-	if(m == "p" && is.library("pracma"))
+	if(mm == "pr" && is.library("pracma"))
 		{
 		gn = n;
 		# upper bound 
@@ -222,16 +232,16 @@ primes.get = function(n, first=TRUE, optimus=FALSE, method="base", )
 		res = pracma::primes(gn);
 		if(first) { res = res[1:n]; }  # truncate to n 
 		if(optimus) { res = c(1, res); }
-		return(res);
+		return(as.integer(res));
 		}
 	
-	if(m == "b" && is.library("bit"))
+	if(mm == "bi" && is.library("bit"))
 		{
 		res = primes.bit(n, first=first, optimus=optimus);
-		return(res);
+		return(as.integer(res));
 		}
 	
-	if(m == "s" && is.library("sfsmisc"))
+	if(mm == "sf" && is.library("sfsmisc"))
 		{
 		gn = n;
 		# upper bound 
@@ -239,12 +249,12 @@ primes.get = function(n, first=TRUE, optimus=FALSE, method="base", )
 		res = sfsmisc::primes(gn);
 		if(first) { res = res[1:n]; }  # truncate to n 
 		if(optimus) { res = c(1, res); }
-		return(res);
+		return(as.integer(res));
 		}
 	
 	
 	res = primes.pracma(n, first=first, optimus=optimus);
-	return(res);
+	return(as.integer(res));
 	}
 
 ##################################################

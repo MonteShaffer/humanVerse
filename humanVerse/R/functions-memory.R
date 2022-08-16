@@ -72,24 +72,16 @@ memory.setDefaults
 
 
 
-memory.get = function() {}
+memory.get = function(key, MEMORY="BASE") 
+	{	
+	.GlobalEnv$.humanVerse[[MEMORY]][[key]];
+	}
 
 
-# obj = .GlobalEnv$.humanVerse
-memory.set = function(key, ... , value, parent=NULL) 
+
+memory.set = function(key, value, MEMORY="BASE") 
 	{
-	if(is.null(parent)) { parent = .GlobalEnv$.humanVerse; }
-	
-	.GlobalEnv$.humanVerse[["timer"]][[key]] = list();
-	
-		within(.GlobalEnv$.humanVerse)
-		{
-		
-		}
-		
-		
-	memory.check("timer");
-	
+	.GlobalEnv$.humanVerse[[MEMORY]][[key]] = value;	
 	}
 	
 	

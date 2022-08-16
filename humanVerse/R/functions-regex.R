@@ -20,7 +20,7 @@ regex.prepWildcard = function(search.term, ...)
 	utils::glob2rx(search.term, ...);
 	}
 	
-	
+	 
 # grep(value = FALSE) ... return's idx ... 
 regex.wildcardSearch = function(searching.what, search.term, ignore.case=TRUE, value = FALSE, ...)
 	{

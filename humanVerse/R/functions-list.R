@@ -179,7 +179,7 @@ list.truncateLength = function(info, n)
 	res = NULL;
 	for (i in 1:n.info) 
 		{
-		n.t = n.lengths(i);
+		n.t = n.lengths[i];
 		if(n.t > n) { n.t = n; }
 		res[[i]] = info[[i]][1:n.t];
 		}

@@ -23,13 +23,15 @@ curl,
   openssl,	
   
   digest,
-  
-Imports:
-  bits,
+   bits,
   expm, Rmpfr, Matrix, MASS,
   # https://cran.r-project.org/web/packages/sfsmisc/index.html
   # integers, special plots, 
   # adebo, floating point gnu-something 
+  microbenchmark
+  
+Imports:
+ 
   graphics,  
   grDevices,
   jsonlite,

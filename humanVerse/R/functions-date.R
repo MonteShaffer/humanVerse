@@ -1,198 +1,5 @@
 
 
-
-# DEFAULT anchors to JULIAN CALENDAR DATE: ... proleptic
-#				August 5, 1600 (Tuesday) ==> RUTHVEN EPOCH 
-# Historical Date Found in Documents (saying Tuesday)
-# cdoy (Current Day of Year) ... important for first year calculations 
-# 		## FROM https://www.timeanddate.com/date/weekday.html
-# Above link also has Aug 5, 1600 as a Tuesday 
-# date.generateProleptic(999); date.generateProleptic(999, "BACKWARD");
-date.generateProleptic = function() {}
-date.generateProleptic = function(n, dir="FORWARD", 
-									path = getwd(),
-									filename = "RUTHVEN_{n}_{dir}.txt",
-									ctype="julian", 
-									cyear = 1600,
-									cmonth = 8,   # August 
-									cday = 5,
-									str.cday = "Tue",
-									cdoy = 218 
-								)
-	{	
-	ctyp = functions.cleanKey(ctype, 1);
-	# Jan, Feb, Mar, ...
-	MONTHS_ = format(ISOdate(2000, 1:12, 1), "%b");
-	LENS_ = c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
-	# Mon, Tue, Wed, ...
-	DAYS_ = format(ISOdate(2000, 1, 1:10), "%a")[1:7];
-
-	
-	# current idx of str.cday (name in week)
-	idx.cday = which(DAYS_ == str.cday);
-	# current leap year day (0 or 1)... extensible to allow others
-	cleapdays = date.calculateLeapDays(cyear, ctype, "integer");
-	LENS_[2] = 28 + cleapdays; # 28 or 29 .. 
-	# current length of a month
-	clen = LENS_[cmonth];
-	
-	
-	DIRE = toupper(functions.cleanKey(dir, 4));
-	dir = "FORWARD"; if(DIRE == "BACK") { dir = "BACKWARD"; }
-	if(is.negative(n)) 
-		{ 
-		n = -1* n;  # n is POSITIVE
-		# REVERSE FORWARD/BACKWARD ...
-		dir = if(dir == "FORWARD") { "BACKWARD"; } else { "FORWARD"; }
-		}  
-	DIRE = toupper(functions.cleanKey(dir, 4));
-		filename = str.replace( "{n}", n, filename );
-		filename = str.replace( "{dir}", dir, filename );
-		filename = paste0(path, "/", filename);  # is trailing slash required, will it break?
-	## HEADER 
-	recovery = FALSE;
-	#if(file.exists(filename))
-		{
-	#	recovery = TRUE;
-		# read last line to know what the values were 
-		# start writing again once they are reach ...
-		}
-	if(!recovery)
-		{
-		row = c("IDX", "YYYY", "MM", "DD", "DOW", "DOY");
-		cat( paste0(row, collapse="|"), "\n", sep="", 
-				file=filename, append=FALSE);
-		}
-			
-	if(DIRE == "FORW") # FORWARD in TIME, ASCENDING
-		{
-		
-		i = 0;
-		while(i < n)
-			{
-			# write current row 
-			row = c(i, cyear, cmonth, cday, str.cday, cdoy);
-			cat( paste0(row, collapse="|"), "\n", sep="", 
-					file=filename, append=TRUE);
-					
-			# increment	
-			i = 1+i;
-			cdoy = 1 + cdoy;
-			if(i %% 365 == 0) 
-				{ 
-				percent = str.pad( round( 100* abs(i/n), 4 ), 5);
-				cat("\n =====   ", cyear, "   ::   ", percent, "% ===== \n"); 
-				flush.console(); 
-				}
-				
-			cday = 1 + cday;
-			if(cday > clen) 
-				{ 
-				# NEW MONTH 
-				cday = 1; 
-				cmonth = 1 + cmonth;
-				if(cmonth > 12)
-					{
-					# NEW YEAR 
-					cmonth = 1;
-					cyear = 1 + cyear;
-					cdoy = 1;
-					cleapdays = date.calculateLeapDays(cyear, ctype, "integer");
-					LENS_[2] = 28 + cleapdays; # 28 or 29 .. 
-					}
-				clen = LENS_[cmonth];
-				}
-			# day name of week [DOW] on continuous 7-day loop	
-			idx.cday = 1 + idx.cday;
-			if(idx.cday > 7) { idx.cday = 1;}
-			str.cday = DAYS_[idx.cday];
-			}		
-		}
-		
-	if(DIRE == "BACK") # BACKWARD in TIME, DESCENDING
-		{
-		if(is.positive(n)) { n = -1* n; }  # n is NEGATIVE
-		i = 0;
-		while(i > n)
-			{
-			row = c(i, cyear, cmonth, cday, str.cday, cdoy);
-			cat( paste0(row, collapse="|"), "\n", sep="", 
-					file=filename, append=TRUE);
-			
-			# DECREMENT 
-			i = i-1;
-			cdoy = cdoy-1;
-			if(i %% 365 == 0) 
-				{ 
-				percent = str.pad( round( 100* abs(i/n), 4 ), 5);
-				cat("\n =====   ", cyear, "   ::   ", percent, "% ===== \n"); 
-				flush.console(); 
-				}
-				
-			cday = cday - 1;
-			if(cday < 1) 
-				{ 
-				# NEW MONTH 
-				cmonth = cmonth - 1;
-				if(cmonth < 1)
-					{
-					# NEW YEAR 
-					cmonth = 12;
-					cyear = cyear - 1;
-					cleapdays = date.calculateLeapDays(cyear, ctype, "integer");
-					LENS_[2] = 28 + cleapdays; # 28 or 29 .. 
-					cdoy = sum(LENS_);
-					}				
-				clen = LENS_[cmonth];
-				cday = clen;  # last day of given month 
-				}
-			# if(cdoy < 1) { cdoy = sum(LENS_); }  ## why again?
-
-			idx.cday = idx.cday - 1;
-			if(idx.cday < 1) { idx.cday = 7;}
-			str.cday = DAYS_[idx.cday];
-			}		
-		}
-
-		cat("\n RESULTS are STORED HERE: \n\n\t", filename, "\n\n");
-	invisible(filename);
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #  date.calculateLeapDays(100*15:18, "julian", "integer");
 #  date.calculateLeapDays(100*15:18);
 
@@ -230,159 +37,89 @@ date.calculateLeapDays = function(cyear,
 		names(r) = cyear;
 	r;
 	}
-	
 
 
-		#  -587094
-		# Ruthven offset ...  -4237058 
-		# Julian ... +2305675 FROM Ruthven ... -1931383
-		# MOD ... Julian - 2400000.5 ...  -4331383.5
-		# LILIAN 
-		# CUSTOM ... 
-# https://www.slideshare.net/chenshuo/datetime-julian-date SLIDE 8
 
-# why is mod this date, BRITAIN was a different date 
-# date.toJulianDayNumber(1858, 11, 17-12, "modified"); 	# GREG 
-# date.toJulianDayNumber(1600, 8, 5, "ruthven");
-# date.toJulianDayNumber(-4712, 1, 1, "julian");		# anchor to special alignment of 3 cycles
-# date.toJulianDayNumber(1582, 10, 15-12, "lilian"); 		# GREG
-# date.toJulianDayNumber(-7, 3, 21, "equ");
-
-
-date.computeOffset = function(NUM, dir=-1, 
-								offset.for="julian", 
-								offset=NULL
-								)
+# date.getTimeZoneOffset(OlsonNames()[123])
+date.getTimeZoneOffset = function(tz = "UTC")
 	{
-	off = functions.cleanKey(offset.for, 3);
-	NUM = as.numeric(NUM);
-	# dir == -1 ... this is toJulianDayNumber
-	# dir == 1 ... this is fromJulianDayNumber
-	
-	# do offset logic here?
-	if(off == "rut")
-		{
-		NUM = NUM + dir*4237058;
-		return(NUM);
-		}
-	if(off == "equ")
-		{
-		NUM = NUM + dir*3649964;  # EQUINOX, MARCH 21, 8BC [-7, 03, 21]
-		return(NUM);
-		}
-	if(off == "jul")
-		{
-		NUM = NUM + dir*1931383;
-		return(NUM);
-		}
-	if(off == "mod")
-		{
-		# MJD 0 thus started on 17 Nov 1858 (Gregorian) at 00:00:00 UTC.
-		NUM = NUM + dir*4331383;
-		if(dir == -1) { NUM = NUM - 0.5; } # don't do 1/2 on return 
-		return(NUM);
-		}	
-	if(off == "lil")
-		{
-		# Lilian day number 1 started at midnight 15 October 1582 (Gregorian).
-		NUM = NUM + dir*4230541;
-		if(dir == -1) { NUM = NUM - 0.5; } # don't do 1/2 on return 
-		return(NUM);
-		}
-	if(off == "cus")
-		{
-		if(is.null(offset)) { offset = dir*1931383; }
-		NUM = NUM + as.numeric(offset);
-		return(NUM);
-		}
-		
-	warning("invalid offset.for, returning NUM for offset = 0");
-	NUM;	
+	info = stringi::stri_timezone_info(tz);
+	info$RawOffset;
 	}
 	
 	
+date.init = function()
+	{
+	memory.init();
 	
-date.toJulianProlepticNumber = function(jyear, jmonth=1, jday=1, 
-										offset.for="julian",
-										offset = NULL
-										)
-	{	
-	# if jyear is dataframe or list, decompose 
+	# ?OlsonNames ... interesting
+	# As from R 3.5.0, when a time zone location is first found in a session, its value is cached in object .sys.timezone in the base environment.
+	# https://data.iana.org/time-zones/tz-link.html#tzdb
+	# https://time.is/ [your clock is 0.6 seconds behind ... latency?]
 	
-	jyear = as.integer(jyear);
-	jmonth = as.integer(jmonth);
-	jday = as.integer(jday);
+	memory.set("tz.names", OlsonNames(), "DATE" );  # doesn't have map to offsets?  stringi
+	memory.set("tz.out", "UTC", "DATE");
+		s.tz = Sys.timezone();
+	memory.set("tz.in", s.tz, "DATE");
+	memory.set("tz.local", s.tz, "DATE");
+	memory.set("tz.local", date.getTimeZoneOffset(s.tz), "DATE" );
+	# 1970 EPOCH 
+	memory.set("tz.origin", structure(0, class = c("POSIXt", "POSIXct") ), "DATE" );
 	
-	IN_THE_BEGINNING = 10000 	# e.g., ~10,000 BC ... 
-								# year = 1 => 1 AD/CE
-								# year = 0 => 1 BC/BCE
-								# year = -1 => 2 BC/BCE
-								# 4800 is traditional number 
-								#   --> DEFAULT offset is -32045
-								# will alter offset
-								# OLD-SCHOOL ALGO - unsigned INTEGERS
-								# New Year was March 1, JULIAN CALENDAR
+		i.tz = stringi::stri_timezone_info();
+	memory.set("tzi.local", i.tz, "DATE");
+	memory.set("tzi.local.offset", i.tz$RawOffset, "DATE");
 	
-	# [a] MAPS Jan/Feb as 11/12 months
-	# [y] places Jan/Feb in previous year 
-	a = as.integer( (14 - jmonth)/12 );		
-	y = as.integer( jyear + IN_THE_BEGINNING - a );
-	m = as.integer( jmonth + 12 * a - 3); 
+	# x = stri_timezone_list(); y = OlsonNames(); stopifnot(identical(x,y));
+	# stri_timezone_list(offset=5.5)
+	# stri_timezone_list(region='US', offset=-10)
 	
-	# https://www.slideshare.net/chenshuo/datetime-julian-date # SLIDE 13
-	# daysBeforeMonth(March) = 0 
-	mm = as.integer( (153*m + 2)/5 );
+		cat("\n", " DATE INIT:  unless otherwise specified, all dates ",
+					" will be outputed to [UTC] time.  Your local timezone is: ",
+					Sys.timezone(), " \n\n\t ", "You can change these default ",
+					" paramaters any time with `memory.set` and access them ",
+					" with `memory.get`.  Please look inside this function ",
+					" for more details. ", "\n");
 	
-	JPN =  jday + mm + 365*y + as.integer( y/4 );  # JULIAN LEAP YEAR 
-	
-	return(date.computeOffset(JPN, -1, offset.for, offset));	
 	}
 	
-	
 
-date.fromJulianProlepticNumber = function(JPN,  
-										offset.for="julian",
-										offset = NULL
-										)
-	{	
-	JPN = as.numeric(JPN);
-
-	IN_THE_BEGINNING = 10000;
-		# FOUR CENTURIES
-	CENTURY_ = 365.25*400;  # (GREG leap days)?  140697; # 
-		# FOUR YEARS  
-	YEARS_   = 365.25*4;	#  1461; # 
+date.getVar = function(key)
+	{
+	ke = functions.cleanKey(key, 2, keep=".");
+	if(key = "l.t")  # local.tz
+		{
+		
+		}
 	
-	a = date.computeOffset(JPN, 1, offset.for, offset) - 1; 
-	b = as.integer((4*a + 3) / CENTURY_);		# four century phase
-	c = a - as.integer((b*CENTURY_)/4);			# one century phase 
-	d = as.integer((4*c + 3) / YEARS_);			# within century phase
-	e = c - as.integer((YEARS_ * d) / 4);		# days in year 
-	m = as.integer((5*e + 2) / 153);			# shifted months
-
-	# day of month (offset - 1), now + 1
-	jday = e - as.integer((153*m + 2)/5) + 1;	
-	
-	# month of year
-	jmonth =  m + 3 - 12 * as.integer(m / 10);					
-	
-	# year
-	jyear = b*100 + d - IN_THE_BEGINNING + as.integer(m / 10); 	
-
-	
-	list(	jyear 	= as.integer( jyear ), 
-			jmonth 	= as.integer( jmonth ), 
-			 jday 	= as.integer( jday) 
-		);
-		
-		
-		
-		
-		
-		
-		
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	
+
+
 	
 	
 	
@@ -490,29 +227,69 @@ date.getDaysInTropicalYear = function()
 ## everything to "UTC" than back to your format 
 ## sometimes UTC is tz.in, sometimes tz.out 
 
-date.getTimeZone = function(tz="in")
+date.getTimeZone = function(which.tz="in")
 	{
-	tz = functions.cleanKey(method, 2);
+	wt = functions.cleanKey(which.tz, 2);
 	# if from INIT, we have other parameters, use them 
 	
+	## [lo]cal ... 
 	
 	# CURRENTLY
-	if(tz == "ou") { return("UTC"); }
+	if(wt == "ou") { return("UTC"); }
 	Sys.timezone();
-	}
-
-date.getOrigin = function() {} 
-date.getOrigin = function()
-	{
-	# if from INIT, we have other parameters, use them 
-	origin = structure(0, class = c("POSIXt", "POSIXct") );
-	origin;
 	}
 		
 date.checkTimeZone = function() {} 		
 date.checkTimeZone = function(tz)
 	{
 	tz %in% OlsonNames();
+	}
+	
+# strftime('%Y-%m-%d', time, 'UTC', 'local')
+
+# strftime(date.getNow(), format='%Y-%m-%d', tz='UTC')
+# string format time ... not POSIX 
+# strptime ... string POSIX time 
+## NOT a string input ... 
+
+# stri_timezone_list ... with UTC offsets .. 
+# stri_datetime_create(5775, 8, 1, locale='@@calendar=hebrew') # 1 Nisan 5775 -> 2015-03-21
+# https://unicode-org.github.io/icu-docs/apidoc/dev/icu4c/calendar_8h_source.html
+#include <unicode/calendar.h>
+#include <unicode/gregocal.h>
+# https://unicode-org.github.io/icu-docs/apidoc/dev/icu4c/classicu_1_1GregorianCalendar.html
+
+
+## HEBREW 
+# Month names
+# Biblical references to the pre-exilic calendar include ten of the twelve months identified by number rather than by name. Prior to the Babylonian captivity, the names of only four months are referred to in the Tanakh:
+
+# Aviv – first month[4]
+# Ziv – second month[5]
+# Ethanim – seventh month[6] and
+# Bul – eighth month.[7] ... Bul - shitta ... 
+	
+date.convertFromUTC = function(datePOSIX.UTC, out.tz="local")
+	{
+	if(out.tz == "local") { out.tz = 
+	if(!is.null(out.tz)) 
+		{ 
+		res = 	as.POSIXct(res, tz = out.tz, origin=origin); 
+		}
+	
+	}
+
+
+date.searchForTimeZone = function(tzw = "*Cairo*")
+	{	
+	memory.init();
+	timezones = memory.get("timezones");
+	res = regex.wildcardSearch(timezones, tzw);
+	if(length(res) < 1) { return(NULL); }
+	
+	out = timezones[res];
+	names(out) = res;
+	out;
 	}
 
 
@@ -543,6 +320,8 @@ date.toUnix = function(datePOSIX = date.now(),
 							out.tz = NULL
 						)
 	{
+	
+	
 	res = date.checkPOSIXct(datePOSIX, in.tz, origin, out.tz);
 	as.numeric(res);	
 	}
@@ -1364,13 +1143,15 @@ asDateTime = function(strvec, from="%Y-%m-%d %H:%M:%S", to="", num=TRUE)
 
 
 
+#  strftime('%Y-%m-%d', time, 'unixepoch', 'localtime')
 
-
-date.now = function(format="MySQL", tz="")
+date.getNow = function(format="MySQL", tz="")
 	{
 	now = Sys.time();
 	
 	}
+
+date.now = date.getNow
 
 date.toUnix = function(time=NULL, ...)
 	{
