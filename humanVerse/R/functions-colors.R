@@ -1,11 +1,26 @@
 
-# colors = c("red","#FF9944",2);
-# cat("\n HVcolor \n");
-# x = color.col2rgb(colors); y = color.rgb2col(x);  stopifnot(identical(y, colors));
-# cat("\n BASE \n");
-# x = grDevices::col2rgb(colors); y = rgb2col(x); stopifnot(identical(y, colors));
 
 
+##################################################
+#'
+#' color.col2rgb (as rgb2col)
+#'
+#' Extends the built-in grDevices::col2rgb function
+#' [ See grDevices::convertColor or grDevices::make.rgb ]
+#'
+#' @param x vector of colors, with ... as lazy input
+#' @param x
+#' @param alpha FALSE (RGB matrix); TRUE (RGBa matrix)
+#' 
+#' @return matrix of colors in RGB matrix format
+#' @export
+#'
+#' @examples
+#' colors = c("red","#FF9944",2);
+#' cat("\n HVcolor \n");
+#' x = color.col2rgb(colors); y = color.rgb2col(x);  stopifnot(identical(y, colors));
+#' cat("\n BASE \n");
+#' x = grDevices::col2rgb(colors); y = rgb2col(x); stopifnot(identical(y, colors));
 color.col2rgb = function(colors, ..., alpha=FALSE)
 	{
 	colors = dots.addTo(colors, ...);
@@ -13,61 +28,33 @@ color.col2rgb = function(colors, ..., alpha=FALSE)
 	colnames(res) = colors;  # original, so inverse will know
 	res;
 	}
-	
-color.rgb2col = function(matrixRGB)
+
+##################################################
+#'
+#'
+#' color.rgb2col (as rgb2col)
+#'
+#' Reverse the built-in grDevices::col2rgb function
+#' [ See grDevices::convertColor or grDevices::make.rgb ]
+#'
+#' @param matrixRGB matrix of RGB or RGBa colors (with names)
+#' @param force.hex TRUE (returns HEX)
+#'					FALSE (names if exist; HEX otherwise)
+#'
+#'
+#' @return CharacterVector of names (if exist), hex colors if not 
+#' @export
+#'
+#' @examples
+#'
+color.rgb2col = function(matrixRGB, force.hex=FALSE)
 	{
 	res = grDevices::rgb( t(matrixRGB)/255, names=colnames(matrixRGB));
+	if(force.hex){ return(res); }
 	if(!is.null(names(res))) { names(res); } else { res; }
 	}	
 	
 rgb2col = color.rgb2col;  # also works as an inverse for the base
-
-
-
-
-	
-	
-	keys = dots.addToKey(key, ...);
-
-more = unlist(list(...));
-	colors = c(colors, more);
-	# colors are "red", "#FF9944", or "i" (integer), as in `i=2; palette()[i];` 
-	# intermixed works ... grDevices::col2rgb(c("red","#FF9944",2), alpha=TRUE);
-	grDevices::col2rgb(colors, alpha=alpha);  
-
-
-color.rgb2col = function()
-	{
-	
-	}
-
-
-
-
-x = grDevices::col2rgb(c("red", "blue"))  
-
-rgb2col = function(x)
-	{
-	x.rgb = t(x)/255;
-	grDevices::rgb( x.rgb, names=rownames(x.rgb));
-	}
-
-x.rgb = t(x)/255; # transpose, norm on [0,1]
-  n = ncol(x.rgb);	# how many cols ... if 4 ... alpha = TRUE 
-  res = grDevices::rgb( x.rgb, names=rownames(x.rgb) );
-  res;
-
-color.col2rgb = function(colors, ..., alpha=FALSE)
-	{
-	more = unlist(list(...));
-	colors = c(colors, more);
-	# colors are "red", "#FF9944", or "i" (integer), as in `i=2; palette()[i];` 
-	# intermixed works ... grDevices::col2rgb(c("red","#FF9944",2), alpha=TRUE);
-	grDevices::col2rgb(colors, alpha=alpha);  
-	}
-	
-grDevices::col2rgb(c("red","#FF9944",2)
-
 
 
 
@@ -124,7 +111,7 @@ if(FALSE)
 #'
 #' @param x vector of colors
 #'
-#' @return vector of colors in RGB hex format
+#' @return matrix of colors in RGB matrix format
 #' @export
 #'
 #' @examples
