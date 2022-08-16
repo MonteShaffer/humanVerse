@@ -1,5 +1,37 @@
 
 
+color.init = function()
+	{
+	memory.init();
+	
+	
+	
+	}
+
+
+color.buildColorTable = function()
+	{
+debug = FALSE;
+	x = memory.get("table", "COLORS");
+	if(!is.null(x)) { return(x); }
+	
+	# local in package, change HVcpp to humanVerse 
+	y = suppressError( system.file("inst/R/colors.rds", 
+									package = "HVcpp", mustWork = TRUE),
+					show.notice=debug, msg="debug: color.buildColorTable" );
+					
+	if(!is.error(y)) 
+		{ 
+		z= readRDS(y);
+		memory.set("table", z, "COLORS");
+		return(z);
+		}
+		
+	# github ?
+	
+	
+	
+	}
 
 ##################################################
 #'
@@ -9,13 +41,16 @@
 #' [ See grDevices::convertColor or grDevices::make.rgb ]
 #'
 #' @param x vector of colors, with ... as lazy input
-#' @param x
+#' @param ...  Allows for lazy input of colors 
 #' @param alpha FALSE (RGB matrix); TRUE (RGBa matrix)
 #' 
 #' @return matrix of colors in RGB matrix format
 #' @export
 #'
 #' @examples
+#' color.col2rgb(c("red","#FF9944",2));  # colors() = "red", HEX, colors()[2]
+#' color.col2rgb("red","#FF9944",2);
+#' 
 #' colors = c("red","#FF9944",2);
 #' cat("\n HVcolor \n");
 #' x = color.col2rgb(colors); y = color.rgb2col(x);  stopifnot(identical(y, colors));
@@ -102,49 +137,6 @@ if(FALSE)
 # Conversion algorithms from http://www.brucelindbloom.com.
 # ?col2rgb
 
-
-
-#' rgb2col
-#'
-#' Reverse the built-in grDevices::col2rgb function
-#' [ See grDevices::convertColor or grDevices::make.rgb ]
-#'
-#' @param x vector of colors
-#'
-#' @return matrix of colors in RGB matrix format
-#' @export
-#'
-#' @examples
-#'
-#' rgb2col( grDevices::col2rgb("red") );
-#' rgb2col( grDevices::col2rgb("red", alpha=TRUE) );
-#' rgb2col( grDevices::col2rgb("#FF0000FF", alpha=TRUE) );
-#' rgb2col( grDevices::col2rgb("#FF000033", alpha=TRUE) );
-#' # it's UNKNOWABLE what the input was so we will later wrap a return method.
-rgb2col = function(x)
-  {
-  # reverses grDevices::col2rgb function
-  x.rgb = t(x)/255; # transpose, norm on [0,1]
-  n = ncol(x.rgb);	# how many cols ... if 4 ... alpha = TRUE 
-  res = grDevices::rgb( x.rgb, names=rownames(x.rgb) );
-  res;
-  }
-
-
-
-
-# extends basic function by allowing 
-	# ... as list of colors
-# color.col2rgb(c("red","#FF9944",2));
-# color.col2rgb("red","#FF9944",2);
-color.col2rgb = function(colors, ..., alpha=FALSE)
-	{
-	more = unlist(list(...));
-	colors = c(colors, more);
-	# colors are "red", "#FF9944", or "i" (integer), as in `i=2; palette()[i];` 
-	# intermixed works ... grDevices::col2rgb(c("red","#FF9944",2), alpha=TRUE);
-	grDevices::col2rgb(colors, alpha=alpha);  
-	}
 
 # will map names and colors?
 color.buildSet = function(setname="base", alpha=TRUE, colors=NULL)
