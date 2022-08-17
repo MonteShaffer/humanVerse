@@ -239,11 +239,12 @@ timer.print = function(key="DEFAULT", ...,
 		# relative time between STOPS
 		if(tim == "rel") { seconds = c( seconds[1], diff(seconds) ); } # 
 		
-		seconds = property.set("time.is", seconds, { if(tim == "rel") { "relative" } else { "absolute" } });
 
 		vkey = units.name;
 		vfactor = as.numeric(units.factor);
 		vals = as.numeric(seconds) * vfactor;
+		vals = property.set("time.is", vals, { if(tim == "rel") { "relative" } else { "absolute" } });
+
 		
 		# wrap into SWITCH?
 		row = switch(forma,
@@ -259,19 +260,32 @@ timer.print = function(key="DEFAULT", ...,
 			}
 		res[[key]] = row;
 		}	
-	list.return(res);
+	res = list.return(res);  
+	res = property.set("time.is", res, time.is);
+	res;
 	}
 	
 
 
+
+
+
+
+
+
+
+
+
+
 # can't use ... as already used ... dots[1], dots[2]
-timer.printALL = function(format="seconds", 
+timer.printALL = function(k=NULL, format="pretty", 
 							units.name = "seconds",
 							units.factor = 1,
 							append.names=TRUE, 
 							digits=2, 
 							as.internal = FALSE)
 	{
+debug = TRUE;
 	TIMER = "timer"; if(as.internal) { TIMER = ".timer"; }
 	
 	forma = functions.cleanKey(format, 5, keep="-");
@@ -289,6 +303,7 @@ timer.printALL = function(format="seconds",
 					res = NULL;  # PANEL of DATA (PANEL FORM)
 					for(key in keys)
 						{
+if(debug) { cat("\n", " KEY: ", key, "\n"); }
 						# I could pass "forma" here, but why?
 						x = timer.print(key, format=format, 
 											units.name=units.name,
@@ -297,23 +312,32 @@ timer.printALL = function(format="seconds",
 											time.is = "relative", 
 											digits=digits
 										);
-						dput(x);
+if(debug) { cat("\n", " x: ", "\n"); print(length(x)); print(str(x)); }
 						info = timer[[key]];
-						dput(info);
+if(debug) { cat("\n", " info: ", "\n"); print(length(info)); print(str(info)); }
 						
 						for(i in 1:length(x))
 							{
-							row = c(j, key, info$start, info$stop[i], info$diff[i], info$marker[i], forma, x[i]);
+							row = c(j, key, info$start, info$stop[i], info$diff[i], info$marker[i], format, x[i]);
 							res = rbind(res, row);
+if(debug) { cat("\n", " row: ", j, "\n"); print(length(row)); print(str(row)); }
+							j = 1 + j;
 							}	
-						j = 1 + j;
+						
 						}
-					dput(res);
+
 					df = as.data.frame(res);
-						rownames(df) = NULL; # seems to be weird (PRINT)
-						colnames(df) = c("key", "start", "stop", "absolute", "marker", "format", "relative");
-					df = df.setColumnType(df, c("start","stop","absolute"), "numeric"); 
 					
+						rownames(df) = NULL; # seems to be weird (PRINT)
+						colnames(df) = c("idx", "key", "start", "stop", "absolute", "marker", "format", "relative");
+if(debug) { cat("\n", " df1: ", "\n"); print(dim(df)); print(str(df)); }
+# stop("monte");		
+# return(df);		
+					# df = df.setColumnType(df, c("start","stop","absolute"), "numeric"); 
+					df$start = as.POSIXct( as.numeric(df$start), origin=date.getOrigin() );
+					df$stop = as.POSIXct( as.numeric(df$stop), origin=date.getOrigin() );
+					df$absolute = ( as.numeric(df$absolute) );
+if(debug) { cat("\n", " df2: ", "\n"); print(dim(df)); print(str(df)); }					
 					##df$start = date.fromUnix(df$start); 
 					##df$stop  = date.fromUnix(df$stop);
 					# last row is likely a string 
