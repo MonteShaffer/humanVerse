@@ -24,7 +24,6 @@
 #' rand(1,10, n=5, method="sample"); # Uses the sample method (available, but why?)
 #' rand(1,10, n=5, method="sample", sample.replace=FALSE); # min, max, n must be comformable "with replacement = FALSE"
 #' rand(1,10, n=5, seed=10);  # fixed seed requires the min/max to be known
-
 rand = function(min = -1*as.integer(Sys.time()), max = as.integer(Sys.time()), n = 1, method = "high-low", sample.replace = TRUE, seed = NULL, attributes=NULL)
     {
 	# if(is.null(seed)) { setSeed(NULL, "rand"); my.seed = getSeed("rand"); } else { my.seed = seed; }

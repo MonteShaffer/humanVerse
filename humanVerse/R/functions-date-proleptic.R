@@ -475,7 +475,7 @@ asDateTime = function(strvec, from="%Y-%m-%d %H:%M:%S", to="", num=TRUE)
 
 
 
-
+ 
 	> now = Sys.time()
 > now 
 [1] "2022-08-11 07:37:36 EDT"

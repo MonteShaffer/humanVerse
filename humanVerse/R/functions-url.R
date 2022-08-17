@@ -1,352 +1,191 @@
 
+urls = c("https://en.wikipedia.org/wiki/Columbia_Falls,_Montana",
+		"https://www.mshaffer.com/hello/there.html?j=3&id=3309480",
+		"https://stackoverflow.com/questions/695438/what-are-the-safe-characters-for-making-urls",
+		"https://en.wikipedia.org/wiki/Columbia_Falls,_Montana?monte=says&hi=TRUE#Demographics", 
+		"http://google.com"
+		);
 
-# https://www.gutenberg.org/cache/epub/feeds/
-# https://stackoverflow.com/questions/24853/what-is-the-difference-between-i-and-i#:~:text=The%20only%20difference%20is%20the,the%20value%20the%20operator%20returns.&text=So%20basically%20%2B%2Bi%20returns,will%20have%20its%20value%20incremented.
-
-
-
-encode.base64 = function(obj)
-	{ 
-	x = serialize(obj);
-	
-	}
-
-url.toBase64 = function(obj)
-	{
-	
-	raw = as.raw(obj)
-
-	openssl::base64_encode
-	}
-
-url.fromBase64 = function(str)
-	{
-
-	}
-
-url.fromList = function(str)
-	{
-
-	}
-
-url.toList = function(url = c("https://en.wikipedia.org/wiki/Columbia_Falls,_Montana"), ...)
-	{
-	# url = "
-	# manually parse ... https://www.mshaffer.com/hello/there.html?j=3&id=3309480
-# https://stackoverflow.com/questions/695438/what-are-the-safe-characters-for-making-urls
-
-	info = str.explode("://", url);
-	http_ = list.getElements(info, 1);
-	
-	more = list.getElements(info, 2);
-		find = c("/",".",",");
-    replace = c("-","^","+");
-
-
-
-	}
-
-
-# https://coolbutuseless.github.io/2021/12/04/base64-encoding/decoding-in-plain-r/
-
-## https://coolbutuseless.github.io/
-
-
-RFC 3548 suggests not only to replace the / character. The URL and Filename safe Alphabet replaces:
-
-the 63:nd / character with the underscore _
-the 62:nd + character with the minus -.
-
-
-
-
-
-
-
-# find = c("/",".",",");
-    replace = c("-","^","+");
-
-url.folderize = function(url, 	w.chars = c("://","/","?",":", "*",'"'), 
-								f.chars = c("@", "^^", "++", "^", "+", "__" ) )
-	{
-	# this could get spurious if they are not equal
-	str.replace(w.chars, f.chars, url); # this needs to be pair-wise
-	}
-
-url.defolderize = function(url, w.chars = c("://","/","?",":", "*",'"'), 
-								f.chars = c("@", "^^", "++", "^", "+", "__" ) )
-	{
-	# this could get spurious if they are not equal
-	## order matters ^^ before ^ on replacement
-	str.replace(f.chars, w.chars, url); # this needs to be pair-wise
-	}
-
-## https://en.wikipedia.org/wiki/Columbia_Falls,_Montana?monte=says&hi=TRUE#Demographics
-## url ="https://en.wikipedia.org/wiki/Columbia_Falls,_Montana?monte=says&hi=TRUE#Demographics"
-## folderize
-url.stringify = function(url, showGET = TRUE,
-						sep.dir = "^DIR^",						
-						sep.get = "__GET_{DATA}_GET__",
-						sep.base64 = "__B64_{DATA}_B64__"
+url.toPath = function() {}		
+url.toPath = function(url = "https://en.wikipedia.org/wiki/Columbia_Falls,_Montana",
+						w.chars = c("/", ",", "?"), 
+						f.chars = c("^", "+", "^q^")	
 						)
-	{
-	# using REGEX to deFolderize ... 
-	sep.http = "__{PROTOCOL}__";		
-										# pattern = "(_{2}){1}([^_]+){1}(_{2}){1}";
-										# info = regex.match(pattern, path_);
+  {
+  s = property.get("s", url);
+  if(!is.null(s)) { out = s; vector.appendProperties(out, url); return(out); }
+  
+  # remove everything after the anchor tag("#")
+  info = str.explode("#", url);
+  nurl = list.getElements(info, 1);
+  # set protocol ... http:// or https:// or ftp://
+  info = str.explode("://", nurl);
+  sep.http = "__{PROTOCOL}__";  # hard-coded so inverse REGEX will work 
+  http_ = str.replace("{PROTOCOL}", list.getElements(info, 1), sep.http);
+  more = list.getElements(info, 2);
+  # maybe truncate (e.g., stack overflow) 
+  more = str.replace(w.chars, f.chars, more);
+  
+  out = paste0(http_, more);
+vector.appendProperties(out, url);
+  }
 
-	info = str.explode("://", url);
-	http_ = str.replace("{PROTOCOL}", list.getElements(info, 1), sep.http);
-	more = list.getElements(info, 2);
-	 
-	info = str.explode("?", more);
-	path_ = dir.cleanupPath( list.getElements(info, 1), file.sep = sep.dir );
-	more = list.getElements(info, 2);
-
-	get_ = NULL;
-	if(showGET)
-		{
-		info = str.explode("#", more);
-		get_ = str.replace("{DATA}", list.getElements(info, 1), sep.get) ;
-		## DONE here 
-			get_[is.na(get_)] = "";
-		more = list.getElements(info, 2);
-		}
-	# lot's of funny symbols possible in ANCHOR
-	more.na = is.na(more);
-	b64_ = str.replace("{DATA}", base64.enc(more), sep.base64);
-	b64_[more.na] = "";
-	
-
-	folder = paste0(http_, path_, get_, b64_ );
-				### flen = str.len(folder);
-		# long filenames may create a PROBLEM ... calculate at FULL PATH
-		# maybe in folder one-level UP store a hash-table 
-		# MD5 -> TRUE KEY
-		# maybe multiple files if pooling ... each pooling element writes to its file ... 
-		# names(folder) = md5.digest(folder);  
-	folder;
-	}
+folderizeURL = url.toPath;
 
 
-# ALIASE:: url.toPath
-
-
-url.deStringify = function(folder, showGET = TRUE,
-								sep.dir 	= "^DIR^",
-								sep.get 	= "__GET_{DATA}_GET__",
-								sep.base64 	= "__B64_{DATA}_B64__"
+url.fromPath = function() {}		
+url.fromPath = function(path = "__https__en.wikipedia.org^wiki^Columbia_Falls+_Montana",
+						w.chars = c("/", ",", "?"), 
+						f.chars = c("^", "+", "^q^")	
 						)
-	{
-	sep.http = "__{PROTOCOL}__";  # hardcoded b/c of REGEX
-
-	get_ = NULL;
-	if(showGET)
-		{
-		s.get = str.explode("{DATA}", sep.get);
-			get_ = str.between(folder, s.get);
-				na.get = is.na(get_);
-				get_ = paste0("?", get_); 
-				get_[na.get] = "";
-		}
-
-	s.base64 = str.explode("{DATA}", sep.base64);
-		b64_ = base64.dec( str.between(folder, s.base64) );
-			na.b64 = is.na(b64_);
-				# if !showGET, the TRUE anchor tag <#> is in the base64
-				# anchor is WORTHLESS? storing anyway
-				sep.anchor = "#"; if(!showGET) { sep.anchor = "?"; }
-			b64_ = paste0(sep.anchor, b64_); 
-			b64_[na.b64] = "";
-
-
-	info = str.explode(s.get[1], folder);
-		more = list.getElements(info, 1);
-		path_ = str.replace(sep.dir, "/", more);
-
-	## THIS WILL BREAK if you change the 
-	# https://regex101.com/r/dYJHqo/1
-	pattern = "(_{2}){1}([^_]+){1}(_{2}){1}";
-	info = regex.match(pattern, path_);
-		http_ = list.getElements(info, 3);
-
+  {
+  s = property.get("s", path);
+  if(!is.null(s)) { out = s; vector.appendProperties(out, path); return(out); }
+  
+  npath = str.replace(rev(f.chars), rev(w.chars), path);
+  
+  # regex.wildcardSearch(npath, "__*__");
+  pattern = "(_{2}){1}([^_]+){1}(_{2}){1}";
+	info = regex.match(pattern, npath);
+		http_ = list.getElements(info, 3);	
 		http__ = paste0("__",http_,"__");
 
-		final_ = str.replace(http__, paste0(http_,"://"), path_);
-
-	url = paste0(final_, get_, b64_ );
-
-	}
-
-# ALIASE:: url.fromPath
-
-# https://www.mshaffer.com/hello/there.html?j=3&id=3309480
-
-urls = c("https://en.wikipedia.org/wiki/Columbia_Falls,_Montana?monte=says&hi=TRUE#Demographics", "https://www.mshaffer.com/hello/there.html?j=3&id=3309480", "http://google.com");
-
-folderizeURL = function(url = "https://en.wikipedia.org/wiki/Columbia_Falls,_Montana")
-  {
-	# could be multivariate?
-  # TODO: update to explodeMe and str_replace
-  info = strsplit(url, "//", fixed=TRUE);
-	str = info[[1]][2];
-	prot = str.replace(":","", info[[1]][1]);
-
-    #find = c("/",".",",");
-    #replace = c("_-_","^","+");
-	
-	find = c("/",",");
-    replace = c("^","+");
-    n.find = length(find);
-  for(i in 1:n.find)
-    {
-    str = gsub(find[i],replace[i],str,fixed=TRUE);
-    }
-	str = paste0("__",prot,"__", str);
-  str;
+		out = str.replace(http__, paste0(http_,"://"), npath);
+vector.appendProperties(out, path);  # stores original path, caching if reusing  
   }
 
 
+defolderizeURL = url.fromPath;
+unfolderizeURL = url.fromPath;
+deFolderizeURL = url.fromPath;
+unFolderizeURL = url.fromPath;
 
-url.download = function(url, local) {} 
-
-
-url.trapOpenConnection = function(url, ...)
+url.testConnection = function(urls, verify=FALSE, timeout=2, ...)
 	{
-	## # just give it a whirl 
-	## https://stackoverflow.com/questions/52911812/check-if-url-exists-in-r
-	# ## sees if the URL registers as valid with libcurl
-	conn = url.trap(url);
-		## connection mode ... ?open.connection
-		if(!is.set(cmode)) 		{ cmode = "rt"; } # read-text  
-		if(!is.set(timeout)) 	{ timeout = 2; }  # seconds
-	
-	if(isFALSE(conn))
+debug = FALSE;
+	n = length(urls);
+	res = logical(n);
+	for(i in 1:n)
 		{
-		return(conn); # it has some append attributed
-		} else {
-				conn.info = tryCatch	(
+		url = urls[i];
+		conn = suppressError( url(url),
+							show.notice=debug, msg="debug url of url.testConnection" 
+							);
+		if(is.error(conn)) { next; }
 
-										{
-										info = open.connection(conn, open=cmode, timeout=timeout, ...);
-										},
-
-										warning = function(w)
-											{
-											warning(paste0("### WARNING ###  throws a warning","\n\n",w));
-											info; # let's still return the value 	.
-											},
-					
-										error = function(e)
-											{
-											# warning(paste0("### ERROR ###  throws an error","\n\n",e));
-											res = FALSE;
-											res = property.set(res, "ERROR", e);
-											return (res);
-											},
-
-										finally =
-											{
-								
-											}
-										);
-				return(conn.info);
-				}
-	return(FALSE);
-	}
-
-
-## call this function url.trap (url) instead of url (url)
-url.trap = function(url)
-	{
-	url.info = tryCatch	(
-
-						{
-						info = url ( url );
-						},
-
-						warning = function(w)
-							{
-							warning(paste0("### WARNING ###  throws a warning","\n\n",w));
-							info; # let's still return the value 	.
-							},
-	
-						error = function(e)
-							{
-							# warning(paste0("### ERROR ###  throws an error","\n\n",e));
-							res = FALSE;
-							res = property.set(res, "ERROR", e);
-							return (res);
-							},
-
-						finally =
-							{
-				
-							}
-						);
-	url.info;
-	}
-
-
-
-
-
-# https://stackoverflow.com/questions/52911812/check-if-url-exists-in-r
-
-# urls = c("http://google.com/", "http://amazon.com/")
-# stati = c(200, 300, 404);
-url.test = function(urls, stati = NULL, ... )
-	{
-	n.urls = length(urls);
-	res = logical(n.urls);
-	for(i in 1:n.urls)
-		{
-		url = urls[i];		
-		if(isTRUE(capabilities("libcurl")))
-			{
-			h = http.headers(url);
-			s = http.status(h);
-			## is the plural of status ... statuses or stati ?
-			if(is.null(stati))
-				{
-				res[i] = !is.empty(s);
-				} else {
-						res[i] = if(s %in% stati) { TRUE } else { FALSE }
-						}
-			} else {				
-					check = url.trapOpenConnection(url);	
-					res[i] = if(is.null(check)) { FALSE } else { TRUE }
-					}		
+		# actually ping it 
+		head = suppressError( curlGetHeaders(url, timeout=timeout, verify=verify),
+							show.notice=debug, msg="debug head of url.testConnection"
+							);
+		if(is.error(head)) { next; }
+		
+		res[i] = TRUE;
 		}
 	res;
 	}
 
+ 
+# this is base function that wraps download.file ... 
+# elsewhere we have to determine the paths ... 
+# setwd("C:/_git_/-R-")
+# paths = getwd();
 
+# "2022-08-16 04:21:54 EDT" ... [13] "2022-08-17 10:28:39 EDT"
+# > timer.start("bits"); x = prime.bits((1000*1000)); length(x); max(x); timer.stop("bits");
+# [1] 1000000
+# [1] 15485863
 
+ # howMany:  9 
 
-##################################################
-#'
-#' is.url
-#'
-#'
-#' @param file (what is the character string to be searched)
-#'
-#' @return TRUE or FALSE
-#' @export
-#'
-#' @examples
-# format or test connection 
-is.validURL = function(urls, deep=FALSE)
+ # CASE 1 
+
+ # RELATIVE TIME AT [ STOP-9 ]      1.25 seconds 
+
+url.download = function(urls, paths, use.cache=TRUE, quiet=FALSE, timeout=2, verify=FALSE, ...)
 	{
-	urls = str.trim(urls);
-	if(!deep)
+debug = FALSE;
+	n.urls = length(urls); n.paths = length(paths);
+	if(n.paths == 1) { paths = rep(paths, n.urls); n.paths = n.urls; }  # many to one ...
+	if(n.urls != n.paths) { stop("mismatch in lengths of urls/paths"); }
+	
+	urls_ = url.toPath(urls);
+	folders = paste0(paths, "/", urls_, "/" );	# add trailing slash
+	folders = str.replace("//", "/", folders)				# in case, trailing slash not needed
+	n.max = max( strlen(folders) );
+	if(n.max > 225) { stop("folder/filename lengths are getting long"); }
+	
+	
+	## can I get headers and content at the same time ??? w/o curl ?
+	errors = logical(n.urls);
+	for(i in 1:n.urls)
 		{
-		fil = functions.cleanKey(urls, 3);
-		x = (fil == "htt"); y = (fil == "ftp");  # multivariate, truth tables
-		return ( (x+y > 0) );
+		url = urls[i];
+		url_ = urls_[i];
+		folder = folders[i];
+		pname = "index.html";
+		dir.createDirectoryRecursive(folder, verbose=FALSE);
+		f.page = paste0(folder,pname); 	# no extension
+		
+		cat("\n", "   FILENAME: ", f.page, " \n");
+		
+		if(file.exists(f.page) && use.cache ) 
+			{ 
+			cat("\n", "\t\t\t ... not downloading, CACHED ", "\n");
+			next; 
+			}
+		
+		s = Sys.time();
+		
+		f.info = paste0(folder,"-info-"); 		# no extension
+			cat( paste0("START:\t",s) , "\n", sep="", file=f.info, append=FALSE);
+			cat( paste0("url:\t",url) , "\n", sep="", file=f.info, append=TRUE);
+			cat( paste0("url_:\t",url_) , "\n", sep="", file=f.info, append=TRUE);
+			cat( paste0("folder:\t",folder) , "\n", sep="", file=f.info, append=TRUE);
+			cat( paste0("pname:\t",pname) , "\n", sep="", file=f.info, append=TRUE);
+		f.head = paste0(folder,"-head-"); 		# no extension
+		
+		h = suppressError( curlGetHeaders(url, timeout=timeout, verify=verify),
+							show.notice=debug, msg="debug head of url.download"
+							);
+		if(!is.error(h)) 
+			{ 
+			cat( h , "\n", sep="", file=f.head, append=FALSE);
+			} else {
+					msg = "\n ============ ERROR with HEADERS ============ \n";
+					cat("\n", msg, "\n");
+					cat(msg, "\n", sep="", file=f.info, append = TRUE); 
+					cat( h , "\n", sep="", file=f.info, append=TRUE);
+					errors[i] = TRUE;
+					next;
+					}
+		
+		
+		
+			# wrap in TRAP error? already caught with headers above 
+			download.file(url, f.page, quiet=quiet, verify=verify, ...)
+			 
+		e = Sys.time();
+		d = as.numeric(e) - as.numeric(s);
+		
+			cat( paste0("end:\t",e) , "\n", sep="", file=f.info, append=TRUE);
+			cat( paste0("elapsed:\t",d) , "\n", sep="", file=f.info, append=TRUE);
+		
 		}
-	# is valid ???
-	stop("TODO: REGEX to filter valid URL");
+	
+	# with libcurl, I could do multivariate without "blocking"
+	# Support for method "libcurl" was optional on Windows prior to R 4.2.0
+	# download.file(url, path, quiet=quiet...)
+	
+	res = folders;
+	res = property.set("ERRORS", res, errors);
+	invisible(res);
 	}
 
+
+
+
+
+# -header-
+# -info- ... full url , time to download, etc. ... 
+# index.html if the path has trailing slash ... otherwise page name 
 

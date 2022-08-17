@@ -275,7 +275,7 @@ file.init = function(my.path = "C:/_R-TEMP_/", verbose = TRUE,
 #' dir.createDirectoryRecursive("aldkj"); # ... will create in getwd()
 dir.createDirectoryRecursive = function(folder, verbose=TRUE)
   {
-	folder = dir.smartInclude(folder);
+	# folder = dir.smartInclude(folder);
 	msg = list();
 	msg[["EXISTS"]] = paste0(" DIRECTORY ", "\n\t\t\t", folder, "\n\n\t", "already exists", "\n\n");
 	msg[["ATTEMPT"]] = paste0(" ATTEMPTING TO CREATE DIRECTORY ", "\n\t\t\t", folder, "\n\n");

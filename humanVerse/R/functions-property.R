@@ -14,9 +14,11 @@
 #'
 #' @examples
 # .get has to be key first ... SYSTEM 
+# set key on obj with value 
 property.set = function(key, obj, value=NULL, 
 									property.type="attributes",
-									as.null = FALSE
+									as.null = FALSE,
+									recycle = FALSE
 									)
 	{
 	pt = functions.cleanKey(property.type, 1);
@@ -42,11 +44,14 @@ property.set = function(key, obj, value=NULL,
 		
 	if(pt == "a")
 		{
-		for(i in 1:n.key)
+		if(recycle)
 			{
-			attributes(obj)[[ key[i] ]] = value[idx.v];
-			idx.v = 1 + idx.v; if(idx.v > n.val) { idx.v = 1; }  # allows for looping gracefully if UNEVEN
-			}
+			for(i in 1:n.key)
+				{
+				attributes(obj)[[ key[i] ]] = value[idx.v];
+				idx.v = 1 + idx.v; if(idx.v > n.val) { idx.v = 1; }  # allows for looping gracefully if UNEVEN
+				}
+			} else { attributes(obj)[[ key[1] ]] = value; }
 		return (obj);
 		}
 	if(pt == "s" || pt == "e")  # System Environment

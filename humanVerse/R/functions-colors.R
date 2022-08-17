@@ -1,5 +1,6 @@
 
 
+	
 color.init = function()
 	{
 	memory.init();
@@ -7,6 +8,14 @@ color.init = function()
 	invisible( color.buildColorTable() );
 	
 	# MSG INIT ... welcome to the humanVerse ... 
+	
+	
+# ?convertColor 
+# ?colorConverter
+# Conversion algorithms from http://www.brucelindbloom.com.
+# ?col2rgb
+
+
 	
 	}
 
@@ -66,15 +75,8 @@ debug = FALSE;
 dechex = function(intdec, ..., n=NULL, pre=NULL, use.names.if.available=TRUE)
 	{
 	intdec = dots.addTo(intdec, ...);
-	n.intdec = length(intdec);
-	int.names = names(intdec);
-	
-	if(use.names.if.available && (length(int.names) == n.intdec)) 
-		{ 
-		res = int.names; 
-		names(res) = as.character(intdec);
-		return(res);
-		}
+	res = vector.useNames(intdec);
+	if(use.names.if.available && !is.null(res)) { return(res); }
 	
 	res = toupper( as.character( as.hexmode( as.integer( intdec ) ) ) );
 	# if the vector already has two-character mode ... dechex( 0:255);  ... n is not necessary
@@ -88,12 +90,6 @@ dechex = function(intdec, ..., n=NULL, pre=NULL, use.names.if.available=TRUE)
 #' @rdname dec2hex
 #' @export
 dec2hex = dechex;
-
-
-# DDEECC -> rounds to dcedcb
-# hexadecimal to decimal
-# hexdec("FF");
-# alias hex2dec
 
 
 ##################################################
@@ -122,16 +118,8 @@ hexdec = function(hexstr, ..., use.names.if.available=TRUE)
 	{
 	hexstr = dots.addTo(hexstr, ...);
 	o.hexstr = hexstr;
-	n.hex = length(hexstr);
-	
-	hex.names = names(hexstr);
-	
-	if(use.names.if.available && (length(hex.names) == n.hex)) 
-		{ 
-		res = as.integer(hex.names); 
-		names(res) = o.hexstr;
-		return(res);
-		}
+	res = vector.useNames(hexstr);
+	if(use.names.if.available && !is.null(res)) { return(res); }
 	
 	# if it has "color" pre-pend, remove it ...	
 	hexstr = str.replace("#", "", hexstr);
@@ -146,6 +134,9 @@ hexdec = function(hexstr, ..., use.names.if.available=TRUE)
 
 
 
+#' @rdname hex2dec
+#' @export
+hex2dec = hexdec;
 
 
 
@@ -212,12 +203,13 @@ rgb2col = color.rgb2col; 	# also works as an inverse for the base
 
 
 
-
-
-
-
-
-
+color.forceHEX = function(colors, ..., method="base")
+	{
+	colors = dots.addTo(colors, ...);
+	x = suppressError( grDevices::col2rgb(colors) );
+	if(!
+	
+	}
 
 
 if(FALSE)
@@ -250,10 +242,37 @@ if(FALSE)
 	}
 
 
-# ?convertColor 
-# ?colorConverter
-# Conversion algorithms from http://www.brucelindbloom.com.
-# ?col2rgb
+
+
+color.col2hex = function(colors, ..., alpha=FALSE, use.names.if.available=TRUE)
+	{
+	colors = dots.addTo(colors, ...);
+	res = vector.useNames(colors);
+	if(use.names.if.available && !is.null(res)) { return(res); }	
+	
+	matrixRGB = color.col2rgb(colors, alpha=alpha);	
+	res = grDevices::rgb( t(matrixRGB)/255, names=colnames(matrixRGB));
+	return(res);
+	}
+
+	
+color.hex2col = function(hexstr, ..., use.names.if.available=TRUE)
+	{
+	hexstr = dots.addTo(colors, ...);
+	res = vector.useNames(hexstr);
+	if(use.names.if.available && !is.null(res)) { return(res); }
+	
+	## are they in our lists?
+	
+	## should we do a deep search, replace with nearest neighbor?
+	
+	matrixRGB = color.col2rgb(colors, alpha=alpha); 
+	
+	res = grDevices::rgb( t(matrixRGB)/255, names=colnames(matrixRGB));
+	return(res);
+	}
+
+
 
 
 # will map names and colors?
@@ -415,6 +434,7 @@ if(exists("monte", .GlobalEnv$.humanVerse[["colors"]][["lists"]]))
 #'
 #' @examples
 #' .color.average("#abcdef", "#123456");
+# maybe color.stats(hexstr, "mean/median/mode/dist/cosine")
 .color.average = function(a.hex, b.hex)
   {
   # maybe write generic color "function", FUN = mean
@@ -442,8 +462,9 @@ if(exists("monte", .GlobalEnv$.humanVerse[["colors"]][["lists"]]))
 color.setOpacity = function(hexvec, opacity=100)
 	{
 	hexvec = checkHEX(hexvec);  # this allows "color.names"
-	alpha = dechex(255 * opacity/100, n=2);
-	paste0(hexvec,alpha);
+	alpha = ( dechex(255 * opacity/100, n=2) );
+	#unname( paste0(hexvec,alpha) );
+	( paste0(hexvec,alpha) );
   }
 
 

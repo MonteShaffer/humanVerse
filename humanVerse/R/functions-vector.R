@@ -1,14 +1,47 @@
 
 
+
+vector.appendProperties = function (res, info, keep.source=TRUE)
+	{	
+	if(keep.source) { res = property.set("s", res, info); }
+	# res = property.set("strlen.s", res, strlen(info));
+	# res = property.set("strlen.o", res, strlen(res));
+	res;	
+	}
+
+vector.useNames = function(info)
+	{
+	n.info = length(info);
+	names.info = property.get("names", info);
+	names.len = strlen(names.info);
+	dput(names.len); 
+	if((length(names.info) == n.info))
+		{
+		res = names.info;
+		names(res) = info;
+		# set KEY on OBJ to VAL
+		res = property.set("strlen", res, names.len);
+		res = property.set("names", res, info);
+		return(res);
+		}
+	return(NULL);	
+	}
+	
+
+
+
+
 .begin = function(x)
 	{
 	1;
 	}
-
-.end = function(x)
+ 
+.end = function(x)  # could it be from THIS
 	{
 	length(x);
 	}
+	
+	
 
 
 #' getNearestIndex

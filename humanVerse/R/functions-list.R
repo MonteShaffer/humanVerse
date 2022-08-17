@@ -161,7 +161,7 @@ list.getLengths = function(info)
 
 
 list.truncateLength = function(info, n)
-	{	
+	{	 
 	dput(info);
 	n.info = length(info);
 	if (!is.list(info)) 

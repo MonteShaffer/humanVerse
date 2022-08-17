@@ -82,6 +82,7 @@ getSeed = seed.get;
 #'
 #' @return
 #' @export
+seed.set = function() {}
 seed.set = function(seed, key, ..., 
 							args.set = list(), 
 							print.seed = TRUE, 

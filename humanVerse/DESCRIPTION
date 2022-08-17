@@ -1,7 +1,7 @@
 Package: humanVerse
 Type: Package
 Title: Saving Human-Life Hours with "human-verse" forms of R functions
-Version: 3.1.4.1
+Version: 3.1415
 Authors@R: person( "Monte J. Shaffer", email = "monte.shaffer@gmail.com",
   role = c("aut", "cre")  )
 Description: Manipulating dataframes, "git r done" ...
@@ -31,7 +31,7 @@ curl,
   microbenchmark
   
 Imports:
- 
+ # libcurl capability, what version of R 
   graphics,  
   grDevices,
   jsonlite,

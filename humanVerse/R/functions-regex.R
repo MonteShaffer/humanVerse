@@ -1,16 +1,5 @@
 
 
-
-
-
-
-
-
-
-
-
-
-
 # str contains the wildcard operator `*` [map any chars] or `?` [map single char]
 # it wraps around START / END, options to edit
 # it will build a 
@@ -20,7 +9,7 @@ regex.prepWildcard = function(search.term, ...)
 	utils::glob2rx(search.term, ...);
 	}
 	
-	 
+	  
 # grep(value = FALSE) ... return's idx ... 
 regex.wildcardSearch = function(searching.what, search.term, ignore.case=TRUE, value = FALSE, ...)
 	{
@@ -34,6 +23,24 @@ regex.wildcardSearch = function(searching.what, search.term, ignore.case=TRUE, v
 # grep(grx, c("monte", "MONTANA"), ignore.case=TRUE, perl=TRUE);
 # grep() ... shows the indexes of matches ... TRUE / FALSE 
 
+
+
+# see preg_match at PHP
+regex.match = function(pattern="(^[^:]+):(.+)", 
+						subject=c("Archs: x64","Encoding: UTF-8"),
+						perl=TRUE)
+	{
+
+	r = regexec(pattern, subject, perl=perl); ### THIS WORKS
+	s = regmatches(subject, r);
+
+	slen = length(s);
+
+	if(slen == 0) { return(FALSE); }
+	if(slen == 1 && length(s[[1]]) == 0 ) { return(FALSE); }
+
+	list.return(s);
+	}
 
 
 
@@ -69,24 +76,6 @@ subject = "a(a(a)(aa(a)a)a)a"; # remove outer parentheses, do again
 
 
  
-
-# see preg_match at PHP
-regex.match = function(pattern="(^[^:]+):(.+)", 
-						subject=c("Archs: x64","Encoding: UTF-8"),
-						perl=TRUE)
-	{
-
-	r = regexec(pattern, subject, perl=perl); ### THIS WORKS
-	s = regmatches(subject, r);
-
-	slen = length(s);
-
-	if(slen == 0) { return(FALSE); }
-	if(slen == 1 && length(s[[1]]) == 0 ) { return(FALSE); }
-
-	list.return(s);
-	}
-
 
  
 
