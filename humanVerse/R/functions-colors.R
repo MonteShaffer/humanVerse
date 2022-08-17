@@ -4,7 +4,9 @@ color.init = function()
 	{
 	memory.init();
 	
+	invisible( color.buildColorTable() );
 	
+	# MSG INIT ... welcome to the humanVerse ... 
 	
 	}
 
@@ -28,14 +30,114 @@ debug = FALSE;
 		}
 		
 	# github ?
+	# https://github.com/MonteShaffer/humanVerse/raw/main/humanVerse/inst/R/colors.rds
+	# download and readRDS 
 	
+	## otherwise, rebuild from 
+	# https://github.com/MonteShaffer/humanVerse/tree/main/-data-/-colors-
 	
 	
 	}
 
+
+
+
+
 ##################################################
 #'
-#' color.col2rgb (as rgb2col)
+#' dechex
+#'
+#' Converts a decimal to hexadecimal
+#'
+#' @param intdec vector of one or more integer values
+#' @param ... vector of one or more integer values
+#' @param n Should we prepend some zeroes, if so how many?
+#' @param hash Should we pre..pre-pend the "#" for colors?
+#'
+#' @return vector of one or more hex values as a string
+#' @export
+#'
+#' @examples
+#' dechex(c(123,255,50), n=2, pre="0x");
+#' dechex(123,255,50, n=2, pre="#");
+#' dechex(c(16581375,12581375,50), n=6, pre="#");
+#' dechex(c(16581375,12581375,50), pre="0x");
+#' dechex(c(255,133,50));
+dechex = function(intdec, ..., n=NULL, pre=NULL)
+	{
+	intdec = dots.addTo(intdec, ...);
+	res = toupper( as.character( as.hexmode( as.integer( intdec ) ) ) );
+	# if the vector already has two-character mode ... dechex( 0:255);  ... n is not necessary
+	if(!is.null(n)) { res = str.pad( res, n, "0", "LEFT"); 	}
+	if(!is.null(pre)) { res = paste0(pre,res); }
+	res;
+	}
+
+
+#' @rdname dec2hex
+#' @export
+dec2hex = dechex;
+
+
+# DDEECC -> rounds to dcedcb
+# hexadecimal to decimal
+# hexdec("FF");
+# alias hex2dec
+
+
+##################################################
+#'
+#' hexdec
+#'
+#' Converts a hexadecimal to decimal
+#'
+#' @param hexstr vector of one or more hex values as a string
+#' @param ... vector of one or more hex values as a string
+#'
+#' @return vector of one or more integer values
+#' @export
+#' @alias hex2dec
+#'
+#' @examples
+#' hexdec("FF");
+#' hexdec("0xFFFF");
+#' hexdec("0xFFFF", "#FF");
+#' hexdec(c("0xFFFF", "FF"), "#DDEECC");
+#' x = c("0xFFFF", "#FF", "#DDEECC");
+#' y = hexdec(x);
+#' z = dechex(y, hash=TRUE); stopifnot(identical(x,z));
+hexdec = function(hexstr, ...)
+	{
+	hexstr = dots.addTo(hexstr, ...);
+	n.hex = length(hexstr);
+	
+	# if it has "color" pre-pend, remove it ...
+	hash = which(substring(hexstr, 1, 1) == "#");
+	
+	hexstr = str.replace("#", "", hexstr);
+	
+	# rather than checking, let's remove and add leading "0x"
+	more = which(substring(hexstr, 1, 2) == "0x");
+	hexstr = paste0("0x", str.replace("0x", "", str.trim(tolower(hexstr))) );
+	
+	missing = setdiff(hash, more);
+	all = rep(" ", n.hex);
+	all[hash] = "#";
+	all[more] = "0x";
+		
+	res = str.toInteger(hexstr, TRUE);
+	names(res) = all;
+	res;
+	}
+
+
+
+
+
+
+##################################################
+#'
+#' color.col2rgb 
 #'
 #' Extends the built-in grDevices::col2rgb function
 #' [ See grDevices::convertColor or grDevices::make.rgb ]
@@ -88,8 +190,10 @@ color.rgb2col = function(matrixRGB, force.hex=FALSE)
 	if(force.hex){ return(res); }
 	if(!is.null(names(res))) { names(res); } else { res; }
 	}	
-	
-rgb2col = color.rgb2col;  # also works as an inverse for the base
+	  
+#' @rdname rgb2col
+#' @export
+rgb2col = color.rgb2col; 	# also works as an inverse for the base
 
 
 
@@ -739,6 +843,12 @@ color.buildWheel = function(rgb, wheel.steps = 12, find.names=FALSE)  # wheel st
 
 
 
+color.doMod = function(x)
+	{
+	xMod = x %% 51;
+	if(xMod <= 25) { floor(x/51) * 51; } else { ceiling(x/51) * 51; }
+	}
+		
 
 #' color.webSafeHEX
 #'
@@ -755,16 +865,12 @@ color.webSafeHEX = function(rgb)
 	g = rgb[2];
 	b = rgb[3];
 
-	doMod = function(x)
-		{
-		xMod = x %% 51;
-		if(xMod <= 25) { floor(x/51) * 51; } else { ceiling(x/51) * 51; }
-		}
+	
 
 	rgb = list(
-			"r" = doMod(r),
-			"g" = doMod(g),
-			"b" = doMod(b)
+			"r" = color.doMod(r),
+			"g" = color.doMod(g),
+			"b" = color.doMod(b)
 			);
 
 	rgb2hex(rgb);
@@ -1130,76 +1236,8 @@ stringToInteger = function(strvec, isHEX = FALSE)
 
 
 
-# DDEECC -> rounds to dcedcb
-# hexadecimal to decimal
-# hexdec("FF");
-# alias hex2dec
 
 
-#' hexdec
-#'
-#' Converts a hexadecimal to decimal
-#'
-#' @param hexstr vector of one or more hex values as a string
-#' @param ... vector of one or more hex values as a string
-#'
-#' @return vector of one or more integer values
-#' @export
-#' @alias hex2dec
-#'
-#' @examples
-#' hexdec("FF");
-#' hexdec("0xFFFF");
-#' hexdec("0xFFFF", "#FF");
-hexdec = function(hexstr, ...)
-	{
-  # http://php.net/manual/en/function.hexdec.php
-  # http://php.net/manual/en/function.dechex.php
-  # java conversions:: http://www.cs.rit.edu/~ncs/color/t_convert.html
-  #	http://www.easyrgb.com/math.php?MATH=M19#text19
-
-	more = unlist(list(...));
-	hexstr = c(hexstr, more);
-
-	# if it has "color" pre-pend, remove it ...
-	hexstr = str_replace("#", "", hexstr);
-	# rather than checking, let's remove and add leading "0x"
-	hexstr = paste0("0x", str_replace("0x", "", trimMe(tolower(hexstr))) );
-	stringToInteger(hexstr, TRUE);
-	}
-
-
-
-
-#' dechex
-#'
-#' Converts a decimal to hexadecimal
-#'
-#' @param intdec vector of one or more integer values
-#' @param ... vector of one or more integer values
-#' @param n Should we prepend some zeroes, if so how many?
-#' @param hash Should we pre..pre-pend the "#" for colors?
-#'
-#' @return vector of one or more hex values as a string
-#' @export
-#' @alias dec2hex
-#'
-#' @examples
-#' dechex(123,255,50, n=2, hash=FALSE);
-#' dechex(16581375,12581375,50, n=6, hash=TRUE);
-#' dechex(16581375,12581375,50, hash=FALSE);
-#' dechex(255,133,50, hash=FALSE);
-dechex = function(intdec, ..., n=NULL, hash=FALSE)
-	{
-	more = unlist(list(...));
-	intdec = c(intdec, more);
-
-	res = toupper( as.character( as.hexmode( as.integer( round(intdec) ) ) ) );
-	# if the vector already has two-character mode ... dechex( 0:255);  ... n is not necessary
-	if(!is.null(n)) { res = strPadLeft( res, n, "0"); 	}
-	if(hash) { res = paste0("#",res); }
-	res;
-	}
 
 
 

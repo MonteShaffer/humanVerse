@@ -29,9 +29,9 @@ str.toInteger = function(str, isHEX=FALSE, base=0L)
 #' str.fromInteger
 #'
 #'
-str.fromInteger = function(intstr)
+str.fromInteger = function(intvec)
 	{
-	as.character(intstr);
+	as.character(as.integer(intvec));
 	}
 
 ##################################################
