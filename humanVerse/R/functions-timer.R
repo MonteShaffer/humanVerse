@@ -2,12 +2,12 @@
 
 # https://www.alexejgossmann.com/benchmarking_r/
 # microbenchmark ... C getting to nanoticker ... rbenchmark, one 'R' function by DIRK
+# if you want to clear internals, use timer.clear ... or timer.clearALL
 
 timer.init = function(purge.memory = FALSE, 
-							show.msg = TRUE, 
-							as.internal = FALSE)
+							show.msg = TRUE)
 	{
-	TIMER = "timer"; if(as.internal) { TIMER = ".timer"; }
+	TIMER = "timer"; 
 	
 	memory.init();
 	
@@ -23,11 +23,13 @@ timer.init = function(purge.memory = FALSE,
 	md5 = str.toMD5( (now) );
 	key = paste0("SESSION-", md5 );	
 	n = length(.GlobalEnv$.humanVerse[[TIMER]]);
+	TIMER = ".timer";
+	n2 = length(.GlobalEnv$.humanVerse[[TIMER]]);
 		## INTERNAL RAINBOW TABLE ... 
 		## if we save .humanVerse (autosave), we can recover MD5 from previous sessions
-		.GlobalEnv$.humanVerse[["md5"]][[md5]] = now;  
+	.GlobalEnv$.humanVerse[["md5"]][[md5]] = paste0("TIMER:SESSION-",now);  
 		# so don't have to parse, and have a lookup
-	timer.start( key , as.internal = as.internal);
+	timer.start( key , as.internal = TRUE);
 	if(show.msg) 
 		{ 
 		# could "cat" have a color?
@@ -50,7 +52,11 @@ timer.init = function(purge.memory = FALSE,
 		
 
 		cat( msg );
-		cat("\n", "The [timer] module is ready and currently has started a SESSION timer named '", key, "' \n\n\t", "In total, there are currently [", n , "] ", str.grammaticalNumber(str,n), " running", "\n");
+		cat("\n", "The [timer] module is running", "\n");
+		cat("\n", "\t\t", "Currently, there are:",  "\n");
+		cat("\t\t\t\t", "[", n , "] USER ", str.grammaticalNumber("timer",n), "running", "\n");
+		cat("\t\t\t\t", "[", n1, "] INTERNAL ", str.grammaticalNumber("timer",n), "running", "\n");
+		cat("\n\n", "Just now, an INTERNAL timer started: [", key, "]", "\n\n\n");
 		
 		}
 	}
@@ -77,18 +83,18 @@ timer.start = function(key="DEFAULT", ...,
 	
 	memory.init();
 	
-	#################################################
+###############################################
+	timer = .GlobalEnv$.humanVerse[[TIMER]];
+###############################################
 	
-	# SIMPLIFY with 'memory.set/get' ... add what to what 
-	# .GlobalEnv$.humanVerse[[TIMER]][[key]] = list();
-	
-	# this overwrites without any checks?
-	# vs. proc.time()
-	now = Sys.time();
+	now = Sys.time(); 		# vs. proc.time()
 	for(key in keys)
 		{
-		.GlobalEnv$.humanVerse[[TIMER]][[key]]$start = now;  
+		timer[[key]]$start = now;  
 		}
+###############################################
+	.GlobalEnv$.humanVerse[[TIMER]] = timer;
+###############################################
 	}
 
 
@@ -115,46 +121,55 @@ timer.stop = function(key="DEFAULT", ..., marker="STOP-{n}",
 	
 	memory.init();
 	
-	#################################################
-	
+###############################################
+	timer = .GlobalEnv$.humanVerse[[TIMER]];
+###############################################
 	
 	now = Sys.time();
+	n.keys = length(keys);
+	res = list();
+	relative = numeric(n.keys);
+	i = 0;
 	for(key in keys)
 		{
-		if(!exists(key, .GlobalEnv$.humanVerse[[TIMER]]))
+		i = 1 + i;
+		if(is.null(timer[[key]]))
 			{
 			warning(paste0("Nothing to stop as timer.start for key: ", key, " not called yet!"));
 			next;
 			}
 		
-		diff = as.numeric(now) - as.numeric(.GlobalEnv$.humanVerse[[TIMER]][[key]]$start);
+		diff = as.numeric(now) - as.numeric(timer[[key]]$start);
 		
-		if(!exists("stop", .GlobalEnv$.humanVerse[[TIMER]][[key]]))
+		if(is.null(timer[[key]]$stop))
 			{
-			# parallel vectors
-			.GlobalEnv$.humanVerse[[TIMER]][[key]]$stop = c(now);
+			# store parallel-length vectors
+			timer[[key]]$stop = c(now);
 			# absolute difference 
-			.GlobalEnv$.humanVerse[[TIMER]][[key]]$diff = c(diff);
+			timer[[key]]$diff = c(diff);
 				mark = str.replace("{n}",1, marker);
-			.GlobalEnv$.humanVerse[[TIMER]][[key]]$marker = c(mark);
+			timer[[key]]$marker = c(mark);
 			} else {
-					.GlobalEnv$.humanVerse[[TIMER]][[key]]$stop = c(.GlobalEnv$.humanVerse[[TIMER]][[key]]$stop, now);
-					.GlobalEnv$.humanVerse[[TIMER]][[key]]$diff = c(.GlobalEnv$.humanVerse[[TIMER]][[key]]$diff, diff);
-					howMany = (1 + length(.GlobalEnv$.humanVerse[[TIMER]][[key]]$marker) ); 
+					timer[[key]]$stop = c(timer[[key]]$stop, now);
+					timer[[key]]$diff = c(timer[[key]]$diff, diff);
+					howMany = (1 + length(timer[[key]]$marker) ); 
 					cat("\n", "howMany: ", howMany, "\n");
 						mark = str.replace("{n}", howMany, marker);
-					.GlobalEnv$.humanVerse[[TIMER]][[key]]$marker = c(.GlobalEnv$.humanVerse[[TIMER]][[key]]$marker, mark);
+					timer[[key]]$marker = c(timer[[key]]$marker, mark);
 					}
+		nstops = length(timer[[key]]$stop);
+		relative[i] = diff; 
+		if(nstops > 1) 
+			{ 
+			relative[i] = as.numeric(timer[[key]]$stop[nstops]) - as.numeric(timer[[key]]$stop[nstops - 1]) ;
+			}
+		
+		res[[i]] = timer.formatPrettyUnits(relative[i], "seconds");
+		cat("\n", "KEY: [",key,"]", "\t\t", "RELATIVE TIME AT [",mark,"] \t ", res[[i]], "\n");
 		}
-	nstops = length(.GlobalEnv$.humanVerse[[TIMER]][[key]]$stop);
-	if(nstops == 1 ) 
-		{ 
-		relative = diff; 
-		} else {
-				relative = as.numeric(.GlobalEnv$.humanVerse[[TIMER]][[key]]$stop[nstops] - .GlobalEnv$.humanVerse[[TIMER]][[key]]$stop[nstops - 1]);
-				}
-	res = timer.formatPrettyUnits(relative, "seconds");
-	cat("\n", "RELATIVE TIME AT [",mark,"] \t ", res, "\n");
+###############################################
+	.GlobalEnv$.humanVerse[[TIMER]] = timer;
+###############################################
 	invisible(relative);
 	}
 
@@ -204,31 +219,31 @@ timer.print = function(key="DEFAULT", ...,
 	
 	memory.init();
 	
-	#################################################
+###############################################
+	timer = .GlobalEnv$.humanVerse[[TIMER]];
+###############################################
 	# seconds, pretty-seconds, pretty ...
 	# port to obj.exists #NULL
 	
 	res = list();  # don't know the format yet
 	for(key in keys)
 		{
-		#if(!obj.keyExists(key, .GlobalEnv$.humanVerse[[TIMER]]))
-		if(!exists(key, .GlobalEnv$.humanVerse[[TIMER]]))
+		if(is.null(timer[[key]]))
 			{
 			warning(paste0("Nothing to print as timer.start/timer.stop for key: ", key, " not called yet!"));
 			next;
 			}
 		
 		# absolute time from when you got on the bus and each STOP
-		seconds = .GlobalEnv$.humanVerse[[TIMER]][[key]]$diff;
+		seconds = timer[[key]]$diff;
 		# relative time between STOPS
 		if(tim == "rel") { seconds = c( seconds[1], diff(seconds) ); } # 
 		
-		seconds = property.set(seconds, "time.is", { if(tim == "rel") { "relative" } else { "absolute" } });
-
+		seconds = property.set("time.is", seconds, { if(tim == "rel") { "relative" } else { "absolute" } });
 
 		vkey = units.name;
 		vfactor = as.numeric(units.factor);
-		vals = seconds * vfactor;
+		vals = as.numeric(seconds) * vfactor;
 		
 		# wrap into SWITCH?
 		row = switch(forma,
@@ -240,7 +255,7 @@ timer.print = function(key="DEFAULT", ...,
 			
 		if(append.names) 
 			{ 
-			names(row) = .GlobalEnv$.humanVerse[[TIMER]][[key]]$marker; 
+			names(row) = timer[[key]]$marker; 
 			}
 		res[[key]] = row;
 		}	
@@ -260,13 +275,17 @@ timer.printALL = function(format="seconds",
 	TIMER = "timer"; if(as.internal) { TIMER = ".timer"; }
 	
 	forma = functions.cleanKey(format, 5, keep="-");
-	
-	if(!exists("timer", .GlobalEnv$.humanVerse))
+
+###############################################
+	timer = .GlobalEnv$.humanVerse[[TIMER]];
+###############################################	
+	if(is.null(timer))
 			{
 			warning(paste0("Nothing to print as timer.start has not been called yet!"));
 			# next;
 			} else {
-					keys = names( .GlobalEnv$.humanVerse[[TIMER]] );
+					keys = names( timer );
+					j = 1;
 					res = NULL;  # PANEL of DATA (PANEL FORM)
 					for(key in keys)
 						{
@@ -278,28 +297,28 @@ timer.printALL = function(format="seconds",
 											time.is = "relative", 
 											digits=digits
 										);
-						info = .GlobalEnv$.humanVerse[[TIMER]][[key]];
-						
+						dput(x);
+						info = timer[[key]];
+						dput(info);
 						
 						for(i in 1:length(x))
 							{
-							row = c(key, info$start, info$stop[i], info$diff[i], info$marker[i], forma, x[i]);
+							row = c(j, key, info$start, info$stop[i], info$diff[i], info$marker[i], forma, x[i]);
 							res = rbind(res, row);
-							}						
+							}	
+						j = 1 + j;
 						}
+					dput(res);
 					df = as.data.frame(res);
 						rownames(df) = NULL; # seems to be weird (PRINT)
 						colnames(df) = c("key", "start", "stop", "absolute", "marker", "format", "relative");
 					df = df.setColumnType(df, c("start","stop","absolute"), "numeric"); 
 					
-					df$start = date.fromUnix(df$start); 
-					df$stop  = date.fromUnix(df$stop);
+					##df$start = date.fromUnix(df$start); 
+					##df$stop  = date.fromUnix(df$stop);
 					# last row is likely a string 
-					df;
-					}		
-	
-	
-	
+					return(df);
+					}	
 	}
 	
 
@@ -369,7 +388,8 @@ timer.formatPretty = function(vals, vkey="seconds", vfactor=1, digits=2)
 		res[i] = paste0( str, round(seconds, digits), " seconds");		
 		}
 	names(res) = names(vals);
-	res = property.set( property.getAll(vals), res );
+	# trying to append and keep "time.is" 
+	# res = property.set( property.getAll(vals), res, );
 	res;
 	}
 
@@ -387,20 +407,24 @@ timer.clear = function(key="DEFAULT", ...,
 	
 	memory.init();
 	
-	#################################################
+###############################################
+	timer = .GlobalEnv$.humanVerse[[TIMER]];
+###############################################
 	
 	for(key in keys)
 		{
-		if(!exists(key, .GlobalEnv$.humanVerse[[TIMER]]))
+		if(is.null(timer[[key]]))
 			{
 			warning(paste0("Nothing to clear as timer.start for key: ", key, " not called yet!"));
 			next;
 			} else {
-					.GlobalEnv$.humanVerse[[TIMER]][[key]] = NULL;
+					timer[[key]] = NULL;
 					if(notice) { warning(paste0(" -- CLEAR from timers [key] ", key, " was successful!")); }
 					}		
 		}
-	
+###############################################
+	.GlobalEnv$.humanVerse[[TIMER]] = timer;
+###############################################	
 	}
 
 
@@ -409,21 +433,30 @@ timer.clearALL = function(notice=TRUE, call.init=TRUE,
 							as.internal = FALSE)
 	{
 	TIMER = "timer"; if(as.internal) { TIMER = ".timer"; }
-	
-	# this will erase ALL timers, including INTERNALS (e.g., AUTOSAVE)
+
+	memory.init();
+###############################################
+	timer = .GlobalEnv$.humanVerse[[TIMER]];
+###############################################	
+	# this will erase ALL timers, 
+	# including INTERNALS (e.g., AUTOSAVE, if as.internal=TRUE)
 	# AUTOSAVE / RESTORE have timestamps as keys,
 	#     so, you could RESTORE and show HOW LONG between STEPS
-	if(!exists("timer", .GlobalEnv$.humanVerse))
+	purge = FALSE;
+	if(is.null(timer))
 			{
 			warning(paste0("Nothing to clear as timer.start has not been called yet!"));
 			# next;
 			} else {
-					howMany = length(.GlobalEnv$.humanVerse[[TIMER]]);
-					.GlobalEnv$.humanVerse[[TIMER]] = NULL;
+					howMany = length(timer);
+					timer = NULL;
+					purge = TRUE;
 					if(notice) { warning(paste0(" -- CLEAR from timers ALL [n  = ", howMany, "] was successful!")); }
-					if(call.init) { timer.init(); }
 					}		
-	
+###############################################
+	.GlobalEnv$.humanVerse[[TIMER]] = timer;
+###############################################
+	if(call.init && purge) { timer.init(); }
 	}
 
 

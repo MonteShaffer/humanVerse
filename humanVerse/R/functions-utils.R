@@ -121,6 +121,8 @@ as.type = function(vals, types="character", ...) # could I pass ... dots
 	}
 
 
+as.Type = as.type;
+
 ##################################################
 #'
 #' bindec
