@@ -285,7 +285,6 @@ timer.printALL = function(k=NULL, format="pretty",
 							digits=2, 
 							as.internal = FALSE)
 	{
-debug = TRUE;
 	TIMER = "timer"; if(as.internal) { TIMER = ".timer"; }
 	
 	forma = functions.cleanKey(format, 5, keep="-");
@@ -303,7 +302,6 @@ debug = TRUE;
 					res = NULL;  # PANEL of DATA (PANEL FORM)
 					for(key in keys)
 						{
-if(debug) { cat("\n", " KEY: ", key, "\n"); }
 						# I could pass "forma" here, but why?
 						x = timer.print(key, format=format, 
 											units.name=units.name,
@@ -312,15 +310,13 @@ if(debug) { cat("\n", " KEY: ", key, "\n"); }
 											time.is = "relative", 
 											digits=digits
 										);
-if(debug) { cat("\n", " x: ", "\n"); print(length(x)); print(str(x)); }
+										
 						info = timer[[key]];
-if(debug) { cat("\n", " info: ", "\n"); print(length(info)); print(str(info)); }
 						
 						for(i in 1:length(x))
 							{
 							row = c(j, key, info$start, info$stop[i], info$diff[i], info$marker[i], format, x[i]);
 							res = rbind(res, row);
-if(debug) { cat("\n", " row: ", j, "\n"); print(length(row)); print(str(row)); }
 							j = 1 + j;
 							}	
 						
@@ -330,17 +326,12 @@ if(debug) { cat("\n", " row: ", j, "\n"); print(length(row)); print(str(row)); }
 					
 						rownames(df) = NULL; # seems to be weird (PRINT)
 						colnames(df) = c("idx", "key", "start", "stop", "absolute", "marker", "format", "relative");
-if(debug) { cat("\n", " df1: ", "\n"); print(dim(df)); print(str(df)); }
-# stop("monte");		
-# return(df);		
+		
 					# df = df.setColumnType(df, c("start","stop","absolute"), "numeric"); 
 					df$start = as.POSIXct( as.numeric(df$start), origin=date.getOrigin() );
 					df$stop = as.POSIXct( as.numeric(df$stop), origin=date.getOrigin() );
 					df$absolute = ( as.numeric(df$absolute) );
-if(debug) { cat("\n", " df2: ", "\n"); print(dim(df)); print(str(df)); }					
-					##df$start = date.fromUnix(df$start); 
-					##df$stop  = date.fromUnix(df$stop);
-					# last row is likely a string 
+					# last column is likely a string 
 					return(df);
 					}	
 	}
