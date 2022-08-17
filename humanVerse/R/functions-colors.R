@@ -63,13 +63,24 @@ debug = FALSE;
 #' dechex(c(16581375,12581375,50), n=6, pre="#");
 #' dechex(c(16581375,12581375,50), pre="0x");
 #' dechex(c(255,133,50));
-dechex = function(intdec, ..., n=NULL, pre=NULL)
+dechex = function(intdec, ..., n=NULL, pre=NULL, use.names.if.available=TRUE)
 	{
 	intdec = dots.addTo(intdec, ...);
+	n.intdec = length(intdec);
+	int.names = names(intdec);
+	
+	if(use.names.if.available && (length(int.names) == n.intdec)) 
+		{ 
+		res = int.names; 
+		names(res) = as.character(intdec);
+		return(res);
+		}
+	
 	res = toupper( as.character( as.hexmode( as.integer( intdec ) ) ) );
 	# if the vector already has two-character mode ... dechex( 0:255);  ... n is not necessary
 	if(!is.null(n)) { res = str.pad( res, n, "0", "LEFT"); 	}
 	if(!is.null(pre)) { res = paste0(pre,res); }
+	names(res) = as.character(intdec);
 	res;
 	}
 
@@ -103,30 +114,33 @@ dec2hex = dechex;
 #' hexdec("0xFFFF");
 #' hexdec("0xFFFF", "#FF");
 #' hexdec(c("0xFFFF", "FF"), "#DDEECC");
-#' x = c("0xFFFF", "#FF", "#DDEECC");
+#' x = c("0xFFFF", "#aF", "#dDEeCc");
 #' y = hexdec(x);
-#' z = dechex(y, hash=TRUE); stopifnot(identical(x,z));
-hexdec = function(hexstr, ...)
+#' z = dechex(y); 
+#' y2 = hexdec(z); stopifnot(identical(y,y2));
+hexdec = function(hexstr, ..., use.names.if.available=TRUE)
 	{
 	hexstr = dots.addTo(hexstr, ...);
+	o.hexstr = hexstr;
 	n.hex = length(hexstr);
 	
-	# if it has "color" pre-pend, remove it ...
-	hash = which(substring(hexstr, 1, 1) == "#");
+	hex.names = names(hexstr);
 	
+	if(use.names.if.available && (length(hex.names) == n.hex)) 
+		{ 
+		res = as.integer(hex.names); 
+		names(res) = o.hexstr;
+		return(res);
+		}
+	
+	# if it has "color" pre-pend, remove it ...	
 	hexstr = str.replace("#", "", hexstr);
 	
 	# rather than checking, let's remove and add leading "0x"
-	more = which(substring(hexstr, 1, 2) == "0x");
 	hexstr = paste0("0x", str.replace("0x", "", str.trim(tolower(hexstr))) );
 	
-	missing = setdiff(hash, more);
-	all = rep(" ", n.hex);
-	all[hash] = "#";
-	all[more] = "0x";
-		
 	res = str.toInteger(hexstr, TRUE);
-	names(res) = all;
+	names(res) = o.hexstr;
 	res;
 	}
 
