@@ -65,8 +65,13 @@ functions.cleanupKey = functions.cleanKey;
 functions.cleanUpKey = functions.cleanKey;
 
 
-
-	
+# gets the RAW function ... 
+# property.get("srcref", ping.domain)
+# compare to body(ping.domain)
+# ?? Rprof ... turn profiling on/off ... 
+# Rprof("boot.out")
+# storm.boot <- boot(rs, storm.bf, R = 4999) # slow enough to profile
+# Rprof(NULL)
 
 	
 functions.getParameterInfo = function(return="dots", truncate=10)
@@ -97,7 +102,7 @@ functions.getParameterInfo = function(return="dots", truncate=10)
 	if(r == "p") { return(pf); }
 	if(r == "m") { return(main); }
 	if(r == "d") { return(dots); }
-	# default is ALL
+	# fallback is ALL
 	list("fn" = fn, "pf" = pf, "main" = main, "dots" = dots);
 	}
 	

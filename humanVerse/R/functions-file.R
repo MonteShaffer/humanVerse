@@ -44,10 +44,51 @@ file.readRDS = readRDS;
 #' @export
 #'
 #' @aliases storeToPipe 
-writeToPipe = function(df, filename, header=TRUE, quote="", sep="|", row.names=FALSE)
+writeToPipe = function(df, filename, header=TRUE, quote="", sep="|", 
+									prepend.meta = TRUE, meta.content="", 
+									row.names=FALSE, ...)
   {
   if(quote == "") { quote = FALSE; }
-  # fp = file(filename, open="wt");
+  if(!prepend.meta)
+	{
+	utils::write.table(df, file=filename, quote=quote, col.names=header, row.names=row.names, sep=sep);
+	return(TRUE);
+	}
+  
+  if(meta.content == "")
+	{
+	meta.content = property.get("meta", df); 
+	if(is.null(meta.content))
+		{
+		types = df.getColumnTypes(df);
+		if(row.names) { types = c("row.names", types); }
+		types.line = paste0("# ", paste0(types, collapse="^"), " #");
+		h.length = strlen(types.line);
+		
+		meta.content = 
+		# msg = paste0("\n\n", 
+			# str.commentWrapper(paste0("\n\n", "Welcome to the {humanVerse}", "\n\n") ), 
+			# "\n\n",
+					# "You could try installing the package: ", "\n\n",
+					# str.commentWrapper( pkg, r.tag = "-", s.pad=15), "\n");
+					
+		# str.commentWrapper
+		}
+	
+  m.a = property.get("meta", df); 
+  ## if we have meta , str.trim(charAt(meta,1)) ... all = "#", just append and go ...
+  #types = df.getColumnTypes(df);
+  #types.line = paste0("# ", paste0(y, collapse="^"), " #"); # if row.names == TRUE, append - or something?
+  #h.length = strlen(types.line); # use for custom header ... 
+  #meta = paste0("# fdlskjf #", "\n");
+  
+conn = file(filename, "rt");
+	on.exit(close(conn));
+  writeLines(meta);
+  utils::write.table(df, file=conn, quote=quote, col.names=header, row.names=row.names, sep=sep);
+  
+  
+  #fp = file(filename, open="wt");
   # writeLines("# comments #");
   # write.csv(df, fp);
   # close(fp);
@@ -75,10 +116,53 @@ file.writeToPipe = writeToPipe;
 readFromPipe = function() {}  
 								# , as.is=TRUE
 								# comment.char="#" ... hexdata
-readFromPipe = function(filename, header=TRUE, quote="", sep="|",  ...)
+readFromPipe = function(filename, header=TRUE, quote="", sep="|",
+								row.names = FALSE,
+								meta.content = TRUE, 
+								meta.skip="#", stop.at=100, ...)
   {
+  if(!meta.content) 
+	{
+	df = utils::read.csv(filename, header=header, row.names=row.names,
+										quote=quote, sep=sep, ...);
+	return(df);
+	}
+  
+  if(meta.skip == "") { stop("meta.skip must have a value, ala comment.char = '#'"); }
+  # loop over readlines, grab the "header" content before the variable names ...
+  # comment.char doesn't stop at header ... e.g., hexcolor data ...
+  
+  i = 0;
+  hstr = character(0);
+  conn = file(filename, "rt");
+	on.exit(close(conn));
+  while ( i < stop.at ) 
+	{
+    line = readLines(conn, n = 1);
+	line_ = str.trim(line);
+	if(length(line_) == 0) { stop("after n=i lines, we reached end of line without finidng"); }
+	if(charAt(line_, 1) == meta.skip) 
+		{ 
+		hstr = c(hstr, line);
+		i = 1 + i;
+		print(i);
+		} else {
+				# we are stopping 
+				cat("\n non-skip # found on line i \n");
+				break;
+				}
+	}
+	
+	df = utils::read.csv(filename, header=header, quote=quote, sep=sep, skip=i, ...);
+	df = property.set("meta", df, hstr);
+	return(df);	
+  }
+  
+  
+  
+  
  # as.is to BYPASS the "factors" issue 
-  df = utils::read.csv(filename, header=header, quote=quote, sep=sep, ...);
+  
 	# get comments and append as attribute
 	# search comments for typeof elements ... 
 	# call type of ... if not that type already
@@ -89,6 +173,13 @@ df;
 #' @export
 file.readFromPipe = readFromPipe;
 
+
+
+# ntypes = df.getColumnTypes(x);
+# paste0(ntypes, collapse="^");
+# y = readFromPipe("times.txt", comment.char="#")
+# later, scan header ... parse META, grab types ...
+# setTYpes ... # override as.POSIX functions with origin = date.getOrigin()
 
 
 
@@ -987,7 +1078,7 @@ file.readTailPipe = function( filename,
 		{
 		buffer = file.size;
 		}
-	fp = file(filename, "rb");
+	fp = file(filename, "rb");  # we have to read in binary 
 		on.exit(close(fp));
 		
 	SEEK_END = "end";

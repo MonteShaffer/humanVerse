@@ -961,6 +961,287 @@ str.translate = function(str, to="latin-ascii")
 	stringi::stri_trans_general(str, to=to);
 	}
 
+if(TRUE)  # set to TRUE or FALSE 
+{xela = ' % we are inside a <s>ingle <q>uote ... don<sq>t use them!
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/*
+*|  ASCII ART HERE WOULD BE FUN.
+*|			You CAN use ..., try <dots> or <dots /> or `...` to specify
+*|				===> that you mean the functional dots <dots> in `R`
+*|			If you meant ellipses, try latex form <ldots> or <ldots />
+*|			BASE LATEX will be able to parse, so think like latex
+*|
+*|			<a href="https://www.atqed.com/latex-dot" target="_blank">MORE DOTS</a>
+*|			Two tagged Latex commands would need more data passed
+*|
+*|			<sq> as [s]ingle [q]uote ... when in doubt, use <sq>
+*|			<dq> as [d]ouble [q]uote ... when in doubt, use <dq>
+*|			<b>[b]old text</b> ... <i>[i]talicized (emph) text</i>
+*|			<u>[u]nderlined text</u> ... 
+*|			<element fgcolor="#FFF099" bgcolor="red">WHATEVER</element>
+*|			<element></element> means a relevant <sq>variable</sq> and 
+*|				will work inside <b> for example
+*|			<b fgcolor="green" bgcolor="pink">my text </b>
+*|			COLORS allowed are ANY HEX and NAMES from `grDevices::colors()`
+^|	
+!
+% still works.  Don<sq> USE <tick> or <tick3> maybe <3tick>, they will confuse MY parser
+&
+()		
+*|			Think HTML v. 1995-ish, FRAMES just comming online
+*|			<a href="https://en.wikipedia.org/wiki/Standard_Generalized_Markup_Language">SGML</a>
+*|			This is loosely typed <SGML />
+*|			<br> or <br /> or <BR> or <BR /> will all work [force new line, ala `\n`]
+*|			You can also use <n> or <n /> for a new line, <t> or <t /> for tabs 
+*|			
+*/
+
+I didn<sq>t need to do those funny *| characters on the left ... just to demo
+how annoying they are.  I can write a function that will scan the file before
+R tries and parse it and cleanup <sq> <dq> <n> <t>
+
+BIBTEX::: 
+Place them anywhere ... you will need a key defined for it to work
+Parser would loop through everything to get all the needed keys, 
+replacing <citep>Shaffer:1999</citep> with <bs>citep{Shaffer:1999}
+
+NOTICE the \n is an allowed escape character but <bs>citep{Shaffer:1999}
+as "c" is not allowed to be escaped by R CLI parser ...
+
+[b]ack [s]lash, not [B]ul [S]hita {HEBREW REFERENCE}
+
+So <bs> means [b]ack [s]lash
+So <fs> means [f]orward [s]lash
+
+<ss> as [s]ingle [s]pace 
+<ds> as [d]ouble [s]pace 
+
+I can autogenreate at the <family> level and at an overall <index> level
+
+
+<bibtex key="Shaffer:1999">
+COPY a bibtex entry here, no single quotes, replace with <sq> or <sq/>
+</bitext>
+
+<citet>Shaffer:1999</citet>
+<citep>Shaffer:1999</citep>
+
+
+```
+# CSS3 named colors, BREWER colors, all part of RGB(a) specification 
+# end.the = "#ffeedd"; 
+# See: https://www.unm.edu/~tbeach/IT145/color.html
+html.colors = c("black", "white", "gray", "silver", 
+				"maroon", "red", "purple", "fushsia", 
+				"green", "lime", "olive", "yellow", 
+				"navy", "blue", "teal", "aqua"
+				);
+```
+
+Besides the single tick `operator` <tick>operator<tick> 
+and three-tick version <tick3>code, multilined if you want</tick3> ... maybe <tickn>?
+
+
+Maybe allow doxygen type syntax intermixed, as desired ... just put without
+#<sq> on LHS ... 
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		WELCOME to the humanVerse 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%% below is an example ... I looked at Rprofmem.Rd to "invent" these tags.
+
+<name>Rprofmem</name>
+	<alias>Rprofmem</alias>
+	<alias>RprofmemALIAS2</alias>
+	<alias>RprofmemALIAS3</alias>
+
+% The stuff can go in any order, I will be looking.  I will only parse stuff
+# inside a <element>WHATEVER</element> tag, so all this extra commentary just 
+# disappears, a lot like my `=` and `:` 
+# good thing I have ```property.get("srcref", ping.domain); ``` 
+
+% TBD if I can pass colors into the FINAL FILE ...
+<title bgcolor="#D5D5D5">Enable Profiling of R<sq>s Memory Use</title>
+
+% You can intentionally go multiline to make it more readible for you.
+<description>
+	Enable or disable reporting of memory allocation in R.
+</description
+
+% UNBELIEVABLE, WTF!  Only Micro$oft is using XML-like documntation tags.
+
+<usage>
+	Rprofmem( filename = "Rprofmem.out", 
+						append = FALSE, 
+							threshold = 0
+			)
+</usage>
+
+
+<return>[empty]</return> ... maps to "value"
+
+
+% Yes, indeed, where is the arguments function in R?  If only, if only.
+% notice I am recycling <name> and <description> ... nested, == OKEE - DOKEE
+<arguments>
+	<argument>
+		<name>filename</name>
+		
+		<type>character (string)</type>
+		
+		<description>
+				The file to be used for recording the memory allocations.
+		</description>
+		
+		<default>[missing]</default>  # or I could just not include this tag ... 
+		
+		% you don<sq>t nest <code></code> inside of <option = ></option>, so `single tick`
+		% you could put singletons inside like <sq>
+		<option = `NULL`, `""`> To disable reporting [to turn off].  That is,
+			the filename turns reporting [on]			
+		</option>
+
+		
+	</argument>
+	
+	<argument>
+		<name>append</name>
+		<type>logical (boolean)</type>
+		
+		<description>
+				Should the file be over-written or appended to?
+		</description>
+		
+		<option = `TRUE`, `FALSE`> 
+			[T]RUE to append; 
+			[F]ALSE to overwrite		
+		</option>
+		
+		% instead of above, I could do multiple options ...
+		%% do the ABOVE or BELOW, as you wish ... 
+		%% although inside <lt><bs>argument<gt> ... notice codes
+		%% comments can be scattered and WON<sq> render ... 
+		%% you can be as VERSOBE as you WANT ... 
+		%% escape chars ... https://mateam.net/html-escape-characters/
+		%% <lt> as &lt; ... <gt> as &gt;
+		%% maybe allow all the codes, UTF that is ...
+		
+		<option = `TRUE`> 
+			[T]RUE to append;		
+		</option>
+		
+		<option = `FALSE`> 
+			[F]ALSE to overwrite;		
+		</option>
+		
+	</argument>
+	
+	
+	% VERBOSITY is HIGH, but we can HIDE these lines easily in NOTEPAD++
+	% YOU could easily select everything herein, do FIND/REPLACE on <sq>
+	<argument>
+		<name>threshold</name>
+		
+		<type>double (numeric)</type>  % maybe try and be precise ... 
+		
+		<description>
+				Allocations on R<sq>s "large vector" heap larger than this number of bytes will be reported.
+		</description>
+		
+		
+	</argument>
+	
+</arguments>
+
+
+%% will treat `verbatim` but tags are allowed, HTML tables are allowed ...
+%% IMAGES are allowed, maybe <figure> to capture <html> and <latex> variants
+%% input TABLE as HTML or as TABULAR ... convert back and forth ...
+%% both <code>malloc</code> and `malloc` will be rendered the same.
+
+%% notice, no comments inside of details ... it is the outer layer of SGML
+<details>
+  Enabling profiling automatically disables any existing profiling to
+  another or the same file. 
+
+  Profiling writes the call stack to the specified file every time
+  <code>malloc</code> is called to allocate a large vector object or to
+  allocate a page of memory for small objects. The size of a page of
+  memory and the size above which `malloc` is used for vectors are
+  compile-time constants, by default 2000 and 128 bytes respectively.
+
+  The profiler tracks allocations, some of which will be to previously
+  used memory and will not increase the total memory use of R.
+</details>
+
+%% [b]ack [s]lash R was breaking, so <R> ... 
+<note>
+  The memory profiler slows down R even when not in use, and so is a
+  compile-time option.
+  (It is enabled in a standard Windows build of <R>.)
+
+  The memory profiler can be used at the same time as other <R> and C profilers.
+</note>
+
+
+
+
+%% <iref><code> ... <code><iref> would parse equivalent, no?
+%% internal reference <iref>
+<see.also>
+  The R sampling profiler, <iref><code>Rprof</code></iref> also collects
+  memory information.
+
+  <iref><code>tracemem</code></iref> 
+
+  The "Writing R Extensions" manual section on "Tidying and profiling R code"
+</see.also>
+
+%% ESCAPING <bs>frac ... joke !
+<equation label="named:3">
+	p(x) = <bs>frac{<bs>lambda^x e^{-<bs>lambda}}{x!} 	
+	<text this="is.optional"> TEXT FORM of EQUATION ...  <bs>lambda^x exp(-<bs>lambda)/x! </text>
+</equation>
+
+Here is some text with inline <equation>x = 0, 1, 2, <bs>ldots</equation> or <equation>x = 0, 1, 2, <ldots></equation>
+
+
+%% monte is here ... 
+<example>
+	print("hello world, run this part of this example.  multiple <example>");
+	<do.not.run>
+		## not supported unless R is compiled to support it.
+		Rprofmem("Rprofmem.out", threshold = 1000)
+		example(glm)
+		Rprofmem(NULL)
+		noquote(readLines("Rprofmem.out", n = 5))
+	</do.not.run>
+</example>
+
+
+<keywords sep=";">
+	utilities; two words; three words, with a comma; and so on ... 
+<keywords>
+
+
+% maybe write a reverse-parser 	... take current #<sq> @param <bs> and reverse
+								... take current .Rd file and do the same
+
+
+parse.fromRd
+parse.toRd
+parse.fromTidy
+parse.toTidy
+
+% auto-generate like CNTRL-SHIFT-L ... maybe source from .sgml external (if desired)...
+
+
+# I could use a scan file and verify , get start/end lines ... str.contains(<sq>)
+whatever I want except for single  .. # lksdjf lkj
+
+------------------------------------------------*/
+'}
+
 
 ##################################################
 #'
@@ -969,7 +1250,7 @@ str.translate = function(str, to="latin-ascii")
 #'
 ## is this stringr::str_c ??
 ## C++ ... obj.push_back(element) ... element, obj
-str.push_back = function(sub, str, sub, collapse="")
+str.push_back = function(sub, str, collapse="")
 	{
 	paste0(str, sub, collapse=collapse);
 	}
@@ -1069,7 +1350,7 @@ suppressError( so they have not included it in base R.  It is probably true, but
 #' pname = "stringi"; pkg = paste0( "install.packages(\"",pname,"\", dependencies=TRUE ); ");
 #' str.commentWrapper( pkg, r.tag = "-", s.pad=15);
 #' ^ i.pad # s.pad CONTENT s.pad # $
-str.commentWrapper = function() {}
+str.commentWrapper = function() {}   # what about \n in str for "blank vertical space"?
 str.commentWrapper = function(str="Welcome to the {humanVerse}", 
 									nchars=0, 
 									c.tag="#", 

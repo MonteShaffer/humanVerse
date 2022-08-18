@@ -1,4 +1,8 @@
 
+# https://stackoverflow.com/questions/9183178/can-php-curl-retrieve-response-headers-and-body-in-a-single-request
+# looks like R doesn't unlike direct access to curl_opt
+# 
+
 urls = c("https://en.wikipedia.org/wiki/Columbia_Falls,_Montana",
 		"https://www.mshaffer.com/hello/there.html?j=3&id=3309480",
 		"https://stackoverflow.com/questions/695438/what-are-the-safe-characters-for-making-urls",
@@ -101,7 +105,14 @@ debug = FALSE;
 
  # RELATIVE TIME AT [ STOP-9 ]      1.25 seconds 
 
-url.download = function(urls, paths, use.cache=TRUE, quiet=FALSE, timeout=2, verify=FALSE, ...)
+url.download = function(urls, paths, 
+								use.cache=TRUE, 
+								quiet=TRUE, 
+								timeout=2, 
+								verify=FALSE,
+								method="base",
+								mode = "curl_fetch_memory"
+								...)
 	{
 debug = FALSE;
 	n.urls = length(urls); n.paths = length(paths);

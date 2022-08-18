@@ -8,7 +8,9 @@ Description: Manipulating dataframes, "git r done" ...
 License: MIT + file LICENSE
 URL: https://github.com/MonteShaffer/humanVerse/humanVerse
 BugReports: https://github.com/MonteShaffer/humanVerse/issues
+Depends: R (>= 4.2.0)
 Encoding: UTF-8
+Language: en-US
 LazyData: true
 Suggests:
   plotrix,
@@ -32,6 +34,7 @@ curl,
   
 Imports:
  # libcurl capability, what version of R 
+ curl,
   graphics,  
   grDevices,
   jsonlite,

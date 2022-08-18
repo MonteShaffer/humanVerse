@@ -214,7 +214,7 @@ timer.print = function(key="DEFAULT", ...,
 	
 	TIMER 	= "timer"; if(as.internal) { TIMER = ".timer"; }
 	
-	forma 	= functions.cleanKey(format, 5, keep="-");
+	forma 	= functions.cleanKey(format, 1, keep="-");
 	tim 	= functions.cleanKey(time.is, 3);
 	
 	memory.init();
@@ -245,12 +245,12 @@ timer.print = function(key="DEFAULT", ...,
 		vals = as.numeric(seconds) * vfactor;
 		vals = property.set("time.is", vals, { if(tim == "rel") { "relative" } else { "absolute" } });
 
-		
+cat("\n", " FORMA: ", forma, "\n\n");		
 		# wrap into SWITCH?
 		row = switch(forma,
 						  "s"  	= vals,   			# [s]econds 
 						  "p" 	= timer.formatPretty(vals, vkey, vfactor, digits),	# [p]retty
-						  "p-s"  	= timer.formatPrettyUnits(vals, vkey, vfactor, digits),
+						  "p-s"  	= timer.formatPrettyUnits(vals, vkey, digits), # [p]retty-[s]econds
 					vals   # DEFAULT		
 					);
 			
@@ -277,7 +277,8 @@ timer.print = function(key="DEFAULT", ...,
 
 
 
-# can't use ... as already used ... dots[1], dots[2]
+# can't use ... as already used on timer.print ... dots[1], dots[2]
+# "k" is bogus, preventing passing a string into format since all other functions require the same string
 timer.printALL = function(k=NULL, format="pretty", 
 							units.name = "seconds",
 							units.factor = 1,
@@ -328,6 +329,7 @@ timer.printALL = function(k=NULL, format="pretty",
 						colnames(df) = c("idx", "key", "start", "stop", "absolute", "marker", "format", "relative");
 		
 					# df = df.setColumnType(df, c("start","stop","absolute"), "numeric"); 
+					df$idx = as.integer(df$idx);
 					df$start = as.POSIXct( as.numeric(df$start), origin=date.getOrigin() );
 					df$stop = as.POSIXct( as.numeric(df$stop), origin=date.getOrigin() );
 					df$absolute = ( as.numeric(df$absolute) );
@@ -354,6 +356,7 @@ timer.printALL = function(k=NULL, format="pretty",
 #' @examples	
 timer.formatPrettyUnits = function(vals, vkey="seconds", digits=2)
 	{
+	# vals have already been vfactor-ed 
 	res = paste0( round(vals, digits), " ", vkey);	
 	names(res) = names(vals);
 	res;

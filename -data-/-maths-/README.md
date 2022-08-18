@@ -13,3 +13,8 @@ C.d[["hex"]] = readChars("pi-hex.txt", 999999);
 
 saveRDS(C.d, "pi.rds");
 
+
+
+# https://www.utm.edu/staff/caldwell/primes/millions/
+
+Compare my bits to his ... 

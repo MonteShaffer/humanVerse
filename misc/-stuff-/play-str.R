@@ -1,6 +1,43 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 str.trimFixed = function(str, trim="#", side="both")
 	{
 	s = functions.cleanKey(side, 1);

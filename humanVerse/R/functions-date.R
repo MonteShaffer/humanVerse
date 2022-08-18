@@ -116,6 +116,26 @@ date.getTimeZoneOffset = function(tz = "UTC")
 	info$RawOffset;
 	}
 	
+
+date.setOrigin = function(origin)
+	{
+	memory.init();
+	memory.set("tz.origin", origin, "DATE");
+	invisible(origin);
+	}
+	
+date.getOrigin = function()
+	{
+	memory.init();
+	x = memory.get("tz.origin", "DATE");
+	if(is.null(x))
+		{
+		# x = structure(0, class = c("POSIXt", "POSIXct") ); # list and compact
+		x = structure(0, class = "POSIXct" ); # compact only
+		memory.set("tz.origin", x, "DATE");
+		}
+	x;
+	}
 	
 date.init = function()
 	{

@@ -237,6 +237,27 @@ df.setColumnType = function(df, cols=NULL, type="numeric", ...)
 			# );
 	}
 
+
+df.getColumnTypes = function(df)
+	{
+	# likely an "apply" would work here ...
+	n = ncol(df);
+	res = character(n);
+	for(i in 1:n)
+		{
+		col.data = df[,i];
+		ntype = typeof(col.data);
+
+		if(ntype == "double")
+			{
+			if(is.POSIXlt(col.data)) { ntype = "POSIXlt";}
+			if(is.POSIXct(col.data)) { ntype = "POSIXct";}			
+			}
+		res[i] = ntype;
+		}
+	res;
+	}
+	
 ## df.prepStuff ... load defaults, do checks, and return list ... extract list ... 
 
 

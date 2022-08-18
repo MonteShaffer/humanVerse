@@ -133,7 +133,6 @@ path.openInExplorer = function(key = "wd")
 	
 
 
-
 # cat(normalizePath(c(R.home(), tempdir())), sep = "\n")
 # list.files(R.home("bin"))
 # https://stackoverflow.com/questions/64476043/

@@ -135,7 +135,7 @@ is.file = file.exists;
 #' @examples
 is.windows = function()
 	{
-	str.contains("win", str.tolower(.Platform[["OS.type"]]) );
+	str.contains("win", tolower(.Platform[["OS.type"]]) );
 	# .isWindows() ... from library(digest)
 	# ??? ... from library(???)
 	}
@@ -172,6 +172,7 @@ is.error = function(e, where="suppressError")
 #' @examples
 is.library = function(str = "stringi", suggestion=TRUE)
 	{
+	if(!is.character(str)) { str = as.character(substitute(str)); }
 	res = isTRUE(requireNamespace( str , quietly = TRUE));
 	if(!res && suggestion)
 		{
@@ -261,8 +262,7 @@ is.false = isFALSE;
 # sys.frame(0)
 is.set = function(obj, allow.NULL=FALSE, deep.scan=TRUE, ...)
 	{
-	
-	debug = FALSE;
+debug = TRUE;
 	
 	mytype = suppressError( typeof(obj), 
 								show.notice=debug,
