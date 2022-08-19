@@ -69,7 +69,9 @@ curl.exec = function(ch, method="curl_fetch_memory")
 curl.init = function()
 	{
 	if(!is.library("curl")) { stop("this requires library(curl) to access libcurl"); }
-	curl::new_handle();
+	# register in memory ... append to handle timestamp, md5 or something
+	# like timers ... ??? multiple handles ??
+	ch = curl::new_handle();
 	}
 	
 curl_init = curl.init;
@@ -80,6 +82,12 @@ curl.isHandle = function(ch)
 	if(!res) { stop("You don't have a [ch], maybe try ch = curl.init(); ");}
 	}
 
+
+curl.optionsToJSON = function() {}
+curl.optionsFromJSON = function() {}
+# https://stackoverflow.com/questions/5356075/how-to-get-an-option-previously-set-with-curl-setopt
+# https://stackoverflow.com/a/5356184/184614
+# wrap it up ... 
 curl.setopt = function(ch, KEY, val)
 	{	
 	curl.isHandle(ch);

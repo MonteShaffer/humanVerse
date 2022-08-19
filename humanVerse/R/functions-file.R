@@ -1,34 +1,4 @@
 
-readChars = readChar;
-
-
-#' writeRDS
-#'
-#' The opposite of readRDS is writeRDS, make it so.
-#'
-#' @param obj The object to be stored
-#' @param filename The file to store the object
-#'
-#' @return
-#' @export
-#'
-writeRDS = function(obj, filename)
-	{
-	saveRDS(obj, file=filename);
-	}
-
-
-
-#' @rdname file.writeRDS
-#' @export
-file.writeRDS = writeRDS;
-
-
-#' @rdname file.readRDS
-#' @export
-file.readRDS = readRDS;
-
-
 #' writeToPipe
 #'
 #' This is the inverse of 'readFromPipe'
@@ -67,7 +37,7 @@ writeToPipe = function(df, filename, header=TRUE, quote="", sep="|",
 		types.line = paste0("# ", paste0(types, collapse=meta.sep), " #");
 		h.length = strlen(types.line);
 		
-		meta.content = 
+		# meta.content = 
 		# msg = paste0("\n\n", 
 			# str.commentWrapper(paste0("\n\n", "Welcome to the {humanVerse}", "\n\n") ), 
 			# "\n\n",
@@ -103,6 +73,7 @@ writeToPipe = function(df, filename, header=TRUE, quote="", sep="|",
 #' @rdname file.writeToPipe
 #' @export
 file.writeToPipe = writeToPipe;
+
 
 #' readFromPipe
 #'
@@ -180,96 +151,89 @@ file.readFromPipe = readFromPipe;
 
 
 
-# ntypes = df.getColumnTypes(x);
-# paste0(ntypes, collapse="^");
-# y = readFromPipe("times.txt", comment.char="#")
-# later, scan header ... parse META, grab types ...
-# setTYpes ... # override as.POSIX functions with origin = date.getOrigin()
 
 
 
-
-#' @rdname is.dir
+#' @rdname fopen
 #' @export
-is.dir = dir.exists;
-
-
-
-
-
-dir.getIncludes
-dir.addToIncludes
-dir.rankIncludes
-
-
-
-dir.smartPath = function(relative, base.path=NULL)
+# https://www.php.net/manual/en/function.fopen.php
+# EXPOSING the library:  https://www.tutorialspoint.com/c_standard_library/c_function_fopen.htm
+# line 773 of connections.c in R:::source ... 
+# 	fp = R_fopen(name, con->mode);
+# https://www.php.net/manual/en/function.fgets.php
+# fopen — Opens file or URL
+# fopen() binds a named resource, specified by filename, to a stream.
+# fp = fopen 
+# fp as file-pointer 
+fopen = function(filename, mode="rb", use.include.path = FALSE, ... )
 	{
+	# maybe do smart filename if use.include.path 
+	if(!file.exists(filename)) { return(FALSE); }
+	fp = file( description=filename, open=mode, ...);
+	return(fp);
+	}
 	
-	}
+
+#' @rdname file.open
+#' @export
+file.open = fopen;
 
 
-dir.getSeparator = function(file.sep = "")
+# # close returns either NULL or an integer status, invisibly. The status is from when the connection was last closed and is available only for some types of connections (e.g., pipes, files and fifos): typically zero values indicate success. Negative values will result in a warning; if writing, these may indicate write failures and should not be ignored.
+# The file pointed to by stream is closed.
+# fclose — Closes an open file pointer 
+# PHP https://www.php.net/manual/en/function.fclose.php
+fclose = function(fp)
 	{
-	sep = .Platform[["file.sep"]];					# this is WRONG on WINDOZE?
-	if(is.windows()) { sep = "\\"; }				# this is the WINDOZE form
-	if(file.sep != "") { sep = file.sep; }		# manual OVERRIDE
-	sep;
+	status = close(fp);
+	if(status == 0) { return(TRUE); }
+	res = FALSE;
+	res = property.set("status", res, status);
+	res;
 	}
-
-dir.cleanupPath = function(path, file.sep="")
-	{
-	sep = dir.getSeparator(file.sep);
-	str.replace(c("/", "\\"), sep, path);
-	}
-
-
-dir.normalizePath = function(path, ..., suppressWarnings=TRUE)
-	{
-	path = path[1];  # # normalizePath is multivariate, key this univariate
 	
 	
-	path.info = tryCatch	(
 
-							{
-							info = normalizePath(path, ...);
-							},
+#' @rdname file.close
+#' @export
+file.close = fclose;
 
-							warning = function(w) #
-								{
-								warning(paste0("### WARNING ###  throws a warning","\n\n",w));
-								# set KEY on INFO to w
-								info = property.set("WARNING", info, w);
-								if(!suppressWarnings) { warning(w); }
-								# info; # let's still return the value 	
-								return(info);
-								},
-		
-							error = function(e) #
-								{
-								# warning(paste0("### ERROR ###  throws an error","\n\n",e));
-								info = property.set("ERROR", info, e);
-								if(!suppressWarnings) { warning(e); }
-								# info; # let's still return the value 
-								return(info);
-								# res = FALSE;
-								# res = property.set("ERROR", res, e);
-								# return (res);
-								},
 
-							finally =
-								{
-					
-								}
-							);
-	return(path.info);
+
+
+#' writeRDS
+#'
+#' The opposite of readRDS is writeRDS, make it so.
+#'
+#' @param obj The object to be stored
+#' @param filename The file to store the object
+#'
+#' @return
+#' @export
+#'
+writeRDS = function(obj, filename)
+	{
+	saveRDS(obj, file=filename);
 	}
 
 
-## https://www.urbandictionary.com/define.php?term=Git-R-Done
 
-## fp = file.open = open
-## file.close = close
+#' @rdname file.writeRDS
+#' @export
+file.writeRDS = writeRDS;
+
+
+#' @rdname file.readRDS
+#' @export
+file.readRDS = readRDS;
+
+
+
+
+
+
+
+
 
 ##  cat(stri_info(short = TRUE))
 ## file:///C:/Users/Monte%20J.%20Shaffer/Desktop/v103i02.pdf
@@ -281,7 +245,7 @@ testme = "C:\\_git_\\github\\MonteShaffer\\humanVerse\\humanVerse\\R\\functions-
 # dir.exists( dirname(testme) );
 
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' file.init;
 #'
@@ -307,17 +271,19 @@ file.init = function(
 	}
 
 
-file.init = function(path.data, path.code, path.humanVerse, base.path="", verbose = TRUE)
-file.init = function(my.path = "C:/_R-TEMP_/", verbose = TRUE,
-	CONFIG = paste0(Sys.getenv("R_USER"),"/R/humanVerse/"),
-	CACHE = paste0(Sys.getenv("TEMP"),"/R/humanVerse/"),
-	DATA = "C:/_R-DATA_/",
-	CODE = "C:/_git_/github/MonteShaffer/humanVerse/notebooks/-functions-/",
-	base.path = getwd()
-;
-						CACHE="/humanVerse/CACHE/", append.cache = TRUE,
-						DATA="C:/_R-DATA_/", 			append.data  = TRUE,
-						CODE="/-CODE-/",			append.code  = TRUE )
+# file.init = function(path.data, path.code, path.humanVerse, base.path="", verbose = TRUE)
+# file.init = function(my.path = "C:/_R-TEMP_/", verbose = TRUE,
+	# CONFIG = paste0(Sys.getenv("R_USER"),"/R/humanVerse/"),
+	# CACHE = paste0(Sys.getenv("TEMP"),"/R/humanVerse/"),
+	# DATA = "C:/_R-DATA_/",
+	# CODE = "C:/_git_/github/MonteShaffer/humanVerse/notebooks/-functions-/",
+	# base.path = getwd()
+# ;
+						# CACHE="/humanVerse/CACHE/", append.cache = TRUE,
+						# DATA="C:/_R-DATA_/", 			append.data  = TRUE,
+						# CODE="/-CODE-/",			append.code  = TRUE )
+  
+file.init = function()  
   {
 	my.path = normalizePath(my.path);
 
@@ -357,7 +323,7 @@ file.init = function(my.path = "C:/_R-TEMP_/", verbose = TRUE,
 
 
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' dir.createDirectoryRecursive
 #'
@@ -406,7 +372,7 @@ createDirectoryRecursive = dir.createDirectoryRecursive;
 
 
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' file.readFrom;
 #'
@@ -519,18 +485,18 @@ file.readFrom = function(filename, ..., method="stringi")
 
 
 
+##########
+# dir.createDirectoryRecursive
+# dir.getDirectoryPath
+# dir.deleteLocalCacheFolder
+# dir.getSourceLocation
 
-dir.createDirectoryRecursive
-dir.getDirectoryPath
-dir.deleteLocalCacheFolder
-dir.getSourceLocation
 
-
-file.readFrom  RDS, PIPE, CSV, BIN, STR (lines), RDS(remote)
-file.writeTo
-file.getDirectoryName # dirname
-file.move  # file.rename(from, to)
-file.writeLine
+# file.readFrom  RDS, PIPE, CSV, BIN, STR (lines), RDS(remote)
+# file.writeTo
+# file.getDirectoryName # dirname
+# file.move  # file.rename(from, to)
+# file.writeLine
 
 # is this url.download() not file?
 file.download = function() {} 
@@ -543,28 +509,28 @@ file.download = function() {}
 ## https://github.com/jeroen/curl/issues/276
 
 
-/*
-library(curl)
+# /*
+# library(curl)
 
-repro <- function(n) {
-  urls <- paste0("https://httpbingo.org/get?q=", 1:n)
+# repro <- function(n) {
+  # urls <- paste0("https://httpbingo.org/get?q=", 1:n)
 
-  make_handle <- function(url) new_handle(url=url)
+  # make_handle <- function(url) new_handle(url=url)
 
-  pool <- new_pool()
+  # pool <- new_pool()
 
-  fail <- function(msg) cat("failed connection:", msg, "\n")
+  # fail <- function(msg) cat("failed connection:", msg, "\n")
 
-  done <- function(data) cat("status:", data$status_code, "\n")
+  # done <- function(data) cat("status:", data$status_code, "\n")
 
-  for(u in urls)
-	multi_add(make_handle(u), done=done, fail=fail, pool=pool)
+  # for(u in urls)
+	# multi_add(make_handle(u), done=done, fail=fail, pool=pool)
 
-  stat <- multi_run(timeout=10, pool=pool)
+  # stat <- multi_run(timeout=10, pool=pool)
 
-  cat("remaining:",  stat$pending, "\n")
-}
-*/
+  # cat("remaining:",  stat$pending, "\n")
+# }
+# */
 
 
 
@@ -625,7 +591,7 @@ repro <- function(n) {
 
 
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' createDirectoryRecursive
 #'
@@ -922,7 +888,7 @@ getDirectoryPath = function(file, trailing=TRUE)
 #' @export
 #'
 #' @examples
-getRemoteAndCache = function(remote, local.file = NULL, local.pre = "TMP"
+getRemoteAndCache = function(remote, local.file = NULL, local.pre = "TMP",
 	tmp.folder = "/humanVerse/cache/", force.download = FALSE,
 	verbose = FALSE, md5.hash = FALSE, append = "")
   {

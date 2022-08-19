@@ -1,5 +1,5 @@
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' property.set
 #'
@@ -77,7 +77,7 @@ setAttribute = property.set;
 
 
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' property.get
 #'
@@ -176,9 +176,18 @@ property.getALL = function(obj=NULL, property.type="attributes")
 	}
 
 
+
+#' @rdname property.getAll
+#' @export
+property.getAll = property.getALL;
+
 #' @rdname getAllAttributes
 #' @export
-getAllAttributes = property.getAll;
+getAllAttributes = property.getALL;
+
+
+
+
 
 #' @rdname getALLAttributes
 #' @export

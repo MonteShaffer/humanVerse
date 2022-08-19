@@ -125,9 +125,27 @@ as.type = function(vals, types="character", ...) # could I pass ... dots
 	}
 
 
+#' @rdname as.Type
+#' @export
 as.Type = as.type;
 
-##################################################
+#' @rdname readChars
+#' @export
+readChars = readChar;
+
+# This is obviously tedious, violates DRY, and introduces bloat.
+# @rdname vs @alias
+# https://stackoverflow.com/questions/57770755/
+# https://stackoverflow.com/a/30773843/184614
+# @describeIn ... @rdname ... map to \alias{} ... 
+# @export ??? 
+# https://stackoverflow.com/a/22556198/184614
+# https://stackoverflow.com/a/71453653/184614
+# The @export docstring informs Roxygen to to put the function name in the package NAMESPACE file
+
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' bindec
 #'

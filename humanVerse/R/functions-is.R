@@ -1,5 +1,7 @@
 
 
+# https://www.rdocumentation.org/packages/Zelig/versions/4.2-1
+is.formula = function() {}
 
 
 is.prime = function(x, ..., optimus=FALSE)
@@ -25,6 +27,7 @@ is.prime = function(x, ..., optimus=FALSE)
 
 # is.function only works on non-string?
 # exists is the reverse, only on a string, not a non-string 
+# overwriting/extending base::
 is.function = function(fn)
 	{
 	if(is.character(fn)) { if(exists(fn)) { return(TRUE); } else { return(FALSE); } }
@@ -38,92 +41,46 @@ function.exists = is.function;
 
 
 
-is.POSIXt = function(x) { inherits(x, "POSIXt"); }
-is.POSIXlt = function(x) { inherits(x, "POSIXlt"); }
-is.POSIXct = function(x) { inherits(x, "POSIXct"); }
+is.POSIXt  = function(x)	{ inherits(x, "POSIXt");  }
+is.POSIXlt = function(x)	{ inherits(x, "POSIXlt"); }
+is.POSIXct = function(x)	{ inherits(x, "POSIXct"); }
 
 
-
-##################################################
-#'
-#' 
-#'
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' is.substring
 #'
-#' @param haystack
-#' @param needle
-#' @param out
 #'
-#' @return
+#' @param needle (substring is UNI-VARIATE)
+#' @param haystack (is MULTI-VARIATE)
+#'
+#' @return TRUE or FALSE (Logical VECTOR of length(haystack)
 #' @export
 #'
 #' @examples
-is.substring = function(haystack, needle)
-  {  
-  grepl(needle, haystack, fixed = TRUE);
-  }
-
-
-
-
-has.color <- function() 
+is.substring = function(needle, haystack)
 	{
-	# this is large function in crayon
-	 
-	# DEBIAN ... 
-	# Sys.getenv("COLORTERM"); 
-	# Sys.getenv("LS_COLORS"); 
-	# Sys.getenv("TERM");
-	#  
-	# TERM                    xterm-256color
-	# what if I pass a #F9A3EE into xterm-256, will it work ?
-	# have a flag to store in the "humanVerse" ... disable / enable ...
-	#
-	
-	
-
+	grepl(needle, haystack, fixed = TRUE);
 	}
 
-has.emacs = function()
-	{
-	Sys.getenv("EMACS") != "" || Sys.getenv("INSIDE_EMACS") != ""	
-	}
-# property.get("EMAC*", NULL, "system")
-
-has.rstudio = function()
-	{
-	!(Sys.getenv("RSTUDIO", "") == "")
-	}
-# property.get("RSTUDIO*", NULL, "system")
-
-# requireNamespace("rstudioapi", quietly = TRUE) &&
-#    rstudioapi::isAvailable() &&
-#    rstudioapi::hasFun("getConsoleHasColor")
 
 
-
-is.list.element = function(element, list) {}
-
-# > is.function(md5_)
-# [1] TRUE
-# > is.function("md5_")
-# [1] FALSE
-# exists("md5_")
 
 
 
 
 #' @rdname is.dir
 #' @export
+is.dir = function() {}
 is.dir = dir.exists;
 
 #' @rdname is.file
 #' @export
+is.file = function() {}
 is.file = file.exists;
 
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' is.windows
 #'
@@ -159,7 +116,7 @@ is.error = function(e, where="suppressError")
 
 
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' is.library
 #'
@@ -193,23 +150,6 @@ is.library = function(str = "stringi", suggestion=TRUE)
 
 
 
-##################################################
-#'
-#' is.substring
-#'
-#'
-#' @param needle (substring is UNI-VARIATE)
-#' @param haystack (is MULTI-VARIATE)
-#'
-#' @return TRUE or FALSE
-#' @export
-#'
-#' @examples
-is.substring = function(needle, haystack)
-	{
-	grepl(needle, haystack, fixed = TRUE);
-	}
-
 
 
 #' @rdname str_contains
@@ -219,6 +159,8 @@ str_contains = is.substring;
 #' @rdname str.contains
 #' @export
 str.contains = is.substring;
+
+
 
 
 
@@ -234,7 +176,7 @@ is.false = isFALSE;
 
 
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' is.set
 #'
@@ -324,7 +266,7 @@ cat("\n STEP X \n");
 isset = is.set;
 
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' is.empty
 #'
@@ -387,7 +329,7 @@ is.empty = function(obj)
 empty = is.empty;
 
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' is.wholeNumber
 #'
@@ -413,6 +355,7 @@ empty = is.empty;
 #' is.wholeNumber(rnorm(5));
 #' is.wholeNumber(rpois(5,1));
 #'
+is.wholeNumber = function() {}
 is.wholeNumber = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
   {
   # See ?is.integer
@@ -423,7 +366,7 @@ is.wholeNumber = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
 
 
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' is.even
 #'
@@ -439,13 +382,16 @@ is.wholeNumber = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
 #'
 is.even = function(x, ..., part="Re")
 	{
-	more = unlist(list(...)); x = c(x, more); 
+	x = dots.addTo(x, ...);
 	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
-	x = as.integer(x);	
+	x = as.integer(x);  # this rounds numerics down ... complex internal is NOT integer
 	( (x %% 2) == 0 );  
 	}
 
-##################################################
+
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' is.odd
 #'
@@ -461,13 +407,13 @@ is.even = function(x, ..., part="Re")
 #'
 is.odd = function(x, ..., part="Re")
 	{
-	more = unlist(list(...)); x = c(x, more); 
+	x = dots.addTo(x, ...);
 	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
-	x = as.integer(x);	
+	x = as.integer(x);  # this rounds numerics down ... complex internal is NOT integer
 	( (x %% 2) == 1 );  
 	}
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' is.positive
 #'
@@ -486,12 +432,12 @@ is.odd = function(x, ..., part="Re")
 #'
 is.positive = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
   {
-  more = unlist(list(...)); x = c(x, more);
-  x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
+  x = dots.addTo(x, ...);
+x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
   x > tol;
   }
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' is.negative
 #'
@@ -510,13 +456,13 @@ is.positive = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
 #'
 is.negative = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
   {
-  more = unlist(list(...)); x = c(x, more);
-  x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
+x = dots.addTo(x, ...);
+	  x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
   x < ( -1 * tol );
   }
 
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' is.zero
 #'
@@ -535,7 +481,7 @@ is.negative = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
 #'
 is.zero = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
 	{
-	more = unlist(list(...)); x = c(x, more);
+	x = dots.addTo(x, ...);
 	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
 	
 	x.pos = x < tol;
@@ -588,33 +534,6 @@ is.le = function(x, y, tol = sqrt(.Machine$double.eps), part="Re")
 
 
 
-
-check.ifConformable = function(x, y) {} # matrix?
-
-check.isCompatibleLength = function(x, y, 
-									method="equal",  # "1-1-equal"
-									action="warning", 
-									msg = " obj1 [x] and obj2 [y] are incompatible lengths, you may get spurious results."
-								)
-	{
-	met = functions.cleanKey(method, 3, keep="-");
-	acti = functions.cleanKey(action, 4);
-	xlen = length(x);
-	ylen = length(y);
-	b = (ylen == xlen);  
-		if(met == "equ") { return(TRUE); }
-		
-	xone = (xlen == 1);
-	yone = (ylen == 1);	
-		if( (met == "11e" || met == "1,1") && (xone || yone) )
-			{
-			return(TRUE);
-			}
-			
-	if(acti == "warn") { warning(msg); }
-	if(acti == "stop") { stop(msg); }
-	}
-						
 
 
 

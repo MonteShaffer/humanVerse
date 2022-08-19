@@ -64,29 +64,7 @@ unfolderizeURL = url.fromPath;
 deFolderizeURL = url.fromPath;
 unFolderizeURL = url.fromPath;
 
-url.testConnection = function(urls, verify=FALSE, timeout=2, ...)
-	{
-debug = FALSE;
-	n = length(urls);
-	res = logical(n);
-	for(i in 1:n)
-		{
-		url = urls[i];
-		conn = suppressError( url(url),
-							show.notice=debug, msg="debug url of url.testConnection" 
-							);
-		if(is.error(conn)) { next; }
 
-		# actually ping it 
-		head = suppressError( curlGetHeaders(url, timeout=timeout, verify=verify),
-							show.notice=debug, msg="debug head of url.testConnection"
-							);
-		if(is.error(head)) { next; }
-		
-		res[i] = TRUE;
-		}
-	res;
-	}
 
  
 # this is base function that wraps download.file ... 
@@ -111,7 +89,7 @@ url.download = function(urls, paths,
 								timeout=2, 
 								verify=FALSE,
 								method="base",
-								mode = "curl_fetch_memory"
+								mode = "curl_fetch_memory",
 								...)
 	{
 debug = FALSE;
@@ -125,6 +103,7 @@ debug = FALSE;
 	n.max = max( strlen(folders) );
 	if(n.max > 225) { stop("folder/filename lengths are getting long"); }
 	
+# for curl, can we store getoptions ... to know the call with features (headers)	
 	
 	## can I get headers and content at the same time ??? w/o curl ?
 	errors = logical(n.urls);

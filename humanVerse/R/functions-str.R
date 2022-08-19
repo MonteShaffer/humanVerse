@@ -1,10 +1,11 @@
 
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.count
 #'
 #'
+#------------------------------------------------#
 str.count = function(what="|", str)
 	{
 	info = str.explode(what, str);
@@ -12,7 +13,7 @@ str.count = function(what="|", str)
 	}
 	
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.toInteger
 #'
@@ -24,7 +25,7 @@ str.toInteger = function(str, isHEX=FALSE, base=0L)
 	return( strtoi(str, base=base) );
 	}
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.fromInteger
 #'
@@ -35,7 +36,7 @@ str.fromInteger = function(intvec)
 	}
 
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.toHEX
 #'
@@ -52,6 +53,8 @@ str.toHEX = function(str, ...)
 	res;
 	}
 	
+	
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # [u]nsorted,   [u]nsorted-[r]everse;  # this is how `table` naturally gives	
 # [c]ount, 		[c]ount-[r]everse;  
 # [a]lpha, 		[a]lpha-[r]everse, 
@@ -117,6 +120,7 @@ str.characterFrequency = function(str,
 	mytable;
 	}
 	
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#	
 str.splitN = function(str, ..., n=2, sep="^")
 	{
 	s.test = str.contains(sep, str);
@@ -133,7 +137,7 @@ str.splitN = function(str, ..., n=2, sep="^")
 	
 	}
 	
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.fromHEX
 #'
@@ -151,46 +155,24 @@ str.fromHEX = function(hstr, ...)
 	}
 
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
-#' str.toHex
-#'
-#'
-# technically "text.toHex"
-str.toHex = function(str)
-	{
-
-	}
-
-##################################################
-#'
-#' str.fromHex
+#' str.toCharacterVector
 #'
 #'
-# technically "text.fromHex"
-str.fromHex = function(hexstr)
-	{
-
-	}
-
-##################################################
-#'
-#' str.fromCharacters
-#'
-#'
-str.toCharacters = function(str, sep="")
+str.toCharacterVector = function(str, sep="")
 	{
 	# strsplit(str, sep, fixed=TRUE)[[1]];
 	res = str.explode(sep, str);
 	list.return(res);
 	}
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
-#' str.fromCharacters
+#' str.fromCharacterVector
 #'
 #'
-str.fromCharacters = function(charslist, sep="")
+str.fromCharacterVector = function(charslist, sep="")
 	{
 	# res = chars;
 	# if(!is.list(chars)) { res = list(); res[[1]] = chars; }
@@ -200,7 +182,7 @@ str.fromCharacters = function(charslist, sep="")
 
 
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.toBASE64
 #'
@@ -217,7 +199,7 @@ str.toBASE64 = function(str, ...)
 	res;
 	}
 	
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.fromBASE64
 #'
@@ -235,7 +217,7 @@ str.fromBASE64 = function(bstr, ...)
 	}
 
 	
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.toMD5
 #'
@@ -324,7 +306,7 @@ str.toMD5 = function(str, times=1, method="digest", ...)
 	}
 
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.fromMD5
 #'
@@ -339,7 +321,7 @@ str.fromMD5 = function(str, times=1, method="digest", ...)
 	}
 
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.toRaw
 #'
@@ -356,7 +338,7 @@ str.toRaw = function(str)
 	list.return(res);
 	}
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.fromRaw
 #'
@@ -376,7 +358,7 @@ str.fromRaw = function(raw)
 	}
 
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.trimFromAny
 #'
@@ -435,7 +417,7 @@ str.trimFromAny = function(str, search="#me", side="both", ...)
 	}
 
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.trimFromFixed
 #'
@@ -474,7 +456,7 @@ str.trimFromFixed = function(str, trim="#", side="both", ...)
 	}
 
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.between
 #'
@@ -487,7 +469,7 @@ str.between = function(str, keys=c("__B64_", "_B64__"))
 	}
 
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.len
 #'
@@ -539,7 +521,7 @@ strlen = str.len;
 str.length = str.len;
 
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.tolower
 #'
@@ -583,7 +565,7 @@ str.tolower = function(str, method="cpp", locale="en_US.UTF-8")
 strtolower = str.tolower;
 
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.toupper
 #'
@@ -622,7 +604,7 @@ str.toupper = function(str, method="cpp", locale="en_US.UTF-8")
 strtoupper = str.toupper;
 
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.trim
 #'
@@ -698,7 +680,7 @@ str.trim = function(str, side="both", method="stringi", pattern="", ...)
 trimMe = str.trim;
 
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.explode
 #'
@@ -756,7 +738,7 @@ explodeMe = str.explode;
 str.split = str.explode;
 
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.implode
 #'
@@ -793,7 +775,7 @@ implodeMe = str.implode;
 str.unsplit = str.implode;
 
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.repeat
 #'
@@ -829,7 +811,7 @@ str.repeat = function(str, times=1, method="base")
 str_repeat = str.repeat;
 
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.replace
 #'
@@ -943,7 +925,7 @@ str.replace = function(search, replace, subject, method="base")
 str_replace = str.replace;
 
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.toObject
 #'
@@ -954,7 +936,7 @@ str.toObject = function(obj.str)
 	eval(parse(text = obj.str));  # as-is, no checks?
 	}  
 	
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.fromObject
 #'
@@ -968,7 +950,7 @@ str.fromObject = function(obj)
 	}  
 
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.replaceFromList
 #'
@@ -988,7 +970,7 @@ str.replaceFromList = function(mylist, mysubject, ...)
 	}
 
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.pad
 #'
@@ -1060,7 +1042,7 @@ str.pad = function(str, final.length, padding="0", side="RIGHT", method="stringi
 str_trim = str.trim;
 
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.removeWhiteSpace
 #'
@@ -1092,7 +1074,11 @@ str.removeWhiteSpace = function( str, replace=" ", n = 2,
 removeWhiteSpace = str.removeWhiteSpace;
 
 
-
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#'
+#' str.stripTags
+#'
+#'
 str.stripTags = function(str)
 	{
 	return(gsub("<.*?>", "", str));
@@ -1101,7 +1087,7 @@ str.stripTags = function(str)
 strip.tags = str.stripTags;
 strip_tags = str.stripTags;
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.translate
 #'
@@ -1397,7 +1383,7 @@ whatever I want except for single  .. # lksdjf lkj
 '}
 
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.push_back
 #'
@@ -1414,7 +1400,7 @@ str.push_back = function(sub, str, collapse="")
 str.push_last = str.push_back;
 
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.push_front
 #'
@@ -1430,11 +1416,75 @@ str.push_front = function(sub, str, collapse="")
 str.push_first = str.push_front;
 
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#'
+#' str.capitalizeFirst
+#'
+#'
 # ucfirst ...
-str.capitalize = function(str) {} 
+str.capitalizeFirst = function(str, ...) 
+	{
+	str = dots.addTo(str, ...);
+	len.str = strlen(str);
+	first = charAt(str, 1);
+	first.uc = toupper(first);
+	paste0( first.uc, substring(str, 2, len.str) );
+	} 
+
+#' @rdname ucfirst
+#' @export
+ucfirst = str.capitalizeFirst;
 
 
-##################################################
+# ucwords(string $string, string $separators = " \t\r\n\f\v"): string
+# ucwords — Uppercase the first character of each word in a string
+# Returns a string with the first character of each word in string capitalized, if that character is alphabetic.
+# str = c("monte says hi", " \t Alex \r \n says hello|world");
+str.capitalizeWords = function(str, ..., sep.any=" \t\r\n\f\v") 
+	{
+	str = dots.addTo(str, ...);
+	ostr = str;  # original, copy ... help with matching `sep.any` on reversal
+	seps = str.explode("", sep.any);
+	info = str.replace(seps, " ", ostr); # cast EVERYTHING as simple space 
+	
+	tmp = str.explode(" ",info);
+	n = length(tmp);
+	new = character(n);
+	for(i in 1:n)
+		{
+		res = tmp[[i]];		
+		first = charAt(res, 1);
+		# what does toupper do on non-letters?  is this necessary?
+		# first.alpha = first %in% letters;
+		# str.replaceAtPosition = function() {}
+		# first.uc = toupper(first[first.alpha]);
+		first.uc = toupper(first);
+		# I need to get strpos of all "weird" CHARS, for now, just back to " "
+		# new[i] = str.map( paste0( first.uc, substring(res, 2, len.res) ),  );
+		# I have new and old, how to map ... 
+		len.res = strlen(res);
+		n.len = length(len.res); # how many keys 
+		pos = 1;
+		o = ostr[i];
+		for(j in 1:n.len)
+			{
+			if(res[j] == "")
+				{
+				res[j] = charAt(o, pos);
+				pos = 1 + pos;
+				} else { pos = 1 + len.res[j]; }
+			}
+		new[i] = paste0(res, collapse="");
+		}
+	new;
+	} 
+
+#' @rdname ucwords
+#' @export
+ucwords = str.capitalizeWords;
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.grammaticalNumber
 #'
@@ -1449,7 +1499,11 @@ str.grammaticalNumber = function(str, n=1, type="noun")
 	}
 
 
-##################################################
+
+
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.wordWrap
 #'
@@ -1485,7 +1539,7 @@ suppressError( so they have not included it in base R.  It is probably true, but
 	}
 
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.commentWrapper
 #'
@@ -1588,7 +1642,7 @@ str.commentWrapper = function(str="Welcome to the {humanVerse}",
 	}
 
 
-##################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' charVector
 #'

@@ -108,6 +108,11 @@ date.calculateLeapDays = function(cyear,
 	}
 
 
+#' @rdname is.leapYear
+#' @export
+is.leapYear = date.calculateLeapDays;
+
+
 
 # date.getTimeZoneOffset(OlsonNames()[123])
 date.getTimeZoneOffset = function(tz = "UTC")

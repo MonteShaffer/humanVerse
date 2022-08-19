@@ -324,7 +324,7 @@ plot.myTukeyPlot = function(x.list, heresy=FALSE,
   # for now, one or two ... horizontal only
 # if heresy use SD, SE.mean .. never do heresy ... JK
 
-###########################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##########
 	# x.list must be a list, need not have same length
 	if(!is.list(x.list)) { ox = x.list; x.list = list(); x.list[[1]] = ox; }
 	n = length(x.list);
@@ -351,7 +351,7 @@ plot.myTukeyPlot = function(x.list, heresy=FALSE,
 					graphics::par(mar=mar)
 				);
 
-###########################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##########
 	# background rectange
 	graphics::rect(		xlim[1] + 1,
 						ylim[1] - 1,
@@ -362,7 +362,7 @@ plot.myTukeyPlot = function(x.list, heresy=FALSE,
 		xright 	= xlim[2] + 1;
 		ybottom = ylim[1] - 1;
 		ytop 	= ylim[2] - 1;
-###########################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##########
 	# football field(s)
 	n.football = n - 1;
 	height.plot = (yscale[2] * 3) / (3*n + (n-1));
@@ -393,12 +393,12 @@ plot.myTukeyPlot = function(x.list, heresy=FALSE,
 			}
 		}
 
-###########################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##########
 	x.stats = stats.prepareTukeyPlot(x.list, heresy=heresy);
 		myMin = getAttribute("min", x.stats);
 		myMax = getAttribute("max", x.stats);
 	data.scale = c(myMin,myMax); # data.scale
-###########################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##########
 # ECDF
 # NA, N
 
@@ -474,7 +474,7 @@ plot.myTukeyPlot = function(x.list, heresy=FALSE,
 
 		y0 = y0 + height.plot + height.football + border;
 		}
-###########################################################
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~##########
 
 
 

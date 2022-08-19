@@ -1,12 +1,9 @@
 
-init = function() {}  
-# this function is linked in .onLoad()
-# if we know WHERE a local config file is, go grab it ... 
-# we should check colors and store it... ENABLE 
 
 
 
-##################################################
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' memory.init;
 #'
@@ -64,11 +61,6 @@ memory.restoreState = function() {}
 
 
 
-
-memory.defaults = function() {}
-
-memory.getDefaults
-memory.setDefaults
 
 
 
