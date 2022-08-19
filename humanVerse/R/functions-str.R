@@ -1440,41 +1440,45 @@ ucfirst = str.capitalizeFirst;
 # ucwords — Uppercase the first character of each word in a string
 # Returns a string with the first character of each word in string capitalized, if that character is alphabetic.
 # str = c("monte says hi", " \t Alex \r \n says hello|world");
-str.capitalizeWords = function(str, ..., sep.any=" \t\r\n\f\v") 
+str.capitalizeWords = function(str, ..., sep.any="\t\r\n\f\v") 
 	{
 	str = dots.addTo(str, ...);
 	ostr = str;  # original, copy ... help with matching `sep.any` on reversal
-	seps = str.explode("", sep.any);
+	# remove space from sep.any
+	if(str.contains(" ",sep.any)) { sep.any = str.replace(" ", "", sep.any); }
+	seps = str.explode("", sep.any);  
 	info = str.replace(seps, " ", ostr); # cast EVERYTHING as simple space 
 	
-	tmp = str.explode(" ",info);
+	tmp = str.explode(" ",info);  # we don't lose original spaces 
 	n = length(tmp);
 	new = character(n);
 	for(i in 1:n)
 		{
 		res = tmp[[i]];		
 		first = charAt(res, 1);
-		# what does toupper do on non-letters?  is this necessary?
-		# first.alpha = first %in% letters;
-		# str.replaceAtPosition = function() {}
-		# first.uc = toupper(first[first.alpha]);
 		first.uc = toupper(first);
-		# I need to get strpos of all "weird" CHARS, for now, just back to " "
-		# new[i] = str.map( paste0( first.uc, substring(res, 2, len.res) ),  );
-		# I have new and old, how to map ... 
 		len.res = strlen(res);
+		
+		res = paste0( first.uc, substring(res, 2, len.res) );
+		
+		# I need to get strpos of all "weird" CHARS, map back from " "
 		n.len = length(len.res); # how many keys 
 		pos = 1;
 		o = ostr[i];
+		ures = res;
 		for(j in 1:n.len)
 			{
+			
 			if(res[j] == "")
-				{
-				res[j] = charAt(o, pos);
+				{		
+				ures[j] = charAt(o, pos);
+cat("\n j = ", j, " \t ures[j] = ", ures[j], " \t pos = ", pos, "\n");
 				pos = 1 + pos;
-				} else { pos = 1 + len.res[j]; }
+				} else { pos = len.res[j] + pos; }
 			}
-		new[i] = paste0(res, collapse="");
+			
+			
+		new[i] = paste0(ures, collapse=""); 
 		}
 	new;
 	} 
@@ -1500,6 +1504,10 @@ str.grammaticalNumber = function(str, n=1, type="noun")
 
 
 
+
+#' @rdname str.gn
+#' @export
+str.gn = str.grammaticalNumber;
 
 
 
