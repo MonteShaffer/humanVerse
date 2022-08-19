@@ -24,7 +24,7 @@ suppressError = function(expression, show.notice = TRUE, msg = "")
 
 # # ?source ... sourceDir
 
-
+## res = include.dir(getwd()); View(res);
 
 include.dir = function(path = getwd(), verbose = TRUE, pattern = "[.][RrSsQq]$")
 	{
@@ -50,14 +50,17 @@ debug = FALSE;
 					
 		w = suppressError( source( myfullpaths[i] ), 
 					show.notice=debug, msg="debugging source.dir" );
-		if(is.error(w) && verbose) 
+		if( is.error(w) ) 
 			{ 
 			w = as.character(w);			
 			j = c(j, i); 
 			# myerrors[[i]] = w; 
 			# myerrors[[ paste0("e:",i) ]] = w;
-			myerrors[j] = w;
-			cat("\n\n", w, "\n\n"); 
+			myerrors[i] = w;
+			if(verbose)
+				{
+				cat("\n\n", w, "\n\n"); 
+				}
 			}
 		
 		if(verbose) { cat("\n"); }

@@ -1,0 +1,3 @@
+
+is.leapYear = date.calculateLeapDays;
+

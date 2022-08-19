@@ -1,5 +1,5 @@
 
-is.leapYear = date.calculateLeapDays;
+
 
 
 is.prime = function(x, ..., optimus=FALSE)

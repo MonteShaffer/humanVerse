@@ -13,7 +13,7 @@ strip_style <- function(string) {
 }
 
 
-cat.init() = function()
+cat.init = function()
 	{
 	# load objects, where to attach?
 	
