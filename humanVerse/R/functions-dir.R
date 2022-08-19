@@ -1,5 +1,8 @@
 
-
+# TODO ???
+# dir.getIncludes
+# dir.addToIncludes
+# dir.rankIncludes
 
 
 
@@ -11,9 +14,7 @@ is.dir = dir.exists;
 
 
 
-dir.getIncludes
-dir.addToIncludes
-dir.rankIncludes
+
 
 
 
@@ -81,5 +82,56 @@ dir.normalizePath = function(path, ..., suppressWarnings=TRUE)
 							);
 	return(path.info);
 	}
+
+
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#'
+#' dir.createDirectoryRecursive
+#'
+#' @param folder the folder to be created
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' # dir.createDirectoryRecursive("R:/monte/says/hi/");
+#' dir.createDirectoryRecursive("aldkj"); # ... will create in getwd()
+dir.createDirectoryRecursive = function(folder, verbose=TRUE)
+  {
+	# folder = dir.smartInclude(folder);
+	msg = list();
+	msg[["EXISTS"]] = paste0(" DIRECTORY ", "\n\t\t\t", folder, "\n\n\t", "already exists", "\n\n");
+	msg[["ATTEMPT"]] = paste0(" ATTEMPTING TO CREATE DIRECTORY ", "\n\t\t\t", folder, "\n\n");
+	msg[["SUCCESS"]] = paste0(" SUCCESS ", "\n\t\t\t", folder, "\n\n");
+	msg[["FAILURE"]] = paste0(" FAILURE ", "\n\t\t\t", folder, "\n\n");
+
+			
+  if(dir.exists(folder))
+	{
+	if(verbose) { cat(msg$EXISTS); }
+	}
+	else
+		{
+		if(verbose) { cat(msg$ATTEMPT); }
+
+		dir.create(folder, recursive=TRUE);
+
+		if(dir.exists(folder))
+			{
+			if(verbose) { cat(msg$SUCCESS); }
+			} else {
+					if(verbose) { cat(msg$FAILURE); return(FALSE);}
+					}
+		}
+	return(TRUE);
+	}
+
+#' @rdname createDirectoryRecursive
+#' @export
+createDirectoryRecursive = dir.createDirectoryRecursive;
+
+
 
 
