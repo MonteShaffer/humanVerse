@@ -52,6 +52,7 @@ str.toHEX = function(str, ...)
 	res;
 	}
 	
+# [u]nsorted,   [u]nsorted-[r]everse;  # this is how `table` naturally gives	
 # [c]ount, 		[c]ount-[r]everse;  
 # [a]lpha, 		[a]lpha-[r]everse, 
 # alpha puts special chars before the letter [a] 
@@ -78,7 +79,7 @@ str.characterFrequency = function(str,
 	
 	# add space back as row, this recast the data types
 	row = c(space.char, sp); 
-	mytable = df.addRow(mytable, row);
+	mytable = df.addRow(mytable, row, "start");
 	nt = nrow(mytable);
 	
 	# sort 
@@ -87,6 +88,11 @@ str.characterFrequency = function(str,
 	so = te[1]; by = te[2]; if(is.na(by)) { by = ""; }
 
 			
+	if(so == "u" && by == "r")
+		{
+		mytable = mytable[ rev(1:nt), ]
+		}
+		
 	if(so == "c")
 		{
 		dir = "DESC"; if(by == "r") { dir = "ASC"; }
@@ -98,16 +104,17 @@ str.characterFrequency = function(str,
 		dir = "DESC"; if(by == "r") { dir = "ASC"; }
 		mytable = df.sortBy(mytable, "char", dir)
 		}
-
-	my.table = switch(by,
-						  "l"	= from.left,
-						  "r" 	= from.right,
-						  "b"  	= c(from.left, from.right),
-					c(from.left, from.right)
-					);
 	
-	tmp.table[ rev(1:nrow(tmp.table)), ]
-	
+	if(horizontal)
+		{
+		# not a dataframe ... vector with names ...
+		mykeys = as.character(mytable$char);
+		myvals = as.integer(mytable$count);
+		names(myvals) = mykeys;
+		return(myvals);
+		}
+		
+	mytable;
 	}
 	
 str.splitN = function(str, ..., n=2, sep="^")
