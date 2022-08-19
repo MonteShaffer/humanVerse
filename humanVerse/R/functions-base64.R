@@ -40,7 +40,7 @@ base64.enc = function(obj, method="JSON", ...)
 	b64.enc(obj.raw);
 	}
 
-
+ 
 ## THIS IS UNIVARIATE
 base64.dec = function(b64.str, method="JSON", ...)
 	{

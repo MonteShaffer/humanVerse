@@ -1,4 +1,11 @@
 
+primes.scan = function() {}
+# scan bit 
+# reformat downloaded file, one prime per line
+# MATH has 1,000,000; 				max 15485863
+# because of gn I have 1,057,662;	max 16441303
+# bits didn't save as expected ... 
+
 
 ##################################################
 #'
@@ -35,6 +42,7 @@ primes.bit = function(n, first=TRUE, optimus=FALSE)
 	# to get 1,000,000 primes; gn = 16,441,303
 	
 	bits.prime = bit::bitwhich(gn, TRUE);  # set all to TRUE, including 1
+	bits.prime[1] = FALSE;
 	
 	## IS.EVEN ##
 	i = 4;
@@ -42,11 +50,6 @@ primes.bit = function(n, first=TRUE, optimus=FALSE)
 	idx = which( (1:gn %% 2 == 0) & (1:gn > 3) );
 	bits.prime[idx] = FALSE;
 	
-	# while(i < gn)
-		# {
-		# bits.prime[i] = FALSE;
-		# i = 2 + i; 
-		# }
 
 	## SIEVE  p is (6k +/- 1) ## 	
 	i = 3;
@@ -69,13 +72,18 @@ primes.bit = function(n, first=TRUE, optimus=FALSE)
 		i = 2+i;
 		}
 	
+	save(bits.prime, file=paste0("primes-",n,".RData") );
+	# use save/load ... to keep format?
 	# , file.out=NULL
 	# #' @param file.out {file.path + file.name to save bits as RDS}
-saveRDS(bits.prime, file=paste0("primes-",n,".rds") );
+# saveRDS(bits.prime, file=paste0("primes-",n,".rds") );
 		
 	p = which(bits.prime == TRUE); # indexes are primes (zero indexed???)
-	if(first) { p = p[2:(n+1)];  if(optimus) { p = c(1,p); } }
-	if(!first) { p = p[p < n]; if(!optimus) { p = p[-c(1)]; } }  
+	# gn is upper bound, so ... truncate ... 
+	if(first) { p = p[1:n];  	if(optimus) { p = c(1,p); } }
+	if(!first) { p = p[p < n];	if(optimus) { p = c(1,p); } }  
+	
+	p = property.set("bits", p, bits.prime);
 	return(p);
 	}
 	
@@ -238,7 +246,7 @@ primes.get = function(n, first=TRUE, optimus=FALSE, method="base")
 	if(mm == "bi" && is.library("bit"))
 		{
 		res = primes.bit(n, first=first, optimus=optimus);
-		return(as.integer(res));
+		return(res);
 		}
 	
 	if(mm == "sf" && is.library("sfsmisc"))

@@ -78,8 +78,9 @@ memory.get = function(key, MEMORY="BASE")
 	}
 
 
-
-memory.set = function(key, value, MEMORY="BASE") 
+# different than property.set (key, OBJ, Value)
+# now the same ... KEY on OBJ to VAL
+memory.set = function(key, MEMORY="BASE", value) 
 	{
 	.GlobalEnv$.humanVerse["."][[MEMORY]][[key]] = value;	
 	}

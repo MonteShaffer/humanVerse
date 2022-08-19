@@ -5,7 +5,7 @@
 #
 #
 ################################################################################
-# character^integer^character^character^integer^integer^integer^integer^character
+# character^integer^character^character^integer^integer^integer^integer
 ################################################################################
 library|idx|hex.color|color|red|green|blue|alpha
 WEB-216|1|#000000|WEB.1|0|0|0|255

@@ -211,7 +211,7 @@ df.setColumnType = function(df, cols=NULL, type="numeric", ...)
 	
 	# return length is n.cols
 	searching = set.match(cols, dfcols);
-	if(anyNA(m)) { stop("one of the [cols] is not in df"); }
+	if(anyNA(searching)) { stop("one of the [cols] is not in df"); }
 	 
 	if(n.types == 1) { type = rep(type, n.cols); n.types = n.cols; }
 	check.isCompatibleLength( cols, type, "equal", 
@@ -222,7 +222,10 @@ df.setColumnType = function(df, cols=NULL, type="numeric", ...)
 	for(i in 1:n.cols)
 		{
 		idx = searching[i];
+cat("\n i = ", i, " \t idx = ", idx, " \t type = ", type[i], " \n");
+		
 		df[ , idx] = as.type( df[ , idx], type[i], ...);
+		
 		}
 	return(df);
 	## pairwise, trying to avoid a clone copy
@@ -237,6 +240,31 @@ df.setColumnType = function(df, cols=NULL, type="numeric", ...)
 			# );
 	}
 
+# [e]nd or [l]ast 
+# [s]tart or [b]eginning or [f]irst
+df.addRow = function(df, row, where = "end")
+	{
+	w  = functions.cleanKey(where, 1);
+	dftypes = df.getColumnTypes(df);
+		dfnames = colnames(df);
+	
+	rowdf = data.frame(t(row));
+		colnames(rowdf) = dfnames;
+	rowdf = df.setColumnType(rowdf, dfnames, dftypes);
+
+
+# [e]nd or [l]ast 
+# [s]tart or [b]eginning or [f]irst
+	
+	# rbind adds factor automatically
+	if(w == "s" || w == "b" || w == "f")
+		{
+		return( rbind(rowdf, df) );
+		}
+	rbind(df, rowdf);  # end 	
+	}
+
+
 
 df.getColumnTypes = function(df)
 	{
@@ -247,6 +275,11 @@ df.getColumnTypes = function(df)
 		{
 		col.data = df[,i];
 		ntype = typeof(col.data);
+		
+		if(ntype == "integer" && is.factor(col.data))
+			{
+			ntype = "factor";
+			}
 
 		if(ntype == "double")
 			{
@@ -265,13 +298,15 @@ df.getColumnTypes = function(df)
 df.sortBy = function(df, cols, dir="ASC")
 	{
 	dfcols = colnames(df); 
+	# if cols are indexes ... map to colnames 
+	if(!is.character(cols)) { cols = as.integer(cols); cols = dfcols[cols]; }
 	n = length(dfcols);
 	n.cols = length(cols);
 	n.dirs = length(dir);
 	
 	# return length is n.cols
 	searching = set.match(cols, dfcols);
-	if(anyNA(m)) { stop("one of the [cols] is not in df"); }
+	if(anyNA(searching)) { stop("one of the [cols] is not in df"); }
 	
 	if(n.dirs == 1) { dir = rep(dir, n.cols); n.dirs = n.cols; }
 	if(n.dirs != n.cols) { stop("cols length != dir length"); }
@@ -281,20 +316,22 @@ df.sortBy = function(df, cols, dir="ASC")
 
 	for(i in 1:n.cols)
 		{
-		idx = which( names(df)== mycols[i] );
+		idx = which( dfcols == cols[i] );
+		mycol = df[,idx];
+		if(is.factor(mycol)) { mycol = as.character(mycol); } # TMP
 		if(dir[i] == "ASC")
 			{
-			vecs[,i] = df[,idx];
+			vecs[,i] = mycol;  # chars work here 
 			} else {
 					# DESC
 					# rev(column_a)
 					# https://stackoverflow.com/a/57534718/184614
 					# if character, positive worked ...
-					if(is.character(df[1, idx])) 
+					if(is.character(mycol[1])) 
 						{
-						vecs[,i] = rev(df[,idx]);
+						vecs[,i] = rev(mycol);
 						} else {
-								vecs[,i] = -df[,idx];
+								vecs[,i] = -mycol;
 								}
 					}
 	  }

@@ -7,8 +7,14 @@
 
 nine.remainder = function(n, casting=9)
 	{
+	# not multivariate 
+	zeroes = which(n == 0);
 	rem = n %% casting;	
-	if(rem == 0) { rem = casting; }
+	nines = which(rem == 0);
+	
+	rem[nines] = casting; 
+	rem[zeroes] = 0;   # if there are zeroes coming in ...
+	# above is object assignment 
 	rem;
 	}
 

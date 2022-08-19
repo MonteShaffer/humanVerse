@@ -1,5 +1,22 @@
 
+# https://blog.revolutionanalytics.com/2009/01/multicolor-text-in-r.html
+# same text, phantom on some of it, overlay in correct order ... black/red/blue
+# used in plotting
 
+# fonts also in plotting
+# text ASCII art of V from Vendette ... use 3.14159 on circle, and primes on V ... 
+# load in via magic, create matrix? manually adjust
+# add to messages, right side ... 
+# add to headers of READ pipe ... 
+
+# https://github.com/r-lib/testthat/blob/717b02164def5c1f027d3a20b889dae35428b6d7/R/colour-text.r
+# R: cat of many colors ... shows hacked version of solution
+# https://stackoverflow.com/questions/24967412/r-a-cat-of-many-colors
+
+# ASCII from readPNG / readJPG, ... not magick ...
+# https://github.com/ctaggart878/asciiart/blob/master/asciiArt.R
+
+# https://w7.pngwing.com/pngs/114/326/png-transparent-carmageddon-youtube-call-of-duty-modern-warfare-2-fortnite-game-others-game-heart-xbox-one.png
 	
 color.init = function()
 	{
@@ -34,7 +51,7 @@ debug = FALSE;
 	if(!is.error(y)) 
 		{ 
 		z= readRDS(y);
-		memory.set("table", z, "COLORS");
+		memory.set("table", "COLORS", z);
 		return(z);
 		}
 		

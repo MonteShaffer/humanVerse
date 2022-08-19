@@ -45,7 +45,9 @@ file.readRDS = readRDS;
 #'
 #' @aliases storeToPipe 
 writeToPipe = function(df, filename, header=TRUE, quote="", sep="|", 
-									prepend.meta = TRUE, meta.content="", 
+									prepend.meta = TRUE, 
+									meta.content="",
+									meta.sep = "^",
 									row.names=FALSE, ...)
   {
   if(quote == "") { quote = FALSE; }
@@ -62,7 +64,7 @@ writeToPipe = function(df, filename, header=TRUE, quote="", sep="|",
 		{
 		types = df.getColumnTypes(df);
 		if(row.names) { types = c("row.names", types); }
-		types.line = paste0("# ", paste0(types, collapse="^"), " #");
+		types.line = paste0("# ", paste0(types, collapse=meta.sep), " #");
 		h.length = strlen(types.line);
 		
 		meta.content = 
@@ -82,10 +84,10 @@ writeToPipe = function(df, filename, header=TRUE, quote="", sep="|",
   #h.length = strlen(types.line); # use for custom header ... 
   #meta = paste0("# fdlskjf #", "\n");
   
-conn = file(filename, "rt");
+	conn = file(filename, "rt");
 	on.exit(close(conn));
   writeLines(meta);
-  utils::write.table(df, file=conn, quote=quote, col.names=header, row.names=row.names, sep=sep);
+  utils::write.table(df, conn, quote=quote, col.names=header, row.names=row.names, sep=sep);
   
   
   #fp = file(filename, open="wt");
@@ -119,7 +121,9 @@ readFromPipe = function() {}
 readFromPipe = function(filename, header=TRUE, quote="", sep="|",
 								row.names = FALSE,
 								meta.content = TRUE, 
-								meta.skip="#", stop.at=100, ...)
+								meta.skip="#", 
+								stop.at=100, 
+								meta.sep="^", ...)
   {
   if(!meta.content) 
 	{
@@ -155,6 +159,7 @@ readFromPipe = function(filename, header=TRUE, quote="", sep="|",
 	
 	df = utils::read.csv(filename, header=header, quote=quote, sep=sep, skip=i, ...);
 	df = property.set("meta", df, hstr);
+	# meta.sep="^" ... let's find it ... and convert df.setColumnsType(df, types);
 	return(df);	
   }
   

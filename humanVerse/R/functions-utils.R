@@ -93,9 +93,13 @@ as.type = function(vals, types="character", ...) # could I pass ... dots
 	nt = length(types); if( (n != nt) && (nt != 1) ) { stop("lenghts must match or types must be of length 1;"); }
 	
 	# NULL => null
-		w = is.null(types);
+		w = which(is.null(types));
 	# "POSIXct.POSIXlt" ... upper case 
-	types[w] = str.tolower(types[w]);
+	if(length(w) > 0)
+		{
+		# NULL is lower is.null
+		types[w] = str.tolower(types[w]);
+		}
 
 	# as.complex, as.double, as.null, as.single, as.integer 
 	# seems like it is of the form as.{typeof(vals))

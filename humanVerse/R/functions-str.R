@@ -34,6 +34,116 @@ str.fromInteger = function(intvec)
 	as.character(as.integer(intvec));
 	}
 
+
+##################################################
+#'
+#' str.toHEX
+#'
+#'
+str.toHEX = function(str, ...)
+	{
+	str = dots.addTo(str, ...);
+	n = length(str);
+	res = character(n);
+	for(i in 1:n)
+		{
+		res[i] = paste0( as.character(charToRaw(str[i])), collapse="");
+		}
+	res;
+	}
+	
+# [c]ount, 		[c]ount-[r]everse;  
+# [a]lpha, 		[a]lpha-[r]everse, 
+# alpha puts special chars before the letter [a] 
+str.characterFrequency = function(str,  
+										case="lower", 
+										sort.by="count",
+										horizontal=TRUE,
+										space.char = "[sp]"
+									)
+	{
+	ca  = functions.cleanKey(case, 2);
+	# we collapse all to get FREQ of what was entered
+	all = paste0(str, collapse="");  # we added a character here ... "\n"
+	if(ca == "lo") { all = tolower(all); }
+	if(ca == "up") { all = toupper(all); }
+	tmp = str.explode(" ", all);
+	sp = length(tmp);
+	all = paste0(tmp, collapse="");
+	tmp = str.explode("", all);
+	
+	mytable = as.data.frame( table(tmp) );  ## currently factors
+		colnames(mytable) = c("char", "count");
+	nt = nrow(mytable);
+	
+	# add space back as row, this recast the data types
+	row = c(space.char, sp); 
+	mytable = df.addRow(mytable, row);
+	nt = nrow(mytable);
+	
+	# sort 
+	sb  = functions.cleanKey(sort.by, 1, keep = "-");
+	te = str.explode("-", sb);
+	so = te[1]; by = te[2]; if(is.na(by)) { by = ""; }
+
+			
+	if(so == "c")
+		{
+		dir = "DESC"; if(by == "r") { dir = "ASC"; }
+		mytable = df.sortBy(mytable, "count", dir)
+		}
+		
+	if(so == "a")
+		{
+		dir = "DESC"; if(by == "r") { dir = "ASC"; }
+		mytable = df.sortBy(mytable, "char", dir)
+		}
+
+	my.table = switch(by,
+						  "l"	= from.left,
+						  "r" 	= from.right,
+						  "b"  	= c(from.left, from.right),
+					c(from.left, from.right)
+					);
+	
+	tmp.table[ rev(1:nrow(tmp.table)), ]
+	
+	}
+	
+str.splitN = function(str, ..., n=2, sep="^")
+	{
+	s.test = str.contains(sep, str);
+	if( sum( s.test ) > 0) 
+		{ 
+		all = paste0(str, collapse="\n"); 
+		stop("Your str has the sep in it, maybe try a different one");
+		}
+	# https://stackoverflow.com/a/26497699/184614
+	# split a string into disjoint substrings of length [n] = 2
+	pattern = paste0("(.{", n, "})");
+	s.str = gsub(pattern, paste0("\\1", sep), str);
+	str.explode(sep, s.str);
+	
+	}
+	
+##################################################
+#'
+#' str.fromHEX
+#'
+#'
+str.fromHEX = function(hstr, ...)
+	{
+	bstr = dots.addTo(bstr, ...);
+	n = length(bstr);
+	res = character(n);
+	for(i in 1:n)
+		{
+		res[i] = rawToChar( bstr[i] );
+		}
+	res;
+	}
+
+
 ##################################################
 #'
 #' str.toHex
@@ -81,6 +191,43 @@ str.fromCharacters = function(charslist, sep="")
 	str.implode(sep, res);
 	}
 
+
+
+##################################################
+#'
+#' str.toBASE64
+#'
+#'
+str.toBASE64 = function(str, ...)
+	{
+	str = dots.addTo(str, ...);
+	n = length(str);
+	res = character(n);
+	for(i in 1:n)
+		{
+		res[i] = b64.enc( charToRaw(str[i]) );
+		}
+	res;
+	}
+	
+##################################################
+#'
+#' str.fromBASE64
+#'
+#'
+str.fromBASE64 = function(bstr, ...)
+	{
+	bstr = dots.addTo(bstr, ...);
+	n = length(bstr);
+	res = character(n);
+	for(i in 1:n)
+		{
+		res[i] = rawToChar( b64.dec(bstr[i]) );
+		}
+	res;
+	}
+
+	
 ##################################################
 #'
 #' str.toMD5
@@ -1350,6 +1497,10 @@ suppressError( so they have not included it in base R.  It is probably true, but
 #' pname = "stringi"; pkg = paste0( "install.packages(\"",pname,"\", dependencies=TRUE ); ");
 #' str.commentWrapper( pkg, r.tag = "-", s.pad=15);
 #' ^ i.pad # s.pad CONTENT s.pad # $
+
+
+
+
 str.commentWrapper = function() {}   # what about \n in str for "blank vertical space"?
 str.commentWrapper = function(str="Welcome to the {humanVerse}", 
 									nchars=0, 
@@ -1364,13 +1515,23 @@ str.commentWrapper = function(str="Welcome to the {humanVerse}",
 	# Quotes "Jakob Nielson" + 5 ... states 66 is optimal
 	# 6.5 inches (1 inch margin) x 10 per inch ... about 65 ... we would do +/- 3 in typing class ... override end
 	
-	n = length(str);
+	# once max is set, build a basic "empty" for "\n" ... copy it ...
+	# if str.trim(str[i]) == "" ... do empty row ... 
+	n = length(str);  len.str = str.len(str);  max.len = max(len.str);
+		if(nchars > 0 && max.len > nchars) { nchars = max.len; }
+		if(nchars == 0) { nchars = max.len; } 
 	res = character(n);
 	mylengths = integer(n);
 		i.str = str.repeat(i.tag, i.pad); i.len = strlen(i.str);
 		s.str = str.repeat(s.tag, s.pad); s.len = strlen(s.str); 
+											c.len = strlen(c.tag);
+											r.len = strlen(r.tag);
 	for(i in 1:n)
 		{
+		t.len = (i.len + s.len + c.len + r.len);
+		tmp.len = t.len + len.str[i];
+		d.len = nchars - t.len;
+		if(nchars > 0) { if( tmp.len < nchars) { str[i] = str.pad(str[i], d.len, " ", "BOTH"); } }
 		s = paste0(		i.str, 
 						c.tag, 
 						r.tag, 
@@ -1396,16 +1557,26 @@ str.commentWrapper = function(str="Welcome to the {humanVerse}",
 						);
 			slen = strlen(s);
 			}
+		nchars = slen; # first line will dictacte the others ...
 			f.n = slen - 2*strlen(s.pad) - i.len - strlen(i.pad);
 			f.str = str.repeat(r.tag, f.n);
+			
+		if(i == 1) 
+			{ 
 			c.line = paste0(i.str, c.tag, r.tag, f.str, r.tag, c.tag, "\n");
-		res[i] = paste0(c.line, s, "\n", c.line);
-		# mylengths[i] = slen;
-		mylengths[i] = strlen(res[i]);
+			res[i] = paste0(c.line, s, "\n");
+			} else if (i == n)
+							{
+							res[i] = paste0(s, "\n", c.line);
+							} else {
+									res[i] = paste0(s, "\n");
+									}
+		mylengths[i] = slen;
+		#mylengths[i] = strlen(res[i]);
 		}
 	
-	res = property.set(res, "lengths", mylengths);
-	res = property.set(res, "indent", i.len);
+	res = property.set("lengths", res,  mylengths);
+	res = property.set("indent", res, i.len);
 	res;
 	}
 

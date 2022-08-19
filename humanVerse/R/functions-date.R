@@ -120,7 +120,7 @@ date.getTimeZoneOffset = function(tz = "UTC")
 date.setOrigin = function(origin)
 	{
 	memory.init();
-	memory.set("tz.origin", origin, "DATE");
+	memory.set("tz.origin", "DATE", origin);
 	invisible(origin);
 	}
 	
@@ -132,7 +132,7 @@ date.getOrigin = function()
 		{
 		# x = structure(0, class = c("POSIXt", "POSIXct") ); # list and compact
 		x = structure(0, class = "POSIXct" ); # compact only
-		memory.set("tz.origin", x, "DATE");
+		memory.set("tz.origin", "DATE", x);
 		}
 	x;
 	}
@@ -146,18 +146,18 @@ date.init = function()
 	# https://data.iana.org/time-zones/tz-link.html#tzdb
 	# https://time.is/ [your clock is 0.6 seconds behind ... latency?]
 	
-	memory.set("tz.names", OlsonNames(), "DATE" );  # doesn't have map to offsets?  stringi
-	memory.set("tz.out", "UTC", "DATE");
+	memory.set("tz.names", 	"DATE", OlsonNames() );  # doesn't have map to offsets?  stringi
+	memory.set("tz.out", 	"DATE", "UTC");
 		s.tz = Sys.timezone();
-	memory.set("tz.in", s.tz, "DATE");
-	memory.set("tz.local", s.tz, "DATE");
-	memory.set("tz.local", date.getTimeZoneOffset(s.tz), "DATE" );
+	memory.set("tz.in", "DATE", s.tz);
+	memory.set("tz.local", "DATE", s.tz);
+	memory.set("tz.local", "DATE", date.getTimeZoneOffset(s.tz) );
 	# 1970 EPOCH 
-	memory.set("tz.origin", structure(0, class = c("POSIXt", "POSIXct") ), "DATE" );
+	memory.set("tz.origin", "DATE", structure(0, class = c("POSIXt", "POSIXct") ) );
 	
 		i.tz = stringi::stri_timezone_info();
-	memory.set("tzi.local", i.tz, "DATE");
-	memory.set("tzi.local.offset", i.tz$RawOffset, "DATE");
+	memory.set("tzi.local", "DATE", i.tz);
+	memory.set("tzi.local.offset", "DATE", i.tz$RawOffset);
 	
 	# x = stri_timezone_list(); y = OlsonNames(); stopifnot(identical(x,y));
 	# stri_timezone_list(offset=5.5)
