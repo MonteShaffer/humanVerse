@@ -1440,20 +1440,26 @@ ucfirst = str.capitalizeFirst;
 # ucwords — Uppercase the first character of each word in a string
 # Returns a string with the first character of each word in string capitalized, if that character is alphabetic.
 # str = c("monte says hi", " \t Alex \r \n says hello|world");
-str.capitalizeWords = function(str, ..., sep.any="\t\r\n\f\v") 
+str.capitalizeWords = function(str, ..., sep.any=" \t\r\n\f\v") 
 	{
 	str = dots.addTo(str, ...);
 	ostr = str;  # original, copy ... help with matching `sep.any` on reversal
-	# remove space from sep.any
-	if(str.contains(" ",sep.any)) { sep.any = str.replace(" ", "", sep.any); }
-	seps = str.explode("", sep.any);  
+	seps = str.explode("", sep.any);
+	# " " must be first in seps ...
+	idx = which(seps == " ");
+	# regarless of current pos, remove all, and put at front ...
+	if(length(idx) > 0) { seps = seps[-c(idx)]; seps = c(" ", seps); }
 	info = str.replace(seps, " ", ostr); # cast EVERYTHING as simple space 
 	
-	tmp = str.explode(" ",info);  # we don't lose original spaces 
+	
+	
+	tmp = str.explode(" ", info);  # list.return on str.explode ... only 1 str 
+	if(!is.list(tmp)) { tm = tmp; tmp = list(); tmp[[1]] = tm;}
 	n = length(tmp);
 	new = character(n);
 	for(i in 1:n)
 		{
+		k = 0;
 		res = tmp[[i]];		
 		first = charAt(res, 1);
 		first.uc = toupper(first);
@@ -1467,14 +1473,33 @@ str.capitalizeWords = function(str, ..., sep.any="\t\r\n\f\v")
 		o = ostr[i];
 		ures = res;
 		for(j in 1:n.len)
-			{
+			{	
+cat("\n j = ", j, " \t res[j] = ", res[j], " \t pos = ", pos, "\n");			
+			if(res[j] != "")
+				{
+				pos = len.res[j] + pos; 
+cat("\n", 'res[j] != ""', " \t pos = ", pos, "\n");
+# let's start tracking ...
+				# not last
+				if(j < n.len)
+					{
+					nex = res[j+1];
+cat("\n", 'res[j+1] != ""', " \t nex = ", nex, "\n");
+					if(nex == "") { next; }
+					# if the next element is not "", we need to add " "
+					n.ch = charAt(o, pos); if(!(n.ch %in% seps)) { n.ch = " "; }
+					ures[j] = paste0(ures[j], n.ch);
+					pos = 1 + pos;
+					}
+
+				
+				} else {		
+						n.ch = charAt(o, pos); if(!(n.ch %in% seps)) { n.ch = " "; }
+						ures[j] = n.ch;
+						pos = 1 + pos;		
+						} 
 			
-			if(res[j] == "")
-				{		
-				ures[j] = charAt(o, pos);
 cat("\n j = ", j, " \t ures[j] = ", ures[j], " \t pos = ", pos, "\n");
-				pos = 1 + pos;
-				} else { pos = len.res[j] + pos; }
 			}
 			
 			
