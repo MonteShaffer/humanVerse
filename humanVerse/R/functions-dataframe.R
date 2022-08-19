@@ -122,7 +122,7 @@ wildcardSearch = function(str, col.name, return.cols=NULL, ignore.case=TRUE, per
 # var = (x=1) ? TRUE : FALSE;
 # var = cond %?% ( tr %:% fa )
 
-fn = function(x, 
+# fn = function(x, 
 
 df.searchColumn = function(df, col, search="*")
 	{
@@ -131,7 +131,9 @@ df.searchColumn = function(df, col, search="*")
 	
 	}
 
-df.search = function(df, search="", warning.zero=TRUE )  # colname = '*mont' AND colname2 = '*shaff' OR ... WITH PARENTHESES
+
+# colname = `*mont` AND colname2 = `*shaff` OR ... WITH PARENTHESES
+df.search = function(df, search="", warning.zero=TRUE )  
 	{
 	
 	

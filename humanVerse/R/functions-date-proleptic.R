@@ -296,9 +296,9 @@ x2 = date.mktime(0,0,0,9,14,1752);
 # There is some historical uncertainty as to which years from 43 BCE to 8 CE were counted as leap years. For the purposes of this web site, we assume that all Julian years divisible by 4 are be counted as leap years.
 
 
-date.daysSince(
+# date.daysSince(
 
-September 2, 1752 was followed by September 14, 1752
+# September 2, 1752 was followed by September 14, 1752
 
 
 

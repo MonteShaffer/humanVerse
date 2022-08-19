@@ -759,3 +759,56 @@ has.rstudio = function()
 is.list.element = function(element, list) {}
 
 
+
+
+
+
+
+### str 
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#'
+#' charVector
+#'
+#' @param strvec
+#' @param sep
+#'
+#' @return
+#' @export
+#'
+#' @examples
+str.toCharVector = function(strvec, sep="")
+	{
+	n = length(strvec);
+	res = list();
+	for(i in 1:n)
+		{
+		res[[i]] = strsplit(strvec[i], sep ,fixed=TRUE)[[1]];
+		}
+	list.return(res);
+	}
+
+
+######################### cat #################
+
+# 
+# cat.checkColorCapability
+
+
+
+
+ansi_regex <- paste0("(?:(?:\\x{001b}\\[)|\\x{009b})",
+                     "(?:(?:[0-9]{1,3})?(?:(?:;[0-9]{0,3})*)?[A-M|f-m])",
+                     "|\\x{001b}[A-M]");
+					 
+					 
+has_style <- function(string) {
+  grepl(ansi_regex, string, perl = TRUE)
+}
+
+strip_style <- function(string) {
+  gsub(ansi_regex, "", string, perl = TRUE, useBytes = TRUE)
+}
+
+

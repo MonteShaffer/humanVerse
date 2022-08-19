@@ -224,7 +224,7 @@ color.forceHEX = function(colors, ..., method="base")
 	{
 	colors = dots.addTo(colors, ...);
 	x = suppressError( grDevices::col2rgb(colors) );
-	if(!
+#	if(!
 	
 	}
 

@@ -1,5 +1,19 @@
 
 
+check.colorCapability = function()
+	{
+	
+# https://github.com/r-lib/testthat/blob/717b02164def5c1f027d3a20b889dae35428b6d7/R/colour-text.r
+
+	# term <- Sys.getenv()["TERM"]
+  # colour_terms <- c("xterm-color","xterm-256color", "screen", "screen-256color")
+
+  # if(rcmd_running() || !any(term %in% colour_terms, na.rm = TRUE)) {
+    # return(text)
+  # }
+	
+	}
+
 
 check.ifConformable = function(x, y) {} # matrix?
 

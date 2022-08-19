@@ -1,17 +1,4 @@
 
-ansi_regex <- paste0("(?:(?:\\x{001b}\\[)|\\x{009b})",
-                     "(?:(?:[0-9]{1,3})?(?:(?:;[0-9]{0,3})*)?[A-M|f-m])",
-                     "|\\x{001b}[A-M]");
-					 
-					 
-has_style <- function(string) {
-  grepl(ansi_regex, string, perl = TRUE)
-}
-
-strip_style <- function(string) {
-  gsub(ansi_regex, "", string, perl = TRUE, useBytes = TRUE)
-}
-
 
 cat.init = function()
 	{
@@ -29,5 +16,3 @@ cat.init = function()
 	}
 
 
-
-cat.checkColorCapability

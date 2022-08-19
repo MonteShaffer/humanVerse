@@ -60,6 +60,7 @@ debug = FALSE;
 		cat("\n Reporting ", length(j), " errors on ", n, " includes ... ", "\n"); 
 		print(df);
 		cat("\n Reporting ", length(j), " errors on ", n, " includes ... ", "\n");
+		print(df$myerrors[ df$myerrors != ""]);
 		}	
 	invisible(df);
 	}

@@ -18,6 +18,7 @@ str.count = function(what="|", str)
 #' str.toInteger
 #'
 #'
+#------------------------------------------------#
 str.toInteger = function(str, isHEX=FALSE, base=0L)
 	{
 	# FALSE means it is just normal numbers we want to convert 
@@ -25,11 +26,19 @@ str.toInteger = function(str, isHEX=FALSE, base=0L)
 	return( strtoi(str, base=base) );
 	}
 
+#^^^^^^^^^^^^^^^^^^^^^^^^#
+#'
+#' @rdname stringToInteger
+#' @export
+stringToInteger = str.toInteger;
+#________________________#
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.fromInteger
 #'
 #'
+#------------------------------------------------#
 str.fromInteger = function(intvec)
 	{
 	as.character(as.integer(intvec));
@@ -41,6 +50,7 @@ str.fromInteger = function(intvec)
 #' str.toHEX
 #'
 #'
+#------------------------------------------------#
 str.toHEX = function(str, ...)
 	{
 	str = dots.addTo(str, ...);
@@ -55,101 +65,22 @@ str.toHEX = function(str, ...)
 	
 	
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-# [u]nsorted,   [u]nsorted-[r]everse;  # this is how `table` naturally gives	
-# [c]ount, 		[c]ount-[r]everse;  
-# [a]lpha, 		[a]lpha-[r]everse, 
-# alpha puts special chars before the letter [a] 
-str.characterFrequency = function(str,  
-										case="lower", 
-										sort.by="count",
-										horizontal=TRUE,
-										space.char = "[sp]"
-									)
-	{
-	ca  = functions.cleanKey(case, 2);
-	# we collapse all to get FREQ of what was entered
-	all = paste0(str, collapse="");  # we added a character here ... "\n"
-	if(ca == "lo") { all = tolower(all); }
-	if(ca == "up") { all = toupper(all); }
-	tmp = str.explode(" ", all);
-	sp = length(tmp);
-	all = paste0(tmp, collapse="");
-	tmp = str.explode("", all);
-	
-	mytable = as.data.frame( table(tmp) );  ## currently factors
-		colnames(mytable) = c("char", "count");
-	nt = nrow(mytable);
-	
-	# add space back as row, this recast the data types
-	row = c(space.char, sp); 
-	mytable = df.addRow(mytable, row, "start");
-	nt = nrow(mytable);
-	
-	# sort 
-	sb  = functions.cleanKey(sort.by, 1, keep = "-");
-	te = str.explode("-", sb);
-	so = te[1]; by = te[2]; if(is.na(by)) { by = ""; }
-
-			
-	if(so == "u" && by == "r")
-		{
-		mytable = mytable[ rev(1:nt), ]
-		}
-		
-	if(so == "c")
-		{
-		dir = "DESC"; if(by == "r") { dir = "ASC"; }
-		mytable = df.sortBy(mytable, "count", dir)
-		}
-		
-	if(so == "a")
-		{
-		dir = "DESC"; if(by == "r") { dir = "ASC"; }
-		mytable = df.sortBy(mytable, "char", dir)
-		}
-	
-	if(horizontal)
-		{
-		# not a dataframe ... vector with names ...
-		mykeys = as.character(mytable$char);
-		myvals = as.integer(mytable$count);
-		names(myvals) = mykeys;
-		return(myvals);
-		}
-		
-	mytable;
-	}
-	
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#	
-str.splitN = function(str, ..., n=2, sep="^")
-	{
-	s.test = str.contains(sep, str);
-	if( sum( s.test ) > 0) 
-		{ 
-		all = paste0(str, collapse="\n"); 
-		stop("Your str has the sep in it, maybe try a different one");
-		}
-	# https://stackoverflow.com/a/26497699/184614
-	# split a string into disjoint substrings of length [n] = 2
-	pattern = paste0("(.{", n, "})");
-	s.str = gsub(pattern, paste0("\\1", sep), str);
-	str.explode(sep, s.str);
-	
-	}
-	
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.fromHEX
 #'
 #'
+#------------------------------------------------#
 str.fromHEX = function(hstr, ...)
 	{
-	bstr = dots.addTo(bstr, ...);
-	n = length(bstr);
+	hstr = dots.addTo(hstr, ...);
+	n = length(hstr);
 	res = character(n);
 	for(i in 1:n)
 		{
-		res[i] = rawToChar( bstr[i] );
+		tt  = str.splitN(hstr[i], 2);
+		ttx = paste0("0x",tt);
+		ttr = as.raw( hexdec(ttx) );		
+		res[i] = rawToChar(ttr);
 		}
 	res;
 	}
@@ -160,6 +91,7 @@ str.fromHEX = function(hstr, ...)
 #' str.toCharacterVector
 #'
 #'
+#------------------------------------------------#
 str.toCharacterVector = function(str, sep="")
 	{
 	# strsplit(str, sep, fixed=TRUE)[[1]];
@@ -167,15 +99,27 @@ str.toCharacterVector = function(str, sep="")
 	list.return(res);
 	}
 
+#^^^^^^^^^^^^^^^^^^^^^^^^#
+#'
+#' @rdname charVector
+#' @export
+charVector = str.toCharacterVector;
+
+#^^^^^^^^^^^^^^^^^^^^^^^^#
+#'
+#' @rdname str.toCharVector
+#' @export
+str.toCharVector = str.toCharacterVector;
+
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.fromCharacterVector
 #'
 #'
+#------------------------------------------------#
 str.fromCharacterVector = function(charslist, sep="")
 	{
-	# res = chars;
-	# if(!is.list(chars)) { res = list(); res[[1]] = chars; }
 	res = list.prep(charslist);
 	str.implode(sep, res);
 	}
@@ -187,6 +131,7 @@ str.fromCharacterVector = function(charslist, sep="")
 #' str.toBASE64
 #'
 #'
+#------------------------------------------------#
 str.toBASE64 = function(str, ...)
 	{
 	str = dots.addTo(str, ...);
@@ -204,6 +149,7 @@ str.toBASE64 = function(str, ...)
 #' str.fromBASE64
 #'
 #'
+#------------------------------------------------#
 str.fromBASE64 = function(bstr, ...)
 	{
 	bstr = dots.addTo(bstr, ...);
@@ -222,6 +168,7 @@ str.fromBASE64 = function(bstr, ...)
 #' str.toMD5
 #'
 #'
+#------------------------------------------------#
 str.toMD5 = function(str, times=1, method="digest", ...)
 	{
 	# necessary overhead
@@ -311,6 +258,7 @@ str.toMD5 = function(str, times=1, method="digest", ...)
 #' str.fromMD5
 #'
 #'
+#------------------------------------------------#
 str.fromMD5 = function(str, times=1, method="digest", ...)
 	{
 	#  body(str.fromMD5);
@@ -326,7 +274,7 @@ str.fromMD5 = function(str, times=1, method="digest", ...)
 #' str.toRaw
 #'
 #'
-# technically "text.toRaw"
+#------------------------------------------------#
 str.toRaw = function(str)
 	{
 	n = length(str);
@@ -343,6 +291,7 @@ str.toRaw = function(str)
 #' str.fromRaw
 #'
 #'
+#------------------------------------------------#
 str.fromRaw = function(raw)
 	{
 	if(is.list(raw))
@@ -358,6 +307,36 @@ str.fromRaw = function(raw)
 	}
 
 
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#'
+#' str.toObject
+#'
+#'
+# eval ... parse 
+#------------------------------------------------#
+str.toObject = function(obj.str) 
+	{ 
+	eval(parse(text = obj.str));  # as-is, no checks?
+	}  
+	
+	
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#'
+#' str.fromObject
+#'
+#'
+# as.character substitute ... doesn't have to exist ...
+# this does require the object to exist ...  
+#------------------------------------------------#
+str.fromObject = function(obj) 
+	{ 
+	if( is.set(obj, TRUE) ) { return(as.character(substitute(obj)));	}
+	return("");
+	}  
+
+
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.trimFromAny
@@ -367,6 +346,8 @@ str.fromRaw = function(raw)
 # str = c("\n monte \n", "# says ", "hi#", "## to Alex#");
 # str.trimFromAny(str, search="#tx")
 # str.trimFromAny(str, search="#tx\n", side="left")
+#------------------------------------------------#
+str.trimFromAny = function() {}
 str.trimFromAny = function(str, search="#me", side="both", ...)
 	{
 	search = as.character(search);
@@ -422,6 +403,8 @@ str.trimFromAny = function(str, search="#me", side="both", ...)
 #' str.trimFromFixed
 #'
 #'
+#------------------------------------------------#
+str.trimFromFixed = function() {}
 str.trimFromFixed = function(str, trim="#", side="both", ...)
 	{
 	s = functions.cleanKey(side, 1);
@@ -461,6 +444,8 @@ str.trimFromFixed = function(str, trim="#", side="both", ...)
 #' str.between
 #'
 #'
+#------------------------------------------------#
+str.between = function() {}
 str.between = function(str, keys=c("__B64_", "_B64__"))
 	{
 	info = str.explode(keys[1], str);
@@ -474,6 +459,7 @@ str.between = function(str, keys=c("__B64_", "_B64__"))
 #' str.len
 #'
 #'
+#------------------------------------------------#
 str.len = function(str, method="stringi", locale="")
   {
 	# if list 
@@ -512,10 +498,14 @@ str.len = function(str, method="stringi", locale="")
 	}
 
 
+#^^^^^^^^^^^^^^^^^^^^^^^^#
+#'
 #' @rdname strlen
 #' @export
 strlen = str.len;
 
+#^^^^^^^^^^^^^^^^^^^^^^^^#
+#'
 #' @rdname str.length
 #' @export
 str.length = str.len;
@@ -532,6 +522,7 @@ str.length = str.len;
 #' @export
 #'
 #' @examples
+#------------------------------------------------#
 str.tolower = function(str, method="cpp", locale="en_US.UTF-8")
 	{
 # l10n_info();      # NON-TRIVIAL
@@ -560,6 +551,8 @@ str.tolower = function(str, method="cpp", locale="en_US.UTF-8")
 	tolower(str);
 	}
 
+#^^^^^^^^^^^^^^^^^^^^^^^^#
+#'
 #' @rdname strtolower
 #' @export
 strtolower = str.tolower;
@@ -576,6 +569,7 @@ strtolower = str.tolower;
 #' @export
 #'
 #' @examples
+#------------------------------------------------#
 str.toupper = function(str, method="cpp", locale="en_US.UTF-8")
 	{
 	# necessary overhead
@@ -599,6 +593,8 @@ str.toupper = function(str, method="cpp", locale="en_US.UTF-8")
 	toupper(str);
 	}
 
+#^^^^^^^^^^^^^^^^^^^^^^^^#
+#'
 #' @rdname strtoupper
 #' @export
 strtoupper = str.toupper;
@@ -628,6 +624,7 @@ strtoupper = str.toupper;
 #'
 #' str.trim("\r\n    four   scores    and  seven      years   \t\t  ");
 #'
+#------------------------------------------------#
 str.trim = function(str, side="both", method="stringi", pattern="", ...)
   {
 	# necessary overhead
@@ -675,9 +672,20 @@ str.trim = function(str, side="both", method="stringi", pattern="", ...)
     return (res);
 	}
 
+#^^^^^^^^^^^^^^^^^^^^^^^^#
+#'
 #' @rdname trimMe
 #' @export
 trimMe = str.trim;
+
+
+
+#^^^^^^^^^^^^^^^^^^^^^^^^#
+#'
+#' @rdname str_trim
+#' @export
+str_trim = str.trim;
+
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -694,6 +702,7 @@ trimMe = str.trim;
 #' @export
 #'
 #' @examples
+#------------------------------------------------#
 str.explode = function(sep = " ", str = "hello friend", method="base",  ...)
 	{
 	# necessary overhead
@@ -728,11 +737,14 @@ str.explode = function(sep = " ", str = "hello friend", method="base",  ...)
 	list.return(res, unlist=FALSE);
 	}
 
-
+#^^^^^^^^^^^^^^^^^^^^^^^^#
+#'
 #' @rdname explodeMe
 #' @export
 explodeMe = str.explode;
 
+#^^^^^^^^^^^^^^^^^^^^^^^^#
+#'
 #' @rdname str.split
 #' @export
 str.split = str.explode;
@@ -743,6 +755,7 @@ str.split = str.explode;
 #' str.implode
 #'
 #'
+#------------------------------------------------#
 str.implode = function(sep, str, method="base", ...)
 	{
 	# necessary overhead
@@ -766,10 +779,14 @@ str.implode = function(sep, str, method="base", ...)
 	}
 
 
+#^^^^^^^^^^^^^^^^^^^^^^^^#
+#'
 #' @rdname implodeMe
 #' @export
 implodeMe = str.implode;
 
+#^^^^^^^^^^^^^^^^^^^^^^^^#
+#'
 #' @rdname str.unsplit
 #' @export
 str.unsplit = str.implode;
@@ -786,6 +803,7 @@ str.unsplit = str.implode;
 #' @export
 #'
 #' @examples
+#------------------------------------------------#
 str.repeat = function(str, times=1, method="base")
 	{
 	m = functions.cleanKey(method, 1);
@@ -806,6 +824,8 @@ str.repeat = function(str, times=1, method="base")
 	res;
 	}
 
+#^^^^^^^^^^^^^^^^^^^^^^^^#
+#'
 #' @rdname str_repeat
 #' @export
 str_repeat = str.repeat;
@@ -826,6 +846,7 @@ str_repeat = str.repeat;
 #' @examples
 #' subject = c("Four score and seven years ago", "Abraham Lincoln buoying vessel"); 
 #' search = c("a", "b", "c"); replace = str.toupper(search);
+#------------------------------------------------#
 str.replace = function(search, replace, subject, method="base")
 	{
 	m = functions.cleanKey(method, 1);
@@ -920,34 +941,12 @@ str.replace = function(search, replace, subject, method="base")
 	}
 
 
+#^^^^^^^^^^^^^^^^^^^^^^^^#
+#'
 #' @rdname str_replace
 #' @export
 str_replace = str.replace;
 
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-#'
-#' str.toObject
-#'
-#'
-# eval ... parse 
-str.toObject = function(obj.str) 
-	{ 
-	eval(parse(text = obj.str));  # as-is, no checks?
-	}  
-	
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-#'
-#' str.fromObject
-#'
-#'
-# as.character substitute ... doesn't have to exist ...
-# this does require the object to exist ...  
-str.fromObject = function(obj) 
-	{ 
-	if( is.set(obj, TRUE) ) { return(as.character(substitute(obj)));	}
-	return("");
-	}  
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -964,10 +963,12 @@ str.fromObject = function(obj)
 #' @examples
 #' mysubject = c("Four score and seven years ago", "Abraham Lincoln buoying vessel"); 
 #' mylist = c("a" = "A", "b" = "B", "c" = "C");
+#------------------------------------------------#
 str.replaceFromList = function(mylist, mysubject, ...)
 	{
 	str.replace( names(mylist), mylist, mysubject);
 	}
+
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -988,6 +989,7 @@ str.replaceFromList = function(mylist, mysubject, ...)
 #' @examples
 #'
 #' str = c("1", "12", "123"); padding = "0";
+#------------------------------------------------#
 str.pad = function(str, final.length, padding="0", side="RIGHT", method="stringi")
 	{
 	str = as.character(str);
@@ -1037,16 +1039,12 @@ str.pad = function(str, final.length, padding="0", side="RIGHT", method="stringi
 	}
 
 
-#' @rdname str_trim
-#' @export
-str_trim = str.trim;
-
-
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.removeWhiteSpace
 #'
 #'
+#------------------------------------------------#
 str.removeWhiteSpace = function( str, replace=" ", n = 2,
                               pre.trim = TRUE, post.trim = TRUE, ...)
   {
@@ -1069,6 +1067,8 @@ str.removeWhiteSpace = function( str, replace=" ", n = 2,
   }
 
 
+#^^^^^^^^^^^^^^^^^^^^^^^^#
+#'
 #' @rdname removeWhiteSpace
 #' @export
 removeWhiteSpace = str.removeWhiteSpace;
@@ -1079,13 +1079,27 @@ removeWhiteSpace = str.removeWhiteSpace;
 #' str.stripTags
 #'
 #'
+#------------------------------------------------#
 str.stripTags = function(str)
 	{
 	return(gsub("<.*?>", "", str));
 	}
 	
+
+#^^^^^^^^^^^^^^^^^^^^^^^^#
+#'
+#' @rdname strip.tags
+#' @export
 strip.tags = str.stripTags;
+
+
+#^^^^^^^^^^^^^^^^^^^^^^^^#
+#'
+#' @rdname strip_tags
+#' @export
 strip_tags = str.stripTags;
+
+
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
@@ -1094,6 +1108,7 @@ strip_tags = str.stripTags;
 #'
 # stringi::stri_trans_general(c("groß© żółć La Niña köszönöm", "Ábcdêãçoàúü", "Record high °C"), "latin-ascii")
 # get rid of temperature ??? caused a BUG before?
+#------------------------------------------------#
 str.translate = function(str, to="latin-ascii")
 	{
 	# to = "upper; latin-ascii"; # ALSO works, in the DOCS
@@ -1390,31 +1405,47 @@ whatever I want except for single  .. # lksdjf lkj
 #'
 ## is this stringr::str_c ??
 ## C++ ... obj.push_back(element) ... element, obj
+#------------------------------------------------#
 str.push_back = function(sub, str, collapse="")
 	{
 	paste0(str, sub, collapse=collapse);
 	}
 
+#^^^^^^^^^^^^^^^^^^^^^^^^#
+#'
 #' @rdname str.push_last
 #' @export
 str.push_last = str.push_back;
 
+#^^^^^^^^^^^^^^^^^^^^^^^^#
+#'
+#' @rdname str.push_end
+#' @export
+str.push_end = str.push_back;
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.push_front
 #'
 #'
+#------------------------------------------------#
 str.push_front = function(sub, str, collapse="")
 	{
 	paste0(sub, str, collapse=collapse);
 	}
 
-
+#^^^^^^^^^^^^^^^^^^^^^^^^#
+#'
 #' @rdname str.push_first
 #' @export
 str.push_first = str.push_front;
 
+
+#^^^^^^^^^^^^^^^^^^^^^^^^#
+#'
+#' @rdname str.push_begin
+#' @export
+str.push_begin = str.push_front;
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
@@ -1422,6 +1453,7 @@ str.push_first = str.push_front;
 #'
 #'
 # ucfirst ...
+#------------------------------------------------#
 str.capitalizeFirst = function(str, ...) 
 	{
 	str = dots.addTo(str, ...);
@@ -1431,6 +1463,8 @@ str.capitalizeFirst = function(str, ...)
 	paste0( first.uc, substring(str, 2, len.str) );
 	} 
 
+#^^^^^^^^^^^^^^^^^^^^^^^^#
+#'
 #' @rdname ucfirst
 #' @export
 ucfirst = str.capitalizeFirst;
@@ -1440,6 +1474,7 @@ ucfirst = str.capitalizeFirst;
 # ucwords — Uppercase the first character of each word in a string
 # Returns a string with the first character of each word in string capitalized, if that character is alphabetic.
 # str = c("monte says hi", " \t Alex \r \n says hello|world", " \t \f \v \r \r\n  \n alex | says \t\t hello|world\tnow");
+#------------------------------------------------#
 str.capitalizeWords = function(str, ..., sep.any=" \t\r\n\f\v") 
 	{
 	str = dots.addTo(str, ...);
@@ -1454,7 +1489,8 @@ str.capitalizeWords = function(str, ..., sep.any=" \t\r\n\f\v")
 	
 	
 	tmp = str.explode(" ", info);  # list.return on str.explode ... only 1 str 
-	if(!is.list(tmp)) { tm = tmp; tmp = list(); tmp[[1]] = tm;}
+	tmp = list.prep(tmp);  # need to coerce to list 
+	
 	n = length(tmp);
 	new = character(n);
 	for(i in 1:n)
@@ -1495,9 +1531,109 @@ str.capitalizeWords = function(str, ..., sep.any=" \t\r\n\f\v")
 	new;
 	} 
 
+
+#^^^^^^^^^^^^^^^^^^^^^^^^#
+#'
 #' @rdname ucwords
 #' @export
 ucwords = str.capitalizeWords;
+ 
+ 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#'
+#' str.characterFrequency
+#'
+#'
+# [u]nsorted,   [u]nsorted-[r]everse;  # this is how `table` naturally gives	
+# [c]ount, 		[c]ount-[r]everse;  
+# [a]lpha, 		[a]lpha-[r]everse, 
+# alpha puts special chars before the letter [a] 
+#------------------------------------------------#
+str.characterFrequency = function(str,  
+										case="lower", 
+										sort.by="count",
+										horizontal=TRUE,
+										space.char = "[sp]"
+									)
+	{
+	ca  = functions.cleanKey(case, 2);
+	# we collapse all to get FREQ of what was entered
+	all = paste0(str, collapse="");  # we added a character here ... "\n"
+	if(ca == "lo") { all = tolower(all); }
+	if(ca == "up") { all = toupper(all); }
+	tmp = str.explode(" ", all);
+	sp = length(tmp);
+	all = paste0(tmp, collapse="");
+	tmp = str.explode("", all);
+	
+	mytable = as.data.frame( table(tmp) );  ## currently factors
+		colnames(mytable) = c("char", "count");
+	nt = nrow(mytable);
+	
+	# add space back as row, this recast the data types
+	row = c(space.char, sp); 
+	mytable = df.addRow(mytable, row, "start");
+	nt = nrow(mytable);
+	
+	# sort 
+	sb  = functions.cleanKey(sort.by, 1, keep = "-");
+	te = str.explode("-", sb);
+	so = te[1]; by = te[2]; if(is.na(by)) { by = ""; }
+
+			
+	if(so == "u" && by == "r")
+		{
+		mytable = mytable[ rev(1:nt), ]
+		}
+		
+	if(so == "c")
+		{
+		dir = "DESC"; if(by == "r") { dir = "ASC"; }
+		mytable = df.sortBy(mytable, "count", dir)
+		}
+		
+	if(so == "a")
+		{
+		dir = "DESC"; if(by == "r") { dir = "ASC"; }
+		mytable = df.sortBy(mytable, "char", dir)
+		}
+	
+	if(horizontal)
+		{
+		# not a dataframe ... vector with names ...
+		mykeys = as.character(mytable$char);
+		myvals = as.integer(mytable$count);
+		names(myvals) = mykeys;
+		return(myvals);
+		}
+		
+	mytable;
+	}
+	
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#'
+#' str.splitN
+#'
+#'	
+#------------------------------------------------#
+str.splitN = function(str, ..., n=2, sep="^")
+	{
+	s.test = str.contains(sep, str);
+	if( sum( s.test ) > 0) 
+		{ 
+		all = paste0(str, collapse="\n"); 
+		all.f = str.characterFrequency(all);
+		print(all.f);
+		stop("Your str has the sep in it, maybe try a different one");
+		}
+	# https://stackoverflow.com/a/26497699/184614
+	# split a string into disjoint substrings of length [n] = 2
+	pattern = paste0("(.{", n, "})");
+	s.str = gsub(pattern, paste0("\\1", sep), str);
+	str.explode(sep, s.str);	
+	}
+	
+
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -1505,6 +1641,7 @@ ucwords = str.capitalizeWords;
 #' str.grammaticalNumber
 #'
 #'
+#------------------------------------------------#
 str.grammaticalNumber = function(str, n=1, type="noun")
 	{
 	# 1 timer, 0 timers, 3 timers 
@@ -1516,7 +1653,8 @@ str.grammaticalNumber = function(str, n=1, type="noun")
 
 
 
-
+#^^^^^^^^^^^^^^^^^^^^^^^^#
+#'
 #' @rdname str.gn
 #' @export
 str.gn = str.grammaticalNumber;
@@ -1529,6 +1667,7 @@ str.gn = str.grammaticalNumber;
 #'
 #'
 # https://www.php.net/manual/en/function.wordwrap.php
+#------------------------------------------------#
 str.wordWrap = function(str, width=66, 
 								line.break = "\n", 
 								cut_long_words = FALSE, 
@@ -1582,6 +1721,7 @@ suppressError( so they have not included it in base R.  It is probably true, but
 
 
 
+#------------------------------------------------#
 str.commentWrapper = function() {}   # what about \n in str for "blank vertical space"?
 str.commentWrapper = function(str="Welcome to the {humanVerse}", 
 									nchars=0, 
@@ -1662,30 +1802,6 @@ str.commentWrapper = function(str="Welcome to the {humanVerse}",
 	}
 
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-#'
-#' charVector
-#'
-#' @param strvec
-#' @param sep
-#'
-#' @return
-#' @export
-#'
-#' @examples
-str.toCharVector = function(strvec, sep="")
-	{
-	n = length(strvec);
-	res = list();
-	for(i in 1:n)
-		{
-		res[[i]] = strsplit(strvec[i], sep ,fixed=TRUE)[[1]];
-		}
-	list.return(res);
-	}
 
 
-#' @rdname charVector
-#' @export
-charVector = str.toCharVector;
 
