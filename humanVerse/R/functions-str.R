@@ -1439,7 +1439,7 @@ ucfirst = str.capitalizeFirst;
 # ucwords(string $string, string $separators = " \t\r\n\f\v"): string
 # ucwords — Uppercase the first character of each word in a string
 # Returns a string with the first character of each word in string capitalized, if that character is alphabetic.
-# str = c("monte says hi", " \t Alex \r \n says hello|world");
+# str = c("monte says hi", " \t Alex \r \n says hello|world", " \t \f \v \r \r\n  \n alex | says \t\t hello|world\tnow");
 str.capitalizeWords = function(str, ..., sep.any=" \t\r\n\f\v") 
 	{
 	str = dots.addTo(str, ...);
@@ -1469,41 +1469,28 @@ str.capitalizeWords = function(str, ..., sep.any=" \t\r\n\f\v")
 		
 		# I need to get strpos of all "weird" CHARS, map back from " "
 		n.len = length(len.res); # how many keys 
-		pos = 1;
 		o = ostr[i];
-		ures = res;
+
+		
+		nstr = "";
+		pos = 1;
 		for(j in 1:n.len)
 			{	
-cat("\n j = ", j, " \t res[j] = ", res[j], " \t pos = ", pos, "\n");			
-			if(res[j] != "")
+			nch = charAt(o, pos);
+			mylen = len.res[j];
+			if(mylen == 0) { nstr = paste0(nstr, nch); pos = 1 + pos; next; }
+			# we have a strlen, which means a sep after ...  
+			nstr = paste0(nstr, res[j]); pos = mylen + pos;
+			if(j < n.len)
 				{
-				pos = len.res[j] + pos; 
-cat("\n", 'res[j] != ""', " \t pos = ", pos, "\n");
-# let's start tracking ...
-				# not last
-				if(j < n.len)
-					{
-					nex = res[j+1];
-cat("\n", 'res[j+1] != ""', " \t nex = ", nex, "\n");
-					if(nex == "") { next; }
-					# if the next element is not "", we need to add " "
-					n.ch = charAt(o, pos); if(!(n.ch %in% seps)) { n.ch = " "; }
-					ures[j] = paste0(ures[j], n.ch);
-					pos = 1 + pos;
-					}
-
-				
-				} else {		
-						n.ch = charAt(o, pos); if(!(n.ch %in% seps)) { n.ch = " "; }
-						ures[j] = n.ch;
-						pos = 1 + pos;		
-						} 
-			
-cat("\n j = ", j, " \t ures[j] = ", ures[j], " \t pos = ", pos, "\n");
+				nch = charAt(o, pos);
+				nstr = paste0(nstr, nch); pos = 1 + pos;
+				}
+# cat("\n j = ", j, " ====> "); print(nstr); cat("\n");
+# stop("monte");
 			}
-			
-			
-		new[i] = paste0(ures, collapse=""); 
+# stop("monte");
+		new[i] = nstr; 
 		}
 	new;
 	} 
