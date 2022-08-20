@@ -42,7 +42,8 @@ Imports:
   
   stats,
   stringi,
-  utils
+  utils,
+  zip
 	
 
 RoxygenNote: 7.1.1

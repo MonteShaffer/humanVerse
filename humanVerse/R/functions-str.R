@@ -26,12 +26,12 @@ str.toInteger = function(str, isHEX=FALSE, base=0L)
 	return( strtoi(str, base=base) );
 	}
 
-#^^^^^^^^^^^^^^^^^^^^^^^^#
+#++++++++++++++++++++++++#
 #'
 #' @rdname stringToInteger
 #' @export
 stringToInteger = str.toInteger;
-#________________________#
+#^^^^^^^^^^^^^^^^^^^^^^^^#
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
@@ -99,13 +99,13 @@ str.toCharacterVector = function(str, sep="")
 	list.return(res);
 	}
 
-#^^^^^^^^^^^^^^^^^^^^^^^^#
+#++++++++++++++++++++++++#
 #'
 #' @rdname charVector
 #' @export
 charVector = str.toCharacterVector;
 
-#^^^^^^^^^^^^^^^^^^^^^^^^#
+#++++++++++++++++++++++++#
 #'
 #' @rdname str.toCharVector
 #' @export
@@ -252,7 +252,7 @@ str.toMD5 = function(str, times=1, method="digest", ...)
 	return(res);
 	}
 
-
+ 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.fromMD5
@@ -498,13 +498,13 @@ str.len = function(str, method="stringi", locale="")
 	}
 
 
-#^^^^^^^^^^^^^^^^^^^^^^^^#
+#++++++++++++++++++++++++#
 #'
 #' @rdname strlen
 #' @export
 strlen = str.len;
 
-#^^^^^^^^^^^^^^^^^^^^^^^^#
+#++++++++++++++++++++++++#
 #'
 #' @rdname str.length
 #' @export
@@ -551,7 +551,7 @@ str.tolower = function(str, method="cpp", locale="en_US.UTF-8")
 	tolower(str);
 	}
 
-#^^^^^^^^^^^^^^^^^^^^^^^^#
+#++++++++++++++++++++++++#
 #'
 #' @rdname strtolower
 #' @export
@@ -593,7 +593,7 @@ str.toupper = function(str, method="cpp", locale="en_US.UTF-8")
 	toupper(str);
 	}
 
-#^^^^^^^^^^^^^^^^^^^^^^^^#
+#++++++++++++++++++++++++#
 #'
 #' @rdname strtoupper
 #' @export
@@ -672,7 +672,7 @@ str.trim = function(str, side="both", method="stringi", pattern="", ...)
     return (res);
 	}
 
-#^^^^^^^^^^^^^^^^^^^^^^^^#
+#++++++++++++++++++++++++#
 #'
 #' @rdname trimMe
 #' @export
@@ -680,7 +680,7 @@ trimMe = str.trim;
 
 
 
-#^^^^^^^^^^^^^^^^^^^^^^^^#
+#++++++++++++++++++++++++#
 #'
 #' @rdname str_trim
 #' @export
@@ -737,13 +737,13 @@ str.explode = function(sep = " ", str = "hello friend", method="base",  ...)
 	list.return(res, unlist=FALSE);
 	}
 
-#^^^^^^^^^^^^^^^^^^^^^^^^#
+#++++++++++++++++++++++++#
 #'
 #' @rdname explodeMe
 #' @export
 explodeMe = str.explode;
 
-#^^^^^^^^^^^^^^^^^^^^^^^^#
+#++++++++++++++++++++++++#
 #'
 #' @rdname str.split
 #' @export
@@ -779,13 +779,13 @@ str.implode = function(sep, str, method="base", ...)
 	}
 
 
-#^^^^^^^^^^^^^^^^^^^^^^^^#
+#++++++++++++++++++++++++#
 #'
 #' @rdname implodeMe
 #' @export
 implodeMe = str.implode;
 
-#^^^^^^^^^^^^^^^^^^^^^^^^#
+#++++++++++++++++++++++++#
 #'
 #' @rdname str.unsplit
 #' @export
@@ -824,7 +824,7 @@ str.repeat = function(str, times=1, method="base")
 	res;
 	}
 
-#^^^^^^^^^^^^^^^^^^^^^^^^#
+#++++++++++++++++++++++++#
 #'
 #' @rdname str_repeat
 #' @export
@@ -941,7 +941,7 @@ str.replace = function(search, replace, subject, method="base")
 	}
 
 
-#^^^^^^^^^^^^^^^^^^^^^^^^#
+#++++++++++++++++++++++++#
 #'
 #' @rdname str_replace
 #' @export
@@ -1067,7 +1067,7 @@ str.removeWhiteSpace = function( str, replace=" ", n = 2,
   }
 
 
-#^^^^^^^^^^^^^^^^^^^^^^^^#
+#++++++++++++++++++++++++#
 #'
 #' @rdname removeWhiteSpace
 #' @export
@@ -1086,14 +1086,14 @@ str.stripTags = function(str)
 	}
 	
 
-#^^^^^^^^^^^^^^^^^^^^^^^^#
+#++++++++++++++++++++++++#
 #'
 #' @rdname strip.tags
 #' @export
 strip.tags = str.stripTags;
 
 
-#^^^^^^^^^^^^^^^^^^^^^^^^#
+#++++++++++++++++++++++++#
 #'
 #' @rdname strip_tags
 #' @export
@@ -1411,13 +1411,13 @@ str.push_back = function(sub, str, collapse="")
 	paste0(str, sub, collapse=collapse);
 	}
 
-#^^^^^^^^^^^^^^^^^^^^^^^^#
+#++++++++++++++++++++++++#
 #'
 #' @rdname str.push_last
 #' @export
 str.push_last = str.push_back;
 
-#^^^^^^^^^^^^^^^^^^^^^^^^#
+#++++++++++++++++++++++++#
 #'
 #' @rdname str.push_end
 #' @export
@@ -1434,14 +1434,14 @@ str.push_front = function(sub, str, collapse="")
 	paste0(sub, str, collapse=collapse);
 	}
 
-#^^^^^^^^^^^^^^^^^^^^^^^^#
+#++++++++++++++++++++++++#
 #'
 #' @rdname str.push_first
 #' @export
 str.push_first = str.push_front;
 
 
-#^^^^^^^^^^^^^^^^^^^^^^^^#
+#++++++++++++++++++++++++#
 #'
 #' @rdname str.push_begin
 #' @export
@@ -1463,7 +1463,7 @@ str.capitalizeFirst = function(str, ...)
 	paste0( first.uc, substring(str, 2, len.str) );
 	} 
 
-#^^^^^^^^^^^^^^^^^^^^^^^^#
+#++++++++++++++++++++++++#
 #'
 #' @rdname ucfirst
 #' @export
@@ -1532,7 +1532,7 @@ str.capitalizeWords = function(str, ..., sep.any=" \t\r\n\f\v")
 	} 
 
 
-#^^^^^^^^^^^^^^^^^^^^^^^^#
+#++++++++++++++++++++++++#
 #'
 #' @rdname ucwords
 #' @export
@@ -1653,7 +1653,7 @@ str.grammaticalNumber = function(str, n=1, type="noun")
 
 
 
-#^^^^^^^^^^^^^^^^^^^^^^^^#
+#++++++++++++++++++++++++#
 #'
 #' @rdname str.gn
 #' @export

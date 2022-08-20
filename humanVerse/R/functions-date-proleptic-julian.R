@@ -83,6 +83,16 @@ date.toJulianProlepticNumber = function(jyear, jmonth=1, jday=1,
 	
 	
 
+#++++++++++++++++++++++++#
+#'
+#' @rdname date.toJPN
+#' @export
+date.toJPN = date.toJulianProlepticNumber;
+#^^^^^^^^^^^^^^^^^^^^^^^^#
+
+
+	
+
 date.fromJulianProlepticNumber = function(JPN,  
 										offset.for="julian",
 										offset = NULL
@@ -128,6 +138,16 @@ date.fromJulianProlepticNumber = function(JPN,
 	
 
 
+#++++++++++++++++++++++++#
+#'
+#' @rdname date.fromJPN
+#' @export
+date.fromJPN = date.fromJulianProlepticNumber;
+#^^^^^^^^^^^^^^^^^^^^^^^^#
+
+
+
+
 # DEFAULT anchors to JULIAN CALENDAR DATE: ... proleptic
 #				August 5, 1600 (Tuesday) ==> RUTHVEN EPOCH 
 # Historical Date Found in Documents (saying Tuesday)
@@ -138,7 +158,8 @@ date.fromJulianProlepticNumber = function(JPN,
 date.generateProlepticJulian = function() {}
 date.generateProlepticJulian = function(n, dir="FORWARD", 
 									path = getwd(),
-									filename = "RUTHVEN_{n}_{dir}.txt",
+									epochname = "RUTHVEN",
+									filename = "{EPOCH}_{n}_{dir}.txt",
 									ctype="julian", 
 									cyear = 1600,
 									cmonth = 8,   # August 
@@ -173,6 +194,7 @@ date.generateProlepticJulian = function(n, dir="FORWARD",
 		dir = if(dir == "FORWARD") { "BACKWARD"; } else { "FORWARD"; }
 		}  
 	DIRE = toupper(functions.cleanKey(dir, 4));
+		filename = str.replace( "{EPOCH}", toupper(epochname), filename );
 		filename = str.replace( "{n}", n, filename );
 		filename = str.replace( "{dir}", dir, filename );
 		filename = paste0(path, "/", filename);  # is trailing slash required, will it break?

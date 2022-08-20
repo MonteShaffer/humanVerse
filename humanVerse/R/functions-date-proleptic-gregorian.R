@@ -21,7 +21,9 @@ date.computeProlepticOffsetGregorian = function(NUM, dir=-1,
 		NUM = NUM + dir*3649964;  # EQUINOX, MARCH 21, 8BC [-7, 03, 21]
 		return(NUM);
 		}
-	if(off == "jul")
+	
+		
+	if(off == "gre" || off == "ggg")
 		{
 		NUM = NUM + dir*1931383;
 		return(NUM);
@@ -80,6 +82,12 @@ date.toGregorianProlepticNumber = function(gyear, gmonth=1, gday=1,
 	}
 	
 	
+#++++++++++++++++++++++++#
+#'
+#' @rdname date.toGPN
+#' @export
+date.toGPN = date.toGregorianProlepticNumber;
+#^^^^^^^^^^^^^^^^^^^^^^^^#
 
 date.fromGregorianProlepticNumber = function(GPN,  
 										offset.for="gregorian",
@@ -124,8 +132,30 @@ date.fromGregorianProlepticNumber = function(GPN,
 		
 	}
 	
+	
+	
+#++++++++++++++++++++++++#
+#'
+#' @rdname date.fromGPN
+#' @export
+date.fromGPN = date.fromGregorianProlepticNumber;
+#^^^^^^^^^^^^^^^^^^^^^^^^#
+	
+
+# Wednesday 2nd September 1752 would be followed by Thursday 14th September 1752.
+
+# setwd("C:/_git_/-SANDBOX-/greg")
 
 # https://www.postgresql.org/docs/current/datetime-julian-dates.html
+# 17 Nov 1858 (Gregorian) ???
+# The Calendar (New Style) Act 1750 introduced the Gregorian calendar to the British Empire, bringing Britain into line with most of Western Europe.
+# Its introduction was not straightforward. It meant that the year 1751 was a short year, lasting just 282 days from 25th March (New Year in the Julian calendar) to 31st December. The year 1752 then began on 1 January.
+# https://www.historic-uk.com/HistoryUK/HistoryofBritain/Give-us-our-eleven-days/
+# 15 October 1582
+# https://en.wikipedia.org/wiki/1582
+# Thursday, October 4. However, the next day became Friday, October 15
+# France followed two months later, letting Sunday, December 9 be followed by Monday, December 20)
+# 
 # RUN PAPAL vs BRITISH ... 
 # DEFAULT anchors to GREGORIAN CALENDAR DATE: ... proleptic
 #				August 5, 1600 (Tuesday) ==> RUTHVEN EPOCH 
@@ -136,14 +166,15 @@ date.fromGregorianProlepticNumber = function(GPN,
 # date.generateProlepticGregorian(999); date.generateProlepticGregorian(999, "BACKWARD");
 date.generateProlepticGregorian = function() {}
 date.generateProlepticGregorian = function(n, dir="FORWARD", 
-									path = getwd(),
-									filename = "RUTHVEN_{n}_{dir}.txt",
+									path = getwd(),									
+									epochname = "PAPAL",
+									filename = "{EPOCH}_{n}_{dir}.txt",
 									ctype="gregorian", 
-									cyear = 1600,
-									cmonth = 8,   # August 
-									cday = 5,
-									str.cday = "Tue",
-									cdoy = 218 
+									cyear = 1582,
+									cmonth = 10,   # October 
+									cday = 15,  # 15 October 1582, Fri, DOY = 288 
+									str.cday = "Fri",
+									cdoy = 288 # build AS-IF this was correct ???
 								)
 	{	
 	ctyp = functions.cleanKey(ctype, 1);
@@ -172,6 +203,7 @@ date.generateProlepticGregorian = function(n, dir="FORWARD",
 		dir = if(dir == "FORWARD") { "BACKWARD"; } else { "FORWARD"; }
 		}  
 	DIRE = toupper(functions.cleanKey(dir, 4));
+		filename = str.replace( "{EPOCH}", toupper(epochname), filename );
 		filename = str.replace( "{n}", n, filename );
 		filename = str.replace( "{dir}", dir, filename );
 		filename = paste0(path, "/", filename);  # is trailing slash required, will it break?
