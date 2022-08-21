@@ -82,6 +82,27 @@
 ## sunset, dusk 
 ## 13, midpoint is "solar noon"
 ## Maybe drop early/mid and get to 9 overall ... how to get to 9? 5 is noon ... 
+## NIGHT watch hours, solar midnight is opposite "solar noon"
+## days on average are 24 hours, 15 minute difference from April/September
+## base days on the actual local sun ... not the average ... 
+## back to sundials 
+
+
+## day/night has 9 phases + 9 = 18 total {chiasmus}
+## maybe 10, so matches hands?  hands down (pinkies are dawn/dusk),
+##                          noon is touchdown jesus W shape (thumbs touching)
+## should we reverse left/right based on NILE (left is sunrise, I think so)
+## counting numbers, palms up ... counting time, palms down ... 
+## left-to-right either system ... 1-10 is numbers, 1-9 is time of day 
+## 
+## dawn, sunrise, morning, early-noon [12:00], 
+##                                            solar noon, 
+## dusk, sunset,  evening, after-noon,  
+## moon/sun has 8 phases ?
+
+
+## if day as 9+9 = 18 phases, should SUN/MOON have 8? or 18?
+## solar noon = summer solstice = full moon 
 
 education = function()
 	{
