@@ -10,6 +10,7 @@
 # -y (boy, say); A (cat, sat, mat); eye (OIC, I, eye); UH (schwa); OH (glottal)
 # acqua => akwa ... agua => agwa (g^w doesn't need it own letter)
 # accents like spanish ... /right leaning EMPHASIS on current syLLAble
+# http://easypronunciation.com/en/english/word/{word}
 
 
 # SUN & MOON:  aku & uka [aku in Egyptian as great light, endowed with spirit)
@@ -18,26 +19,69 @@
 # FRACTALS of scale 
 # SPRING EQUINOX = "ala" ... (to spring forth, HEBREW)
 # ANEP = 3/4 moon, 20th day of moon cycle (egyptian)
+# AGEP (means darkness) ... Uru was gods who lightened darkness; Khenu gave lesser light
+# AZIS (means light, arabic)
 # qaaf = growing moon (egyptian) ... 12th day ?
 # petsch 9 (new moon)
-# qai, ket(u) = renewal ...
+# qai, ket(u) = renewal ...  khat = tip of sword/beginning ...  7 brothers/sister? ... Arcturi/Pleidia (celestial N/S ?)
 # ala, 
-
+# AKU (sun year), UKA (moon phases 'month')
+# AKUtri = sun month (sonth?) ... what is name for a day ... 
 # Abrashit ... name of new year ... 
 # half-moon (Egyptian) = uniting of the bulls
+# http://www.touregypt.net/featurestories/moon.htm 
 
 
 # N/S E/W as up/down stream, birth/sleep of sun ... see pg 406 EGYPT = pdf pg 561
 # ALSO https://seshmedewnetcher.com/egyptian-orientation-and-geography/
 # "DECANS" as "WEEKS"
 # left side [abi] first, strong side spiritual (feminine) ... woman 
-# right side [amen] second, strong side physically (masculine) ... man (out of wo)
+# right side [amen] => [ami]? or [iba] second, strong side physically (masculine) ... man (out of wo)
+# facing you [abi-iba] where b are middle three fingers [a] is thumb, [i] is pinkie
+# facing away from you (piano) [iba-abi] shows reflection by rotation (viewpoint)
 # each decan has two pentads ... F/M as in 
 ##											kAt/ka
 ##											sAt/sa
 ##											mAt/ma 			... cat/sat/mat (wow)!!
 
+## count open palms facing you, F[abi]: 1,2,3,4,5 (thumb, ... pinkie)
+##                              M[ami]: 5,4,3,2,1 (pinkie, ... thumb)
 
+## identification is 1 kAt, ... 5 kAt, 5 ka, ... 1 ka 
+##                   1 sAt, ... 5 sAt, 5 sa, ... 1 sa
+##                   1 mAt, ... 5 mAt, 5 ma, ... 1 ma 
+
+## civil identification 1-10 as  1-10 kAtka (one word)
+##								 1-10 sAtsa 
+##								 1-10 mAtma 
+
+## three decans define a solar month .. a sonth? 
+## there are three seasons of four sonths in a year 
+
+## fa na ha sha  (1) M21-ish is start of year (Abrashit) ... growing ... 1 kAt-fa or 1 kAtka-fa
+## pa ra ba la   (2) turning of solstice [parabola] ... 1 kAt-pa is about AUG 1
+## wa da ya za   (3) returning ... 1 kAt-wa is about DEC 1
+
+## any confusion of language, season can be prouncounced
+## fa-na-ha-sha , pa-ra-ba-la , wa-da-ya-za 
+## vertical pronunciation are four divisiosn of the season 
+## fa-pa-wa , na-ra-da, ha-ba-ya, sha-la-za 
+
+## epogemonalj days are at END (4) restoring/preparing 
+## OUT of TIME days are "ta-ta (1-9)" ... say number AFTER for out of time
+## say number before for IN TIME ... 5 sAt-fa ... or 5 sAtsa-fa 
+## tells you everything ... sAt is spiritual ... sAtsa is civil (numerical calculations)
+
+
+
+## dawn to dusk, (sunrise to sunset) ... dawn is NEW day early morning 
+## dawn, sunrise
+##                early-morning, mid-morning, morning, 
+##                early noon,    solar noon, after noon,
+##                early-evening, mid-evening, evening,
+## sunset, dusk 
+## 13, midpoint is "solar noon"
+## Maybe drop early/mid and get to 9 overall ... how to get to 9? 5 is noon ... 
 
 education = function()
 	{
