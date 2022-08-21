@@ -103,6 +103,13 @@
 
 ## if day as 9+9 = 18 phases, should SUN/MOON have 8? or 18?
 ## solar noon = summer solstice = full moon 
+## solar midnight = winter solstice = no/new moon 
+## what is the mirror of dawn/sunrise ... at night ?
+## EQU1, growing, MAX, returning, EQU2, returning, MIN, growing, ...
+## EQU1 is exact, others are calculated in MOD 30 space ... 
+## observed solstice can be exact but not part of CALENDAR ...
+
+
 
 education = function()
 	{
