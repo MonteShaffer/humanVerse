@@ -451,16 +451,3 @@ charCode = function(svec)
 
 
 	
-GOD = function(x)
-	{
-	# x = 1:9999;
-	x.sorted = sort(x, decreasing=TRUE);
-	x.sum = stats.sum(x);
-	
-	# weirdness on "-MAGNITUDE-" in list ...
-	### res = list("-ONE-" = 1, "-RANK-" = 1, "-MAGNITUDE-", " > SUM(ALL) ");
-	res = list("-ONE-" = 1, "-RANK-" = 1); res$`-MAGNITUDE-` = " > SUM(ALL) ";	
-	res = property.set("sum", res, x.sum);
-	res = property.set("max", res, x.sorted[1]);
-	res;
-	}
