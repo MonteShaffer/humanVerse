@@ -124,6 +124,74 @@ edumacate = education;
 
 
 
+sine.forYear = function(YYYY)
+	{
+	
+	leap = date.calculateLeapDays(YYYY, "xelian", "integer");
+
+	fn.sine = function(x, freq) { sin(2 * pi * freq * x); }
+	# off by phases ... 
+	fn.sine.inv = function(y, freq) { asin(y)/2/pi/freq } 
+		
+	x = 0:360; # start and return to zero 
+	y = fn.sine(x, 1/360);
+	
+	# maybe do.plot() ... with do.plot.defaults to save parameters,
+	#  ... for par(new=TRUE), only override the new values ... 
+	# https://r-coder.com/plot-r
+	# https://www.stat.auckland.ac.nz/~ihaka/120/Notes/ch03.pdf
+	plot(x, y, pch=".", bty="n", col="black", 
+						main="",
+						xlim = c(-10, 370), xlab="", xaxt="n",
+						ylim = c(-1,1), ylab="", yaxt="n"
+		);
+		# 5's 
+		idx = 1+(1:72 * 5);
+		points(x[idx], y[idx], pch="-", col="blue");  # color="blue" ... color not a graphical parameter
+		# 10's 
+		idx = 1+(1:36 * 10);
+		points(x[idx], y[idx], pch="+", col="green");
+		# 30's
+		idx = 1+(1:12 * 30);
+		points(x[idx], y[idx], pch=5, col="red");
+		## ta-ta
+		idx = (360:(365+leap));
+		points(idx, 0*idx, pch="*", col="purple");
+		## to compute differences
+		y_ = c(y, rep(0, (length(idx)-1)) );
+	par(new=TRUE);
+	ndays = 365 + leap;
+	x2 = 0:ndays;
+	y2 = fn.sine(x2, 1/ndays);
+	plot(x2, y2, type="l", bty="n", col="gray",  
+						main="",
+						xlim = c(-10, 370), xlab="", xaxt="n",
+						ylim = c(-1,1), ylab="", yaxt="n"
+		);
+						
+	dy = y2 - y_;  # this is phase-shift difference 
+	
+	# get x-diff (days) for a given y (12 month markers) [TODO]
+	# inverse sine?
+	## x2_ = fn.sine.inv(y, 1/ndays); # or 1/360 or 1/ndays ? 
+	## get y value on 1/360 ... find x2 of y2 ~= y on 1/365 ...
+	## 
+	idx = 1+(1:12 * 30);
+					add = c(0,0,0, 60,120,180, 180,180,180, 240,300,360);
+	my = y[idx]; mx = abs(fn.sine.inv(my, 1/ndays)) + add;  # shifting > 90
+				
+	
+	my2 = 0*my;
+	for(i in 1:12)
+		{
+		# limit x2 to neighborhood 
+		which( (y2 < my[i] - 0.01)
+		}
+	
+	dx = x2_ - x;  # this is a day difference at a given month marker 
+	
+	}
+
 
 
 GOD = function(x)
@@ -154,6 +222,9 @@ GOD = function(x)
 	# MXX as EQUINOX M22/M23 on Julian/Gregorian for ~10BC
 	# julian ( as.Date("1972-03-21"), -2440588 ) = 2441398
 	# 2441398 - 723179 = 1718219 JDN .. -1 ... 1718218 (2.718281828459045090796)
+	
+	# https://en.wikipedia.org/wiki/Phase_(waves)
+	# tides / complex ... https://beckmw.wordpress.com/tag/plot/
 	
 	
 	# weirdness on "-MAGNITUDE-" in list ...
