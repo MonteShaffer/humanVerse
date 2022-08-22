@@ -1,7 +1,7 @@
 
 
 # day 0 ... Thursday, 14 September 1752
-ctype = "Gregorian"
+ytype = "Gregorian"
 cyear = 1752;
 cleap = gregorian.isLeap(cyear);
 cmonth = 9; # August
@@ -31,7 +31,7 @@ date.generateProleptic = function() {}
 date.generateProleptic = function(n, dir="FORWARD", 
 									path = getwd(),
 									filename = "RUTHVEN_{n}_{dir}.txt",
-									ctype="julian", 
+									ytype="julian", 
 									cyear = 1600,
 									cmonth = 8,   # August 
 									cday = 5,
@@ -39,7 +39,7 @@ date.generateProleptic = function(n, dir="FORWARD",
 									cdoy = 218 
 								)
 	{	
-	ctyp = functions.cleanKey(ctype, 1);
+	ytyp = functions.cleanKey(ytype, 1);
 	# Jan, Feb, Mar, ...
 	MONTHS_ = format(ISOdate(2000, 1:12, 1), "%b");
 	LENS_ = c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
@@ -50,7 +50,7 @@ date.generateProleptic = function(n, dir="FORWARD",
 	# current idx of str.cday (name in week)
 	idx.cday = which(DAYS_ == str.cday);
 	# current leap year day (0 or 1)... extensible to allow others
-	cleapdays = date.calculateLeapDays(cyear, ctype, "integer");
+	cleapdays = date.calculateLeapDays(cyear, ytype, "integer");
 	LENS_[2] = 28 + cleapdays; # 28 or 29 .. 
 	# current length of a month
 	clen = LENS_[cmonth];
@@ -96,7 +96,7 @@ date.generateProleptic = function(n, dir="FORWARD",
 					cmonth = 1;
 					cyear = 1 + cyear;
 					cdoy = 1;
-					cleap = date.calculateLeapDays(cyear, ctype, "integer");
+					cleap = date.calculateLeapDays(cyear, ytype, "integer");
 					LENS_[2] = 28 + cleapdays; # 28 or 29 .. 
 					}
 				clen = LENS_[cmonth];
@@ -136,7 +136,7 @@ date.generateProleptic = function(n, dir="FORWARD",
 					{
 					cmonth = 12;
 					cyear = cyear - 1;
-					cleap = date.calculateLeapDays(cyear, ctype, "integer");
+					cleap = date.calculateLeapDays(cyear, ytype, "integer");
 					LENS_[2] = 28 + cleapdays; # 28 or 29 .. 
 					cdoy = sum(LENS_);
 					}				
@@ -205,7 +205,7 @@ LENS_ = c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
 DAYS_ = format(ISOdate(2000, 1, 1:10), "%a")[1:7];
 
 # day 0 ... Thursday, 14 September 1752
-ctype = "Gregorian"
+ytype = "Gregorian"
 cyear = 1752;
 cleap = gregorian.isLeap(cyear);
 cmonth = 9; # August
@@ -370,7 +370,7 @@ DAYS_ = format(ISOdate(2000, 1, 1:10), "%a")[1:7];
 
 
 # day 0 ... Thursday, 14 September 1752
-ctype = "Gregorian"
+ytype = "Gregorian"
 cyear = 1752;
 cleap = gregorian.isLeap(cyear);
 cmonth = 9; # August

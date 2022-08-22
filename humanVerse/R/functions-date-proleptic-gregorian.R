@@ -169,7 +169,7 @@ date.generateProlepticGregorian = function(n, dir="FORWARD",
 									path = getwd(),									
 									epochname = "PAPAL",
 									filename = "{EPOCH}_{n}_{dir}.txt",
-									ctype="gregorian", 
+									ytype="gregorian", 
 									cyear = 1582,
 									cmonth = 10,   # October 
 									cday = 15,  # 15 October 1582, Fri, DOY = 288 
@@ -177,7 +177,7 @@ date.generateProlepticGregorian = function(n, dir="FORWARD",
 									cdoy = 288 # build AS-IF this was correct ???
 								)
 	{	
-	ctyp = functions.cleanKey(ctype, 1);
+	ytyp = functions.cleanKey(ytype, 1);
 	# Jan, Feb, Mar, ...
 	MONTHS_ = format(ISOdate(2000, 1:12, 1), "%b");
 	LENS_ = c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
@@ -188,7 +188,7 @@ date.generateProlepticGregorian = function(n, dir="FORWARD",
 	# current idx of str.cday (name in week)
 	idx.cday = which(DAYS_ == str.cday);
 	# current leap year day (0 or 1)... extensible to allow others
-	cleapdays = date.calculateLeapDays(cyear, ctype, "integer");
+	cleapdays = date.calculateLeapDays(cyear, ytype, "integer");
 	LENS_[2] = 28 + cleapdays; # 28 or 29 .. 
 	# current length of a month
 	clen = LENS_[cmonth];
@@ -249,7 +249,7 @@ date.generateProlepticGregorian = function(n, dir="FORWARD",
 					cmonth = 1;
 					cyear = 1 + cyear;
 					cdoy = 1;
-					cleapdays = date.calculateLeapDays(cyear, ctype, "integer");
+					cleapdays = date.calculateLeapDays(cyear, ytype, "integer");
 					LENS_[2] = 28 + cleapdays; # 28 or 29 .. 
 					}
 				clen = LENS_[cmonth];
@@ -291,7 +291,7 @@ date.generateProlepticGregorian = function(n, dir="FORWARD",
 					# NEW YEAR 
 					cmonth = 12;
 					cyear = cyear - 1;
-					cleapdays = date.calculateLeapDays(cyear, ctype, "integer");
+					cleapdays = date.calculateLeapDays(cyear, ytype, "integer");
 					LENS_[2] = 28 + cleapdays; # 28 or 29 .. 
 					cdoy = sum(LENS_);
 					}				

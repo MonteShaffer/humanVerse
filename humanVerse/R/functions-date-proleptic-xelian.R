@@ -1,13 +1,14 @@
 
-# 10 VOWELS; 20 CONSONANTS
+# 10 VOWELS; 20 CONSONANTS (maybe 30) ... unique sound, unique letter 
 # phoible.org/parameters ... ranking of soundex usages globally.
-# w  	r  	t  		y  	p 
+# w  	r  	t  		y  	p  ... what of th (theta)
 # s 	sh 	ch  	d  	z
 # f  	g  	h  		j  	k  (k or s, NO c)
 # v  	b  	x  		m  	n (~n, nj); r(r) ... rolling is optional  
 
 # a  	e  	i  		o  	u   # spanish sounds 
 # -y (boy, say); A (cat, sat, mat); eye (OIC, I, eye); UH (schwa); OH (glottal)
+# -w (bow, ow) ... separate "-y" from "y" and same with "-w" / "w" 
 # acqua => akwa ... agua => agwa (g^w doesn't need it own letter)
 # accents like spanish ... /right leaning EMPHASIS on current syLLAble
 # http://easypronunciation.com/en/english/word/{word}
@@ -111,6 +112,8 @@
 
 
 
+
+
 education = function()
 	{
 	
@@ -129,6 +132,15 @@ GOD = function(x)
 	x.sorted = sort(x, decreasing=TRUE);
 	x.sum = stats.sum(x);
 	
+	
+	## ANCHOR:  Mar 21, 1972 - "1980" as - 723179
+	## THIS is DAY ORIGIN (YEAR = 0, MONTH = 0, DAY = 0.  Call it ABRASHET PRIME.
+	## YEAR 0 has no leap days; 
+	## YEARS (not zero) DIVISIBLE by 5 have +1 leap day 
+	##                               25 have +1 leap day (+2 total)
+	##                               500 have +1 leap day (+3 total)
+	##                              5000 have +1 leap day (+4 total)
+	## AVG YEAR is = 365 + 1/5 + 1/25 + 1/500 + 1/5000 = 365.2422
 	# 1980 * 365.24219 
 	# 1980 * 365.2422 ... 723179.6 ... 
 	# March 21, 1972 - 723179 ... YEAR 0 (leap +5 year) ... (.6) gets worked in ...

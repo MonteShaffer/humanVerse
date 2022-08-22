@@ -22,7 +22,7 @@
 #------------------------------------------------#
 
 EPOCH_ANCHOR = "RUTHVEN";
-CTYPE = "julian";
+YTYPE = "julian";
 CYEAR = 1600;
 CMONTH = 8;
 CDAY = 5;
@@ -39,7 +39,7 @@ FILE_TEMPLATE = "{EPOCH}_{n}_{dir}.txt";  	# {n} is DAYS
 											# if(n < 0) ---> BACKWARD 
 											# if(n > 0) ---> FORWARD
 											
-FINAL_TEMPLATE = "{EPOCH}_({UPPER},{LOWER}){ctype}";
+FINAL_TEMPLATE = "{EPOCH}_({UPPER},{LOWER}){ytype}";
 
 
 
@@ -66,7 +66,7 @@ file.fR = date.generateProlepticJulian(DAYS_FORWARD,
 										path = PATH,
 										epochname = EPOCH_ANCHOR,
 										filename = FILE_TEMPLATE,
-										ctype = CTYPE,
+										ytype = YTYPE,
 										cyear = CYEAR,
 										cmonth = CMONTH,
 										cday = CDAY, 
@@ -78,7 +78,7 @@ file.bR = date.generateProlepticJulian(DAYS_BACKWARD,
 										path = PATH,
 										epochname = EPOCH_ANCHOR,
 										filename = FILE_TEMPLATE,
-										ctype = CTYPE,
+										ytype = YTYPE,
 										cyear = CYEAR,
 										cmonth = CMONTH,
 										cday = CDAY, 
@@ -174,7 +174,7 @@ filestem = FINAL_TEMPLATE;
 	filestem = str.replace("{EPOCH}", toupper(EPOCH_ANCHOR), filestem);
 	filestem = str.replace("{UPPER}", UPPER, filestem);
 	filestem = str.replace("{LOWER}", LOWER, filestem);
-	filestem = str.replace("{ctype}", tolower(substring(CTYPE, 1, 3)), filestem);
+	filestem = str.replace("{ytype}", tolower(substring(YTYPE, 1, 3)), filestem);
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#

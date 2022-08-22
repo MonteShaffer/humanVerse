@@ -119,7 +119,7 @@ MONTHS_ = format(ISOdate(2000, 1:12, 1), "%b");
 LENS_ = c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
 DAYS_ = format(ISOdate(2000, 1, 1:10), "%a")[1:7];
 
-ctype = "Julian"
+ytype = "Julian"
 cyear = 1600;
 cleap = (cyear %%4 == 0);
 cmonth = 8; # August
@@ -253,7 +253,7 @@ MONTHS_ = format(ISOdate(2000, 1:12, 1), "%b");
 LENS_ = c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
 DAYS_ = format(ISOdate(2000, 1, 1:10), "%a")[1:7];
 
-ctype = "Julian"
+ytype = "Julian"
 cyear = 1600;
 cleap = (cyear %%4 == 0);
 cmonth = 8; # August

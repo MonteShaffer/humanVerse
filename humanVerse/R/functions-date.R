@@ -2,31 +2,50 @@
 
 date.calculateLeapDays = function() {}
 date.calculateLeapDays = function(cyear, 
-									ctype="gregorian",
+									ytype="gregorian",
 									return = "logical"  # boolean
 									)
 	{
 	# cyear is 1AD => 1, 1BC => 0, 2BC => -1
-	ctyp = functions.cleanKey(ctype, 4);
+	ytyp = functions.cleanKey(ytype, 4);
 	ret = functions.cleanKey(return, 3);
-	# ctype="julian"
-	if(ctyp == "juli")
+	# ytype="julian"
+	if(ytyp == "juli")
 		{
-		i = (cyear %%4 == 0); 			
+		i = (cyear %% 4 == 0); 			
 		if(ret == "int") { i = as.integer(i); } # removes names 
 		names(i) = cyear;
 		return(i);
 		}
-	if(ctyp == "xela")
+		
+	if(ytyp == "xela")
 		{
-		stop("what, TODO::");
+		## stop("what, TODO::");
+			# if(YEAR == 0) { return(0); } # RULE: YEAR ZERO HAS ZERO leap days 
+			# sum( as.integer( YEAR / c(5, 25, 500, 5000) ) ); # TOTAL LEAP DAYS SINCE YEAR 0
+		z = as.numeric(!(cyear == 0));  # put a zero at any cyear == 0
+										# multiply away ... multivariate  
+		
+		# NON-ZERO YEAR HAS ... 
+		h = as.numeric(cyear %% 5 == 0);
+		i = as.numeric(cyear %% 25 == 0);	
+		j = as.numeric(cyear %% 500 == 0);	
+		k = as.numeric(cyear %% 5000 == 0);
+		
+		r = h + i + j + k;
+		r = r * z;
+		names(r) = cyear;
+				
+		if(ret != "int") { warning("Returning integers as BOOLEAN is nonsensical for Xelian"); }
+		# remove year zeroes by pairwise multiplication.
+		return( r );
 		}
 	
 	
 	# gregorian is default
-	k = (cyear %%400 == 0);		
-	j = (cyear %%100 == 0);		
-	i = (cyear %%4 == 0);	
+	k = (cyear %% 400 == 0);		
+	j = (cyear %% 100 == 0);		
+	i = (cyear %% 4 == 0);	
 		# multivariate, as a set 
 		r = i - j + k;
 		r = as.logical(r);

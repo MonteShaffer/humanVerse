@@ -19,9 +19,9 @@
 ##  365.2425 = 365 + 1/4 - 1/100 + 1/400
 ##  --------> 15 October 1582, Fri, DOY = 288 <--------
 ## Julian Thursday, 4 October 1582, being followed by Gregorian Friday, 15 October. 
-## DOY is 288, as-if the ctype="gregorian" was always working
+## DOY is 288, as-if the ytype="gregorian" was always working
 ## YEAR / DAY differences are "calendar" rules that switch from 
-##   one ctype to another
+##   one ytype to another
 ## PAPAL is one "switch" EPOCH, BRITISH is another
 
 # https://en.wikipedia.org/wiki/Calendar_(New_Style)_Act_1750
@@ -30,7 +30,7 @@
 #  OTHER RULES can be created (CALENDAR means RULES) 
 #    to adjust subyear elements (SOY, DAYS_IN_WEEKS, MONTHS, MONTH NAMES)
 # # # EPOCH_ANCHOR = "BRITISH";
-# # # CTYPE = "gregorian";
+# # # YTYPE = "gregorian";
 # # # CYEAR = 1752;
 # # # CMONTH = 9;
 # # # CDAY = 14;
@@ -47,7 +47,7 @@
 
 								
 EPOCH_ANCHOR = "PAPAL";
-CTYPE = "gregorian";
+YTYPE = "gregorian";
 CYEAR = 1582;
 CMONTH = 10;
 CDAY = 15;
@@ -63,7 +63,7 @@ FILE_TEMPLATE = "{EPOCH}_{n}_{dir}.txt";  	# {n} is DAYS
 											# if(n < 0) ---> BACKWARD 
 											# if(n > 0) ---> FORWARD
 											
-FINAL_TEMPLATE = "{EPOCH}_({UPPER},{LOWER}){ctype}";
+FINAL_TEMPLATE = "{EPOCH}_({UPPER},{LOWER}){ytype}";
 
 
 
@@ -90,7 +90,7 @@ file.fR = date.generateProlepticGregorian(DAYS_FORWARD,
 										path = PATH,
 										epochname = EPOCH_ANCHOR,
 										filename = FILE_TEMPLATE,
-										ctype = CTYPE,
+										ytype = YTYPE,
 										cyear = CYEAR,
 										cmonth = CMONTH,
 										cday = CDAY, 
@@ -102,7 +102,7 @@ file.bR = date.generateProlepticGregorian(DAYS_BACKWARD,
 										path = PATH,
 										epochname = EPOCH_ANCHOR,
 										filename = FILE_TEMPLATE,
-										ctype = CTYPE,
+										ytype = YTYPE,
 										cyear = CYEAR,
 										cmonth = CMONTH,
 										cday = CDAY, 
@@ -198,7 +198,7 @@ filestem = FINAL_TEMPLATE;
 	filestem = str.replace("{EPOCH}", toupper(EPOCH_ANCHOR), filestem);
 	filestem = str.replace("{UPPER}", UPPER, filestem);
 	filestem = str.replace("{LOWER}", LOWER, filestem);
-	filestem = str.replace("{ctype}", tolower(substring(CTYPE, 1, 3)), filestem);
+	filestem = str.replace("{ytype}", tolower(substring(YTYPE, 1, 3)), filestem);
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
