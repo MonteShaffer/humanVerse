@@ -368,7 +368,8 @@ calculateZscores = stats.zScores;
 stats.summary = function(x, type=1, sort.ASC = FALSE,
 								outlier.z = c(-3, 3), 
 								outlier.m = c(-3, 3),
-								outlier.IQR = c(1.5, 3)
+								outlier.IQR = c(1.5, 3),
+								sharpe.R = 0
 						)
 	{
 	res = list();
@@ -399,12 +400,16 @@ stats.summary = function(x, type=1, sort.ASC = FALSE,
 					# [I like oldschool] ... In the older notion of nonparametric skew, defined as {\displaystyle (\mu -\nu )/\sigma ,}(\mu -\nu )/\sigma , where {\displaystyle \mu }\mu  is the mean, {\displaystyle \nu }\nu  is the median, and {\displaystyle \sigma }\sigma  is the standard deviation, the skewness is defined in terms of this relationship
 					# If the distribution is both symmetric and unimodal, then the mean = median = mode. 
 					# how can mean/median/mode be equal if they are not members of the same set?
+					# https://en.wikipedia.org/wiki/Sharpe_ratio
+					# https://en.wikipedia.org/wiki/Coefficient_of_variation#Estimation
 					
 	res$extended = list(
 						"mean.mad" 	= mean( abs( xx - res$base$mean ) ),
 						"mean.se"	= ( res$base$sd / sqrt(n2) ),
 						"skew"		= (sum(( xx - res$base$mean )^3)/n2)/(sum((xx - res$base$mean)^2)/n2)^(3/2),
 						"kurtosis"	=  n2 * sum( ( xx - res$base$mean )^4 ) / ( sum( ( xx - res$base$mean )^2)^2 ),  # [space]^4 was bug?
+						"sharpe"	= ( res$base$mean - sharpe.R ) / res$base$sd,
+						"CV" 		= res$base$sd / res$base$mean
 						);
 
 						# matrixStats::weightedMad(xx);
@@ -461,7 +466,8 @@ stats.summary = function(x, type=1, sort.ASC = FALSE,
 						"upper" = 	which( x > fence.outer.upper )
 						);
 	
-	res; 
+	# maybe do plot at end with NORMAL, t and z-cuts?
+	invisible(res); 
 	}
 
 

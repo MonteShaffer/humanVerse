@@ -62,6 +62,49 @@ temp.kelvinToFahrenheit = function(degK)
 	}
 	
 temp.k2f = 	temp.kelvinToFahrenheit	
+
+
+# https://en.wikipedia.org/wiki/Rankine_scale
+# TODO, add rankine ... 
+
+temp.rankineFromFahrenheit = function(degF)
+	{
+	degR = degF - 459.67;
+	is.Z = (degR < 0);
+	if(any(isZ)) { warning("one or more values below absolute zero"); }
+	degR[is.Z] = NA;
+	degR;
+	}
+	
+temp.r2f = temp.rankineFromFahrenheit;
+	
+temp.rankineToFahrenheit = function(degR)
+	{
+	degF = degR + 459.67;
+	is.Z = (degF < -459.67);
+	if(any(isZ)) { warning("one or more values below absolute zero"); }
+	degF[is.Z] = NA;
+	degF;	
+	}
+
+
+temp.f2r = temp.rankineToFahrenheit;
+
+temp.rankineToKelvin = function(degR)
+	{
+	temp.kelvinFromFahrenheit( temp.rankineToFahrenheit(degR) );
+	}
+	
+temp.r2k = temp.rankineToKelvin;
+	
+temp.rankineFromKelvin = function(degK)
+	{
+	temp.rankineFromFahrenheit ( temp.kelvinToFahrenheit( degK ) );
+	}
+	
+temp.k2r = temp.rankineFromKelvin;
+
+
 	
 # https://onlinegdb.com/qgvpmcpRr
 # https://onlinegdb.com/5HTxwqrS6
