@@ -75,6 +75,14 @@ stats.warningNA = function(x)
 	}
 
 
+# maybe stats.countWhere = function(x, "x > 3") {}
+# analagous to COUNTIF ... 
+stats.countNA = function(x)
+	{
+	sum(is.na(x));  # adding TRUEs as 1's in binary (0,1) sense 
+	}
+
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' stats.sum
@@ -178,20 +186,62 @@ stats.mean = function(x, na.rm=TRUE, is.member=TRUE, ...)
 		# by default, na.rm happens inside b/c na.last=NA
 	x.sort = sort(x, na.last=TRUE);  
 		# this returns [NA] if there are NA's ... WHY?!?
+		# sort not really necessary?
 	m = mean(x.sort, na.rm=na.rm, ...); 
 
 		# plain vanilla with 'sort' overhead
 	if(!is.member) { return(m); }  
 
-	m.deviations = abs(x.sort-m);
-	m.mins = stats.whichMin(m.deviations);
-		# this returns the first (smallest) if deviations tied
-	x.sort[ m.mins[1] ]; 
+	# this returns the first (smallest) if deviations tied
+	m.dev = abs(x.sort - m);	 			m.mins = stats.whichMin(m.dev);
+											x.bar = x.sort[ m.mins[1] ]; 
+	x.bar; 
 	}
 
 #' @rdname doMean
 #' @export
 doMean = stats.mean;
+
+
+stats.sd = function(x, na.rm=TRUE, is.member=TRUE, ...)
+	{
+	if(!is.member) { sd(x, na.rm=na.rm); }  # plain vanilla 
+	warning = stats.warningNA(x);
+	n = length(x);
+	n2 = n - stats.countNA(x);
+		# by default, na.rm happens inside b/c na.last=NA
+	x.sort = sort(x, na.last=TRUE);  
+	
+	x.sum = x.sum2 = 0;
+	# NAIVE algorithm, so-called
+	for(i in 1:n2)
+		{
+		x.sum 	= x[i] + x.sum;
+		x.sum2	= x[i]*x[i] + x.sum2;
+		}
+	
+	x.mean	= x.sum/n2;
+	x.var	= (x.sum2 - (x.sum*x.sum)/n2)/(n2-1);
+	x.sd	= sqrt(x.var);
+	
+	m.dev = abs(x.sort - x.mean); 			m.mins = stats.whichMin(m.dev);
+											x.bar = x.sort[ m.mins[1] ]; 
+	# this is mean centered ... +/- one SD is 68% of the data ?, trecile (33%)
+	s.dev = abs(x.sort - x.sd); 			s.mins = stats.whichMin(s.dev);
+											s.hat = abs(x.sort[ s.mins[1] ]);
+	# this is the element that is closest to computed sd in the set 
+												
+	# maybe create a trecile rule 
+	# x.tri = stats::quantile(xx, prob=( (0:3)/3 ), type=1);
+	# element nearest lower (x.tri[2]) or nearest upper (x.tri[3])
+	# isn't that what x.sort - x.sd is technically doing ?
+	
+	s.hat;
+	}
+
+
+# buy me a coffee ... popup, not a WIKI annoyance or interrupted, you clicked
+# pi simple ... CNTRL-SHIFT CLICK ... v, date 
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -340,6 +390,28 @@ whichMinFrequency = stats.whichMinFrequency;
 
 
 
+stats.mScores = function(x, x.median = NULL, x.mad = NULL, method="base")
+	{
+	if(is.numeric(x.median) && is.numeric(x.mad)) { return ( (x - x.median) / x.mad ); }
+	m = functions.cleanKey(method, 1);
+	if( is.null(x.median) || is.null(x.mad) )
+      {
+      warning("Only one value was entered for x.median / x.mad ... Computing from the data instead.")
+      }
+	
+	# [b]ase method ... missing values, definition of mean?
+	if( m == "b" )
+		{
+		return( (x - median(x)) / mad(x) );
+		}
+		
+	x.median = stats.median(x);
+	x.mad	 = stats.median( abs( x - x.median ) );
+	
+	return ( (x - x.median) / x.mad );
+	}
+	
+	
 
 stats.zScores = function(x, x.bar = NULL, s.hat = NULL, method="base")
 	{
@@ -364,7 +436,7 @@ stats.zScores = function(x, x.bar = NULL, s.hat = NULL, method="base")
 calculateZscores = stats.zScores;
 
 
-
+stats.summary = function() {}
 stats.summary = function(x, type=1, sort.ASC = FALSE,
 								outlier.z = c(-3, 3), 
 								outlier.m = c(-3, 3),
@@ -418,13 +490,21 @@ stats.summary = function(x, type=1, sort.ASC = FALSE,
 	 
 	# think about redundancy on sorting in all of the functions ...
 	res$sorted = sort( x, decreasing=!sort.ASC, na.last=TRUE );
+	
 	res$Qs = stats::quantile(xx, prob=( (0:4)/4 ), type=type);  # includes min/max 
-		res$IQR = as.numeric(res$Qs[4] - res$Qs[2]); # inner half the data 
+		names(res$Qs) = paste0( (0:4), "/4" );
+	res$IQR = as.numeric(res$Qs[4] - res$Qs[2]); # inner half the data 
+	
 	res$Fs = stats::quantile(xx, prob=( (0:5)/5 ), type=type);
+		names(res$Fs) = paste0( (0:5), "/5" );
+	
 	res$Ns = stats::quantile(xx, prob=( (0:9)/9 ), type=type);
-		res$ITR = as.numeric(res$Ns[7] - res$Ns[4]); # inner third of the data 
+		names(res$Ns) = paste0( (0:9), "/9" );
+	res$ITR = as.numeric(res$Ns[7] - res$Ns[4]); # inner third of the data 
 	
 	res$mean 	= stats.mean(xx);					# members of the set
+	res$sd		= stats.sd(xx);
+	res$var		= (res$sd)^2;
 	res$median 	= stats.median(xx);
 	res$mad		= stats.median( abs( xx - res$median ) ); # members of diff(set)
 	res$mode 	= stats.mode(xx);

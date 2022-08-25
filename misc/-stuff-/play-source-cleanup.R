@@ -109,7 +109,7 @@ doStatsSummary = function(x)
 	result$niniles = stats::quantile(xx, prob=probs.niniles, type=1 );
 	result$niniles.members = cutMe(xx, probs.niniles, lower.equal = TRUE);
 
-
+#
 	result$median.weighted = matrixStats::weightedMad(xx);
 	result$MAD.weighted = matrixStats::weightedMedian(xx);
 
