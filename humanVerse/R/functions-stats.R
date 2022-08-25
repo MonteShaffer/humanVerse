@@ -1,7 +1,7 @@
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
-#' stats.summary
+#' tukey.summary
 #'
 #' behaves summary() with TUKEY flavor
 #'
@@ -13,26 +13,39 @@
 #'
 #' @examples
 #' 
-#' stats.summary( c(87, presidents[1:30], 87) );
+#' tukey.summary( c(87, presidents[1:30], 87) );
 #'
-stats.summary = function(x, tukey=TRUE, type=1, signif.digits=5, snames = c("min", "-Q1-", "median", "Mean", "-Q3-", "max"), tnames = c("min", "-Hinge1-", "median", "-Hinge3-", "max"), ... )
+tukey.summary = function() {}
+tukey.summary = function(x, type=1, signif.digits=5, return="five", 
+							snames = c("min", "-Q1-", "median", "Mean", "-Q3-", "max"), 
+							tnames = c("min", "-Hinge1-", "median", "-Hinge3-", "max"), 
+						... )
 	{
-	## fivenum(x)
-	# maybe build internal caching mechanism based on a digest of the obj
-	# stats.summary = function(x, tukey=TRUE, type=1, signif.digits=options("digits")$digits, names = c("min", "-Q1-", "median", "Mean", "-Q3-", "max"), ... )
-				#signif.digits=5; names = c("min", "-Q1-", "median", "Mean", "-Q3-", "max");
+	r = functions.cleanKey(return, 1);
+	
 	res = summary(x, digits=signif.digits, quantile.type=type, ...);
+	res = res[c(1:3,5:6)];  # tukey 
 	names(res) = snames;
+	
 	myfive = fivenum(x);
 	names(myfive) = tnames;
-	if(tukey) { res = res[c(1:3,5:6)]; }
-	res = property.set("five", res, myfive );
-	res;
+	
+	# [s]ummary form 
+	if(r == "s")
+		{
+		res = property.set("five", res, myfive );
+		return(res);
+		}
+	
+	# [f]ive or [t]ukey ... [d]efault
+	out = myfive;
+	out = property.set("summary", out, res);
+	return(out);
 	}
 
 #' @rdname tukeySummary
 #' @export
-tukeySummary = stats.summary;
+tukeySummary = tukey.summary;
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -326,5 +339,103 @@ whichMinFreq = function(x) # opposite of doMode
 whichMinFrequency = stats.whichMinFrequency;
 
 
+
+
+stats.zScores = function(x, x.bar = NULL, s.hat = NULL, method="base")
+	{
+	if(is.numeric(x.bar) && is.numeric(s.hat)) { return ( (x - x.bar) / s.hat); }
+	m = functions.cleanKey(method, 1);
+	if( is.null(x.bar) || is.null(s.hat) )
+      {
+      warning("Only one value was entered for x.bar / s.hat ... Computing from the data instead.")
+      }
+	
+	# [b]ase method ... missing values, definition of mean?
+	if( m == "b" )
+		{
+		return( (x - mean(x)) / sd(x) );
+		}
+	
+	x.bar = stats.mean(x);
+	x.sd = sd(x, na.rm = TRUE);	
+	return ( (x - x.bar) / s.hat);
+	}
+
+calculateZscores = stats.zScores;
+
+
+
+stats.summary = function(x, type=1, sort.ASC = FALSE,
+								outlier.z = c(-3, 3), 
+								outlier.IQR = c(1.5, 3)
+						)
+	{
+	res = list();
+	n = length(x);
+	xx = stats::na.omit(x);
+	n2 = length(xx);
+	res$length = list("n" = n, "omit" = (n-n2), "good" = n2);
+	res$base = list(	"mean" 		= base::mean(xx), 
+						"mean.t5" 	= base::mean(xx, trim=0.05),
+						"mean.t20" 	= base::mean(xx, trim=0.20),
+						"var"		= stats::var(xx),
+						"sd"		= stats::sd(xx),
+						"median"	= stats::median(xx),
+						"mad"		= stats::mad(xx),			# ?mad hi/low as type?
+						"five"		= stats::fivenum(xx)
+					);
+					
+					
+	res$extended = list(
+						"mean.mad" 	= mean( abs( xx - res$base$mean ) ),
+						"mean.se"	= ( res$base$sd / sqrt(res$length$good) ),
+						
+						"se" = 
+						);
+						
+						stderror <- function(x) sd(x)/sqrt(length(x))
+						
+						mad for median absolute deviation (MAD)
+
+mape for mean absolute percent error (MAPE), mae for mean-absolute error (MAE), dr for "index of agreement (dr)", vnse for Nash-Sutcliffe model efficiency (NSE), and rmse for root mean square error (RMSE).
+	 https://en.wikipedia.org/wiki/Grubbs%27s_test
+	 
+	 
+	# think about redundancy on sorting in all of the functions ...
+	res$sorted = sort( x, decreasing=!sort.ASC, na.last=TRUE );
+	res$Qs = stats::quantile(xx, prob=( (0:4)/4 ), type=type);  # includes min/max 
+		res$IQR = as.numeric(res$Qs[4] - res$Qs[2]); # inner half the data 
+	res$Fs = stats::quantile(xx, prob=( (0:5)/5 ), type=type);
+	res$Ns = stats::quantile(xx, prob=( (0:9)/9 ), type=type);
+		res$ITR = as.numeric(res$Ns[7] - res$Ns[4]); # inner third of the data 
+	
+	res$mean 	= stats.mean(xx);					# members of the set
+	res$median 	= stats.median(xx);
+	res$mad		= stats.median( abs( xx - res$median ) ); # members of diff(set)
+	res$mode 	= stats.mode(xx);
+	res$min 	= as.numeric( res$Ns[1] ); 			# drop names 
+	res$max 	= as.numeric( res$Ns[10]);
+	res$range	= as.numeric( res$max - res$min ); 	# https://en.wikipedia.org/wiki/Range_(statistics)
+	res$xlim	= c(res$min, res$max);  			# this is base::range 
+	 
+	 
+	
+		x.bar = res$mean; 				# anchored to set membership
+		s.hat = res$base$sd;
+	res$zScores = (x - x.bar) / s.hat;  # maybe different that base::scale()
+		# the probem: neither x.bar or s.hat are trimmed ... bias in outlier detection
+	res$zOutliers = list(
+						"lower" = 	which( res$zScores < outlier.z[1] ),
+						"upper" = 	which( res$zScores > outlier.z[2] )
+						)
+						
+		
+		
+		# use median / mad (median deviation) 
+		outliers.lower = which(res$zScores 
+	
+	
+	
+	}
 
 
