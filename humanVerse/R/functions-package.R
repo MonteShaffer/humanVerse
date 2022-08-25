@@ -67,14 +67,53 @@ package.install = function(pkg, ...)
 package.version = function(pkg)
 	{
 	# allow str or obj for pkg
+	# packageVersion() 
+	# Citation
 	}
 	
+
+
+
+# works like library, but scans all functions/files
+# /R ... MAYBE future ... and /inst /src ???
+# builds and caches a -ONE.R- file stored in CACHE /R-libraries/
+# advanced dynamics can grab info from CRAN
+# if CRAN links to GITHUB, grab info from GITHUB
+# cache with date YYYYMMDDHHMMSS ... and most recent (two copies)
+# by default, just grab most recent 
+# but can rebuild ... 
+HV.library = function() {}
+
+package.detach = function(pkg = "stringi", method = "lib
+package.attach = function(pkg = "stringi", method="library")
+	{
+	# require(pkg);
+	# library(pkg);
+	
+	}
+
+# You cannot detach either the workspace (position 1) nor the base package (the last item in the search list), and attempting to do so will throw an error.
+
+package.info = function(pkg = "stringi")
+	{
+	x = library(help = pkg);
+	x;
+
+	
+	}
+
 	
 # plural intentional, but make aliases 	
 packages.installed = function()
 	{
 	library()$results[,1];
 	}
+	
+	
+# .libPaths() # get library location
+# library()   # see all packages installed
+# search()    # see packages currently loaded	
+# https://www.r-bloggers.com/2016/11/a-simple-guide-to-s3-methods/	
 	
 packages.attached = function()
 	{

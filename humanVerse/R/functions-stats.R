@@ -15,14 +15,19 @@
 #' 
 #' stats.summary( c(87, presidents[1:30], 87) );
 #'
-stats.summary = function(x, tukey=TRUE, type=1, ... )
+stats.summary = function(x, tukey=TRUE, type=1, signif.digits=5, snames = c("min", "-Q1-", "median", "Mean", "-Q3-", "max"), tnames = c("min", "-Hinge1-", "median", "-Hinge3-", "max"), ... )
 	{
+	## fivenum(x)
 	# maybe build internal caching mechanism based on a digest of the obj
 	# stats.summary = function(x, tukey=TRUE, type=1, signif.digits=options("digits")$digits, names = c("min", "-Q1-", "median", "Mean", "-Q3-", "max"), ... )
-				signif.digits=5; names = c("min", "-Q1-", "median", "Mean", "-Q3-", "max");
-	res = summary(x, digits=signif.digits, type=type...);
-	names(res) = names;
-	if(tukey) { res[c(1:3,5:6)]; } else { res; }
+				#signif.digits=5; names = c("min", "-Q1-", "median", "Mean", "-Q3-", "max");
+	res = summary(x, digits=signif.digits, quantile.type=type, ...);
+	names(res) = snames;
+	myfive = fivenum(x);
+	names(myfive) = tnames;
+	if(tukey) { res = res[c(1:3,5:6)]; }
+	res = property.set("five", res, myfive );
+	res;
 	}
 
 #' @rdname tukeySummary

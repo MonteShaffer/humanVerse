@@ -201,6 +201,18 @@ is.false = isFALSE;
 # is.set (given as an object)
 
 
+is.type = function(obj)
+	{
+debug = FALSE;
+	mytype = suppressError( typeof(obj), 
+								show.notice=debug,
+								msg="debugging typeof is.type" 
+							);
+	if(is.error(mytype)) 	{ return(FALSE); }
+	invisible(mytype);	
+	}
+
+
 # sys.frame(0)
 is.set = function(obj, allow.NULL=FALSE, deep.scan=TRUE, ...)
 	{

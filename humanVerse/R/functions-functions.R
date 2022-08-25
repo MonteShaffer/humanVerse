@@ -1,7 +1,86 @@
 
+# str( package.NAMESPACE(stringi) );
+# str( package.NAMESPACE("stringi") );
+# .rmpkg("package:stringi")
 
 
+#  methods("plot")
+#  .S3methods("plot")
+#  utils:::getKnownS3generics()
+# knownGenerics
+
+# R_Srcref = getAttrib(op, R_SrcrefSymbol);
+
+package.NAMESPACE = function(pkg = "stringi", ...)
+	{
+	if(is.type(pkg) == FALSE) { pkg = as.character(substitute(pkg)); }
+	ns = asNamespace(pkg, base.OK = FALSE); # cast as <environment: namespace:pkg>
+	# getNamespaceInfo(ns);
+	keys = ls(..., envir = get(".__NAMESPACE__.", envir = ns, inherits = FALSE));
+	res = list();
+	for(key in keys)
+		{
+		res[[key]] = getNamespaceInfo(ns, key);
+		}
+	res;	
+	}
+
+## getNamespaceInfo("stringi")
+## nsName <- "stats"
+## (ns <- asNamespace(nsName)) # <environment: namespace:stats>
+
+## Inverse function of asNamespace() :
+## environmentName(asNamespace("stats")) # "stats"
+## environmentName(asNamespace("base"))  # "base"
+## getNamespaceInfo(ns, "spec")[["name"]] ## -> "stats"
+
+## loadedNamespaces()
+## util::methods() has "::" and ":::" logic ... 
+ 
+## https://rdrr.io/r/base/formals.html
+## overwrite formals
+## ## You can overwrite the formal arguments of a function (though this is
+## advanced, dangerous coding).
+## f <- function(x) a + b
+## formals(f) <- alist(a = , b = 3)
+
+
+# methods(cbind) vs methods("cbind") ... both work 
+# https://stackoverflow.com/questions/8696158/find-all-functions-including-private-in-a-package
+functions.listFromPackage = function(pkg = "stats")
+	{
+	all 	= ls( getNamespace(pkg), 		all.names = TRUE); 
+	# public has to be loaded ... 
+	public 	= ls( paste0("package:", pkg),	all.names = TRUE);
+	private = set.diff(all, public);
+	list("public" = public, "private" = private);
+	}
+
+
+# functions-ls, 		functions on ls() not part of a library
+# attached-packages, 	functions on ls() AND functions in loaded library(pkg)
+# installed-packages, 	functions on ls(), fn loaded AND 
+# disjoint ... fn within ls(); fn with pkg(X) ... installed or loaded 
+# juser selects where to look, but the result would be by package ... 
+
+functions.usageOf = function(fn = "base:::curlDownload", pkg=NULL, depth="ls-only")
+	{
+	if(is.null(pkg))
+		{
+		# scan global ls environment for functions ...
+		# default is attached libraries 
+		# could do deep.scan = TRUE ... all installed libraries ...
+		} else {
+				# pkg can be multivariate, a list of pkg ... 
+				# do an internal audit of fn within the pkg 
+				fn doesn't have to be a member of the pkg
+				}
 	
+	}
+	
+
+# pryr::show_c_source(.Internal(match.call(definition, call, expand.dots)))
+## show c or fortran source or c++ source ... 	
 functions.whereIs = function(fn = "base:::curlDownload")
 	{
 	# how to cast as character if it is the fn obj ...
@@ -66,6 +145,16 @@ functions.cleanupKey = functions.cleanKey;
 functions.cleanUpKey = functions.cleanKey;
 
 
+# Functions will only be recorded in the profile log if they put a context on the call stack (see sys.calls). Some primitive functions do not do so: specifically those which are of type "special" (see the ‘R Internals’ manual for more details).
+# Rprof("copy.out")
+## copy/pasted
+# plot.tukey = function(x) {}
+# Rprof(NULL)
+# summaryRprof("copy.out");
+
+
+# plot.tukey = function(x) {}
+
 # gets the RAW function ... 
 # property.get("srcref", ping.domain)
 # compare to body(ping.domain)
@@ -73,6 +162,24 @@ functions.cleanUpKey = functions.cleanKey;
 # Rprof("boot.out")
 # storm.boot <- boot(rs, storm.bf, R = 4999) # slow enough to profile
 # Rprof(NULL)
+
+# deparse.c  [1830]
+# PROTECT(srcref = lang2(R_AsCharacterSymbol, srcref));
+#   PROTECT(srcref = eval(srcref, R_BaseEnv));
+# gram.c [5186]
+# errorcall(R_NilValue, _("'\\%c' is an unrecognized escape in character string starting \"%s\""), c, currtext);
+# gram.c [4647] ... line 4641 /* one line */ ... line 4579 /* multiline */
+# static int SkipComment(void)
+
+
+# srcfilecopy
+# srcfile.R in base/R
+
+
+
+
+
+
 
 	
 functions.getParameterInfo = function(return="dots", truncate=10)

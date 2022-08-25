@@ -2673,7 +2673,8 @@ color.buildSet = function(setname="base", alpha=TRUE, colors=NULL)
 				hexcolors = rgb2col(x); 
 				
 				xt = as.data.frame( t(x) );
-				if(!is.set(xt$alpha)) { xt$alpha = 255; }
+				#if(!is.set(xt$alpha)) { xt$alpha = 255; }
+				if(is.null(xt$alpha)) { xt$alpha = 255; }
 				xt$color = colors;
 				xt$hex.color = hexcolors;
 				

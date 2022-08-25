@@ -1,4 +1,16 @@
 
+
+
+URL_parts <- function(x) {
+    m <- regexec("^(([^:]+)://)?([^:/]+)(:([0-9]+))?(/.*)", x)
+    parts <- do.call(rbind,
+                     lapply(regmatches(x, m), `[`, c(3L, 4L, 6L, 7L)))
+    colnames(parts) <- c("protocol","host","port","path")
+    parts
+}
+# URL_parts(x)
+
+
 # https://stackoverflow.com/questions/9183178/can-php-curl-retrieve-response-headers-and-body-in-a-single-request
 # looks like R doesn't unlike direct access to curl_opt
 # 

@@ -1,4 +1,10 @@
 
+# n.FUNCTIONS ... 
+## is.vector vs is.atomic ... 
+## list(500) is no, vector("list", 500) is yes ...
+## n.dim(X) and n.length(X) ... deal with issues of dim not found 
+
+
 
 #' standardizeToFactor
 #'

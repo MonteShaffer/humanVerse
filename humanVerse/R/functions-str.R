@@ -1,4 +1,12 @@
 
+# conflict with "str" method?
+# http://adv-r.had.co.nz/S3.html
+# .S3PrimitiveGenerics
+# methods("str");
+# strwidth(s, units = "user", cex = NULL, font = NULL, vfont = NULL, ...)
+# strheight(s, units = "user", cex = NULL, font = NULL, vfont = NULL, ...)
+# maybe gr.
+
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'

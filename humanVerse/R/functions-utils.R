@@ -1,18 +1,68 @@
 
+## PHP https://kinsta.com/blog/is-php-dead/
+# https://kinsta.com/blog/php-vs-javascript/
+# 
 
-# works like library, but scans all functions/files
-# /R ... MAYBE future ... and /inst /src ???
-# builds and caches a -ONE.R- file stored in CACHE /R-libraries/
-# advanced dynamics can grab info from CRAN
-# if CRAN links to GITHUB, grab info from GITHUB
-# cache with date YYYYMMDDHHMMSS ... and most recent (two copies)
-# by default, just grab most recent 
-# but can rebuild ... 
-HV.library = function() {}
+# https://en.wikipedia.org/wiki/Inverse_function
+temp.celsiusToFahrenheit = function(degC)
+	{
+	degF = 9/5 * degC + 32;
+	is.Z = (degF < -459.67);
+	if(any(isZ)) { warning("one or more values below absolute zero"); }
+	degF[is.Z] = NA;
+	degF;
+	}
+	
+temp.c2f = 	temp.celsiusToFahrenheit
+	
+temp.celsiusFromFahrenheit = function(degF)
+	{	
+	degC = 5/9 * (degF - 32);
+	is.Z = (degC < −273.15);
+	if(any(isZ)) { warning("one or more values below absolute zero"); }
+	degC[is.Z] = NA;
+	degC;
+	}
+	
+temp.f2c = 	temp.celsiusFromFahrenheit
+
+temp.celsiusToKelvin = function(degC)
+	{	
+	degK = degC + 273.15;
+	is.Z = (degK < 0);
+	if(any(isZ)) { warning("one or more values below absolute zero"); }
+	degK[is.Z] = NA;
+	degK;
+	}
+	
+temp.c2k = 	temp.celsiusToKelvin
+
+temp.celsiusFromKelvin = function(degK)
+	{
+	degC = degK - 273.15;
+	is.Z = (degC < −273.15);
+	if(any(isZ)) { warning("one or more values below absolute zero"); }
+	degC[is.Z] = NA;
+	degC;
+	}
 
 
-
-
+temp.k2c = 	temp.celsiusFromKelvin
+	
+temp.kelvinFromFahrenheit = function(degF)
+	{
+	temp.celsiusToKelvin( temp.celsiusFromFahrenheit(degF) );
+	}
+	
+temp.f2k = 	temp.kelvinFromFahrenheit
+	
+temp.kelvinToFahrenheit = function(degK)
+	{
+	temp.celsiusToFahrenheit( temp.celsiusFromKelvin( degK ) );
+	}
+	
+temp.k2f = 	temp.kelvinToFahrenheit	
+	
 # https://onlinegdb.com/qgvpmcpRr
 # https://onlinegdb.com/5HTxwqrS6
 # C++ variant ... 

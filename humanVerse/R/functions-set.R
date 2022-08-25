@@ -45,6 +45,13 @@ set.match = function(searching, set, ...)
 	match(searching, set, ...);	
 	}
 	
+# maybe just set.match = match 
+set.diff = setdiff;
+set.union = union;
+set.intersect = intersect;
+set.equal = setequal;
+set.isElement = is.element;
+	
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'	
 #' set.remove

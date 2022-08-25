@@ -61,7 +61,19 @@
 
 ## fa na ha sha  (1) M21-ish is start of year (Abrashit) ... growing ... 1 kAt-fa or 1 kAtka-fa
 ## pa ra ba la   (2) turning of solstice [parabola] ... 1 kAt-pa is about AUG 1
+## ==> pa ga ba la ... ra becomes generic day (DOY) ... 
+## keep parabala ... "ga" is generic day [Nychthemeron] ... rising/dying ... all of it
+## sunrise is the moment of birth of the day, ga-Aku-ala ...  ga-Uka-ala (moonrise)
+## sunset is the moment of death of the sun,  ga-Aku-ni-ala  ga-Uka-ni-ala (moonset)
+## [ni] as [nee] is basic negation ... maybe n-tilde ... ny ... 
+## ga-Abrashet, ga-Abrashet-ala, ga-max, ga-max-ni-ala, ga-Abrash (ga-nee-Aku), 
+##  ... ga-Abrash-ni-ala, ga-min, ga-min-ala, ga-Abrashet ... 
+## (ga) phases of the day ...
+## (Aku) phases of the solar cycle (year) 
+## (Uka) phases of the lunar cycle  (moonth)
 ## wa da ya za   (3) returning ... 1 kAt-wa is about DEC 1
+
+
 
 ## any confusion of language, season can be prouncounced
 ## fa-na-ha-sha , pa-ra-ba-la , wa-da-ya-za 
@@ -140,10 +152,13 @@ sine.forYear = function(YYYY)
 	#  ... for par(new=TRUE), only override the new values ... 
 	# https://r-coder.com/plot-r
 	# https://www.stat.auckland.ac.nz/~ihaka/120/Notes/ch03.pdf
+	my.xlim = c(-10, 130);
+	my.ylim = c(-1, 1);
+	
 	plot(x, y, pch=".", bty="n", col="black", 
 						main="",
-						xlim = c(-10, 370), xlab="", xaxt="n",
-						ylim = c(-1,1), ylab="", yaxt="n"
+						xlim = my.xlim, xlab="", xaxt="n",
+						ylim = my.ylim, ylab="", yaxt="n"
 		);
 		# 5's 
 		idx = 1+(1:72 * 5);
@@ -165,8 +180,8 @@ sine.forYear = function(YYYY)
 	y2 = fn.sine(x2, 1/ndays);
 	plot(x2, y2, type="l", bty="n", col="gray",  
 						main="",
-						xlim = c(-10, 370), xlab="", xaxt="n",
-						ylim = c(-1,1), ylab="", yaxt="n"
+						xlim = my.xlim, xlab="", xaxt="n",
+						ylim = my.ylim, ylab="", yaxt="n"
 		);
 						
 	dy = y2 - y_;  # this is phase-shift difference 
@@ -177,18 +192,21 @@ sine.forYear = function(YYYY)
 	## get y value on 1/360 ... find x2 of y2 ~= y on 1/365 ...
 	## 
 	idx = 1+(1:12 * 30);
-					add = c(0,0,0, 60,120,180, 180,180,180, 240,300,360);
-	my = y[idx]; mx = abs(fn.sine.inv(my, 1/ndays)) + add;  # shifting > 90
-				
-	
-	my2 = 0*my;
+	my = y[idx]; 
+	nx = numeric(12);
 	for(i in 1:12)
 		{
-		# limit x2 to neighborhood 
-		which( (y2 < my[i] - 0.01)
+		# # limit x2 to neighborhood
+		lookup = (idx[i] - 10) : (idx[i] + 10);
+		mx = x2[lookup]; my2 = y2[mx]; 
+		di = abs(my2 - my[i]);
+		idx_ = which.min(di);		 
+		nx[i] = mx[idx_] - 1; # 0/1 indexing issue 
 		}
-	
-	dx = x2_ - x;  # this is a day difference at a given month marker 
+	# x[idx]; y[idx]; nx; y2[nx];
+	dx = nx - x[idx];  # this is a day difference at a given month marker 
+	# dy[idx];
+	# tt = rbind(x[idx], y[idx], nx, y2[nx], dy[idx]); rownames(tt) = c("x", "y", "nx", "y2", "dy"); round(tt,1);
 	
 	}
 
