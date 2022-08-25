@@ -367,6 +367,7 @@ calculateZscores = stats.zScores;
 
 stats.summary = function(x, type=1, sort.ASC = FALSE,
 								outlier.z = c(-3, 3), 
+								outlier.m = c(-3, 3),
 								outlier.IQR = c(1.5, 3)
 						)
 	{
@@ -375,31 +376,40 @@ stats.summary = function(x, type=1, sort.ASC = FALSE,
 	xx = stats::na.omit(x);
 	n2 = length(xx);
 	res$length = list("n" = n, "omit" = (n-n2), "good" = n2);
-	res$base = list(	"mean" 		= base::mean(xx), 
+	res$base = list(	"sum" 		= base::sum(xx),
+						"mean" 		= base::mean(xx),	
 						"mean.t5" 	= base::mean(xx, trim=0.05),
 						"mean.t20" 	= base::mean(xx, trim=0.20),
-						"var"		= stats::var(xx),
-						"sd"		= stats::sd(xx),
+						"var"		= stats::var(xx),  	# sample as /(n-1)
+						"sd"		= stats::sd(xx),	# sample as /(n-1)
 						"median"	= stats::median(xx),
-						"mad"		= stats::mad(xx),			# ?mad hi/low as type?
+						"mad"		= stats::mad(xx),			
 						"five"		= stats::fivenum(xx)
 					);
 					
+					# stats::mad() defaults 
+					# ?mad hi/low as type?
+					# constant as NORMAL assumption:  1/qnorm(3/4) * 2
+					
+					# https://www.programmingr.com/statistics/skewness/
+					# Base R does not contain a function that will allow you to calculate Skewness in R. [LOL!]
+					# library(methods) keeps computing the mean() ?!ARGH!?
+					# https://en.wikipedia.org/wiki/Skewness#Sample_skewness
+					# This is form skewness.g1 
+					# [I like oldschool] ... In the older notion of nonparametric skew, defined as {\displaystyle (\mu -\nu )/\sigma ,}(\mu -\nu )/\sigma , where {\displaystyle \mu }\mu  is the mean, {\displaystyle \nu }\nu  is the median, and {\displaystyle \sigma }\sigma  is the standard deviation, the skewness is defined in terms of this relationship
+					# If the distribution is both symmetric and unimodal, then the mean = median = mode. 
+					# how can mean/median/mode be equal if they are not members of the same set?
 					
 	res$extended = list(
 						"mean.mad" 	= mean( abs( xx - res$base$mean ) ),
-						"mean.se"	= ( res$base$sd / sqrt(res$length$good) ),
-						
-						"se" = 
+						"mean.se"	= ( res$base$sd / sqrt(n2) ),
+						"skew"		= (sum(( xx - res$base$mean )^3)/n2)/(sum((xx - res$base$mean)^2)/n2)^(3/2),
+						"kurtosis"	=  n2 * sum( ( xx - res$base$mean )^4 ) / ( sum( ( xx - res$base$mean )^2)^2 ),  # [space]^4 was bug?
 						);
-						
-						stderror <- function(x) sd(x)/sqrt(length(x))
-						
-						mad for median absolute deviation (MAD)
 
-mape for mean absolute percent error (MAPE), mae for mean-absolute error (MAE), dr for "index of agreement (dr)", vnse for Nash-Sutcliffe model efficiency (NSE), and rmse for root mean square error (RMSE).
-	 https://en.wikipedia.org/wiki/Grubbs%27s_test
-	 
+						# matrixStats::weightedMad(xx);
+						# matrixStats::weightedMedian(xx);
+
 	 
 	# think about redundancy on sorting in all of the functions ...
 	res$sorted = sort( x, decreasing=!sort.ASC, na.last=TRUE );
@@ -424,18 +434,34 @@ mape for mean absolute percent error (MAPE), mae for mean-absolute error (MAE), 
 		s.hat = res$base$sd;
 	res$zScores = (x - x.bar) / s.hat;  # maybe different that base::scale()
 		# the probem: neither x.bar or s.hat are trimmed ... bias in outlier detection
+		#  https://en.wikipedia.org/wiki/Grubbs%27s_test
 	res$zOutliers = list(
 						"lower" = 	which( res$zScores < outlier.z[1] ),
 						"upper" = 	which( res$zScores > outlier.z[2] )
-						)
-						
+						);
+	
+	# distribution-less on all assumptions ... TBD: outlier.m 
+	res$mScores = (x - res$median) / res$mad; 					
+	res$mOutliers = list(
+						"lower" = 	which( res$mScores < outlier.m[1] ),
+						"upper" = 	which( res$mScores > outlier.m[2] )
+						);
 		
-		
-		# use median / mad (median deviation) 
-		outliers.lower = which(res$zScores 
+	# TUKEY ... inner / outer into basic outliers ... "far out" homage 
+		fence.inner.lower = res$median - outlier.IQR[1] * res$IQR;
+		fence.inner.upper = res$median + outlier.IQR[1] * res$IQR;
+		fence.outer.lower = res$median - outlier.IQR[2] * res$IQR;
+		fence.outer.upper = res$median + outlier.IQR[2] * res$IQR;
+	res$outliers = list(
+						"lower" = 	which( x < fence.inner.lower ),
+						"upper" = 	which( x > fence.inner.upper )
+						);
+	res$far.out = list(
+						"lower" = 	which( x < fence.outer.lower ),
+						"upper" = 	which( x > fence.outer.upper )
+						);
 	
-	
-	
+	res; 
 	}
 
 
