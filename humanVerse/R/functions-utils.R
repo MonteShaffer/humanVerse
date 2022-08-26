@@ -1,4 +1,5 @@
 
+	
 temp.constants = function(envir=parent.frame(1))
 	{
 	ABS_ZERO_F = -459.67;
@@ -11,18 +12,57 @@ temp.constants = function(envir=parent.frame(1))
 	assign("ABS_ZERO_K", ABS_ZERO_K, envir=envir);
 	assign("ABS_ZERO_R", ABS_ZERO_R, envir=envir);	
 	}
+
 	
 temp.isNA = function(degX, Xunits="celsius")
 	{
-	X = functions.cleanKey(Xunits, 1, to="upper");
+	X = functions.cleanKey(Xunits, 1, case="upper");
 	temp.constants();
 		Xconstant.str = paste0("ABS_ZERO_",X);
 		Xconstant = eval(parse(text = Xconstant.str));
+#		dput(Xconstant);
 	is.Z = (degX < Xconstant);
-	if(any(isZ)) { warning("one or more values below absolute zero"); }
+	if(any(is.Z)) { warning("one or more values below absolute zero"); }
 	degX[is.Z] = NA;
 	degX;	
 	}
+
+
+
+temp.convert = function(degX, from="fahrenheit", to="celsius")
+	{
+	temp.constants();
+	# convert everthing to "celsius" on first pass
+	F = functions.cleanKey(from, 1, case="upper");
+	T = functions.cleanKey(to, 1, case="upper");
+dput(degX); dput(F); dput(T); dput(ABS_ZERO_R);
+	degC = switch(F,
+					  "C"	= degX,				
+					  "F" 	= 5/9 * (degX - 32),
+					  "K"  	= degX + ABS_ZERO_C,				
+					  "R"  	= (5/9 * (degX - 32)) + ABS_ZERO_R,				
+				degX											# DEFAULT
+				);
+	# convert everything from "celsius" on second pass 
+	
+	degN = switch(T,
+					  "C"	= degC,				
+					  "F" 	= 9/5 * degC + 32,
+					  "K"  	= degC - ABS_ZERO_C,				
+					  "R"  	= (9/5 * degC + 32) + ABS_ZERO_R,				
+				degN											# DEFAULT
+				);
+	temp.isNA(degN);
+	}
+
+
+temp.c2f = 	temp.celsiusToFahrenheit = function(degC) { temp.convert(degC, "C", "F"); }
+temp.f2c = 	temp.celsiusFromFahrenheit = function(degF) { temp.convert(degF, "F", "C"); }
+	
+temp.c2k = 	temp.celsiusToKelvin = function(degC) { temp.convert(degC, "C", "K"); }
+temp.k2c = 	temp.celsiusFromKelving = function(degK) { temp.convert(degK, "K", "C"); }
+
+
 
 ## PHP https://kinsta.com/blog/is-php-dead/
 # https://kinsta.com/blog/php-vs-javascript/
@@ -32,10 +72,7 @@ temp.isNA = function(degX, Xunits="celsius")
 temp.celsiusToFahrenheit = function(degC)
 	{
 	degF = 9/5 * degC + 32;
-	is.Z = (degF < -459.67);
-	if(any(isZ)) { warning("one or more values below absolute zero"); }
-	degF[is.Z] = NA;
-	degF;
+	temp.isNA(degF, "F");
 	}
 	
 temp.c2f = 	temp.celsiusToFahrenheit
@@ -43,10 +80,7 @@ temp.c2f = 	temp.celsiusToFahrenheit
 temp.celsiusFromFahrenheit = function(degF)
 	{	
 	degC = 5/9 * (degF - 32);
-	is.Z = (degC < −273.15);
-	if(any(isZ)) { warning("one or more values below absolute zero"); }
-	degC[is.Z] = NA;
-	degC;
+	temp.isNA(degC, "C");
 	}
 	
 temp.f2c = 	temp.celsiusFromFahrenheit
@@ -54,10 +88,7 @@ temp.f2c = 	temp.celsiusFromFahrenheit
 temp.celsiusToKelvin = function(degC)
 	{	
 	degK = degC + 273.15;
-	is.Z = (degK < 0);
-	if(any(isZ)) { warning("one or more values below absolute zero"); }
-	degK[is.Z] = NA;
-	degK;
+	temp.isNA(degK, "K");
 	}
 	
 temp.c2k = 	temp.celsiusToKelvin
@@ -65,10 +96,7 @@ temp.c2k = 	temp.celsiusToKelvin
 temp.celsiusFromKelvin = function(degK)
 	{
 	degC = degK - 273.15;
-	is.Z = (degC < −273.15);
-	if(any(isZ)) { warning("one or more values below absolute zero"); }
-	degC[is.Z] = NA;
-	degC;
+	temp.isNA(degC, "C");
 	}
 
 
@@ -95,10 +123,7 @@ temp.k2f = 	temp.kelvinToFahrenheit
 temp.rankineFromFahrenheit = function(degF)
 	{
 	degR = degF - 459.67;
-	is.Z = (degR < 0);
-	if(any(isZ)) { warning("one or more values below absolute zero"); }
-	degR[is.Z] = NA;
-	degR;
+	temp.isNA(degR, "R");
 	}
 	
 temp.r2f = temp.rankineFromFahrenheit;
@@ -106,10 +131,7 @@ temp.r2f = temp.rankineFromFahrenheit;
 temp.rankineToFahrenheit = function(degR)
 	{
 	degF = degR + 459.67;
-	is.Z = (degF < -459.67);
-	if(any(isZ)) { warning("one or more values below absolute zero"); }
-	degF[is.Z] = NA;
-	degF;	
+	temp.isNA(degF, "F");	
 	}
 
 
