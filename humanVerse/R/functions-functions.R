@@ -106,19 +106,28 @@ functions.whereIs = function(fn = "base:::curlDownload")
 #'
 #' @examples
 functions.cleanKey = function() {}
-functions.cleanKey = function(key, n=1, keep="", extra = "! #")
+functions.cleanKey = function(key, n=1, keep="", to="lower", extra = "! #")
 	{
-	str = tolower(key); # has to be base-R (not str.tolower, recursion)
+	to = substring(tolower(to), 1, 2);
+			# has to be base-R (not str.tolower, recursion)
+	str = switch(to,
+					  "lo"	= tolower(key),		# lower-case
+					  "up" 	= toupper(key),		# upper-case 
+					  "un"  = key,				# unchanged (as-is)
+					  "no"  = key,				# no changes (as-is)
+				tolower(key)					# DEFAULT [lower-case]
+				);	
 	if(extra == "")
 		{
 		# recursion, these functions are calling cleanup 
 		# Error: node stack overflow
 		# Error: no more error handlers available (recursive errors?); invoking 'abort' restart
 		n = nchar(extra);  # nchars 
+		extra_ = strsplit(extra, "", fixed=TRUE)[[1]];
 		res = str;
 		for(i in 1:n)
-			{
-			res = gsub(strsplit(extra, "")[[1]], "", res, fixed=TRUE);
+			{			
+			res = gsub(extra_[i], "", res, fixed=TRUE);
 			}
 		str = res;
 		}
@@ -132,7 +141,8 @@ functions.cleanKey = function(key, n=1, keep="", extra = "! #")
 	# we could explode(extra[i]).implode("") ## REMOVE
 	# if keep, explode("-"), return n elements 
 	# separated by keep ([f]irst-[s]econd-[t]hird]) ... f-s-t
-	substr(str,1,n);
+	# substr(str,1,n);  # or 
+	# substring(str, 1, n);
 	} 
 
 

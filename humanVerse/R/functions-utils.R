@@ -1,4 +1,29 @@
 
+temp.constants = function(envir=parent.frame(1))
+	{
+	ABS_ZERO_F = -459.67;
+	ABS_ZERO_C = -273.15;
+	ABS_ZERO_K = 0;
+	ABS_ZERO_R = -459.67;
+	
+	assign("ABS_ZERO_F", ABS_ZERO_F, envir=envir);
+	assign("ABS_ZERO_C", ABS_ZERO_C, envir=envir);
+	assign("ABS_ZERO_K", ABS_ZERO_K, envir=envir);
+	assign("ABS_ZERO_R", ABS_ZERO_R, envir=envir);	
+	}
+	
+temp.isNA = function(degX, Xunits="celsius")
+	{
+	X = functions.cleanKey(Xunits, 1, to="upper");
+	temp.constants();
+		Xconstant.str = paste0("ABS_ZERO_",X);
+		Xconstant = eval(parse(text = Xconstant.str));
+	is.Z = (degX < Xconstant);
+	if(any(isZ)) { warning("one or more values below absolute zero"); }
+	degX[is.Z] = NA;
+	degX;	
+	}
+
 ## PHP https://kinsta.com/blog/is-php-dead/
 # https://kinsta.com/blog/php-vs-javascript/
 # 

@@ -101,7 +101,7 @@ stats.countNA = function(x)
 stats.sum = function(x, na.rm=TRUE)
 	{
 	warning = stats.warningNA(x);
-	res = sum(x, na.rm=na.rm)
+	res = base::sum(x, na.rm=na.rm)
 	res;
 	}
 
@@ -224,13 +224,15 @@ stats.sd = function(x, na.rm=TRUE, is.member=TRUE, ...)
 	x.var	= (x.sum2 - (x.sum*x.sum)/n2)/(n2-1);
 	x.sd	= sqrt(x.var);
 	
-	m.dev = abs(x.sort - x.mean); 			m.mins = stats.whichMin(m.dev);
-											x.bar = x.sort[ m.mins[1] ]; 
+	m.dev 	= abs(x.sort - x.mean); 			m.mins = stats.whichMin(m.dev);
+												x.bar = x.sort[ m.mins[1] ]; 
 	# this is mean centered ... +/- one SD is 68% of the data ?, trecile (33%)
-	s.dev = abs(x.sort - x.sd); 			s.mins = stats.whichMin(s.dev);
-											s.hat = abs(x.sort[ s.mins[1] ]);
+	#m2.dev 	= abs(x.sort - x.bar);
+	s.dev 	= abs(x.sort - x.sd ); 				s.mins = stats.whichMin(s.dev);
+												s.hat = abs(x.sort[ s.mins[1] ]);
 	# this is the element that is closest to computed sd in the set 
-												
+						
+	# 457 - 300; 457 + 300; # pracma::primes(1000); 
 	# maybe create a trecile rule 
 	# x.tri = stats::quantile(xx, prob=( (0:3)/3 ), type=1);
 	# element nearest lower (x.tri[2]) or nearest upper (x.tri[3])
@@ -242,6 +244,16 @@ stats.sd = function(x, na.rm=TRUE, is.member=TRUE, ...)
 
 # buy me a coffee ... popup, not a WIKI annoyance or interrupted, you clicked
 # pi simple ... CNTRL-SHIFT CLICK ... v, date 
+# https://www.fileformat.info/info/unicode/char/13268/index.htm # 8 divisions
+# https://www.fileformat.info/info/unicode/block/egyptian_hieroglyphs/utf8test.htm
+# https://www.fileformat.info/info/unicode/char/131fc/browsertest.htm # 5 star
+# https://www.fileformat.info/info/unicode/char/1328d/index.htm # ASC/DESC
+# https://www.fileformat.info/info/unicode/char/13416/browsertest.htm # median (3)
+# https://www.fileformat.info/info/unicode/char/13254/index.htm # persian rug 
+# https://www.fileformat.info/info/unicode/char/13028/browsertest.htm # boxplot IQR?
+# CENSORSHIP on penis
+# https://www.fileformat.info/info/unicode/char/130B8/browsertest.htm
+# https://unicode-explorer.com/c/130B8#:~:text=%F0%93%82%B8%20penis%2C%20phallus%20%7C%20EGYPTIAN%20HIEROGLYPH%20D052&text=The%20Unicode%20character%20depicting%20a,the%20Egyptian%20hieroglyphics%20unicode%20block.
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -436,6 +448,23 @@ stats.zScores = function(x, x.bar = NULL, s.hat = NULL, method="base")
 calculateZscores = stats.zScores;
 
 
+stats.min = function(x, na.rm=TRUE)
+	{
+	warning = stats.warningNA(x);
+	base::min(x, na.rm=na.rm);
+	}
+	
+stats.max = function(x, na.rm=TRUE)
+	{
+	warning = stats.warningNA(x);
+	base::max(x, na.rm=na.rm);
+	}	
+	
+stats.range = function(x, na.rm=TRUE)
+	{
+	base::diff( base::range(x, na.rm=na.rm) );
+	}
+
 stats.summary = function() {}
 stats.summary = function(x, type=1, sort.ASC = FALSE,
 								outlier.z = c(-3, 3), 
@@ -510,13 +539,16 @@ stats.summary = function(x, type=1, sort.ASC = FALSE,
 	res$mode 	= stats.mode(xx);
 	res$min 	= as.numeric( res$Ns[1] ); 			# drop names 
 	res$max 	= as.numeric( res$Ns[10]);
-	res$range	= as.numeric( res$max - res$min ); 	# https://en.wikipedia.org/wiki/Range_(statistics)
+	res$range	= as.numeric( res$max - res$min ); 	
+		# https://en.wikipedia.org/wiki/Range_(statistics)
 	res$xlim	= c(res$min, res$max);  			# this is base::range 
-	 
+		# https://bookdown.org/dli/rguide/descriptive-statistics-for-a-vector.html
+		# In R, the function, range( ) shows the minimum and maximum value in the dataset. It is not the same idea of range used in statistics.
+		# [maybe diff(range()) = stats.range 
 	 
 	
 		x.bar = res$mean; 				# anchored to set membership
-		s.hat = res$base$sd;
+		s.hat = res$sd;
 	res$zScores = (x - x.bar) / s.hat;  # maybe different that base::scale()
 		# the probem: neither x.bar or s.hat are trimmed ... bias in outlier detection
 		#  https://en.wikipedia.org/wiki/Grubbs%27s_test
@@ -547,6 +579,8 @@ stats.summary = function(x, type=1, sort.ASC = FALSE,
 						);
 	
 	# maybe do plot at end with NORMAL, t and z-cuts?
+	# maybe box.tukey (univariate)
+	# maybe box.niner (univariate)
 	invisible(res); 
 	}
 

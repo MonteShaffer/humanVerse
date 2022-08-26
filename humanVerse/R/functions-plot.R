@@ -1,5 +1,55 @@
 
 
+gr.polygons = function(x1, y1, x2, y2, ...)
+	{
+	# x1, reverse on x2, and reconnect to first point of x1
+	x = c(x1, rev(x2), x1[1]);
+	y = c(y1, rev(y2), y1[1]);
+	graphics::polygon(x, y, ...);
+	}
+	
+plot.polygonsBetweenTwoData = gr.polygons;	
+gr.polygon = gr.polygons;
+
+gr.setPosition = function(where="top")
+	{
+	# https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/text.html
+	# [pos] as a position specifier for the text. If specified this overrides any adj value given. Values of 1, 2, 3 and 4, respectively indicate positions below, to the left of, above and to the right of the specified (x,y) coordinates.
+	# argh! can't ever remember the numbers ...
+	w = functions.cleanKey(where, 1);
+	if(w == "b") 				{ return(1); }  				# below, bottom
+	if(w == "l") 				{ return(2); }  				# left
+	if(w == "a" || w == "t") 	{ return(3); }  				# above, top
+	if(w == "r") 				{ return(4); }  				# right
+	stop("bad input");	
+	}
+
+gr.pos = gr.setPosition;
+plot.setPosition = gr.setPosition;
+
+
+#' plot.setPosition
+#'
+#' @param where
+#'
+#' @return
+#' @export
+#'
+#' @examples
+plot.setPosition = function(where)
+	{
+  # argh! can't ever remember the numbers ...
+	# w = substr(trimMe(tolower(where)),1,1);
+  w = charAt( trimMe(tolower(where)), 1);
+	if(w == "b") 				{ return(1); }  				# below, bottom
+	if(w == "l") 				{ return(2); }  				# left
+	if(w == "a" || w == "t") 	{ return(3); }  				# above, top
+	if(w == "r") 				{ return(4); }  				# right
+	stop("bad input");
+	}
+
+
+
 plot.polygonsBetweenTwoData = function(x1, y1, x2, y2, ...)
   {
   # https://onertipaday.blogspot.com/2007/04/highlight-overlapping-area-between-two.html
@@ -486,26 +536,6 @@ plot.myTukeyPlot = function(x.list, heresy=FALSE,
 
 
 
-
-#' plot.setPosition
-#'
-#' @param where
-#'
-#' @return
-#' @export
-#'
-#' @examples
-plot.setPosition = function(where)
-	{
-  # argh! can't ever remember the numbers ...
-	# w = substr(trimMe(tolower(where)),1,1);
-  w = charAt( trimMe(tolower(where)), 1);
-	if(w == "b") 				{ return(1); }  				# below, bottom
-	if(w == "l") 				{ return(2); }  				# left
-	if(w == "a" || w == "t") 	{ return(3); }  				# above, top
-	if(w == "r") 				{ return(4); }  				# right
-	stop("bad input");
-	}
 
 
 
