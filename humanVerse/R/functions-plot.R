@@ -11,10 +11,14 @@ gr.polygons = function(x1, y1, x2, y2, ...)
 plot.polygonsBetweenTwoData = gr.polygons;	
 gr.polygon = gr.polygons;
 
+
+
 gr.setPosition = function(where="top")
 	{
 	# https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/text.html
 	# [pos] as a position specifier for the text. If specified this overrides any adj value given. Values of 1, 2, 3 and 4, respectively indicate positions below, to the left of, above and to the right of the specified (x,y) coordinates.
+	# https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/axis.html
+	# [side] an integer specifying which side of the plot the axis is to be drawn on. The axis is placed as follows: 1=below, 2=left, 3=above and 4=right.
 	# argh! can't ever remember the numbers ...
 	w = functions.cleanKey(where, 1);
 	if(w == "b") 				{ return(1); }  				# below, bottom
@@ -24,7 +28,8 @@ gr.setPosition = function(where="top")
 	stop("bad input");	
 	}
 
-gr.pos = gr.setPosition;
+gr.side = gr.setPosition;  	# for axes
+gr.pos = gr.setPosition;	# for text 
 plot.setPosition = gr.setPosition;
 
 

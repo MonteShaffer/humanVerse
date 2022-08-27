@@ -1,5 +1,21 @@
 
 
+
+check.type = function(obj)
+	{
+debug = FALSE;
+	checktype = suppressError( typeof(obj), 
+								show.notice=debug,
+								msg="debugging typeof is.type" 
+							);
+	res = TRUE;
+	if(is.error(checktype)) { res = FALSE; }
+	res = property.set("typeof", res, checktype);
+	res;
+	}
+
+ 
+
 check.colorCapability = function()
 	{
 	

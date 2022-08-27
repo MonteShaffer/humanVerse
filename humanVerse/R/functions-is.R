@@ -129,7 +129,8 @@ is.error = function(e, where="suppressError")
 #' @examples
 is.library = function(str = "stringi", suggestion=TRUE)
 	{
-	if(!is.character(str)) { str = as.character(substitute(str)); }
+	checktype = check.type(str);
+	if(!checktype) { str = as.character(substitute(str)); }
 	res = isTRUE(requireNamespace( str , quietly = TRUE));
 	if(!res && suggestion)
 		{
@@ -143,11 +144,41 @@ is.library = function(str = "stringi", suggestion=TRUE)
 									# I think I wrote a downloader once, overwrite with this?
 									# RGUI windows?
 		
-		}
+		}	
+	names(res) = str; 
 	res;
 	}
 
 
+are.libraries = function(strV = "stringi", ..., suggestion=TRUE)
+	{
+	# if I make multivariate, must be string input ... 
+	strV = dots.addTo(strV, ...);
+	# make multivariate?
+	n = length(strV);
+	res = logical(n);
+	for(i in 1:n)
+		{
+		str = strV[i];
+		# if(!is.character(str)) { str = as.character(substitute(str)); }
+		res[i] = isTRUE(requireNamespace( str , quietly = TRUE));
+		if(!res[i] && suggestion)
+			{
+			pkg = paste0( "install.packages(\"",str,"\", dependencies=TRUE ); ")
+			msg = paste0("\n\n", str.commentWrapper("LIBRARY is not found!"), "\n\n",
+						"You could try installing the package: ", "\n\n",
+						str.commentWrapper( pkg, r.tag = "-", s.pad=15), "\n");
+			warning(msg);
+			# cat.me(msg, "warning"); 	# does color removal if in place
+										# <b><i><u><br>ight, <color fg= bg=>
+										# I think I wrote a downloader once, overwrite with this?
+										# RGUI windows?
+			
+			}
+		}
+	names(res) = strV;
+	res;
+	}
 
 
 
@@ -201,34 +232,22 @@ is.false = isFALSE;
 # is.set (given as an object)
 
 
-is.type = function(obj)
-	{
-debug = FALSE;
-	mytype = suppressError( typeof(obj), 
-								show.notice=debug,
-								msg="debugging typeof is.type" 
-							);
-	if(is.error(mytype)) 	{ return(FALSE); }
-	invisible(mytype);	
-	}
-
 
 # sys.frame(0)
 is.set = function(obj, allow.NULL=FALSE, deep.scan=TRUE, ...)
 	{
 debug = TRUE;
 	
-	mytype = suppressError( typeof(obj), 
-								show.notice=debug,
-								msg="debugging typeof is.set" 
-							);
+	checktype = check.type(obj);
 							
 
 if(debug) {	
-	print(mytype);						
+	print(checktype);						
 cat("\n STEP 1 \n");
 		}
-	if(is.error(mytype)) 	{ return(FALSE); }
+	if(!checktype) 	{ return(FALSE); }
+	
+	mytype = property.get("typeof", checktype);
 	
 if(debug) {	
 cat("\n STEP 2 \n");
@@ -236,6 +255,7 @@ cat("\n STEP 2 \n");
 	if(!deep.scan && is.character(obj)) { return( exists(obj, ...) ); }
 	
 	# WHAT about monte$says as input 
+	# monte$says@attribute*class NOTATION 
 	
 	## isset is operating on objs that are not classes/functions
 	## closures

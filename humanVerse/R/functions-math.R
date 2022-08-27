@@ -7,7 +7,7 @@
 
 	  # e = crossprod(a, b) / (sqrt(crossprod(a, a)) * sqrt(crossprod(b, b)))
 
-
+# RECURSIVE ... # https://www.statology.org/cosine-similarity-r/
 
 
 #' .cosine.similarity
@@ -27,8 +27,11 @@
 #' a = c(2,1,0,2,0,1,1,1); b = c(2,1,1,1,1,0,1,1);
 #' .cosine.similarity( a,b );
 #'
-.cosine.similarity = function(a, b, method="crossprod")
+# property.get("srcref", .cosine.similarity); # lsa is NULL
+.cosine.similarity = function(a, b, method="cpp", technique="crossprod")
   {
+  m = functions.cleanKey(method, 1);
+  tech = functions.cleanKey(technique, 4);
   # cat("\n\n ==================== COSINE SIMILARITY (a,b) ========== \n\n");
   # cat("\n", " ===  a === "); print(a); cat("\n");
   # cat("\n", " ===  b === "); print(a); cat("\n");
@@ -40,14 +43,16 @@
     return (NA);
     }
 
-  if(method == "crossprod")
+  if(tech == "cros")
     {
     theta = crossprod(a, b) / (sqrt(crossprod(a, a)) * sqrt(crossprod(b, b)));
     } else  {
             theta = (a %*% b) / (sqrt(sum(a^2)) * sqrt(sum(b^2)));
             }
 
-  as.numeric(theta);
+	# flatten 
+	if(is.complex(theta)) { theta = as.complex(theta); return(theta); }
+  as.numeric(theta);   # as.numeric on complex ?
   }
 
 
@@ -68,119 +73,203 @@
 #' a = c(2,1,0,2,0,1,1,1); b = c(2,1,1,1,1,0,1,1);
 #' .angular.distance(  a, b );
 #'
-.angular.distance = function(a, b)
+.angular.similarity = function(a, b, return="similarity", ...)
   {
-  # maybe do "auto-detect" on v.neg at the a, b level?
-  cos_sim = .cosine.similarity( a,b );
-  vector.neg = ( sum( is.negative(a,b) ) > 0 );
+  r = functions.cleanKey(return, 1);
+  cos.sim = .cosine.similarity( a,b, ... );
+  # any element in either is negative
+  vector.neg = ( sum( is.negative(a,b) ) > 0 ); 
   if(vector.neg)
     {
-    ad = 1 * acos(cos_sim) / pi;
+    ad = 1 * acos(cos.sim) / pi;
     } else  {
-            ad = 2 * acos(cos_sim) / pi;
+            ad = 2 * acos(cos.sim) / pi;
             }
-  ad = set.attribute("cos", cos_sim, ad);
-  ad;
+	as.sim = 1 - ad;
+	
+# angular distance
+if(r == "d")
+	{
+	res = ad;
+  res = property.set("cosine.similarity", res, cos.sim);
+  res = property.set("angular.similarity", res, as.sim);
+  return(res);
+	}
+# angular similarity 
+res = as.sim;	
+res = property.set("cosine.similarity", res, cos.sim);
+  res = property.set("angular.distance", res, ad);
+  res;
   }
 
 
 
-dist.cosine = function(X)
-	{
-	# return cosine similarity and angular distance for data ... 
-	# multivariate column is each (a,b)
-	# does n*(n-1) / 2 computations ... nested for 'i' and 'j' or while ...
-	
-	n = ncol(X);
-	
-	X.dist.cosine = X.dist.angular = matrix(NA, nrow=n, ncol=n);
-	
-	for(i in 1:n)
+angular.similarity = function(a, b=NULL, by="col", return="similarity", ...)
+	{	
+	# is.vector assumes there are not attributes attached ... 
+	# is.atomic returns TRUE for matrix 
+	adim = dim(a); bdim = dim(b);
+	if(is.null(adim) && is.atomic(a) && !is.null(b) && is.atomic(b))
 		{
-		a = X[,i];
-		for(j in 1:n)
-			{
-			if(i <= j)
-				{
-				
-				} else {
-						
-						}
-			
-			}
-		
+		return( .angular.similarity(a,b, return=return, ...) );
 		}
-	
+	by = functions.cleanKey(by, 2);
+	if(is.matrix(a) && is.null(b))
+		{
+		if(by == "ro") { a = t(a); } # just transpose 
+		m.names = colnames(a);
+		n = ncol(a);
+		m = matrix(0, nrow=n, ncol=n, dimnames = list(m.names, m.names));		
+		for(i in 2:n)
+			{
+			for(j in 1:(i-1))
+				{
+				m[i, j] = .angular.similarity(a[, i], a[, j], return=return, ...);
+				}
+			}
+		m = m + t(m); # lower triangle
+		diag(m) = 1;  # non-computed self-similarity
+		return(m);
+		}
+		
+	v = NULL;
+	if(is.null(adim) && !is.null(bdim))
+		{
+		v = a;
+		m = b;
+		}
+	if(!is.null(adim) && is.null(bdim))
+		{
+		v = b;
+		m = a;
+		}
+		
+	if(!is.null(v))
+		{
+		nv = length(v);	
+		mdim = dim(m);
+		if(by == "co" && (nv != mdim[1]))
+			{
+			if(nv != mdim[2]) { stop("bad dimensions, can't fix"); }
+			if(nv == mdim[2]) { m = t(m); mdim = dim(m); } # just transpose 
+			}
+		if(by == "ro" && (nv != mdim[2]))
+			{
+			if(nv != mdim[1]) { stop("bad dimensions, can't fix"); }
+			if(nv == mdim[1]) { m = t(m); mdim = dim(m); } # just transpose 
+			}
+		## good dimensions ... everything by column ...
+		m.names = colnames(m);
+		n = ncol(m);
+		res = numeric(n);
+		for(i in 1:n)
+			{
+			res[i] = .angular.similarity(v, m[, i], ...);
+			}
+		names(res) = m.names;
+		return(res);		
+		}
+		
+	stop("what are you doing here!");	
+	# vector/matrix OR matrix/vector is unrealistic
+	# rowwise, columnwise how to know ... 
+	# is.null(adim) && is.null(bdim) && 
+	# adim = dim(a); 
+	# bdim = dim(b);
 	}
 
-# computeCosineSimilarityMatrix = function(A, angle.distance=FALSE)
-#   {
-#   # compute a score similar to a "dist" matrix ... lower triangle?
-#   }
+
+# ?pmatch ?charmatch ?match.arg ... NOT argmatch ... 
+
+cosine.similarity = function(a, b=NULL, by="col", ...)
+	{	
+	# is.vector assumes there are not attributes attached ... 
+	# is.atomic returns TRUE for matrix 
+	adim = dim(a); bdim = dim(b);
+	if(is.null(adim) && is.atomic(a) && !is.null(b) && is.atomic(b))
+		{
+		return( .cosine.similarity(a,b, ...) );
+		}
+	by = functions.cleanKey(by, 2);
+	if(is.matrix(a) && is.null(b))
+		{
+		if(by == "ro") { a = t(a); } # just transpose 
+		m.names = colnames(a);
+		n = ncol(a);
+		m = matrix(0, nrow=n, ncol=n, dimnames = list(m.names, m.names));		
+		for(i in 2:n)
+			{
+			for(j in 1:(i-1))
+				{
+				m[i, j] = .cosine.similarity(a[, i], a[, j], ...);
+				}
+			}
+		m = m + t(m); # lower triangle
+		diag(m) = 1;  # non-computed self-similarity
+		return(m);
+		}
+		
+	# vector by-col of matrix 
+	# cosine(a, data) works by-columns 
+	# cosine(data, a) does NOT work ...
+	
+	v = NULL;
+	if(is.null(adim) && !is.null(bdim))
+		{
+		v = a;
+		m = b;
+		}
+	if(!is.null(adim) && is.null(bdim))
+		{
+		v = b;
+		m = a;
+		}
+		
+	if(!is.null(v))
+		{
+		nv = length(v);	
+		mdim = dim(m);
+		if(by == "co" && (nv != mdim[1]))
+			{
+			if(nv != mdim[2]) { stop("bad dimensions, can't fix"); }
+			if(nv == mdim[2]) { m = t(m); mdim = dim(m); } # just transpose 
+			}
+		if(by == "ro" && (nv != mdim[2]))
+			{
+			if(nv != mdim[1]) { stop("bad dimensions, can't fix"); }
+			if(nv == mdim[1]) { m = t(m); mdim = dim(m); } # just transpose 
+			}
+		## good dimensions ... everything by column ...
+		m.names = colnames(m);
+		n = ncol(m);
+		res = numeric(n);
+		for(i in 1:n)
+			{
+			res[i] = .cosine.similarity(v, m[, i], ...);
+			}
+		names(res) = m.names;
+		return(res);		
+		}
+		
+		
+	stop("what are you doing here!");	
+	}
 
 
 
-#' computeCosineSimilarity
-#'
-#' This is a multivariate (one-many) computation ...
-#'
-#' @param a vector 'a'
-#' @param bs vectors 'bs' (e.g., a matrix)
-#'
-#' @return dataframe
-#' @export
-#'
-#' @examples
-#' a = c(2,1,0,2,0,1,1,1); a = setAttribute("name", "a", a);
-#' b = c(2,1,1,1,1,0,1,1);
-#' bs = as.matrix( cbind(a, b) );
-#' computeCosineSimilarity(a, bs);
-#'
-#  ... update (as, bs) ... only do lower/upper triangle for efficiency ... can be one-many
-computeCosineSimilarity = function(a, bs)
-  {
-
-  a.name = getAttribute("name", a);
-  a  = as.vector(a);  n = length(a);
 
 
-  bs = as.matrix(bs); r = dim(bs)[1];
-                      c = dim(bs)[2];
 
-  nc = c; # number to compare
-  b.names = colnames(bs);
-  ## generic "match" length?
-  if(n != r)
-    {
-    bs = matrix.transpose(bs);
-    b.names = colnames(bs);
-    nc = r;
-    if(n != c)
-      {
-      stop( paste0(" function [cosine.similarity] has 'a' of length: ", n,
-                    "\n\t", " ... and 'bs' of length: ", c,
-                    "\n\t", " ... and 'bs' of width: ", r, "\n") );
-      }
-    }
-  # print(dim(bs));
 
-  # maybe see if any "bs" are unique, and prevent the re-calculation
-  # lsa::cosine has a "recursive" call which may be the reason it is so slow
-  res = numeric(nc + 1);
-  names = character(nc + 1);
 
-  res[1] = .cosine.similarity(a, a);
-  names[1] = paste0(a.name, "-", a.name);
-  for(i in 1:nc)
-    {
-    res[i+1] = .cosine.similarity(a, bs[,i]);
-    names[i+1] = paste0(a.name, "-", b.names[i]);
-    }
 
-  df = as.data.frame( cbind(names,res) );
-    colnames(df) = c("name", "cosine.similarity");
-  df;
-  }
+
+
+
+
+
+
+
 
 
 

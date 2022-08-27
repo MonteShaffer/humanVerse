@@ -114,6 +114,7 @@ debug = FALSE;
 	folders = str.replace("//", "/", folders)				# in case, trailing slash not needed
 	n.max = max( strlen(folders) );
 	if(n.max > 225) { stop("folder/filename lengths are getting long"); }
+	# maybe truncate at domain.com/ append MD5 ... have the MD5, BASE64, and original in the "-info-" file ... if using CURL, also store JSON object of curl options that made it happen ... maybe also copy "-cookie-" into folder (redundancy for ChOCu ... cha-ka, not wa-ka wa-ka, fuzzy bear)
 	
 # for curl, can we store getoptions ... to know the call with features (headers)	
 	

@@ -176,7 +176,7 @@ lookup = b64.init();
 #' @example
 #' b64.enc(as.raw(1:20))
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-b64.enc <- function(raw_vec) {
+b64.enc = function(raw_vec) {
 	lookup = b64.init();
 	char_ = names(lookup);
 	

@@ -55,14 +55,23 @@ dput(degX); dput(F); dput(T); dput(ABS_ZERO_R);
 	temp.isNA(degN);
 	}
 
-
-temp.c2f = 	temp.celsiusToFahrenheit = function(degC) { temp.convert(degC, "C", "F"); }
-temp.f2c = 	temp.celsiusFromFahrenheit = function(degF) { temp.convert(degF, "F", "C"); }
+# 6, or 12, or 16 ??
+temp.c2f = 	function(degC) { temp.convert(degC, "C", "F"); }
+temp.f2c = 	function(degF) { temp.convert(degF, "F", "C"); }
 	
-temp.c2k = 	temp.celsiusToKelvin = function(degC) { temp.convert(degC, "C", "K"); }
-temp.k2c = 	temp.celsiusFromKelving = function(degK) { temp.convert(degK, "K", "C"); }
+temp.c2k = 	function(degC) { temp.convert(degC, "C", "K"); }
+temp.k2c = 	function(degK) { temp.convert(degK, "K", "C"); }
+
+# 4 nCr 2 ... choose vs lchoose ?
+# choose(4, 2) ... with replacement 
+# make %nCr% and %nPr% functions ... 
+nCr = function(n, r) { factorial(n) / ( factorial(r) * factorial(n-r) ); }
+"%nCr%" = nCr;
+nPr = function(n, r) { factorial(n) / factorial(n-r); }
+"%nPr%" = nPr;
 
 
+# Euclidean fractions ... (depth = 12, tol = ) ... 
 
 ## PHP https://kinsta.com/blog/is-php-dead/
 # https://kinsta.com/blog/php-vs-javascript/

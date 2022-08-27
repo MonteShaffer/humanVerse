@@ -368,9 +368,11 @@ stats.whichMinFrequency = function(x)
 #'
 stats.mode = function(x, force.numeric=TRUE)
 	{
+	# R is a programming language for statistical computing and graphics supported by the R Core Team and the R Foundation for Statistical Computing. Created by statisticians Ross Ihaka and Robert Gentleman, R is used among data miners, bioinformaticians and statisticians for data analysis and developing statistical software. (WIKIPEDIA.com).
+	# R is a free software environment for statistical computing and graphics. It compiles and runs on a wide variety of UNIX platforms, Windows and MacOS. (r-project.org) 
 	# NA?
 	x.table = as.data.frame( table(x) );
-		freq.max = max( x.table$Freq );
+		freq.max = max( x.table$Freq );  # why named 'Freq', hopefully it doesn't change its name 
 	x.list = x.table[x.table$Freq==freq.max,];
 	xs = as.vector (x.list$x);
 	if(force.numeric){ xs = as.numeric(xs);}
@@ -507,12 +509,20 @@ stats.summary = function(x, type=1, sort.ASC = FALSE,
 	res$extended = list(
 						"mean.mad" 	= mean( abs( xx - res$base$mean ) ),
 						"mean.se"	= ( res$base$sd / sqrt(n2) ),
-						"skew"		= (sum(( xx - res$base$mean )^3)/n2)/(sum((xx - res$base$mean)^2)/n2)^(3/2),
+						"skewness"	= (sum(( xx - res$base$mean )^3)/n2)/(sum((xx - res$base$mean)^2)/n2)^(3/2),
 						"kurtosis"	=  n2 * sum( ( xx - res$base$mean )^4 ) / ( sum( ( xx - res$base$mean )^2)^2 ),  # [space]^4 was bug?
 						"sharpe"	= ( res$base$mean - sharpe.R ) / res$base$sd,
 						"CV" 		= res$base$sd / res$base$mean
 						);
 
+	info = "Kurtosis is a measure of the “tailedness” of the probability distribution. A standard normal distribution has kurtosis of 3 and is recognized as mesokurtic. An increased kurtosis (>3) can be visualized as a thin “bell” with a high peak whereas a decreased kurtosis corresponds to a broadening of the peak and “thickening” of the tails. Kurtosis >3 is recognized as leptokurtic and <3 as platykurtic (lepto=thin; platy=broad). There are four different formats of kurtosis, the simplest is the population kurtosis; the ratio between the fourth moment and the variance. (https://www.sciencedirect.com/topics/neuroscience/kurtosis)";
+	
+	res$extended$kurtosis = property.set("info", res$extended$kurtosis, info);
+	
+	info = "Skewness refers to a distortion or asymmetry that deviates from the symmetrical bell curve, or normal distribution, in a set of data. If the curve is shifted to the left or to the right, it is said to be skewed. Skewness can be quantified as a representation of the extent to which a given distribution varies from a normal distribution. A normal distribution has a skew of zero, while a lognormal distribution, for example, would exhibit some degree of right-skew. (https://www.investopedia.com/terms/s/skewness.asp).  \n Skewness is defined base the tails of the distribution, NOT the center of MASS of the data (defined by the histogram: *more* numbers on the right or left side [not the weighting of the numbers defined by the mean, but the counts]).  If the center of MASS appears to be shifted to the LEFT (|:.), it is 'called right-skewed' as the 'long-tail of the data is to the right' and has positive skewness (skewness > 0).  If the center of MASS appears to be shifted to the RIGHT (.:|), it is called "left-skewed" as the 'long-tail of the data is to the left' and has negative skewness (skewness < 0).  If the center of MASS is balanced (.:|:.) and symmetric (e.g., a 'Normal' distribution), then (skewness = 0).  The 'confusion' is exacerbated by changing statistical norms from the nonparametric assumptions of the data; specifically the relationship between the median and the mean.  For more info, please see (https://en.wikipedia.org/wiki/Skewness#Relationship_of_mean_and_median)."
+	
+	res$extended$skewness = property.set("info", res$extended$skewness, info);
+	
 						# matrixStats::weightedMad(xx);
 						# matrixStats::weightedMedian(xx);
 
@@ -583,5 +593,22 @@ stats.summary = function(x, type=1, sort.ASC = FALSE,
 	# maybe box.niner (univariate)
 	invisible(res); 
 	}
+
+
+
+
+# contigency tables ... partial and absolute probabilities
+# pivot tables ... 
+# scatterplot with bubble as size 
+# scatterplot with categories 
+# heat map
+# all of excel bivariate R^2 trendlines ...
+# =AVERAGE ... mean()
+# =STDEV.S ... sd()
+# =VAR.S ... var()
+# =AVE ... mean.mad() inside stats.summary
+# =QUARTILE.INC ... quantile( prob = c(0, 0.25, 0.5, 0.75, 1)
+# =PERCENTILE.INC ... quantile (prob = (0:100)/100) ... notice 101
+# skewness/kurtosis msg 
 
 

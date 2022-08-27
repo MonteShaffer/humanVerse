@@ -97,11 +97,12 @@ str.fromHEX = function(hstr, ...)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.toCharacterVector
-#'
+#' 
 #'
 #------------------------------------------------#
 str.toCharacterVector = function(str, sep="")
 	{
+	# add both options (cpp or not?)
 	# strsplit(str, sep, fixed=TRUE)[[1]];
 	res = str.explode(sep, str);
 	list.return(res);
@@ -416,14 +417,14 @@ str.trimFromFixed = function() {}
 str.trimFromFixed = function(str, trim="#", side="both", ...)
 	{
 	s = functions.cleanKey(side, 1);
-	str.len = strlen(str);
+	len.str = str.len(str);
 	n.str = length(str);
-	slen = strlen(trim);
+	slen = str.len(trim);
 	# if x is character vector, x[1][2] should return the charAt(x[1], 2)
 	# likely the OLD SCHOOL LEGACY of multidimensional arrays?
 	
 	first = substring(str, 1, slen);
-	last = substring(str, str.len-slen+1, str.len);
+	last = substring(str, len.str-slen+1, len.str);
 	
 	right = (last == trim);
 	left = (first == trim);
@@ -437,7 +438,7 @@ str.trimFromFixed = function(str, trim="#", side="both", ...)
 		}
 	
 	# both = (right & left);
-	stop = str.len;
+	stop = len.str;
 	if( (s=="r" || s=="b") )
 		{
 		stop[right] = stop[right] - slen;
@@ -1016,7 +1017,7 @@ str.pad = function(str, final.length, padding="0", side="RIGHT", method="stringi
 		return (res);
 		}
 
-	ns = strlen(str);
+	ns = str.len(str);
 	rs = final.length - n;
 	n = length(str); # how many strings
 	res = character(n);
@@ -1465,7 +1466,7 @@ str.push_begin = str.push_front;
 str.capitalizeFirst = function(str, ...) 
 	{
 	str = dots.addTo(str, ...);
-	len.str = strlen(str);
+	len.str = str.len(str);
 	first = charAt(str, 1);
 	first.uc = toupper(first);
 	paste0( first.uc, substring(str, 2, len.str) );
@@ -1507,7 +1508,7 @@ str.capitalizeWords = function(str, ..., sep.any=" \t\r\n\f\v")
 		res = tmp[[i]];		
 		first = charAt(res, 1);
 		first.uc = toupper(first);
-		len.res = strlen(res);
+		len.res = str.len(res);
 		
 		res = paste0( first.uc, substring(res, 2, len.res) );
 		
@@ -1751,10 +1752,10 @@ str.commentWrapper = function(str="Welcome to the {humanVerse}",
 		if(nchars == 0) { nchars = max.len; } 
 	res = character(n);
 	mylengths = integer(n);
-		i.str = str.repeat(i.tag, i.pad); i.len = strlen(i.str);
-		s.str = str.repeat(s.tag, s.pad); s.len = strlen(s.str); 
-											c.len = strlen(c.tag);
-											r.len = strlen(r.tag);
+		i.str = str.repeat(i.tag, i.pad); i.len = str.len(i.str);
+		s.str = str.repeat(s.tag, s.pad); s.len = str.len(s.str); 
+											c.len = str.len(c.tag);
+											r.len = str.len(r.tag);
 	for(i in 1:n)
 		{
 		t.len = (i.len + s.len + c.len + r.len);
@@ -1770,7 +1771,7 @@ str.commentWrapper = function(str="Welcome to the {humanVerse}",
 						r.tag, 
 						c.tag
 					);
-		slen = strlen(s);
+		slen = str.len(s);
 		if(slen < nchars)
 			{
 			n.tag = 1 + ceiling( (nchars - slen)/2 );
@@ -1784,10 +1785,10 @@ str.commentWrapper = function(str="Welcome to the {humanVerse}",
 							r.tag, 
 							c.tag
 						);
-			slen = strlen(s);
+			slen = str.len(s);
 			}
 		nchars = slen; # first line will dictacte the others ...
-			f.n = slen - 2*strlen(s.pad) - i.len - strlen(i.pad);
+			f.n = slen - 2*str.len(s.pad) - i.len - str.len(i.pad);
 			f.str = str.repeat(r.tag, f.n);
 			
 		if(i == 1) 
@@ -1801,7 +1802,7 @@ str.commentWrapper = function(str="Welcome to the {humanVerse}",
 									res[i] = paste0(s, "\n");
 									}
 		mylengths[i] = slen;
-		#mylengths[i] = strlen(res[i]);
+		#mylengths[i] = str.len(res[i]);
 		}
 	
 	res = property.set("lengths", res,  mylengths);

@@ -106,11 +106,11 @@ functions.whereIs = function(fn = "base:::curlDownload")
 #'
 #' @examples
 functions.cleanKey = function() {}
-functions.cleanKey = function(key, n=1, keep="", to="lower", extra = "! #")
-	{
-	to = substring(tolower(to), 1, 2);
+functions.cleanKey = function(key, n=1, keep="", case="lower", extra = "! #")
+	{ 
+	ca = substring(tolower(case), 1, 2);
 			# has to be base-R (not str.tolower, recursion)
-	str = switch(to,
+	str = switch(ca,
 					  "lo"	= tolower(key),		# lower-case
 					  "up" 	= toupper(key),		# upper-case 
 					  "un"  = key,				# unchanged (as-is)
@@ -142,7 +142,7 @@ functions.cleanKey = function(key, n=1, keep="", to="lower", extra = "! #")
 	# if keep, explode("-"), return n elements 
 	# separated by keep ([f]irst-[s]econd-[t]hird]) ... f-s-t
 	# substr(str,1,n);  # or 
-	# substring(str, 1, n);
+	substring(str, 1, n);
 	} 
 
 
