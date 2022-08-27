@@ -106,7 +106,8 @@ functions.whereIs = function(fn = "base:::curlDownload")
 #'
 #' @examples
 functions.cleanKey = function() {}
-functions.cleanKey = function(key, n=1, keep="", case="lower", extra = "! #")
+# extra = "! #"
+functions.cleanKey = function(key, n=1, keep="", case="lower", extra = "")
 	{ 
 	ca = substring(tolower(case), 1, 2);
 			# has to be base-R (not str.tolower, recursion)
@@ -117,7 +118,7 @@ functions.cleanKey = function(key, n=1, keep="", case="lower", extra = "! #")
 					  "no"  = key,				# no changes (as-is)
 				tolower(key)					# DEFAULT [lower-case]
 				);	
-	if(extra == "")
+	if(extra != "")
 		{
 		# recursion, these functions are calling cleanup 
 		# Error: node stack overflow

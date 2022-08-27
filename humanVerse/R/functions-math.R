@@ -109,7 +109,7 @@ angular.similarity = function(a, b=NULL, by="col", return="similarity", ...)
 	# is.vector assumes there are not attributes attached ... 
 	# is.atomic returns TRUE for matrix 
 	adim = dim(a); bdim = dim(b);
-	if(is.null(adim) && is.atomic(a) && !is.null(b) && is.atomic(b))
+	if(is.null(adim) && is.atomic(a) && !is.null(b) && is.null(bdim) && is.atomic(b))
 		{
 		return( .angular.similarity(a,b, return=return, ...) );
 		}
@@ -171,11 +171,6 @@ angular.similarity = function(a, b=NULL, by="col", return="similarity", ...)
 		}
 		
 	stop("what are you doing here!");	
-	# vector/matrix OR matrix/vector is unrealistic
-	# rowwise, columnwise how to know ... 
-	# is.null(adim) && is.null(bdim) && 
-	# adim = dim(a); 
-	# bdim = dim(b);
 	}
 
 
@@ -186,7 +181,7 @@ cosine.similarity = function(a, b=NULL, by="col", ...)
 	# is.vector assumes there are not attributes attached ... 
 	# is.atomic returns TRUE for matrix 
 	adim = dim(a); bdim = dim(b);
-	if(is.null(adim) && is.atomic(a) && !is.null(b) && is.atomic(b))
+	if(is.null(adim) && is.atomic(a) && !is.null(b) && is.null(bdim) && is.atomic(b))
 		{
 		return( .cosine.similarity(a,b, ...) );
 		}
@@ -212,6 +207,11 @@ cosine.similarity = function(a, b=NULL, by="col", ...)
 	# vector by-col of matrix 
 	# cosine(a, data) works by-columns 
 	# cosine(data, a) does NOT work ...
+	# a = c(23, 34, 44, 45, 42, 27, 33, 34);
+	# data = structure(c(23, 34, 44, 45, 42, 27, 33, 34, 17, 18, 22, 26, 26, 29, 31, 30, 34, 35, 35, 36, 51, 29, 30, 31), dim = c(8L, 3L), dimnames = list( NULL, c("a", "b", "c")));
+	# Using control = "exact" (short for control = c("all", "hexNumeric")) comes closest to making deparse() an inverse of parse() (but we have not yet seen an example where "all", now including "digits17", would not have been as good). However, not all objects are deparse-able even with these options, and a warning will be issued if the function recognizes that it is being asked to do the impossible.
+	# SET DEFAULT to dput(pi, control="all") ... in my INIT() as an exacmple of messing with the base::defaults ...
+	
 	
 	v = NULL;
 	if(is.null(adim) && !is.null(bdim))
