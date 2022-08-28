@@ -61,52 +61,72 @@ date.constants = function(envir=parent.frame(1))
 
 num.round = function(n, by=5)
 	{
-	by * as.integer((n + by) / by);
+	byidx = (n %% by == 0); # these already are indexed well 
+	new = by * as.integer((n + by) / by);
+	res = n;
+	res[!byidx] = new[!byidx];
+	res;
 	}
 
 
 snails.pace = function(moves = 200, finish.line = 8,
-						snails.x = NULL, 
-						snails.y = NULL, 
-						snails.col = NULL)
+							snail.x = NULL,
+							snail.y = NULL,
+							snail.col = NULL
+						)
 	{
-	if(is.null(snails.x)) { snails.x = 0*(1:6); }
-	if(is.null(snails.y)) { snails.y = 1*(1:6); }
-	if(is.null(snails.col)) { snails.col = c("orange", "blue", "pink", "green", "yellow", "red"); }
-	snails.col = c("orange", "blue", "pink", "green", "yellow", "red");
-	snails.y = 1*(1:6);
-	snails.plot = function(snails.x, snails.y) 
+	if(is.null(snail.x)) 	{ snail.x = 0*(1:6); }
+	if(is.null(snail.y)) 	{ snail.y = 1*(1:6); }
+	if(is.null(snail.col)) { snail.col = c("orange", "blue", "pink", "green", "yellow", "red"); }
+	
+	snail.rank = 0*snail.x; 
+	crank = 1; # current rank 	
+	move.number = 0;
+	
+	snails.plot = function(snail.x, snail.y, snail.rank, move.number, moves, finish.line, crank) 
 		{ 
-		xmax = max(10, max(snails.x) );
-		plot(snails.x, snails.y, 
-				col=snails.col, 
+		xmax = max(10, max(snail.x) );
+		ymax = max(8, max(snail.y) );
+		plot(snail.x, snail.y, 
+				col=snail.col, 
 				pch=16, cex=5, 
 				xlim=c(0, num.round(xmax, 5) ), 
-				ylim=c(0,10), 
+				ylim=c(0, num.round(ymax, 4) ), 
 				axes=FALSE, 
 				frame.plot=FALSE, 
-				xlab="", ylab=""
+				xlab="", ylab="",
+				main=paste0("Move #", move.number, " of ", moves)
 				); 
-		axis(gr.side("bottom")); 
-		text(snails.x, y=snails.y, labels=snails.x, col="black"); 
+		#axis(gr.side("bottom")); 
+		axis(1);
+			has.rank = (snail.rank != 0);
+			snails.lab = paste0(snail.x, "*", snail.rank);
+			snails.lab[!has.rank] = snail.x[!has.rank];
+		text(snail.x, y=snail.y, labels=snails.lab, col="black"); 
 		abline(v = finish.line, col="gray", lty="dashed");
 		}
-	snails.update = function(snails.x, snails.y) 
+	snails.update = function(snail.x, snail.y, snail.rank, move.number, moves, finish.line, crank) 
 		{
-		x = readline(prompt="Press [enter] to continue");
+		x = readline(prompt="Press [enter] to continue, [ESC] to quit");
 		n = sample(1:6, 1);
-		snails.x[n] = 1 + snails.x[n];
-		snails.plot(snails.x, snails.y);
-		snails.x;
+		snail.x[n] = 1 + snail.x[n];
+		if( (snail.rank[n] == 0) && (snail.x[n] >= finish.line) )
+			{ 			
+			snail.rank[n] = crank;
+			crank = 1 + crank; 			
+			# update to MAIN environment
+			assign("snail.rank", snail.rank, envir=parent.frame() );
+			assign("crank", crank, envir=parent.frame() );
+			}		
+		snail.x;
 		}
 
-	snails.plot(snails.x, snails.y);
-	m.max = moves;
-	m = 0;
-	while(m < m.max)
+	snails.plot(snail.x, snail.y, snail.rank, move.number, moves, finish.line, crank); 
+	while(move.number < moves)
 		{
-		snails.x = snails.update(snails.x, snails.y);	
-		m = 1 + m;
+		move.number = 1 + move.number;
+		snail.x = snails.update(snail.x, snail.y, snail.rank, move.number, moves, finish.line, crank);
+		snails.plot(snail.x, snail.y, snail.rank, move.number, moves, finish.line, crank);		
 		}
 	}
 
