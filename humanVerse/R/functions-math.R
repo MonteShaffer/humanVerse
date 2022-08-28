@@ -119,7 +119,7 @@ cosine.similarity = function(a, b=NULL, by="col", ...)
 	adim = dim(a); bdim = dim(b);
 	if(is.null(adim) && is.atomic(a) && !is.null(b) && is.null(bdim) && is.atomic(b))
 		{
-cat("\n MONTE \n");
+#cat("\n MONTE \n");
 		cs = .cosine.similarity(a,b, ...);
 		as = .angular.similarity(a,b, cs=cs, ...);
 		ad = 1-as;
@@ -132,7 +132,7 @@ cat("\n MONTE \n");
 	by = functions.cleanKey(by, 2);
 	if(is.matrix(a) && is.null(b))
 		{
-cat("\n ALEX \n");
+#cat("\n ALEX \n");
 		if(by == "ro") { a = t(a); } # just transpose 
 		m.names = colnames(a);
 		n = ncol(a);
@@ -184,7 +184,7 @@ cat("\n ALEX \n");
 		
 	if(!is.null(v))
 		{
-cat("\n NAT \n");
+#cat("\n NAT \n");
 		nv = length(v);	
 		mdim = dim(m);
 		if(by == "co" && (nv != mdim[1]))
@@ -226,10 +226,103 @@ cat("\n NAT \n");
 
 
 
+latex.fromCFrac = function() {}
 
+num.toEFrac = function() {} 
+# Egyptian Fractions 
+
+
+num.toFrac = function(x, ..., 
+								return = "last",
+								max.depth = 12,  
+								tol = sqrt(.Machine$double.eps) , 
+								part="Re"
+						)
+	{
+	r = functions.cleanKey(return, 1);
+	x = dots.addTo(x, ...); 
+	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
+	
+	CF = num.toCFrac(x, max.depth=max.depth, tol=tol, part=part);
+	# in this function, I have x ... other times I may not 
+	# x = property.get("x", CF);
+	CF = check.list(CF); # make certain it is a list 
+	n = length(CF);
+	e = vector("list", n);
+	cr = character(n);  # character return of last 
+	ce = numeric(n);	# error as attributes of above 
+	for(i in 1:n)
+		{
+		cf = CF[[i]];
+		x_ = x[i];
+		
+		ncf = length(cf);
+		idx = -2:(ncf-1);
+		ilen = length(idx);
+		a = c(NA, NA, cf);
+		num = den = integer(ilen);
+		error.percent = numeric(ilen);
+		ndchar = character(ilen);
+		num[1] = 0; num[2] = 1;
+		den[1] = 1; den[2] = 0;
+		
+		df = as.data.frame( cbind(idx, a, num, den) );
+			df$ndchar = ndchar;  # do after above, or everything becomes CHAR
+			df$error.percent = error.percent;
+		cidx = 3;  # this is where we start
+		while(cidx <= ilen)
+			{
+			if(is.na(df$a[cidx])) { break; }
+			cnum = df$a[cidx] * df$num[(cidx-1)] + df$num[(cidx-2)];
+			cden = df$a[cidx] * df$den[(cidx-1)] + df$den[(cidx-2)];
+			
+			cchar = paste0(cnum,"/",cden);
+			# https://stackoverflow.com/a/64146458/184614
+			cerr = signif( (100* (x_ - (cnum/cden) ) / x_ ), 5);
+						
+			df$num[cidx] = cnum;
+			df$den[cidx] = cden;
+			df$ndchar[cidx] = cchar;
+			df$error.percent[cidx] = cerr;
+			# sprintf("%0.5f%%", cerr * 100);
+			
+			cr[i] = cchar;
+			ce[i] = cerr;
+			
+			cidx = 1 + cidx;
+			}
+		
+		e[[i]] = df;
+		}
+		
+	if(r == "l" || r == "1") # confusion with "ell" vs "one"
+		{
+		cr = property.set("x", cr, x);
+		cr = property.set("error.percent", cr, ce);		
+		return(cr);
+		}
+	# this returns anything but [l]ast ... everything 
+	e = list.return(e);  # does this preserve internal property.set ? NOPE
+	e = property.set("CF", e, CF);
+	e;
+	}
+
+
+
+# my.constants
+# PI = 3.1415926535897932385626433
+# PI == pi ... TRUE ??!>!?
+
+
+# https://en.wikipedia.org/wiki/Continued_fraction#Continued_fraction_expansion_of_%CF%80_and_its_convergents
+# https://oeis.org/A001203
+# pi =  3, 7, 15, 1, 292, 1, 1, 1, 2, 1, 3, 1, 14, 2, 1, 1, 2, 2, 2, 2, 1, 84, 2, 1, 1, 15, 3, 13
+# I am getting 
+# 		3   7  15   1 292   1   1   1   2   1   3   1  14   3   3  23  NA
+num.toCFrac = function() {}
 
 num.toCFrac = function(x, ..., 
-								max.depth = 16, 
+								max.depth = 12,  
 								tol = sqrt(.Machine$double.eps) , 
 								part="Re"
 						)
@@ -245,37 +338,30 @@ num.toCFrac = function(x, ...,
 		
 		j = 1;		
 		w = as.integer(x_); # whole part 
-		r = x_ - w; 		# remainder 
-		eps = r;			# global difference from x_  
-		d = w;				# running decimal form 
+		r = x_ - w; 		# remainder 	
 		
 		e[[i]] = c(w);
-		while(j < max.depth)
+		while(j <= max.depth)  # max.depth + 1 allows for abcissa (whole number)
 			{
 			# internally if tolerance of eps (r) is reached, we break ...
-			if(abs(eps) < tol) { break; }
+			# for non-convergence, r just jumps around 
+			if(abs(r) < tol) { break; }
 			w = as.integer( 1/r );
 			r = (1/r) - w;			# for next iteration 
 			e[[i]] = c(e[[i]], w);
-			
-			if(w > 1)
-				{
-				d = d + (1/w); 			# update the decimal form, 
-										# could track num/den	
-				} else {
-						d = d + r;		# we are converging 
-						}
-			eps = x_ - d;						
+			 			
 			j = 1 + j;
 			}
 		#	NA analagous to ... (continues), marker that we stopped manually.
-		if(j == max.depth) { e[[i]] = c(e[[i]], NA); } 	
-		
-			
-		# https://math.stackexchange.com/questions/3084970/how-to-convert-continued-fractions-into-normal-fractions
+		if(j > max.depth) { e[[i]] = c(e[[i]], NA); } 	
 		}
+	e = list.return(e);
+	e = property.set("x", e, x);
 	e;
 	}
+
+
+
 	
 num.toContinuousFraction = num.toCFrac;
 

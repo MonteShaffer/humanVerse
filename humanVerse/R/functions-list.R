@@ -4,13 +4,16 @@
 
 
 
-list.prep = function(input)
+check.list = function(input)
 	{
 	# we may have only a vector, not a list 
-	if(!is.list(input)) { res = list(); res[[1]] = input; }
+	if(is.list(input)) { return(input); }
+		res = list(); 
+		res[[1]] = input;
 	res;
 	}
 
+list.prep = check.list;
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
@@ -22,7 +25,7 @@ list.prep = function(input)
 #' @param res
 #' @param unlist
 #'
-#' @return
+#' @return 
 #' @export
 list.return = function(res, unlist=FALSE)
 	{
