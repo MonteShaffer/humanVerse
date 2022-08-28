@@ -1,11 +1,11 @@
 # https://stackoverflow.com/questions/1746501/
-	  # a = c(2,1,0,2,0,1,1,1)
-	  # b = c(2,1,1,1,1,0,1,1)
-	  # d = (a %*% b) / (sqrt(sum(a^2)) * sqrt(sum(b^2)))
+		# a = c(2,1,0,2,0,1,1,1)
+		# b = c(2,1,1,1,1,0,1,1)
+		# d = (a %*% b) / (sqrt(sum(a^2)) * sqrt(sum(b^2)))
 
-	  ## OR
+		## OR
 
-	  # e = crossprod(a, b) / (sqrt(crossprod(a, a)) * sqrt(crossprod(b, b)))
+		# e = crossprod(a, b) / (sqrt(crossprod(a, a)) * sqrt(crossprod(b, b)))
 
 # RECURSIVE ... # https://www.statology.org/cosine-similarity-r/
 
@@ -29,31 +29,26 @@
 #'
 # property.get("srcref", .cosine.similarity); # lsa is NULL
 .cosine.similarity = function(a, b, method="cpp", technique="crossprod")
-  {
-  m = functions.cleanKey(method, 1);
-  tech = functions.cleanKey(technique, 4);
-  # cat("\n\n ==================== COSINE SIMILARITY (a,b) ========== \n\n");
-  # cat("\n", " ===  a === "); print(a); cat("\n");
-  # cat("\n", " ===  b === "); print(a); cat("\n");
+	{
+	m = functions.cleanKey(method, 1);
+	tech = functions.cleanKey(technique, 4);
+	# The cosine of two non-zero vectors (WIKI: Cosine similarity)
+	if(sum(a) == 0 && sum(b) == 0)
+		{
+		return (NA);
+		}
 
-  # maybe perform some non-zero vector "checks"
-  # sum(a); sum(b);  if "fails", return NA ... with warning()
-  if(sum(a) == 0 && sum(b) == 0)
-    {
-    return (NA);
-    }
-
-  if(tech == "cros")
-    {
-    theta = crossprod(a, b) / (sqrt(crossprod(a, a)) * sqrt(crossprod(b, b)));
-    } else  {
-            theta = (a %*% b) / (sqrt(sum(a^2)) * sqrt(sum(b^2)));
-            }
+	if(tech == "cros")
+		{
+		theta = crossprod(a, b) / (sqrt(crossprod(a, a)) * sqrt(crossprod(b, b)));
+		} else	{
+				theta = (a %*% b) / (sqrt(sum(a^2)) * sqrt(sum(b^2)));
+				}
 
 	# flatten 
 	if(is.complex(theta)) { theta = as.complex(theta); return(theta); }
-  as.numeric(theta);   # as.numeric on complex ?
-  }
+	as.numeric(theta);	 # as.numeric on complex ?
+	}
 
 
 
@@ -71,36 +66,36 @@
 #'
 #' @examples
 #' a = c(2,1,0,2,0,1,1,1); b = c(2,1,1,1,1,0,1,1);
-#' .angular.distance(  a, b );
+#' .angular.distance(	a, b );
 #'
-.angular.similarity = function(a, b, return="similarity", ...)
-  {
-  r = functions.cleanKey(return, 1);
-  cos.sim = .cosine.similarity( a,b, ... );
-  # any element in either is negative
-  vector.neg = ( sum( is.negative(a,b) ) > 0 ); 
-  if(vector.neg)
-    {
-    ad = 1 * acos(cos.sim) / pi;
-    } else  {
-            ad = 2 * acos(cos.sim) / pi;
-            }
-	as.sim = 1 - ad;
-	
-# angular distance
-if(r == "d")
+.angular.similarity = function(a, b, return="similarity", cs=NULL, ...)
 	{
-	res = ad;
-  res = property.set("cosine.similarity", res, cos.sim);
-  res = property.set("angular.similarity", res, as.sim);
-  return(res);
+	r = functions.cleanKey(return, 1); # [s]imilarity or [d]istance 
+	if(is.null(cs)) { cs = .cosine.similarity( a,b, ... ); }
+	# any element in either is negative
+	vector.neg = ( sum( is.negative(a,b) ) > 0 ); 
+	if(vector.neg)
+		{
+		ad = 1 * acos(cs) / pi;
+		} else	{
+				ad = 2 * acos(cs) / pi;
+				}
+	as = 1 - ad;
+	
+	# angular distance
+	if(r == "d")
+		{
+		res = ad;
+		res = property.set("cosine.similarity",  res, cs);
+		res = property.set("angular.similarity", res, as);
+		return(res);
+		}
+	# angular similarity 
+	res = as;	
+	res = property.set("cosine.similarity", res, cs);
+	res = property.set("angular.distance",  res, ad);
+	res;
 	}
-# angular similarity 
-res = as.sim;	
-res = property.set("cosine.similarity", res, cos.sim);
-  res = property.set("angular.distance", res, ad);
-  res;
-  }
 
 
 
@@ -128,7 +123,7 @@ angular.similarity = function(a, b=NULL, by="col", return="similarity", ...)
 				}
 			}
 		m = m + t(m); # lower triangle
-		diag(m) = 1;  # non-computed self-similarity
+		diag(m) = 1;	# non-computed self-similarity
 		return(m);
 		}
 		
@@ -200,7 +195,7 @@ cosine.similarity = function(a, b=NULL, by="col", ...)
 				}
 			}
 		m = m + t(m); # lower triangle
-		diag(m) = 1;  # non-computed self-similarity
+		diag(m) = 1;	# non-computed self-similarity
 		return(m);
 		}
 		
@@ -261,9 +256,61 @@ cosine.similarity = function(a, b=NULL, by="col", ...)
 
 
 
+# phi = (1 + sqrt(5)) / 2
+# x = c(1/7, 1/123, pi, phi)
+ 
+toFrac = function(x, ...,	max.depth=16, tol = sqrt(.Machine$double.eps) , part="Re", return="n/d")	# could return Euclidean nested
+	{	
+	x = dots.addTo(x, ...); 
+	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
+	n = length(x);
+	e = vector("list", n);
+	for(i in 1:n)
+		{
+		x_ = x[i];
+		
+		j = 1;		
+		w = as.integer(x_); # whole part 
+		r = x_ - w; 		# remainder 
+		e[[i]] = c(w);
+		while(j < max.depth)
+			{
+			# internally if tolerance of eps (r) is reached, we break ...
+			if(r < tol) { break; }
+			w = as.integer( 1/r );
+			r = (1/r) - w;
+			e[[i]] = c(e[[i]], w);			
+			j = 1 + j;
+			}
+		#	NA analagous to ... (continues), marker that we stopped manually.
+		# if(j == max.depth) { e[[i]] = c(e[[i]], NA); } 	
+		
+			
+		# https://math.stackexchange.com/questions/3084970/how-to-convert-continued-fractions-into-normal-fractions
+		
+		
+		hm2 = 0; 
+		hm1 = 1;
+		km2 = 1;
+		km1 = 0;
+		
+		# hn=anhn−1+hn−2
+		# kn=ankn−1+kn−2
+		
+		num0 = den0 = 1;
+		a = e[[i]]; alen = length(a);
+		num = numeric(alen);	num[1] = a[2] * 1 + 0; num[2] = a[3] * num0 + 1;
+		den = numeric(alen);	den[1] = a[2] * 0 + 1; den[2] = a[3] * den0 + 0;
+		
+		e[[i]] = property.set("info", e[[i]], list("depth" = j, "remainder" = r));
+		}
+	names(e) = x;
+	e;
+	}
 
-
-
+# https://en.wikipedia.org/wiki/Continued_fraction#Some_useful_theorems
+# error is ORIG - FRAC / ORIG 
+# https://math.stackexchange.com/questions/3084970/how-to-convert-continued-fractions-into-normal-fractions
 
 
 

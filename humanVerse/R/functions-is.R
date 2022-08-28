@@ -488,7 +488,7 @@ x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
 #'
 is.negative = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
   {
-x = dots.addTo(x, ...);
+x = dots.addTo(x, ...); 
 	  x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
   x < ( -1 * tol );
   }
