@@ -129,7 +129,7 @@ str.toCharVector = str.toCharacterVector;
 #------------------------------------------------#
 str.fromCharacterVector = function(charslist, sep="")
 	{
-	res = list.prep(charslist);
+	res = check.list(charslist);
 	str.implode(sep, res);
 	}
 
@@ -770,7 +770,7 @@ str.implode = function(sep, str, method="base", ...)
 	# necessary overhead
 	m = functions.cleanKey(method, 1);
 	# if(!is.list(str)) { tmp = str; str = list(); str[[1]] = tmp; }
-	str = list.prep(str);  # maybe redundant of a check from another function
+	str = check.list(str);  # maybe redundant of a check from another function
 
 	if(m == "c" && exists("cpp_implode"))
 		{
@@ -1498,7 +1498,7 @@ str.capitalizeWords = function(str, ..., sep.any=" \t\r\n\f\v")
 	
 	
 	tmp = str.explode(" ", info);  # list.return on str.explode ... only 1 str 
-	tmp = list.prep(tmp);  # need to coerce to list 
+	tmp = check.list(tmp);  # need to coerce to list 
 	
 	n = length(tmp);
 	new = character(n);
