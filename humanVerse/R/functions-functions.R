@@ -114,7 +114,7 @@ functions.cleanKey = function(key, n=1, keep="", case="lower", extra = "")
 	str = switch(ca,
 					  "lo"	= tolower(key),		# lower-case
 					  "up" 	= toupper(key),		# upper-case 
-					  "un"  = key,				# unchanged (as-is)
+ 					  "un"  = key,				# unchanged (as-is)
 					  "no"  = key,				# no changes (as-is)
 				tolower(key)					# DEFAULT [lower-case]
 				);	

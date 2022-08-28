@@ -102,7 +102,7 @@ stats.sum = function(x, na.rm=TRUE)
 	{
 	warning = stats.warningNA(x);
 	res = base::sum(x, na.rm=na.rm)
-	res;
+	res; 
 	}
 
 

@@ -33,9 +33,13 @@
 	m = functions.cleanKey(method, 1);
 	tech = functions.cleanKey(technique, 4);
 	# The cosine of two non-zero vectors (WIKI: Cosine similarity)
+	if(anyNA(a) || anyNA(b))
+		{
+		return (NaN);
+		}
 	if(sum(a) == 0 && sum(b) == 0)
 		{
-		return (NA);
+		return (NaN);
 		}
 
 	if(tech == "cros")
@@ -68,10 +72,11 @@
 #' a = c(2,1,0,2,0,1,1,1); b = c(2,1,1,1,1,0,1,1);
 #' .angular.distance(	a, b );
 #'
-.angular.similarity = function(a, b, return="similarity", cs=NULL, ...)
+.angular.similarity = function(a, b, return="similarity", set.properties=FALSE, cs=NULL, ...)
 	{
 	r = functions.cleanKey(return, 1); # [s]imilarity or [d]istance 
 	if(is.null(cs)) { cs = .cosine.similarity( a,b, ... ); }
+	if(is.nan(cs)) { return(NaN); } 
 	# any element in either is negative
 	vector.neg = ( sum( is.negative(a,b) ) > 0 ); 
 	if(vector.neg)
@@ -80,94 +85,30 @@
 		} else	{
 				ad = 2 * acos(cs) / pi;
 				}
-	as = 1 - ad;
+	as = 1 - ad;  # ad = 1 - as; 
 	
 	# angular distance
 	if(r == "d")
 		{
 		res = ad;
-		res = property.set("cosine.similarity",  res, cs);
-		res = property.set("angular.similarity", res, as);
+		if(set.properties)
+			{
+			res = property.set("cosine.similarity",  res, cs);
+			res = property.set("angular.similarity", res, as);
+			}
 		return(res);
 		}
 	# angular similarity 
 	res = as;	
-	res = property.set("cosine.similarity", res, cs);
-	res = property.set("angular.distance",  res, ad);
+	if(set.properties)
+		{
+		res = property.set("cosine.similarity", res, cs);
+		res = property.set("angular.distance",  res, ad);
+		}
 	res;
 	}
 
-
-
-angular.similarity = function(a, b=NULL, by="col", return="similarity", ...)
-	{	
-	# is.vector assumes there are not attributes attached ... 
-	# is.atomic returns TRUE for matrix 
-	adim = dim(a); bdim = dim(b);
-	if(is.null(adim) && is.atomic(a) && !is.null(b) && is.null(bdim) && is.atomic(b))
-		{
-		return( .angular.similarity(a,b, return=return, ...) );
-		}
-	by = functions.cleanKey(by, 2);
-	if(is.matrix(a) && is.null(b))
-		{
-		if(by == "ro") { a = t(a); } # just transpose 
-		m.names = colnames(a);
-		n = ncol(a);
-		m = matrix(0, nrow=n, ncol=n, dimnames = list(m.names, m.names));		
-		for(i in 2:n)
-			{
-			for(j in 1:(i-1))
-				{
-				m[i, j] = .angular.similarity(a[, i], a[, j], return=return, ...);
-				}
-			}
-		m = m + t(m); # lower triangle
-		diag(m) = 1;	# non-computed self-similarity
-		return(m);
-		}
-		
-	v = NULL;
-	if(is.null(adim) && !is.null(bdim))
-		{
-		v = a;
-		m = b;
-		}
-	if(!is.null(adim) && is.null(bdim))
-		{
-		v = b;
-		m = a;
-		}
-		
-	if(!is.null(v))
-		{
-		nv = length(v);	
-		mdim = dim(m);
-		if(by == "co" && (nv != mdim[1]))
-			{
-			if(nv != mdim[2]) { stop("bad dimensions, can't fix"); }
-			if(nv == mdim[2]) { m = t(m); mdim = dim(m); } # just transpose 
-			}
-		if(by == "ro" && (nv != mdim[2]))
-			{
-			if(nv != mdim[1]) { stop("bad dimensions, can't fix"); }
-			if(nv == mdim[1]) { m = t(m); mdim = dim(m); } # just transpose 
-			}
-		## good dimensions ... everything by column ...
-		m.names = colnames(m);
-		n = ncol(m);
-		res = numeric(n);
-		for(i in 1:n)
-			{
-			res[i] = .angular.similarity(v, m[, i], ...);
-			}
-		names(res) = m.names;
-		return(res);		
-		}
-		
-	stop("what are you doing here!");	
-	}
-
+ 
 
 # ?pmatch ?charmatch ?match.arg ... NOT argmatch ... 
 
@@ -178,25 +119,46 @@ cosine.similarity = function(a, b=NULL, by="col", ...)
 	adim = dim(a); bdim = dim(b);
 	if(is.null(adim) && is.atomic(a) && !is.null(b) && is.null(bdim) && is.atomic(b))
 		{
-		return( .cosine.similarity(a,b, ...) );
+cat("\n MONTE \n");
+		cs = .cosine.similarity(a,b, ...);
+		as = .angular.similarity(a,b, cs=cs, ...);
+		ad = 1-as;
+		
+		res = cs;	
+		res = property.set("angular.similarity", res, as);
+		res = property.set("angular.distance",   res, ad);
+		return( res );
 		}
 	by = functions.cleanKey(by, 2);
 	if(is.matrix(a) && is.null(b))
 		{
+cat("\n ALEX \n");
 		if(by == "ro") { a = t(a); } # just transpose 
 		m.names = colnames(a);
 		n = ncol(a);
-		m = matrix(0, nrow=n, ncol=n, dimnames = list(m.names, m.names));		
+		m = matrix(0, nrow=n, ncol=n, dimnames = list(m.names, m.names));
+		d = s = m;  # angular distance, angular similarity, cosine similarity
 		for(i in 2:n)
 			{
 			for(j in 1:(i-1))
 				{
-				m[i, j] = .cosine.similarity(a[, i], a[, j], ...);
+				cs = .cosine.similarity( a[, i], a[, j], ...);
+				as = .angular.similarity(a[, i], a[, j], cs=cs, ...);
+				
+				m[i, j] = cs;
+				s[i, j] = as;
 				}
 			}
 		m = m + t(m); # lower triangle
+		s = s + t(s);
 		diag(m) = 1;	# non-computed self-similarity
-		return(m);
+		diag(s) = 1;
+		d = 1-s;
+		
+		res = m;	
+		res = property.set("angular.similarity", res, s);
+		res = property.set("angular.distance",   res, d);
+		return( res );
 		}
 		
 	# vector by-col of matrix 
@@ -222,6 +184,7 @@ cosine.similarity = function(a, b=NULL, by="col", ...)
 		
 	if(!is.null(v))
 		{
+cat("\n NAT \n");
 		nv = length(v);	
 		mdim = dim(m);
 		if(by == "co" && (nv != mdim[1]))
@@ -238,12 +201,20 @@ cosine.similarity = function(a, b=NULL, by="col", ...)
 		m.names = colnames(m);
 		n = ncol(m);
 		res = numeric(n);
+		d = s = res;
 		for(i in 1:n)
 			{
-			res[i] = .cosine.similarity(v, m[, i], ...);
+			cs = .cosine.similarity( v, m[, i], ...);
+			as = .angular.similarity(v, m[, i], cs=cs, ...);
+			
+			res[i] = cs;
+			s[i] = as;
 			}
-		names(res) = m.names;
-		return(res);		
+		d = 1 - s;
+		names(res) = names(d) = names(s) = m.names;
+		res = property.set("angular.similarity", res, s);
+		res = property.set("angular.distance",   res, d);
+		return( res );		
 		}
 		
 		
@@ -255,6 +226,58 @@ cosine.similarity = function(a, b=NULL, by="col", ...)
 
 
 
+
+
+num.toCFrac = function(x, ..., 
+								max.depth = 16, 
+								tol = sqrt(.Machine$double.eps) , 
+								part="Re"
+						)
+	{
+	x = dots.addTo(x, ...); 
+	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
+	
+	n = length(x);
+	e = vector("list", n);
+	for(i in 1:n)
+		{
+		x_ = x[i];
+		
+		j = 1;		
+		w = as.integer(x_); # whole part 
+		r = x_ - w; 		# remainder 
+		eps = r;			# global difference from x_  
+		d = w;				# running decimal form 
+		
+		e[[i]] = c(w);
+		while(j < max.depth)
+			{
+			# internally if tolerance of eps (r) is reached, we break ...
+			if(abs(eps) < tol) { break; }
+			w = as.integer( 1/r );
+			r = (1/r) - w;			# for next iteration 
+			e[[i]] = c(e[[i]], w);
+			
+			if(w > 1)
+				{
+				d = d + (1/w); 			# update the decimal form, 
+										# could track num/den	
+				} else {
+						d = d + r;		# we are converging 
+						}
+			eps = x_ - d;						
+			j = 1 + j;
+			}
+		#	NA analagous to ... (continues), marker that we stopped manually.
+		if(j == max.depth) { e[[i]] = c(e[[i]], NA); } 	
+		
+			
+		# https://math.stackexchange.com/questions/3084970/how-to-convert-continued-fractions-into-normal-fractions
+		}
+	e;
+	}
+	
+num.toContinuousFraction = num.toCFrac;
 
 # phi = (1 + sqrt(5)) / 2
 # x = c(1/7, 1/123, pi, phi)

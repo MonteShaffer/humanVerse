@@ -69,7 +69,7 @@ property.set = function(key, obj, value=NULL,
 
 	}
 
-
+ 
 
 #' @rdname setAttribute
 #' @export
@@ -206,5 +206,7 @@ property.getAll = property.getALL;
 property.remove = function()
 	{
 # Sys.unsetenv(x)
+# attributes(x) <- NULL ... removes all 
+
 
 	}

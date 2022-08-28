@@ -487,11 +487,11 @@ x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
 #' is.negative( c(-1*1:5,-sin(pi), 0,0,0, sin(pi), 1:5, NA, NA) );
 #'
 is.negative = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
-  {
-x = dots.addTo(x, ...); 
-	  x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
-  x < ( -1 * tol );
-  }
+	{
+	x = dots.addTo(x, ...); 
+	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
+	x < ( -1 * tol );
+	}
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
