@@ -103,7 +103,7 @@ functions.whereIs = function(fn = "base:::curlDownload")
 #'
 #' @return Updated key
 #' @export
-#'
+#' 
 #' @examples
 functions.cleanKey = function() {}
 # extra = "! #"

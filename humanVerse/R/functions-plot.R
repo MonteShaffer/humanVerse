@@ -10,7 +10,7 @@ gr.polygons = function(x1, y1, x2, y2, ...)
 	
 plot.polygonsBetweenTwoData = gr.polygons;	
 gr.polygon = gr.polygons;
-
+ 
 
 
 gr.setPosition = function(where="top")

@@ -59,18 +59,70 @@ date.constants = function(envir=parent.frame(1))
 	assign("SECS_PER_TYEAR",	SECS_PER_TYEAR,	envir=envir);	
 	}
 
+num.round = function(n, by=5)
+	{
+	by * as.integer((n + by) / by);
+	}
+
+
+snails.pace = function(moves = 200, finish.line = 8,
+						snails.x = NULL, 
+						snails.y = NULL, 
+						snails.col = NULL)
+	{
+	if(is.null(snails.x)) { snails.x = 0*(1:6); }
+	if(is.null(snails.y)) { snails.y = 1*(1:6); }
+	if(is.null(snails.col)) { snails.col = c("orange", "blue", "pink", "green", "yellow", "red"); }
+	snails.col = c("orange", "blue", "pink", "green", "yellow", "red");
+	snails.y = 1*(1:6);
+	snails.plot = function(snails.x, snails.y) 
+		{ 
+		xmax = max(10, max(snails.x) );
+		plot(snails.x, snails.y, 
+				col=snails.col, 
+				pch=16, cex=5, 
+				xlim=c(0, num.round(xmax, 5) ), 
+				ylim=c(0,10), 
+				axes=FALSE, 
+				frame.plot=FALSE, 
+				xlab="", ylab=""
+				); 
+		axis(gr.side("bottom")); 
+		text(snails.x, y=snails.y, labels=snails.x, col="black"); 
+		abline(v = finish.line, col="gray", lty="dashed");
+		}
+	snails.update = function(snails.x, snails.y) 
+		{
+		x = readline(prompt="Press [enter] to continue");
+		n = sample(1:6, 1);
+		snails.x[n] = 1 + snails.x[n];
+		snails.plot(snails.x, snails.y);
+		snails.x;
+		}
+
+	snails.plot(snails.x, snails.y);
+	m.max = moves;
+	m = 0;
+	while(m < m.max)
+		{
+		snails.x = snails.update(snails.x, snails.y);	
+		m = 1 + m;
+		}
+	}
 
 
 
 date.formatter = function(input, from, to)
 	{
 	# YYYYg or j or x 
-	# MM or MMs [short-name] ("Jun") or MMn ("June") [name]
+	# short and seconds ... bad idea ... 
+	# MM or MMn [short-name] ("Jun") or MMnn ("June") [name]
 	# DD
 	# WWi (iso, four other calculations)
 	# don't use "s" or "n" as they may be expanded for DD names / WW names 
+	# "s" is seconds, so "n" or "nn"
 	# DOWi (iso, when the week starts, Sun/Mon)
-	# DOWs [short-name] ("Mon") or DOWn ("Monday");
+	# DOWn [short-name] ("Mon") or DOWnn ("Monday");
 	# DOYj or (g as papal) or british ... JAN/FEB were END of YEAR in julian/gregorian ... changed with british adoption 
 	# hh (24-hour), hham (12-hour with AM/PM)
 	# mm 
@@ -86,8 +138,10 @@ date.formatter = function(input, from, to)
 	# https://www.geeksforgeeks.org/how-to-design-a-tiny-url-or-url-shortener/
 	# can't I do base64 ... hex ... 
 	# don't do solar mm or ss.sss just make 
-	#     shh18d.ddddddd as decimal ... 0 - 17.99999
-	#     shh18n.nnnnnnn as decimal ... 0 - 17.99999
+	#     shh18d.ddddddd as decimal ... 0 - 17.99999  # day
+	# 		shh18p as p's and q's ... opposites (day / night)
+	#       shh18q
+	#     shh18n.nnnnnnn as decimal ... 0 - 17.99999  # night, not [n]?, dark 
 	# length(one shh18d) = length(one ssh18n) on EQUINOX 
 	# length is function( lat, lon, alt for YYYY-MM-DD )
 	# https://www.w3schools.com/sql/func_mysql_date_format.asp
