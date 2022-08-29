@@ -77,7 +77,7 @@ snails.pace = function(moves = 200, finish.line = 8,
 	{
 	if(is.null(snail.x)) 	{ snail.x = 0*(1:6); }
 	if(is.null(snail.y)) 	{ snail.y = 1*(1:6); }
-	if(is.null(snail.col)) { snail.col = c("orange", "blue", "pink", "green", "yellow", "red"); }
+	if(is.null(snail.col))	{ snail.col = c("orange", "blue", "pink", "green", "yellow", "red"); }
 	
 	snail.rank = 0*snail.x; 
 	crank = 1; # current rank 	
@@ -129,6 +129,78 @@ snails.pace = function(moves = 200, finish.line = 8,
 		snails.plot(snail.x, snail.y, snail.rank, move.number, moves, finish.line, crank);		
 		}
 	}
+
+
+
+
+
+
+
+
+
+
+
+snails.pace2 = function(moves = 200, finish.line = 8,
+							snail.x = NULL,
+							snail.y = NULL,
+							snail.col = NULL
+						)
+	{
+	if(is.null(snail.x)) 	{ snail.x = 0*(1:6); }
+	if(is.null(snail.y)) 	{ snail.y = 1*(1:6); }
+	if(is.null(snail.col))	{ snail.col = c("orange", "blue", "pink", "green", "yellow", "red"); }
+	
+	snail.rank = 0*snail.x; 
+	crank = 1; # current rank 	
+	move.number = 0;
+	
+	snails.plot = function() 
+		{ 
+		xmax = max(10, max(snail.x) );
+		ymax = max(8, max(snail.y) );
+		plot(snail.x, snail.y, 
+				col=snail.col, 
+				pch=16, cex=5, 
+				xlim=c(0, num.round(xmax, 5) ), 
+				ylim=c(0, num.round(ymax, 4) ), 
+				axes=FALSE, 
+				frame.plot=FALSE, 
+				xlab="", ylab="",
+				main=paste0("Move #", move.number, " of ", moves)
+				); 
+		#axis(gr.side("bottom")); 
+		axis(1);
+			has.rank = (snail.rank != 0);
+			snails.lab = paste0(snail.x, "*", snail.rank);
+			snails.lab[!has.rank] = snail.x[!has.rank];
+		text(snail.x, y=snail.y, labels=snails.lab, col="black"); 
+		abline(v = finish.line, col="gray", lty="dashed");
+		}
+	snails.update = function() 
+		{
+		x = readline(prompt="Press [enter] to continue, [ESC] to quit");
+		n = sample(1:6, 1);
+		snail.x[n] = 1 + snail.x[n];
+		if( (snail.rank[n] == 0) && (snail.x[n] >= finish.line) )
+			{ 			
+			snail.rank[n] = crank;
+			crank = 1 + crank; 			
+			# update to MAIN environment
+			assign("snail.rank", snail.rank, envir=parent.frame() );
+			assign("crank", crank, envir=parent.frame() );
+			}		
+		snail.x;
+		}
+
+	snails.plot(); 
+	while(move.number < moves)
+		{
+		move.number = 1 + move.number;
+		snail.x = snails.update();
+		snails.plot();		
+		}
+	}
+
 
 
 
