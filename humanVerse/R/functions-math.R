@@ -229,6 +229,7 @@ latex.fromCFrac = function() {}
 
 num.toEFrac = function() {} 
 # Egyptian Fractions 
+# http://web.ff.cuni.cz/ustavy/egyptologie/pdf/Gardiner_signlist.pdf
 
 
 num.toFrac = function(x, ..., 

@@ -85,17 +85,20 @@ console.readkey = function(msg="Press [ENTER] to continue, [ESC] to exit")
 # http://rfunction.com/archives/1302
 # par mar
 snails.pace = function() {} 
+# x = snails.pace(auto.play=1/50, s.par=TRUE);
+# x = snails.pace(auto.play=1/50, s.par=TRUE, intro.pause=FALSE);
 # Symbola
 # https://fontlibrary.org/en/font/symbola
 snails.pace = function(snails = 6, finish.line = 8, moves = 200,
-							auto.play = NULL, ymax = 2 + snails,
-							s.family = NULL,
+							auto.play = NULL, intro.pause = TRUE,
+							ymax = 2 + snails,
 							s.par = FALSE, s.pch=(10+snails), s.cex=snails,
-							snail.col = c("orange", "blue", "pink", "green", "yellow", "red")
+							snail.col = c("orange", "blue", "pink", "green", "yellow", "red"), ...
 						)
 	{
-	old.par = par(no.readonly = TRUE);	
-	on.exit({par(new = FALSE); par(old.par);}); # add=TRUE to on.exit ... always, maybe like dput(all)
+	old.par = par(no.readonly = TRUE);
+	move.history = NULL;
+	on.exit({par(new = FALSE); par(old.par); invisible(move.history)}); # add=TRUE to on.exit ... always, maybe like dput(all)
 	snail.x = 0*(1:snails); 
 	if(ymax < snails) { ymax = snails; }
 	y.d = ymax - snails; 
@@ -113,15 +116,14 @@ snails.pace = function(snails = 6, finish.line = 8, moves = 200,
 	crank = 1; # current rank 	
 	move.number = 0;
 	n = 0; # current number randomized (color)
+	snail.lab = "";
 	
 	snails.plot = function() 
 		{ 
 		xmax = max(finish.line, max(snail.x) );
 		# define reasonable xmax if overpainting 
-		if(s.par) { xmax = 1.3* moves/snails;  }
-		
-		
-		
+		# SIM to solve ?
+		if(s.par) { xmax = (1/0.7)* moves/snails;  }		
 		
 		
 		plot(snail.x, snail.y, 
@@ -140,6 +142,14 @@ snails.pace = function(snails = 6, finish.line = 8, moves = 200,
 			has.rank = (snail.rank != 0);
 			snail.lab = paste0(snail.x, "*", snail.rank);
 			snail.lab[!has.rank] = snail.x[!has.rank];
+			assign("snail.lab", snail.lab, envir=parent.env(environment()) );
+		# overlay "points" again so trail doesn't have text ...
+		# maybe not even use plot ?
+		if(s.par)
+			{
+			points(snail.x, snail.y, col=snail.col, pch=s.pch, cex=1.3*s.cex);
+			}
+		# place text with current number PLUS * rank if finish.line 
 		text(snail.x, y=snail.y, labels=snail.lab, col="black"); 
 		abline(v = finish.line, col="gray", lty="dashed");
 		
@@ -163,7 +173,7 @@ snails.pace = function(snails = 6, finish.line = 8, moves = 200,
 		# font_add("Symbola", "Symbola.ttf")
 		# https://www.fileformat.info/info/unicode/char/1f40c/fontsupport.htm
 		# windowsFonts()
-		# font_add_google("Cousine", "Cousine")
+		# sysfonts::font_add_google("Cousine", "Cousine")
 		# font_families()
 		# https://statr.me/
 		# https://yixuan.blog/cleveland-r-meetup/pretty.html#1
@@ -172,23 +182,27 @@ snails.pace = function(snails = 6, finish.line = 8, moves = 200,
 		# plot(mtcars$wt, mtcars$mpg, pch="ȯ", col = "red", cex = 2, family="Cousine")
 		# points(mtcars$wt, mtcars$mpg, pch="\u25D3", col = "blue", cex = 2, family="Symbola")
 		# points(mtcars$wt, mtcars$mpg, pch="\u1F40C", col = "orange", cex = 2, family="Symbola")
-		rect(0,ymax, finish.line, (ymax-1), border=NA, col=r.col);
-		text(0, y=(ymax-1/2), labels=status, col="black", pos=4); # to the right 
-		text(finish.line, y=(ymax-1/2), labels=status, col="white", pos=2); # to the left 
+		# U+1F40C
+		# length is the current color's position
+			xlen = finish.line; if( n != 0 ) { xlen = snail.x[n]; }
+								if(xlen == 0) { xlen = finish.line; }
+		# white out overlay 
+		rect(0,ymax, xmax, (ymax-1), border=NA, col="white");
+		rect(0,ymax, xlen, (ymax-1), border=NA, col=r.col);
+		text(0, y=(ymax-1/3), labels=status, col="black", pos=4); # to the right 
+		text(xlen, y=(ymax-2/3), labels=status, col="white", pos=2); # to the left 
 		
 		if(s.par) { par(new = TRUE); }
 		}
 	snails.update = function() 
 		{
-		if(is.null(auto.play))
+		if(intro.pause && move.number < 2)
 			{
 			x = readline(prompt="Press [enter] to continue, [ESC] to quit");
-			} else {
-					if(move.number < 2) 
-						{
-						x = readline(prompt="Press [enter] to continue, [ESC] to quit");
-						}
-					}
+			} else if(is.null(auto.play))
+				{
+				x = readline(prompt="Press [enter] to continue, [ESC] to quit");
+				} 
 		n = sample(1:snails, 1);
 		assign("n", n, envir=parent.env(environment()) );
 		
@@ -212,9 +226,19 @@ snails.pace = function(snails = 6, finish.line = 8, moves = 200,
 		{
 		move.number = 1 + move.number;
 		snail.x = snails.update();
+		move.history = c(move.history, snail.col[n]);
 		snails.plot();	
-		if(!is.null(auto.play)) { Sys.sleep(auto.play); }
+		if(!is.null(auto.play)) 
+			{ 
+			dev.flush();
+			Sys.sleep(auto.play); 
+			}
 		}
+	attr(move.history, "color") = snail.col;
+	attr(move.history, "info") = snail.lab;
+	# https://stackoverflow.com/a/31298923/184614
+	# attr(move.history, "info") = setNames(as.list(snail.lab), snail.col);
+	invisible(move.history);	
 	}
 
 
