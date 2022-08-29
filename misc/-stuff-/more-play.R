@@ -470,3 +470,237 @@ headsAndTails.inRange(xdf.sorted, 6, 338005);
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+num.round = function(n, by=5, method="round")
+	{
+	byidx = (n %% by == 0); # these already are indexed well 
+    new = by * as.integer((n + by) / by);
+    res = n;
+    res[!byidx] = new[!byidx];
+    res;
+	# round(n/by) * by;
+	#ceiling(n/by) * by;
+	#floor(n/by) * by;
+	# maybe if negative do ceiling, positive do floor ...
+	# user wants basically an UP/DOWN feature ... 
+	}
+
+# https://stackoverflow.com/a/15272920/184614
+console.readkey = function(msg="Press [ENTER] to continue, [ESC] to exit")
+	{
+	cat (msg);
+	line = readline();
+	# maybe do something like onkeypress (see stackoverflow METHOD 3)
+	# if [-] slow down the auto.play ... [+] speed up 
+	}
+
+# http://rfunction.com/archives/1302
+# par mar
+snails.pace = function() {} 
+# x = snails.pace(auto.play=1/50, s.par=TRUE);
+# x = snails.pace(auto.play=1/50, s.par=TRUE, intro.pause=FALSE);
+# Symbola 
+# https://fontlibrary.org/en/font/symbola
+snails.pace = function(snails = 6, finish.line = 8, moves = 200,
+							auto.play = NULL, intro.pause = TRUE,
+							ymax = 2 + snails,
+							s.par = FALSE, s.pch=(10+snails), s.cex=snails,
+							snail.col = c("orange", "blue", "pink", "green", "yellow", "red"), ...
+						)
+	{
+	old.par = par(no.readonly = TRUE);
+	move.history = NULL;
+	on.exit({par(new = FALSE); par(old.par); invisible(move.history)}); # add=TRUE to on.exit ... always, maybe like dput(all)
+	snail.x = 0*(1:snails); 
+	if(ymax < snails) { ymax = snails; }
+	y.d = ymax - snails; 
+	scale.y = ymax / snails;
+	snail.y = (scale.y*(1:snails)) - (1/(snails/2) * y.d);
+	snail.y = snail.y - 1; # moved the rect to top, so adjust 
+	
+	# RANDOM colors ... `sample(colors(), snails);`
+	n.col = length(snail.col);
+	n.missing = snails - n.col;
+	### collision is possible, highly improbable
+	if(n.missing > 0) { snail.col = c(snail.col, sample(colors(), n.missing)); }
+		
+	snail.rank = 0*snail.x; 
+	crank = 1; # current rank 	
+	move.number = 0;
+	n = 0; # current number randomized (color)
+	snail.lab = "";
+	
+	snails.round = function(n, by = 5)
+		{
+		ceiling(n/by) * by;
+		}
+
+	
+	snails.plot = function() 
+		{ 
+		xmax = max(finish.line, max(snail.x) );
+		# define reasonable xmax if overpainting 
+		# SIM to solve ?
+		if(s.par) { xmax = (1/0.7)* moves/snails;  }		
+		
+		# U+1F40C [snail]
+		plot(snail.x, snail.y, 
+				col=snail.col, 
+				pch=s.pch, cex=s.cex, 
+				xlim=c(-1, snails.round(xmax, 5) ), 
+				ylim=c(-1, ymax ), 
+				axes=FALSE, 
+				frame.plot=FALSE, 
+				xlab="", ylab="",
+				main=""
+				); 
+			
+		#axis(gr.side("bottom")); 
+		axis(1);
+			has.rank = (snail.rank != 0);
+			snail.lab = paste0(snail.x, "*", snail.rank);
+			snail.lab[!has.rank] = snail.x[!has.rank];
+			assign("snail.lab", snail.lab, envir=parent.env(environment()) );
+		# overlay "points" again so trail doesn't have text ...
+		# maybe not even use plot ?
+		if(s.par)
+			{
+			points(snail.x, snail.y, col=snail.col, pch=s.pch, cex=1.3*s.cex);
+			}
+		# place text with current number PLUS * rank if finish.line 
+		text(snail.x, y=snail.y, labels=snail.lab, col="black"); 
+		abline(v = finish.line, col="gray", lty="dashed");
+		
+		# main in plot is updating, so place a textbox (white) to overwrite?
+		status=paste0("Move #", move.number, " of ", moves);
+			r.col = "white"; if(n != 0) { r.col = snail.col[n]; }
+		# berryFunctions, roundedRectangle 
+		# just draw inner rectangles with missing corners and add 1/4 radius circles ... gr.circle (should be a function)
+		# https://stackoverflow.com/questions/34522732/changing-fonts-in-ggplot2#
+		# Also, windowsFonts disappeared from grDevices after 3.4.1. The code here needs updating. – smci  Aug 16, 2018 at 22:19
+		# windowsFonts()
+		# library(extrafont); font_import(); loadfonts(device = "win");
+		# Another option is to use showtext package which supports more types of fonts (TrueType, OpenType, Type 1, web fonts, etc.) and more graphics devices, and avoids using external software such as Ghostscript.
+		# library(showtext); font_add_google("Montserrat", "Montserrat")
+		# font_paths()  ; font_files()  ; font_add("Palatino", "pala.ttf")
+		# http://www.cookbook-r.com/Graphs/Fonts/
+		# https://rdrr.io/cran/berryFunctions/man/roundedRect.html
+		# http://www.statisticstoproveanything.com/2013/09/using-custom-images-as-pch-values-in-r.html
+		# https://cran.r-project.org/web/packages/utf8/vignettes/utf8.html
+		# U+1F40C [snail]
+		# font_add("Symbola", "Symbola.ttf")
+		# https://www.fileformat.info/info/unicode/char/1f40c/fontsupport.htm
+		# windowsFonts()
+		# sysfonts::font_add_google("Cousine", "Cousine")
+		# font_families()
+		# https://statr.me/
+		# https://yixuan.blog/cleveland-r-meetup/pretty.html#1
+		# showtext_auto()
+		#  par(family = "Cousine")
+		# plot(mtcars$wt, mtcars$mpg, pch="ȯ", col = "red", cex = 2, family="Cousine")
+		# points(mtcars$wt, mtcars$mpg, pch="\u25D3", col = "blue", cex = 2, family="Symbola")
+		# points(mtcars$wt, mtcars$mpg, pch="\u1F40C", col = "orange", cex = 2, family="Symbola")
+		# U+1F40C
+		# length is the current color's position
+			xlen = finish.line; if( n != 0 ) { xlen = snail.x[n]; }
+								if(xlen == 0) { xlen = finish.line; }
+		# white out overlay 
+		rect(0,ymax, xmax, (ymax-1), border=NA, col="white");
+		rect(0,ymax, xlen, (ymax-1), border=NA, col=r.col);
+		text(0, y=(ymax-1/3), labels=status, col="black", pos=4); # to the right 
+		text(xlen, y=(ymax-2/3), labels=status, col="white", pos=2); # to the left 
+		
+		if(s.par) { par(new = TRUE); }
+		}
+	snails.update = function() 
+		{
+		if(intro.pause && move.number < 2)
+			{
+			x = readline(prompt="Press [enter] to continue, [ESC] to quit");
+			} else if(is.null(auto.play))
+				{
+				x = readline(prompt="Press [enter] to continue, [ESC] to quit");
+				} 
+		n = sample(1:snails, 1);
+		assign("n", n, envir=parent.env(environment()) );
+		
+		snail.x[n] = 1 + snail.x[n];
+		if( (snail.rank[n] == 0) && (snail.x[n] >= finish.line) )
+			{ 			
+			snail.rank[n] = crank;
+			crank = 1 + crank; 			
+			# update to MAIN environment
+			assign("snail.rank", snail.rank, envir=parent.env(environment()) );
+			assign("crank", crank, envir=parent.env(environment()) );
+			}		
+		snail.x;
+		}
+
+	par(new = FALSE); 	
+	# c(bottom, left, top, right)
+	par(mar=c(2,1,1,1));
+	snails.plot(); 
+	while(move.number < moves)
+		{
+		move.number = 1 + move.number;
+		snail.x = snails.update();
+		move.history = c(move.history, snail.col[n]);
+		snails.plot();	
+		if(!is.null(auto.play)) 
+			{ 
+			dev.flush();
+			Sys.sleep(auto.play); 
+			}
+		}
+	attr(move.history, "color") = snail.col;
+	attr(move.history, "info") = snail.lab;
+	# https://stackoverflow.com/a/31298923/184614
+	# attr(move.history, "info") = setNames(as.list(snail.lab), snail.col);
+	invisible(move.history);	
+	}
+
+
+
+
+
+
+
+
