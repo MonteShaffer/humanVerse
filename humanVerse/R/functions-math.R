@@ -112,6 +112,15 @@
 
 # ?pmatch ?charmatch ?match.arg ... NOT argmatch ... 
 
+	# vector by-col of matrix 
+	# cosine(a, data) works by-columns 
+	# cosine(data, a) does NOT work ...
+	# a = c(23, 34, 44, 45, 42, 27, 33, 34);
+	# data = structure(c(23, 34, 44, 45, 42, 27, 33, 34, 17, 18, 22, 26, 26, 29, 31, 30, 34, 35, 35, 36, 51, 29, 30, 31), dim = c(8L, 3L), dimnames = list( NULL, c("a", "b", "c")));
+	# Using control = "exact" (short for control = c("all", "hexNumeric")) comes closest to making deparse() an inverse of parse() (but we have not yet seen an example where "all", now including "digits17", would not have been as good). However, not all objects are deparse-able even with these options, and a warning will be issued if the function recognizes that it is being asked to do the impossible.
+	# SET DEFAULT to dput(pi, control="all") ... in my INIT() as an exacmple of messing with the base::defaults ...
+	
+	
 cosine.similarity = function(a, b=NULL, by="col", ...)
 	{	
 	# is.vector assumes there are not attributes attached ... 
@@ -138,21 +147,18 @@ cosine.similarity = function(a, b=NULL, by="col", ...)
 		n = ncol(a);
 		m = matrix(0, nrow=n, ncol=n, dimnames = list(m.names, m.names));
 		d = s = m;  # angular distance, angular similarity, cosine similarity
-		for(i in 2:n)
+		for(i in 1:n)
 			{
-			for(j in 1:(i-1))
+			for(j in i:n)
 				{
 				cs = .cosine.similarity( a[, i], a[, j], ...);
 				as = .angular.similarity(a[, i], a[, j], cs=cs, ...);
 				
-				m[i, j] = cs;
-				s[i, j] = as;
+				m[i, j] = m[j, i] = cs;
+				s[i, j] = s[j, i] = as;
 				}
 			}
-		m = m + t(m); # lower triangle
-		s = s + t(s);
-		diag(m) = 1;	# non-computed self-similarity
-		diag(s) = 1;
+		# self-similarity may be NaN ... doing "1" on diag is NOT correct
 		d = 1-s;
 		
 		res = m;	
@@ -161,14 +167,7 @@ cosine.similarity = function(a, b=NULL, by="col", ...)
 		return( res );
 		}
 		
-	# vector by-col of matrix 
-	# cosine(a, data) works by-columns 
-	# cosine(data, a) does NOT work ...
-	# a = c(23, 34, 44, 45, 42, 27, 33, 34);
-	# data = structure(c(23, 34, 44, 45, 42, 27, 33, 34, 17, 18, 22, 26, 26, 29, 31, 30, 34, 35, 35, 36, 51, 29, 30, 31), dim = c(8L, 3L), dimnames = list( NULL, c("a", "b", "c")));
-	# Using control = "exact" (short for control = c("all", "hexNumeric")) comes closest to making deparse() an inverse of parse() (but we have not yet seen an example where "all", now including "digits17", would not have been as good). However, not all objects are deparse-able even with these options, and a warning will be issued if the function recognizes that it is being asked to do the impossible.
-	# SET DEFAULT to dput(pi, control="all") ... in my INIT() as an exacmple of messing with the base::defaults ...
-	
+	# maybe compare a vector to a matrix 
 	
 	v = NULL;
 	if(is.null(adim) && !is.null(bdim))
@@ -343,7 +342,19 @@ egy.lists = function()
 	# nfr ... ZERO ... http://www.math.buffalo.edu/mad/Ancient-Africa/mad_ancient_egypt_zero.html
 	# https://mathancientegypt-blog.tumblr.com/post/116476596099/zero-continued-again
 	# Some people have made certain discoveries about the Great Pyramid, using maths: When using the Egyptian cubit the perimeter is 365.24 - the amount of days in the yearWhen doubling the perimeter, the answer is equal to one minute of one degree at the equatorThe apex to base slant is equal to 600th of a degree of latitudeThe height x 10 to the power of 9 gives approximately the distance from the earth to the sunThe perimeter divided by 2 x the height of the pyramid is equal to pi - 3.1416The weight of the pyramid x 10 to the power of 15 is equal to the approximate weight of the earthWhen the cross diagonals of the base are added together, the answer is equal to the amount of time (in years) that it takes for the earth’s polar axis to go back to its original starting point - 25,286.6 yearsThe measurements of the King’s Chamber gives 2-5-3 and 3-4-5 which are basic Pythagorean triangles
-	# http://www.touregypt.net/featurestories/numbers.htm#ixzz3XOfqEpUy ... The Egyptians, though, had no concept for zero.
+	# http://www.touregypt.net/featurestories/numbers.htm#ixzz3XOfqEpUy ... The Egyptians, though, had no concept for zero. 
+	# https://mathigon.org/task/egyptian-fractions [memory ... changing one visual] *** very nice lesson, realistic, carving in stone ... 
+	# 1308b,c,d are special fractions
+	# 13421 is maybe the 10?
+	# 133e4... numbers 1, 2, ... ?
+	# https://discoveringegypt.com/egyptian-hieroglyphic-writing/egyptian-mathematics-numbers-hieroglyphs/
+	# 7 ones for 7 or special symbol?
+	# https://egyptianhieroglyphs.co.uk/
+	# https://github.com/morrisfranken/glyphreader # Gardener labels
+	# http://iamai.nl/downloads/GlyphDataset.zip
+	# https://opennmt.net/ # can we diagnram sentences?
+	# 
+	
 	
 	
 	RMP = list( 
