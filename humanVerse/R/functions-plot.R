@@ -11,6 +11,33 @@ gr.polygons = function(x1, y1, x2, y2, ...)
 plot.polygonsBetweenTwoData = gr.polygons;	
 gr.polygon = gr.polygons;
  
+ 
+# shapeEX1 = list(x = c(-0.01, 0.01, 0.01, 0.0916, 0.0816, 0, -0.0816, -0.0916, 
+-0.01), y = c(0.1, 0.1, 0.01, -0.0413, -0.0587, -0.01, -0.0587, 
+-0.0413, 0.01));
+# shapeEX2 = list(x = c(0.007, 0.007, 0.064, 0.078, -0.007, -0.007, -0.064, 
+-0.078), y = c(0.078, -0.042, 0.007, -0.007, -0.078, 0.042, -0.007, 
+0.007));
+
+# https://stackoverflow.com/a/72528751/184614
+gr.points = function(x, y, shape=NULL, col = 'black', cex = 1, ...) 
+	{
+	# mask for default function if no shape ... 
+	if(is.null(shape)) { points(x, y, col = col, cex = cex, ...); }
+	# resize 
+	shape = lapply(shape, function(z) z * cex);	
+	# shape is "SVG like"	
+	Map(
+		function(xi, yi) 
+			{
+			a = grconvertX(grconvertX(xi, 'user', 'inches') + shape$x, 'inches', 'user')
+			b = grconvertY(grconvertY(yi, 'user', 'inches') + shape$y, 'inches', 'user')
+			polygon(a, b, col = col, border = col, ...)
+			}
+		, xi = x, yi = y);
+		
+	invisible(NULL);
+	}
 
 
 gr.setPosition = function(where="top")

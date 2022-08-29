@@ -53,6 +53,17 @@ str.fromInteger = function(intvec)
 	}
 
 
+str.toUTF = function(str)
+	{
+	# maybe jsut stringi 
+	# intToUtf8(0x03B2L)
+	# text(1, 1.2, intToUtf8(c(21315, 31179, 19975, 36733)), cex = 5)
+	}
+str.fromUTF = function(utf)
+	{
+	
+	}
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.toHEX
