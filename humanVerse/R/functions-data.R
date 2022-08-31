@@ -1,4 +1,7 @@
 
+# hadley
+# https://stackoverflow.com/a/1816487/184614
+# 
 
 ## timelib ... store list of regex
 ## is_america

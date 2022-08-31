@@ -1,11 +1,12 @@
 
+# snails.pace(snails=1, auto.play=1/50);
+
 snails.pace = function() {} 
-# x = snails.pace(auto.play=1/50, s.par=TRUE);
-# x = snails.pace(auto.play=1/50, s.par=TRUE, intro.pause=FALSE);
-snails.pace = function(snails = 6, finish.line = 8, moves = 200,
-							auto.play = NULL, intro.pause = TRUE,
-							ymax = 2 + snails,
-							s.par = FALSE, s.pch=(10+snails), s.cex=snails,
+
+snails.pace = function(snails = 6, finish.line = 8, moves = 200, 
+							auto.play = NULL,  y.factor = 4/3, 
+							intro.pause = TRUE, snail.par = TRUE, 
+							snail.pch=16, snail.cex=6,
 							snail.col = c("orange", "blue", "pink", "green", "yellow", "red"), ...
 						)
 	{
@@ -14,23 +15,37 @@ snails.pace = function(snails = 6, finish.line = 8, moves = 200,
 	on.exit({par(new = FALSE); par(old.par); invisible(move.history)}); # add=TRUE to on.exit ... always, maybe like dput(all)
 	
 	snail.x = 0*(1:snails); 
-		if(ymax < snails) { ymax = snails; }
-		y.d = ymax - snails; 
-		scale.y = ymax / snails;
-	snail.y = (scale.y*(1:snails)) - (1/(snails/2) * y.d);
-	snail.y = snail.y - 1; # moved the rect to top, so adjust 
+	
+	
+	ymax = y.factor * snails;  # 1/6 above & 1/6 below
+	
+	y.header 	= (1/6)*ymax;        # about 16%
+	y.ceiling 	= ymax - y.header;
+	y.floor 	= 0;  # graph starts at -1 
+	
+	y.range = y.ceiling - y.floor; 
+	y.scale = y.range/snails;
+	snail.y = y.scale*(0:(snails-1));
+	
+	
 	
 	# RANDOM colors ... `sample(colors(), snails);`
 	n.col = length(snail.col);
 	n.missing = snails - n.col;
 	### collision is possible, highly improbable
-	if(n.missing > 0) { snail.col = c(snail.col, sample(colors(), n.missing)); }
+	if(n.missing > 0) 
+		{ 
+		# if snails is too big, this breaks
+		snail.col = c(snail.col, sample(colors(), n.missing, replace=TRUE)); 
+		}
 		
 	snail.rank = 0*snail.x; 
 	crank = 1; # current rank 	
 	move.number = 0;
 	n = 0; # current number randomized (color)
 	snail.lab = "";
+	
+	# I could set.seed and play the entire game in one sample(1:6, 200, replace=TRUE)
 	
 	snails.round = function(n, by = 5)
 		{
@@ -42,11 +57,16 @@ snails.pace = function(snails = 6, finish.line = 8, moves = 200,
 		xmax = max(finish.line, max(snail.x) );
 		# define reasonable xmax if overpainting 
 		# SIM to solve ?
-		if(s.par) { xmax = (1/0.7)* moves/snails;  }		
+		if(snail.par) 
+			{ 
+			xmax = (1/0.7)* moves/snails; 
+			if(xmax > moves) { xmax = moves; }
+			if(xmax < finish.line) { xmax = finish.line; }
+			}		
 		
 		# U+1F40C [snail]
 		plot(snail.x, snail.y, 
-				col=snail.col, pch=s.pch, cex=s.cex, 
+				col=snail.col, pch=snail.pch, cex=snail.cex, 
 				xlim=c(-1, snails.round(xmax, 5) ), 
 				ylim=c(-1, ymax ), 
 				axes=FALSE, frame.plot=FALSE, 
@@ -60,9 +80,9 @@ snails.pace = function(snails = 6, finish.line = 8, moves = 200,
 		# overlay "points" again so trail doesn't have text ...
 		# maybe not even use plot ?
 		# overlay doesn't work with BAD UTF character ... weird ?
-		if(s.par)
+		if(snail.par)
 			{
-			points(snail.x, snail.y, col=snail.col, pch=s.pch, cex=1.3*s.cex);
+			points(snail.x, snail.y, col=snail.col, pch=snail.pch, cex=1.3*snail.cex);
 			}
 		# place text with current number PLUS * rank if finish.line 
 		text(snail.x, y=snail.y, labels=snail.lab, col="black"); 
@@ -70,18 +90,18 @@ snails.pace = function(snails = 6, finish.line = 8, moves = 200,
 		
 		# main in plot is updating, so place a textbox (white) to overwrite?
 		# white out overlay 
-		rect(0,ymax, xmax, (ymax-1), border=NA, col="white");
+		rect(0,(ymax-5/6*y.header), 1.5*xmax, (ymax-1/6*y.header), border=NA, col="white");
 		
 		status=paste0("Move #", move.number, " of ", moves);
 			r.col = "white"; if(n != 0) { r.col = snail.col[n]; }
 		# length is the current color's position
 			xlen = finish.line; if( n != 0 ) { xlen = snail.x[n]; }
 								if(xlen == 0) { xlen = finish.line; }		
-		rect(0,ymax, xlen, (ymax-1), border=NA, col=r.col);
-		text(0, y=(ymax-1/3), labels=status, col="black", pos=4); # to the right 
-		text(xlen, y=(ymax-2/3), labels=status, col="white", pos=2); # to the left 
+		rect(0,(ymax-5/6*y.header), xlen, (ymax-1/6*y.header), border=NA, col=r.col);
+		text(0, y=(ymax-1/3*y.header), labels=status, col="black", pos=4); # to the right 
+		text(xlen, y=(ymax-2/3*y.header), labels=status, col="white", pos=2); # to the left 
 		
-		if(s.par) { par(new = TRUE); }
+		if(snail.par) { par(new = TRUE); }
 		}
 	snails.update = function() 
 		{
@@ -92,7 +112,7 @@ snails.pace = function(snails = 6, finish.line = 8, moves = 200,
 				{
 				x = readline(prompt="Press [enter] to continue, [ESC] to quit");
 				} 
-		n = sample(1:snails, 1);
+		n = sample((1:snails), 1);
 		assign("n", n, envir=parent.env(environment()) );
 		
 		snail.x[n] = 1 + snail.x[n];
@@ -123,7 +143,7 @@ snails.pace = function(snails = 6, finish.line = 8, moves = 200,
 			}
 		}
 	attr(move.history, "color") = snail.col;
-	attr(move.history, "info") = snail.lab;
+	attr(move.history, "info") 	= snail.lab;
 	invisible(move.history);	
 	}
 

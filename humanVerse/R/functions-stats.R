@@ -1,4 +1,15 @@
 
+	
+	
+
+
+
+
+
+
+
+# https://www.r-project.org/foundation/members.html
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' tukey.summary
@@ -467,6 +478,10 @@ stats.range = function(x, na.rm=TRUE)
 	base::diff( base::range(x, na.rm=na.rm) );
 	}
 
+# are these all not univariate?
+# x = c(-0.457320423426742, 0.718822930133582, 0.913246703178334, 1.7489769470399, -0.435465367752817, -0.094406449218146, -1.29106291718895, -1.81526173485784, 0.246525347218095, -0.942997917267053, -0.00183948250677812, -0.19456458422759, 1.30012685580887, -0.286935598888774, 1.75036394522621, 1.20020292972812, 0.0872539337664133, 1.38539706854182, 1.85078707399169, 0.0629809109473718, -0.199309995765987, -1.0603974913912, 0.999818789291627, 1.56204778042194, 0.0229749429268058, 1.55599419104352, -1.61627827655638, 2.50204258589797, 1.17878626750971, -0.555160121843776, 0.486708062967901, -0.296390985434472, -0.356519522480354, 0.576064971994066, -0.526271633773905, 2.32994442689201, 1.55933903938102, 0.520621633705236, 0.277102682760275, 1.89017076338778, -0.831309252521779, 0.174731362485081, -1.76979571867116, 0.322617878673464, 1.22647626113366, 0.679615634830971, 0.959971889567321, 0.952391473234687, 0.429646833044911, 2.2402408720535, 1.85154085855492, 0.235088249191772, 0.510886122411297, 1.21555381652151, -1.78997554451195, -0.915385327412029, 0.854750205156582, 1.34335688999449, 0.495875033824638, 0.113341956475536, -0.499171025341094, -0.514522135855301, -1.15059136357202, 1.12563598134349, -0.277864709411034, 0.677044261028789, -0.148662161455589, -0.104440858011832, -0.492614646070104, -0.862547048838231, -0.304471715174949, 1.23759263561903, 0.712062306092214, 1.64070305189485, -1.33675055746022, -1.60301825221837, 1.28710227218544, -0.249302392930578, -1.24772834671796, 0.0702606721622734, 0.712865930106855, 1.08571484024967, -0.542589647418648, -0.258300920730575, -0.575242684071675, 1.62201031630678, 0.0768877651412813, 1.19956015385064, 0.424021358146621, 1.03882219075107, -1.0836688677529, 0.935204617976028, -1.31459218916934, -0.779253539443086, -0.939860443677011, -0.893448119796482, 0.429425929894907, -1.00920713262212, -0.477890588313549, 0.156767929541687);
+# x.info = stats.summary(x);
+# str(x.info);
 stats.summary = function() {}
 stats.summary = function(x, type=1, sort.ASC = FALSE,
 								outlier.z = c(-3, 3), 
@@ -479,13 +494,20 @@ stats.summary = function(x, type=1, sort.ASC = FALSE,
 	n = length(x);
 	xx = stats::na.omit(x);
 	n2 = length(xx);
+	
+		t.var = stats::var(xx);
+		t.var.p = t.var*(n2-1)/n2;
+		t.mean = base::mean(xx);
+		
 	res$length = list("n" = n, "omit" = (n-n2), "good" = n2);
 	res$base = list(	"sum" 		= base::sum(xx),
-						"mean" 		= base::mean(xx),	
-						"mean.t5" 	= base::mean(xx, trim=0.05),
+						"mean" 		= t.mean,	
+						"mean.t5" 	= base::mean(xx, trim=0.05), 
 						"mean.t20" 	= base::mean(xx, trim=0.20),
-						"var"		= stats::var(xx),  	# sample as /(n-1)
-						"sd"		= stats::sd(xx),	# sample as /(n-1)
+						"var"		= t.var,  			# sample as /(n-1)
+						"var.p"		= t.var.p,	# population
+						"sd"		= sqrt(t.var),		# UNBIASED /(n-1)
+						"sd.p"		= sqrt(t.var.p), 	# population
 						"median"	= stats::median(xx),
 						"mad"		= stats::mad(xx),			
 						"five"		= stats::fivenum(xx)
@@ -506,23 +528,26 @@ stats.summary = function(x, type=1, sort.ASC = FALSE,
 					# https://en.wikipedia.org/wiki/Sharpe_ratio
 					# https://en.wikipedia.org/wiki/Coefficient_of_variation#Estimation
 					
+					
+		t.mean.d = xx - res$base$mean;
 	res$extended = list(
-						"mean.mad" 	= mean( abs( xx - res$base$mean ) ),
-						"mean.se"	= ( res$base$sd / sqrt(n2) ),
-						"skewness"	= (sum(( xx - res$base$mean )^3)/n2)/(sum((xx - res$base$mean)^2)/n2)^(3/2),
-						"kurtosis"	=  n2 * sum( ( xx - res$base$mean )^4 ) / ( sum( ( xx - res$base$mean )^2)^2 ),  # [space]^4 was bug?
-						"sharpe"	= ( res$base$mean - sharpe.R ) / res$base$sd,
-						"CV" 		= res$base$sd / res$base$mean
+						"mean.deviation" = t.mean.d,
+						"mean.mad" 	= mean( abs( t.mean.d ) ),
+						"mean.se"	= ( res$base$sd.p / sqrt(n2) ),
+						"sharpe"	= ( res$base$mean - sharpe.R ) / res$base$sd.p, #Sharpe ratio
+						"CV" 		= res$base$sd.p / res$base$mean  # Coefficient of variation
 						);
+						
+						
+	# https://en.wikipedia.org/wiki/Method_of_moments_(statistics)
+	# not the same as moments::all.moments() ?
+	res$moments = list();
+		for(i in 0:5)
+			{
+			mo = paste0("m",i);
+			res$moments[[mo]] = sum(t.mean.d^i)/n2;
+			}
 
-	info = "Kurtosis is a measure of the “tailedness” of the probability distribution. A standard normal distribution has kurtosis of 3 and is recognized as mesokurtic. An increased kurtosis (>3) can be visualized as a thin “bell” with a high peak whereas a decreased kurtosis corresponds to a broadening of the peak and “thickening” of the tails. Kurtosis >3 is recognized as leptokurtic and <3 as platykurtic (lepto=thin; platy=broad). There are four different formats of kurtosis, the simplest is the population kurtosis; the ratio between the fourth moment and the variance. (https://www.sciencedirect.com/topics/neuroscience/kurtosis)";
-	
-	res$extended$kurtosis = property.set("info", res$extended$kurtosis, info);
-	
-	info = "Skewness refers to a distortion or asymmetry that deviates from the symmetrical bell curve, or normal distribution, in a set of data. If the curve is shifted to the left or to the right, it is said to be skewed. Skewness can be quantified as a representation of the extent to which a given distribution varies from a normal distribution. A normal distribution has a skew of zero, while a lognormal distribution, for example, would exhibit some degree of right-skew. (https://www.investopedia.com/terms/s/skewness.asp).  \n Skewness is defined base the tails of the distribution, NOT the center of MASS of the data (defined by the histogram: *more* numbers on the right or left side [not the weighting of the numbers defined by the mean, but the counts]).  If the center of MASS appears to be shifted to the LEFT (|:.), it is 'called right-skewed' as the 'long-tail of the data is to the right' and has positive skewness (skewness > 0).  If the center of MASS appears to be shifted to the RIGHT (.:|), it is called "left-skewed" as the 'long-tail of the data is to the left' and has negative skewness (skewness < 0).  If the center of MASS is balanced (.:|:.) and symmetric (e.g., a 'Normal' distribution), then (skewness = 0).  The 'confusion' is exacerbated by changing statistical norms from the nonparametric assumptions of the data; specifically the relationship between the median and the mean.  For more info, please see (https://en.wikipedia.org/wiki/Skewness#Relationship_of_mean_and_median)."
-	
-	res$extended$skewness = property.set("info", res$extended$skewness, info);
-	
 						# matrixStats::weightedMad(xx);
 						# matrixStats::weightedMedian(xx);
 
@@ -544,6 +569,8 @@ stats.summary = function(x, type=1, sort.ASC = FALSE,
 	res$mean 	= stats.mean(xx);					# members of the set
 	res$sd		= stats.sd(xx);
 	res$var		= (res$sd)^2;
+	res$var.p	= res$var*(n2-1)/n2;
+	res$sd.p 	= sqrt(res$var.p);	
 	res$median 	= stats.median(xx);
 	res$mad		= stats.median( abs( xx - res$median ) ); # members of diff(set)
 	res$mode 	= stats.mode(xx);
@@ -557,8 +584,8 @@ stats.summary = function(x, type=1, sort.ASC = FALSE,
 		# [maybe diff(range()) = stats.range 
 	 
 	
-		x.bar = res$mean; 				# anchored to set membership
-		s.hat = res$sd;
+		x.bar = res$base$mean; 				# NOT anchored to set membership
+		s.hat = res$base$sd.p;				# sd (population)
 	res$zScores = (x - x.bar) / s.hat;  # maybe different that base::scale()
 		# the probem: neither x.bar or s.hat are trimmed ... bias in outlier detection
 		#  https://en.wikipedia.org/wiki/Grubbs%27s_test
@@ -587,6 +614,50 @@ stats.summary = function(x, type=1, sort.ASC = FALSE,
 						"lower" = 	which( x < fence.outer.lower ),
 						"upper" = 	which( x > fence.outer.upper )
 						);
+	
+	
+	
+	if(n2 < 4) 
+		{ 
+		warning("Need at least 4 data for complete analysis, returning what has been calculated."); 
+		return(invisible(res)); 
+		}
+	
+	# see moments::skewness or e1071::skewness
+
+	skew.g1 = res$moments$m3 / ( (res$moments$m2)^(3/2) );
+	skew.G1 = skew.g1 * sqrt(n2 * (n2-1)) / (n2 - 2) ;
+	skew.b1 = skew.g1 * ((n2-1)/n) ^ (3/2);
+	
+	res$skewness = list(
+						"g1" = skew.g1,
+						"G1" = skew.G1,
+						"b1" = skew.b1
+						);
+	
+	info = "Skewness refers to a distortion or asymmetry that deviates from the symmetrical bell curve, or normal distribution, in a set of data. If the curve is shifted to the left or to the right, it is said to be skewed. Skewness can be quantified as a representation of the extent to which a given distribution varies from a normal distribution. A normal distribution has a skew of zero, while a lognormal distribution, for example, would exhibit some degree of right-skew. (https://www.investopedia.com/terms/s/skewness.asp).  \n Skewness is defined base the tails of the distribution, NOT the center of MASS of the data (defined by the histogram: *more* numbers on the right or left side [not the weighting of the numbers defined by the mean, but the counts]).  If the center of MASS appears to be shifted to the LEFT (|:.), it is 'called right-skewed' as the 'long-tail of the data is to the right' and has positive skewness (skewness > 0).  If the center of MASS appears to be shifted to the RIGHT (.:|), it is called \"left-skewed\" as the 'long-tail of the data is to the left' and has negative skewness (skewness < 0).  If the center of MASS is balanced (.:|:.) and symmetric (e.g., a 'Normal' distribution), then (skewness = 0).  The 'confusion' is exacerbated by changing statistical norms from the nonparametric assumptions of the data; specifically the relationship between the median and the mean.  For more info, please see (https://en.wikipedia.org/wiki/Skewness#Relationship_of_mean_and_median)."
+	
+	res$skewness = property.set("info", res$skewness, info);
+	
+
+	kurt.g2 = res$moments$m4 / (res$moments$m2)^2 - 3;
+	kurt.G2 = ((n2+1)*kurt.g2 + 6)*(n2-1)/((n2-2)*(n2-3));
+	kurt.b2 = (kurt.g2 + 3) * (1 - 1/n2)^2 - 3;
+	
+	res$kurtosis = list(
+						"g2" = kurt.g2,
+						"G2" = kurt.G2,
+						"b2" = kurt.b2
+						);
+	
+
+	info = "Kurtosis is a measure of the “tailedness” of the probability distribution. A standard normal distribution has kurtosis of 3 and is recognized as mesokurtic. An increased kurtosis (>3) can be visualized as a thin “bell” with a high peak whereas a decreased kurtosis corresponds to a broadening of the peak and “thickening” of the tails. Kurtosis >3 is recognized as leptokurtic and <3 as platykurtic (lepto=thin; platy=broad). There are four different formats of kurtosis, the simplest is the population kurtosis; the ratio between the fourth moment and the variance. (https://www.sciencedirect.com/topics/neuroscience/kurtosis).  Often the 'excess kurtosis' is reported meaning they already subtracted 3 from the result.";
+	
+	res$kurtosis = property.set("info", res$kurtosis, info);
+	
+	
+	
+	
 	
 	# maybe do plot at end with NORMAL, t and z-cuts?
 	# maybe box.tukey (univariate)

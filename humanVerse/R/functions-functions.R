@@ -1,4 +1,7 @@
 
+
+# people.whois, package.whatis, function.whereis
+
 # str( package.NAMESPACE(stringi) );
 # str( package.NAMESPACE("stringi") );
 # .rmpkg("package:stringi")
@@ -55,6 +58,140 @@ functions.listFromPackage = function(pkg = "stats")
 	private = set.diff(all, public);
 	list("public" = public, "private" = private);
 	}
+
+# recycles vs DOES NOT recylce (see sweep)
+# https://stackoverflow.com/a/73550374/184614
+
+
+# # pkg = "from-ls()";
+	# x = ls(all.names = TRUE);
+	
+	# x = ls(getNamespace('base'), all.names = TRUE)
+	# y = sapply(x, function(x) inherits(try(match.fun(x), silent = TRUE), 'try-error'));
+	
+	# f = x[!y];
+	# z1 = sapply(f, function(x) is.null(formals(match.fun(x))[[param]]));
+	# f1 = f[!z1];
+	
+	# z2 = sapply(f, function(x) is.null(formals(args(match.fun(x)))[[param]]));
+	# f2 = f[!z2];
+	
+	# v1 = sapply(f1, function(x) formals(match.fun(x))[[param]]);
+	# v2 = sapply(f2, function(x) formals(args(match.fun(x)))[[param]]);
+	
+	# x <- ls(getNamespace('stats'), all.names = TRUE)
+# y <- sapply(x, function(x) inherits(try(match.fun(x), silent = TRUE), 'try-error'))
+	
+	
+
+
+
+
+# options(warn=2);
+# options("warn");
+options.get = function() {}
+options.set = function() {}
+
+# parameter is currently not a list or a vector ... 
+
+# df = functions.withParameter("na.rm", packages=c("stats","base"));
+# df = functions.withParameter("na.rm");
+# table(df$pkg);
+# xtabs(~pkg+param.value , df)
+
+
+functions.withParameter = function(param="na.rm", packages=(.packages()), json=FALSE)
+	{
+debug = FALSE;
+op = options();
+options(warn=2);			# turns warnings into errors
+on.exit( options(op) ); # we need to saveState/restoreState based on options
+  # options(warn=0); # default is 0, 2 is TURN into error ... 
+	processOneFunction = function(fn.str)
+		{
+		fn.obj = suppressError( match.fun(fn.str), show.notice=debug, msg="debug functions.listFunctionsWithParameter match.fun()");
+		if(is.error(fn.obj)) { return(NULL); }
+if(debug) { cat("\n fn.str = ", fn.str, "\t pkg = ", pkg, "\t w = ", w, "\n");	}		
+		# is.function (mine vs base::) ? 
+		if(base::is.function(fn.obj))
+			{
+			f = suppressError( formals( fn.obj ), show.notice=debug, msg="debug functions.listFunctionsWithParameter formals()");
+			if(is.error(f)) { return(NULL); }
+			if(is.primitive(fn.obj)) 
+				{ 
+				f = suppressError( formals(args(fn.obj)) , show.notice=debug, msg="debug functions.listFunctionsWithParameter formals(args())");
+				if(is.error(f)) { return(NULL); }
+				}
+				
+			if( !(param %in% names(f) ) ) { return(NULL); }
+			
+if(debug) { print( f[param] );	}		
+
+			row = switch(toupper(as.character(json)),
+					  "TRUE"	= c(pkg, w, fn.str, JSON.stringify(f[[param]]) ),
+				c(pkg, w, fn.str, as.character(f[[param]]) )	# DEFAULT				# DEFAULT [lower-case]
+				);
+
+			return(row);
+			}
+		return(NULL);
+		}
+	
+	df = NULL;
+	
+	## LOOP OVER PACKAGES
+	if(!is.null(packages))
+		{
+		for(package in packages)
+			{
+			pkg = package;
+			info = functions.listFromPackage(pkg);
+			w = "public";
+			for(fn.str in info$public)
+				{
+				row = processOneFunction(fn.str);
+				df = rbind(df, row);
+				}
+			w = "private";
+			for(fn.str in info$private)
+				{
+				row = processOneFunction(fn.str);
+				df = rbind(df, row);
+				}
+			}		
+		}
+	
+	# let's process regular ls()
+	pkg = "zzz.from-ls(GLOBAL)";
+	w = "public";	
+	info = ls(all.names = TRUE, pos=1);  # global environment
+	for(fn.str in info)
+		{
+		row = processOneFunction(fn.str);
+		df = rbind(df, row);
+		}	
+	# append this PSEUDO-PKG to "packages" list ... 
+		
+		
+		
+	df = as.data.frame(df);
+	colnames(df) = c("pkg", "fn.is", "fn.name", "param.value");
+		df$pkg = as.factor(df$pkg);
+		df$fn.is = as.factor(df$fn.is);
+		df$param.value = as.factor(df$param.value);
+	
+	
+	summary = xtabs(~pkg+param.value , df);
+	
+	print( summary );
+	
+	attr(df, "param") = param;
+	attr(df, "packages") = c(packages, pkg);
+	attr(df, "summary") = summary;
+	invisible(df);
+	}
+
+
 
 
 # functions-ls, 		functions on ls() not part of a library
@@ -166,6 +303,7 @@ functions.cleanUpKey = functions.cleanKey;
 
 # plot.tukey = function(x) {}
 
+# property.get("srcref", stringi::stri_trim);
 # gets the RAW function ... 
 # property.get("srcref", ping.domain)
 # compare to body(ping.domain)
@@ -191,6 +329,7 @@ functions.cleanUpKey = functions.cleanKey;
 
 
 
+# setNames(list(...), sapply(as.list(match.call())[-1], deparse))
 
 	
 functions.getParameterInfo = function(return="dots", truncate=10)

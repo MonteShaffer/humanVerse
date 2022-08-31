@@ -2,7 +2,7 @@
 
 # https://www.rdocumentation.org/packages/Zelig/versions/4.2-1
 is.formula = function() {}
-
+# is.model?
 
 is.prime = function(x, ..., optimus=FALSE)
 	{
@@ -18,20 +18,43 @@ is.prime = function(x, ..., optimus=FALSE)
 		return( list.getProperty("prime", factors) );
 		}
 	# if one, 
-	if(x == 1) { return(optimus); }
+	if(x == 1) { return(optimus); } ## this is not multivariate, list above 
 	return( (nf == idx) ); 
 	}
 	
 	
 
 
-# is.function only works on non-string?
+
+are.functions = function(fnV = "sum", ..., suggestion=TRUE)
+	{
+	# if I make multivariate, must be string input ... 
+	fnV = dots.addTo(fnV, ...);
+	n = length(fnV);
+	res = logical(n);
+	for(i in 1:n)
+		{
+		fn = fnV[i];
+		res[i] = function.exists(fn);  # not to confuse with base::is.function
+		}
+	names(res) = fnV;
+	res;
+	}
+
+
+# base::is.function only works on non-string?
 # exists is the reverse, only on a string, not a non-string 
 # overwriting/extending base::
 is.function = function(fn)
 	{
-	if(is.character(fn)) { if(exists(fn)) { return(TRUE); } else { return(FALSE); } }
-	base::is.function(fn);
+debug = FALSE;
+	# is.function(match.fun("outer"))
+	if(is.character(fn)) 
+		{ 
+		x = suppressError( match.fun(fn), show.notice=debug, msg="debug is.function");
+		if(is.error(x)) { return(FALSE); }  # should be TRUE otherwise 
+		base::is.function(x);
+		} else { base::is.function(fn); }
 	}
 	
 #' @rdname function.exists
