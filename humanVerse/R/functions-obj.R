@@ -167,7 +167,10 @@ obj.access = function(str)
 				}	
 	}
 
+# leading . will work
 
+"%$$%" = function(r=NULL, str) { access(str); }
+	
 
 access <- `$$` <- function(str)
     {

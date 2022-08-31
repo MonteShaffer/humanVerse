@@ -100,3 +100,26 @@ xls.QUARTILE.EXC = function(x, q=1, na.rm=TRUE)
 	}
 	
 
+
+xls.COMBINE = function(n, r)
+	{
+	n %nCr% r;	
+	}
+
+xls.PERMUT = function(n, r)
+	{
+	n %nPr% r;	
+	}
+
+
+# xls.COMBINE = function(n, r) {}
+# xls.NORMDIST = xls.NORMINV = xls.POISSON = xls.BINOMIAL = xls.SUMPRODUCT
+# POISSON/BINOMAL ... E[X], var[X] ... n, p 
+# xls has "mean" not AVERAGE ... LOL
+# P(A), P(A and B), P(A|B), P(A or B) ... parse/eval ... 
+# BAYES's THEOREM in simple FORM ...
+# P(X = x); 								=> 1
+# P(X > x); P(X >= x); P(X <=x); P(X < x); 	=> 4
+# P(a </= x </= b); P(a >/= x >/= b);		=> 8?
+# p's and q's ... q = 1-p 		
+

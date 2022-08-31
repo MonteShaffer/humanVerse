@@ -534,6 +534,7 @@ is.negative = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
 #' is.zero(-1);
 #' is.zero( c(-1*1:5,-sin(pi), 0,0,0, sin(pi), 1:5, NA, NA) );
 #'
+is.zero = function(x) {}
 is.zero = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
 	{
 	x = dots.addTo(x, ...);

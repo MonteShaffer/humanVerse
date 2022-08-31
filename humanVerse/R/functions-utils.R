@@ -1,4 +1,30 @@
 
+
+
+ceil = ceiling;
+ 
+
+
+dots.addTo = function(key, ...)
+	{
+	more = unlist(list(...));
+	c(key, more);
+	}
+	
+
+
+#' @rdname dots.addToKey
+#' @export
+dots.addToKey = dots.addTo;
+
+
+#' @rdname nchars
+#' @export
+nchars = nchar;
+
+
+
+
 	
 temp.constants = function(envir=parent.frame(1))
 	{
@@ -62,13 +88,167 @@ temp.f2c = 	function(degF) { temp.convert(degF, "F", "C"); }
 temp.c2k = 	function(degC) { temp.convert(degC, "C", "K"); }
 temp.k2c = 	function(degK) { temp.convert(degK, "K", "C"); }
 
+# TI-83
+# Eng (engineering) notation mode is similar to scientific notation. However, the number can have one, two, or three digits before the decimal; and the power-of-10 exponent is a multiple of three, as in 12.34567E3.
+
+# randBin(# of coin flips, prob of heads, # of simulations)
+
+
+gcd.lcm = function(x,y)
+	{
+	a=x;
+	b=y;
+	while (b != 0)
+        {
+		t = b;
+		b = a %% b;
+		a = t;
+        }
+	list("gcd"=a, "lcm"=(x*y)/a);
+	}
+
+
+
 # 4 nCr 2 ... choose vs lchoose ?
+# ?utils::combn  ?choose 
+# library(combinat); library(gtools);
 # choose(4, 2) ... with replacement 
 # make %nCr% and %nPr% functions ... 
-nCr = function(n, r) { factorial(n) / ( factorial(r) * factorial(n-r) ); }
-"%nCr%" = nCr;
-nPr = function(n, r) { factorial(n) / factorial(n-r); }
-"%nPr%" = nPr;
+# https://davetang.org/muse/2013/09/09/combinations-and-permutations-in-r/
+# https://www.calculatorsoup.com/calculators/discretemathematics/permutationsreplacement.php
+nCr = function(n, r, replace=FALSE) 
+	{ 
+	# same function (FALSE, with n+r-1)
+	if(replace) { return( nCr( (n+r-1), r, replace=FALSE ) ); } 
+	factorial(n) / ( factorial(r) * factorial(n-r) ); 
+	}
+"%ncr%" = "%nCr%" = nCr;
+
+"%!%" = function(n, r=NULL) { factorial(n); }
+
+nPr = function(n, r, replace=FALSE) 
+	{ 
+	if(replace) { return( n^r ); }
+	factorial(n) / factorial(n-r); 
+	}
+"%npr%" = "%nPr%" = nPr;
+
+
+
+
+
+math.cleanup = function(x, tol = sqrt(.Machine$double.eps), ...)
+	{
+	# maybe sqrt(3)/2
+	# zeros 
+	z = is.zero(x, tol=tol, ...); # Re / Im also possible.
+	x[z] = 0;
+	x;
+	}
+
+math.sin = function(x, ...)
+	{
+	# maybe do better with fractional components
+	x = dots.addTo(x, ...);
+	math.cleanup( sin(x) );
+	}
+	
+math.cos = function(x, ...)
+	{
+	# maybe do better with fractional components
+	x = dots.addTo(x, ...);
+	math.cleanup( cos(x) );
+	}
+	
+math.tan = function(x, ...)
+	{
+	# maybe do better with fractional components
+	x = dots.addTo(x, ...);
+	math.cleanup( tan(x) );
+	}
+
+cotan 		= function(x, ...) { 1/math.tan(x,...); }
+cosecant 	= function(x, ...) { 1/math.sin(x,...); } 	
+secant 		= function(x, ...) { 1/math.cos(x,...); } 
+	
+	
+math.asin = function(x, ...)
+	{
+	# maybe do better with fractional components
+	x = dots.addTo(x, ...);
+	math.cleanup( asin(x) );
+	}
+
+arcsin = math.asin;	
+
+	
+math.acos = function(x, ...)
+	{
+	# maybe do better with fractional components
+	x = dots.addTo(x, ...);
+	math.cleanup( acos(x) );
+	}
+
+arccos = math.acos;
+
+	
+	
+math.atan = function(x, ...)
+	{
+	# maybe do better with fractional components
+	x = dots.addTo(x, ...);
+	math.cleanup( atan(x) );
+	}
+
+
+arctan = math.atan;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # Euclidean fractions ... (depth = 12, tol = ) ... 
@@ -165,42 +345,8 @@ temp.k2r = temp.rankineFromKelvin;
 # https://onlinegdb.com/qgvpmcpRr
 # https://onlinegdb.com/5HTxwqrS6
 # C++ variant ... 
-gcd.lcm = function(x,y)
-	{
-	a=x;
-	b=y;
-	while (b != 0)
-        {
-		t = b;
-		b = a %% b;
-		a = t;
-        }
-	list("gcd"=a, "lcm"=(x*y)/a);
-	}
 
 
-
-
-ceil = ceiling;
- 
-
-
-dots.addTo = function(key, ...)
-	{
-	more = unlist(list(...));
-	c(key, more);
-	}
-	
-
-
-#' @rdname dots.addToKey
-#' @export
-dots.addToKey = dots.addTo;
-
-
-#' @rdname nchars
-#' @export
-nchars = nchar;
 
 
 
@@ -442,10 +588,10 @@ dechex = function(intdec, ..., n=NULL, hash=FALSE)
 #'
 deg2rad = function(degs, ...)
 	{
-	more = unlist(list(...));
-	degs = c(degs, more);
+	degs = dots.addTo(degs, ...);
 
-	res = list();
+	n = length(degs);
+	res = numeric(n);
 	i = 0;
 	for(deg in degs)
 		{
@@ -453,10 +599,13 @@ deg2rad = function(degs, ...)
 		ndeg = suppressWarnings(as.numeric(deg));
 		rad = NaN;
 		if( !is.na(ndeg) )  { rad = (pi/180) * ndeg; }
-		res[[i]] = rad;
+		res[i] = rad;
 		}
-	returnList(res);
+	res;
 	}
+
+
+"%deg%" = function(deg, r=NULL) { deg2rad(deg); }
 
 #' rad2deg
 #'
@@ -476,23 +625,21 @@ deg2rad = function(degs, ...)
 #'
 rad2deg = function(rads, ...)
 	{
-	more = unlist(list(...));
-	rads = c(rads, more);
-
-	res = list();
-	i = 0;
+	rads = dots.addTo(rads, ...);
+	n = length(rads);
+	res = numeric(n);
 	for(rad in rads)
 		{
 		nrad = suppressWarnings(as.numeric(rad));
 		i = 1 + i;
 		deg = NaN;
 		if( !is.na(nrad) )  { deg = (180/pi) * nrad; }
-		res[[i]] = deg;
+		res[i] = deg;
 		}
-	returnList(res);
+	res;
 	}
 	
-	
+"%rad%" = function(rad, d=NULL) { rad2deg(rad); }	
 	
 	
 	
