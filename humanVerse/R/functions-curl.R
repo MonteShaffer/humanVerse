@@ -122,7 +122,7 @@ curl_setopt = curl.setopt;
 # parse_headers_list(req$headers)
 
 
-info = curlGetHeaders("http://www.mshaffer.com/");
+# info = curlGetHeaders("http://www.mshaffer.com/");
 
 
 handle_setopt = function (handle, ..., .list = list()) 

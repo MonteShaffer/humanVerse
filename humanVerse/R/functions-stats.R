@@ -216,8 +216,8 @@ doMean = stats.mean;
 
 stats.sd = function(x, na.rm=TRUE, is.member=TRUE, ...)
 	{
-	if(!is.member) { sd(x, na.rm=na.rm); }  # plain vanilla 
 	warning = stats.warningNA(x);
+	if(!is.member) { sd(x, na.rm=na.rm); }  # plain vanilla 
 	n = length(x);
 	n2 = n - stats.countNA(x);
 		# by default, na.rm happens inside b/c na.last=NA
@@ -285,6 +285,7 @@ stats.sd = function(x, na.rm=TRUE, is.member=TRUE, ...)
 #'
 stats.whichMin = function(x, na.rm=TRUE)
 	{
+	warning = stats.warningNA(x);
 	# behaves like which.min(x) but returns multiple
 	x.min = min( x, na.rm=na.rm ); 
 	which(x == x.min);
@@ -313,6 +314,7 @@ whichMin = stats.whichMin;
 #'
 stats.whichMax = function(x, na.rm=TRUE)
 	{
+	warning = stats.warningNA(x);
 	# behaves like which.max(x) but returns multiple
 	x.max = max( x, na.rm=na.rm ); 
 	which(x == x.max);
@@ -348,6 +350,7 @@ whichMax = stats.whichMax;
 #'
 stats.whichMinFrequency = function(x)
 	{
+	warning = stats.warningNA(x);
 	x.table = as.data.frame( table(x) );
 		freq.min = min( x.table$Freq );
 	x.list = x.table[x.table$Freq==freq.min,];
@@ -379,6 +382,7 @@ stats.whichMinFrequency = function(x)
 #'
 stats.mode = function(x, force.numeric=TRUE)
 	{
+	warning = stats.warningNA(x);
 	# R is a programming language for statistical computing and graphics supported by the R Core Team and the R Foundation for Statistical Computing. Created by statisticians Ross Ihaka and Robert Gentleman, R is used among data miners, bioinformaticians and statisticians for data analysis and developing statistical software. (WIKIPEDIA.com).
 	# R is a free software environment for statistical computing and graphics. It compiles and runs on a wide variety of UNIX platforms, Windows and MacOS. (r-project.org) 
 	# NA?
@@ -417,6 +421,7 @@ whichMinFrequency = stats.whichMinFrequency;
 
 stats.mScores = function(x, x.median = NULL, x.mad = NULL, method="base")
 	{
+	warning = stats.warningNA(x);
 	if(is.numeric(x.median) && is.numeric(x.mad)) { return ( (x - x.median) / x.mad ); }
 	m = functions.cleanKey(method, 1);
 	if( is.null(x.median) || is.null(x.mad) )
@@ -427,7 +432,8 @@ stats.mScores = function(x, x.median = NULL, x.mad = NULL, method="base")
 	# [b]ase method ... missing values, definition of mean?
 	if( m == "b" )
 		{
-		return( (x - median(x)) / mad(x) );
+		# base::mad has a constant != 1 by default ...
+		return( (x - median(x, na.rm=TRUE)) / mad(x, na.rm=TRUE) );
 		}
 		
 	x.median = stats.median(x);
@@ -441,6 +447,7 @@ stats.mScores = function(x, x.median = NULL, x.mad = NULL, method="base")
 stats.zScores = function(x, x.bar = NULL, s.hat = NULL, method="base")
 	{
 	if(is.numeric(x.bar) && is.numeric(s.hat)) { return ( (x - x.bar) / s.hat); }
+	warning = stats.warningNA(x);
 	m = functions.cleanKey(method, 1);
 	if( is.null(x.bar) || is.null(s.hat) )
       {
@@ -450,7 +457,7 @@ stats.zScores = function(x, x.bar = NULL, s.hat = NULL, method="base")
 	# [b]ase method ... missing values, definition of mean?
 	if( m == "b" )
 		{
-		return( (x - mean(x)) / sd(x) );
+		return( (x - mean(x, na.rm=TRUE)) / sd(x) );
 		}
 	
 	x.bar = stats.mean(x);
@@ -475,6 +482,7 @@ stats.max = function(x, na.rm=TRUE)
 	
 stats.range = function(x, na.rm=TRUE)
 	{
+	warning = stats.warningNA(x);
 	base::diff( base::range(x, na.rm=na.rm) );
 	}
 

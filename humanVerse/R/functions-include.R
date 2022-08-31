@@ -42,7 +42,7 @@ suppressError = function(expression, show.notice = TRUE, msg = "")
 
 # # ?source ... sourceDir
 ## cat("\n", res$myerrors[ res$myerrors != ""], sep="\n" );
-
+ 
 ## res = include.dir(getwd()); View(res); res$myerrors[ res$myerrors != ""]
 
 include.dir = function() {}

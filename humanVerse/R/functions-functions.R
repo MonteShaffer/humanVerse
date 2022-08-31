@@ -210,7 +210,7 @@ functions.usageOf = function(fn = "base:::curlDownload", pkg=NULL, depth="ls-onl
 		} else {
 				# pkg can be multivariate, a list of pkg ... 
 				# do an internal audit of fn within the pkg 
-				fn doesn't have to be a member of the pkg
+				# fn doesn't have to be a member of the pkg
 				}
 	
 	}

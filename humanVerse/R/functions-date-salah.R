@@ -20,7 +20,7 @@ astro.DOS = function()
 # first light as in LOTR Helm's Deep
 # last light as in Big Sur sunset or Pirates:End of the World 
 
-date.salah = function(date='2020-02-20', ctype="british"
+date.salah = function(date='2020-02-20', ctype="british",
 								lat = 30, 
 								long = 30, 
 								alt = 0, 

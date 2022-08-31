@@ -84,7 +84,7 @@ package.version = function(pkg)
 # but can rebuild ... 
 HV.library = function() {}
 
-package.detach = function(pkg = "stringi", method = "lib
+# package.detach = function(pkg = "stringi", method = "lib
 package.attach = function(pkg = "stringi", method="library")
 	{
 	# require(pkg);
