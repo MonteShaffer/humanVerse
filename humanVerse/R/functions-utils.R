@@ -1,6 +1,79 @@
 
 
 
+#' deg2rad
+#'
+#' Convert angles from degrees to radians.
+#' Similar to pracma::deg2rad however is vectorized (multivariate).
+#'
+#' @param degs One or more angles in degrees
+#' @param ...  One or more angles in degrees
+#'
+#' @return One or more angles in radians.
+#' @export
+#'
+#' @examples
+#' deg2rad(c(1,3,34));
+#' deg2rad(1,3,34);
+#' deg2rad(1,3,"alex");
+#'
+deg2rad = function(degs, ...)
+	{
+	degs = dots.addTo(degs, ...);
+
+	n = length(degs);
+	res = numeric(n);
+	i = 0;
+	for(deg in degs)
+		{
+		i = 1 + i;
+		ndeg = suppressWarnings(as.numeric(deg));
+		rad = NaN;
+		if( !is.na(ndeg) )  { rad = (pi/180) * ndeg; }
+		res[i] = rad;
+		}
+	res;
+	}
+
+
+"%deg%" = function(deg, r=NULL) { deg2rad(deg); }
+
+#' rad2deg
+#'
+#' Convert angles from radians to degrees.
+#' Similar to pracma::rad2deg however is vectorized (multivariate).
+#'
+#' @param degs One or more angles in radians.
+#' @param ...  One or more angles in radians.
+#'
+#' @return One or more angles in degrees.
+#' @export
+#'
+#' @examples
+#' rad2deg(c(1,3,34));
+#' rad2deg(1,3,34);
+#' rad2deg(1,3,"alex");
+#'
+rad2deg = function(rads, ...)
+	{
+	rads = dots.addTo(rads, ...);
+	n = length(rads);
+	res = numeric(n);
+	for(rad in rads)
+		{
+		nrad = suppressWarnings(as.numeric(rad));
+		i = 1 + i;
+		deg = NaN;
+		if( !is.na(nrad) )  { deg = (180/pi) * nrad; }
+		res[i] = deg;
+		}
+	res;
+	}
+	
+"%rad%" = function(rad, d=NULL) { rad2deg(rad); }	
+	
+	
+
 ceil = ceiling;
  
 
@@ -258,94 +331,6 @@ arctan = math.atan;
 # 
 
 # https://en.wikipedia.org/wiki/Inverse_function
-temp.celsiusToFahrenheit = function(degC)
-	{
-	degF = 9/5 * degC + 32;
-	temp.isNA(degF, "F");
-	}
-	
-temp.c2f = 	temp.celsiusToFahrenheit
-	
-temp.celsiusFromFahrenheit = function(degF)
-	{	
-	degC = 5/9 * (degF - 32);
-	temp.isNA(degC, "C");
-	}
-	
-temp.f2c = 	temp.celsiusFromFahrenheit
-
-temp.celsiusToKelvin = function(degC)
-	{	
-	degK = degC + 273.15;
-	temp.isNA(degK, "K");
-	}
-	
-temp.c2k = 	temp.celsiusToKelvin
-
-temp.celsiusFromKelvin = function(degK)
-	{
-	degC = degK - 273.15;
-	temp.isNA(degC, "C");
-	}
-
-
-temp.k2c = 	temp.celsiusFromKelvin
-	
-temp.kelvinFromFahrenheit = function(degF)
-	{
-	temp.celsiusToKelvin( temp.celsiusFromFahrenheit(degF) );
-	}
-	
-temp.f2k = 	temp.kelvinFromFahrenheit
-	
-temp.kelvinToFahrenheit = function(degK)
-	{
-	temp.celsiusToFahrenheit( temp.celsiusFromKelvin( degK ) );
-	}
-	
-temp.k2f = 	temp.kelvinToFahrenheit	
-
-
-# https://en.wikipedia.org/wiki/Rankine_scale
-# TODO, add rankine ... 
-
-temp.rankineFromFahrenheit = function(degF)
-	{
-	degR = degF - 459.67;
-	temp.isNA(degR, "R");
-	}
-	
-temp.r2f = temp.rankineFromFahrenheit;
-	
-temp.rankineToFahrenheit = function(degR)
-	{
-	degF = degR + 459.67;
-	temp.isNA(degF, "F");	
-	}
-
-
-temp.f2r = temp.rankineToFahrenheit;
-
-temp.rankineToKelvin = function(degR)
-	{
-	temp.kelvinFromFahrenheit( temp.rankineToFahrenheit(degR) );
-	}
-	
-temp.r2k = temp.rankineToKelvin;
-	
-temp.rankineFromKelvin = function(degK)
-	{
-	temp.rankineFromFahrenheit ( temp.kelvinToFahrenheit( degK ) );
-	}
-	
-temp.k2r = temp.rankineFromKelvin;
-
-
-	
-# https://onlinegdb.com/qgvpmcpRr
-# https://onlinegdb.com/5HTxwqrS6
-# C++ variant ... 
-
 
 
 
@@ -570,77 +555,6 @@ dechex = function(intdec, ..., n=NULL, hash=FALSE)
 
 
 
-#' deg2rad
-#'
-#' Convert angles from degrees to radians.
-#' Similar to pracma::deg2rad however is vectorized (multivariate).
-#'
-#' @param degs One or more angles in degrees
-#' @param ...  One or more angles in degrees
-#'
-#' @return One or more angles in radians.
-#' @export
-#'
-#' @examples
-#' deg2rad(c(1,3,34));
-#' deg2rad(1,3,34);
-#' deg2rad(1,3,"alex");
-#'
-deg2rad = function(degs, ...)
-	{
-	degs = dots.addTo(degs, ...);
-
-	n = length(degs);
-	res = numeric(n);
-	i = 0;
-	for(deg in degs)
-		{
-		i = 1 + i;
-		ndeg = suppressWarnings(as.numeric(deg));
-		rad = NaN;
-		if( !is.na(ndeg) )  { rad = (pi/180) * ndeg; }
-		res[i] = rad;
-		}
-	res;
-	}
-
-
-"%deg%" = function(deg, r=NULL) { deg2rad(deg); }
-
-#' rad2deg
-#'
-#' Convert angles from radians to degrees.
-#' Similar to pracma::rad2deg however is vectorized (multivariate).
-#'
-#' @param degs One or more angles in radians.
-#' @param ...  One or more angles in radians.
-#'
-#' @return One or more angles in degrees.
-#' @export
-#'
-#' @examples
-#' rad2deg(c(1,3,34));
-#' rad2deg(1,3,34);
-#' rad2deg(1,3,"alex");
-#'
-rad2deg = function(rads, ...)
-	{
-	rads = dots.addTo(rads, ...);
-	n = length(rads);
-	res = numeric(n);
-	for(rad in rads)
-		{
-		nrad = suppressWarnings(as.numeric(rad));
-		i = 1 + i;
-		deg = NaN;
-		if( !is.na(nrad) )  { deg = (180/pi) * nrad; }
-		res[i] = deg;
-		}
-	res;
-	}
-	
-"%rad%" = function(rad, d=NULL) { rad2deg(rad); }	
-	
 	
 	
 	
@@ -665,7 +579,7 @@ rad2deg = function(rads, ...)
 #'
 charAt = function(str,idx)
   {
-  substr(str,idx,idx);
+  substr(str,idx,idx);  # or substring?
   }
 
 #' lastChar
@@ -685,11 +599,11 @@ charAt = function(str,idx)
 #' lastChar("Sasha");
 #' lastChar("Alexander");
 #'
-lastChar = function(str, trim=FALSE)
+lastChar = function(str, pre.trim=FALSE)
 	{
 	# this also works:: ... # .substr(str, -1)
-	if(trim){ str = str.trim(str); }
-	s.len = strlen(str);
+	if(pre.trim){ str = str.trim(str); }
+	slen = str.len(str);
 	charAt(str, s.len);
 	}
 
@@ -713,7 +627,8 @@ lastChar = function(str, trim=FALSE)
 #'
 charCodeAt = function(str,idx)
   {
-  charCode ( charAt(str,idx) ); #  as.numeric( iconv( charAt(str,idx), from="ASCII", to="unicodeFFFE", toRaw=TRUE)[[1]][2] );
+  charCode ( charAt(str,idx) ); 
+  #  as.numeric( iconv( charAt(str,idx), from="ASCII", to="unicodeFFFE", toRaw=TRUE)[[1]][2] );
   }
 
 
