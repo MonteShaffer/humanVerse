@@ -333,6 +333,7 @@ file.init = function()
 #'
 #' @examples
 #' WARNING:  OneDrive, DropBox may have file-lock ... CACHE, DATA, CODE are separate
+# add basic save/load ... save.image 
 file.readFrom = function(filename, ..., method="stringi")
 	{
 	mmm = functions.cleanKey(method, 3);

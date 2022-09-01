@@ -35,7 +35,7 @@ get.last.error = function()
 #' @examples
 # set.par.key
 setParKey = function(myKey, myValue)
-	{
+	{ 
   # save memory ... restoreState ... pdf
 # par(mar=c(0.25, 0.25, 0.25, 0.25)
 	# R.O. indicates read-only arguments: These may only be used in queries and cannot be set. ("cin", "cra", "csi", "cxy", "din" and "page" are always read-only.)
@@ -280,6 +280,17 @@ getOptions = function(myKeys)
 		}
 	returnList(res);
 	}
+
+
+
+
+
+
+
+
+
+
+
 
 
 #' getElementsInList

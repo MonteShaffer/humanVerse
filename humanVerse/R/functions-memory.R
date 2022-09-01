@@ -41,7 +41,7 @@ initMemory = memory.init;
 # # memory.smartRestore();
 
 
-memory.clear = function(purge.ls=TRUE, all.names=TRUE, purge.gc=TRUE, detach.packages=TRUE)
+system.clear = function(purge.ls=TRUE, all.names=TRUE, purge.gc=TRUE, detach.packages=TRUE)
 	{
 	# does this unregister loaded libraries?
 	if(purge.ls) { rm(list=ls(all.names=all.names)); }
@@ -62,19 +62,23 @@ memory.restoreState = function() {}
 
 
 
+ 
 
-
-memory.get = function(key, MEMORY="BASE") 
+memory.get = function(key, MEMORY="BASE", unused=NULL) 
 	{	
-	.GlobalEnv$.humanVerse["."][[MEMORY]][[key]];
+	.GlobalEnv$.humanVerse[["."]][[MEMORY]][[key]];
 	}
 
 
+# 
+	# if(is.null(.GlobalEnv$.humanVerse)) { memory.init(); }
+	# if(is.null(.GlobalEnv$.humanVerse["."])) { .GlobalEnv$.humanVerse["."] = list(); }
+	# if(is.null(.GlobalEnv$.humanVerse["."][[MEMORY]])) { .GlobalEnv$.humanVerse["."][[MEMORY]] = list(); }
 # different than property.set (key, OBJ, Value)
 # now the same ... KEY on OBJ to VAL
 memory.set = function(key, MEMORY="BASE", value) 
 	{
-	.GlobalEnv$.humanVerse["."][[MEMORY]][[key]] = value;	
+	.GlobalEnv$.humanVerse[["."]][[MEMORY]][[key]] = value;	
 	}
 	
 	

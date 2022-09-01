@@ -1,7 +1,7 @@
 
 
 # https://www.alexejgossmann.com/benchmarking_r/
-# microbenchmark ... C getting to nanoticker ... rbenchmark, one 'R' function by DIRK
+# microbenchmark ... C getting to nanoticker ... rbenchmark, one 'R' function by DIRK ... LOL tinyverse 
 # if you want to clear internals, use timer.clear ... or timer.clearALL
 
 timer.init = function(purge.memory = FALSE, 

@@ -1,4 +1,24 @@
 
+folder.cleanup = function(folder)
+	{
+	# replace _DATA_ , _SANDBOX_ , _CODE_ , _CONFIG_ 
+	# try to do relative ./../../
+	# remove // to / ... we assume this is a folder, not a URL 
+	folder = str.replace("///", "/", folder);
+	folder = str.replace("//", "/", folder);
+	folder;
+	}
+ 
+
+# _DATA_ , _SANDBOX_ , _CODE_ , _CONFIG_ 
+urban.buildWordList = function(where="_DATA_/web/", howOften = "yearly")
+	{
+	folder =  folder.cleanup( paste0(where, "/", "-URBAN-", "/", "YYYY", "/") );
+	sitemap = folder.cleanup( paste0(folder, "/", "sitemap", "/") );
+	
+	
+	}
+
 
 
 # ntypes = df.getColumnTypes(x);

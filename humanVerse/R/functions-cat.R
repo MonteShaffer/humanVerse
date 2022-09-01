@@ -1,5 +1,27 @@
 
 
+# https://stackoverflow.com/questions/9596918/r-warning-wrapper-raise-to-parent-function
+cat.warning = function(..., sep=" ")
+	{
+	str = dots.addTo(NULL, ...);
+	res = paste0(str, collapse=sep);
+	
+	parent.call = sys.call(sys.nframe() - 1L);
+	warning( paste("In", deparse(parent.call), ":", res) , call.=FALSE);	
+	}
+
+cat.stop = function(..., sep=" ")
+	{
+	str = dots.addTo(NULL, ...);
+	res = paste0(str, collapse=sep);
+	
+	parent.call = sys.call(sys.nframe() - 1L);
+	stop( paste("In", deparse(parent.call), ":", res) , call.=FALSE);	
+	}
+
+
+
+
 cat.init = function()
 	{
 	# load objects, where to attach?

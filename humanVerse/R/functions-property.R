@@ -1,7 +1,7 @@
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
-#' property.set
+#' property.set 
 #'
 #' This is a function to get/set the "attributes"/"attr"
 #'
@@ -208,5 +208,241 @@ property.remove = function()
 # Sys.unsetenv(x)
 # attributes(x) <- NULL ... removes all 
 
-
+	# cat.stop("monte", "say", "hi");
 	}
+
+
+
+
+
+
+
+
+
+
+
+#' setOption
+#'
+#' @param myKey
+#' @param myValue
+#'
+#' @return
+#' @export
+#'
+#' @examples
+option.set = function(keys, values)
+	{
+	n = length(keys);
+	for(i in 1:n)
+		{
+		key = keys[i];
+		value = values[i];
+		options(stats::setNames(list(key), value));
+		}
+	}
+	
+
+
+	
+setOption = option.set;
+setOptions = option.set;
+options.set = option.set;
+
+
+
+#' getOptions
+#'
+#' @param keys
+#'
+#' @return
+#' @export
+#'
+#' @examples
+option.get = function(keys)
+	{
+	#  R::base has "getOption" but not "getOptions"	(multivariate)
+	n = length(keys);
+	res = vector("list", n);
+	for(i in 1:n)
+		{
+		key = keys[i];
+		res[[i]] = base::getOption(key);
+		}
+	list.return(res);
+	}
+
+getOptions = option.get;
+options.get = option.get;
+
+
+option.getALL = function()
+	{
+	options();
+	}
+
+option.getAll = option.getALL;
+options.getAll = option.getALL;
+options.getALL = option.getALL;
+
+option.saveState = function(key="DEFAULT")
+	{
+	memory.set(key, "OPTIONS", options() );	
+	}
+
+options.saveState = option.saveState;
+	
+option.restoreState = function(key="DEFAULT")
+	{
+	op = memory.get(key, "OPTIONS");
+	if(!is.null(op))
+		{
+		options(op);
+		return(invisible(TRUE));
+		}
+	warning("There is no memory for key=XXX, nothing updated");
+	return(invisible(TRUE));
+	}
+
+options.restoreState = option.restoreState;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#' setPar
+#'
+#' @param myKey
+#' @param myValue
+#'
+#' @return
+#' @export
+#'
+#' @examples
+# bazaar graphics::par opens a par window in RGui
+par.set = function(keys, values)
+	{
+	pnames = names( graphics::par(no.readonly = TRUE) );
+	n = length(keys);
+	for(i in 1:n)
+		{
+		key = keys[i];
+		value = values[i];
+		if( key %in% pnames)
+			{
+			graphics::par(stats::setNames(list(key), value));
+			} else { 
+					cat.warning("key", key, " is either *NOT* a par key on this DEVICE or is READONLY"); 
+					} 
+		}
+	}
+	
+
+
+	
+setPar = par.set;
+
+
+
+#' getPars
+#'
+#' @param keys
+#'
+#' @return
+#' @export
+#'
+#' @examples
+par.get = function(keys, vals=NULL, no.readonly = TRUE)
+	{
+	pnames = names( graphics::par(no.readonly = no.readonly) );
+	n = length(keys);
+	res = vector("list", n);
+	for(i in 1:n)
+		{
+		key = keys[i];
+		res[[i]] = graphics::par(key);
+		}
+	list.return(res);
+	}
+	
+	
+getPar = par.get;
+
+
+par.getALL = function(no.readonly = TRUE)
+	{
+	par(no.readonly=no.readonly);  # only show ones we can change by default
+	}
+
+par.getAll = par.getALL;
+
+par.saveState = function(key="DEFAULT", no.readonly = TRUE)
+	{
+	memory.set(key, "PAR", par(no.readonly = no.readonly) );	
+	}
+
+	
+par.restoreState = function(key="DEFAULT")
+	{
+	old.par = memory.get(key, "PAR");
+	if(!is.null(old.par))
+		{
+		par(old.par);
+		return(invisible(TRUE));
+		}
+	warning("There is no memory for par key=XXX, nothing updated");
+	return(invisible(TRUE));
+	}
+
+
+
+
