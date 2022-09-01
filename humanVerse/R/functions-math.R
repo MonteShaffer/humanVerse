@@ -1,237 +1,81 @@
-# https://stackoverflow.com/questions/1746501/
-		# a = c(2,1,0,2,0,1,1,1)
-		# b = c(2,1,1,1,1,0,1,1)
-		# d = (a %*% b) / (sqrt(sum(a^2)) * sqrt(sum(b^2)))
-
-		## OR
-
-		# e = crossprod(a, b) / (sqrt(crossprod(a, a)) * sqrt(crossprod(b, b)))
-
-# RECURSIVE ... # https://www.statology.org/cosine-similarity-r/
 
 
-#' .cosine.similarity
-#'
-#' This is a univariate calculation
-#'
-#' See <https://en.wikipedia.org/wiki/Cosine_similarity#Definition>
-#'
-#' @param a vector 'a'
-#' @param b vector 'b'
-#' @param method use 'crossprod' or less-efficient default option
-#'
-#' @return the cosine similarity
-#' @export
-#'
-#' @examples
-#' a = c(2,1,0,2,0,1,1,1); b = c(2,1,1,1,1,0,1,1);
-#' .cosine.similarity( a,b );
-#'
-# property.get("srcref", .cosine.similarity); # lsa is NULL
-.cosine.similarity = function(a, b, method="cpp", technique="crossprod")
-	{
-	m = functions.cleanKey(method, 1);
-	tech = functions.cleanKey(technique, 4);
-	# The cosine of two non-zero vectors (WIKI: Cosine similarity)
-	if(anyNA(a) || anyNA(b))
-		{
-		return (NaN);
-		}
-	if(sum(a) == 0 && sum(b) == 0)
-		{
-		return (NaN);
-		}
-
-	if(tech == "cros")
-		{
-		theta = crossprod(a, b) / (sqrt(crossprod(a, a)) * sqrt(crossprod(b, b)));
-		} else	{
-				theta = (a %*% b) / (sqrt(sum(a^2)) * sqrt(sum(b^2)));
-				}
-
-	# flatten 
-	if(is.complex(theta)) { theta = as.complex(theta); return(theta); }
-	as.numeric(theta);	 # as.numeric on complex ?
-	}
-
-
-
-#' .angular.distance
-#'
-#' This is a univariate calculation
-#'
-#' See <https://en.wikipedia.org/wiki/Cosine_similarity#Angular_distance_and_similarity>
-#'
-#' @param a vector 'a'
-#' @param b vector 'b'
-#'
-#' @return the angular distance
-#' @export
-#'
-#' @examples
-#' a = c(2,1,0,2,0,1,1,1); b = c(2,1,1,1,1,0,1,1);
-#' .angular.distance(	a, b );
-#'
-.angular.similarity = function(a, b, return="similarity", set.properties=FALSE, cs=NULL, ...)
-	{
-	r = functions.cleanKey(return, 1); # [s]imilarity or [d]istance 
-	if(is.null(cs)) { cs = .cosine.similarity( a,b, ... ); }
-	if(is.nan(cs)) { return(NaN); } 
-	# any element in either is negative
-	vector.neg = ( sum( is.negative(a,b) ) > 0 ); 
-	if(vector.neg)
-		{
-		ad = 1 * acos(cs) / pi;
-		} else	{
-				ad = 2 * acos(cs) / pi;
-				}
-	as = 1 - ad;  # ad = 1 - as; 
-	
-	# angular distance
-	if(r == "d")
-		{
-		res = ad;
-		if(set.properties)
-			{
-			res = property.set("cosine.similarity",  res, cs);
-			res = property.set("angular.similarity", res, as);
-			}
-		return(res);
-		}
-	# angular similarity 
-	res = as;	
-	if(set.properties)
-		{
-		res = property.set("cosine.similarity", res, cs);
-		res = property.set("angular.distance",  res, ad);
-		}
-	res;
-	}
 
  
 
-# ?pmatch ?charmatch ?match.arg ... NOT argmatch ... 
-
-	# vector by-col of matrix 
-	# cosine(a, data) works by-columns 
-	# cosine(data, a) does NOT work ...
-	# a = c(23, 34, 44, 45, 42, 27, 33, 34);
-	# data = structure(c(23, 34, 44, 45, 42, 27, 33, 34, 17, 18, 22, 26, 26, 29, 31, 30, 34, 35, 35, 36, 51, 29, 30, 31), dim = c(8L, 3L), dimnames = list( NULL, c("a", "b", "c")));
-	# Using control = "exact" (short for control = c("all", "hexNumeric")) comes closest to making deparse() an inverse of parse() (but we have not yet seen an example where "all", now including "digits17", would not have been as good). However, not all objects are deparse-able even with these options, and a warning will be issued if the function recognizes that it is being asked to do the impossible.
-	# SET DEFAULT to dput(pi, control="all") ... in my INIT() as an exacmple of messing with the base::defaults ...
-	
-	
-cosine.similarity = function(a, b=NULL, by="col", ...)
-	{	
-	# is.vector assumes there are not attributes attached ... 
-	# is.atomic returns TRUE for matrix 
-	adim = dim(a); bdim = dim(b);
-	if(is.null(adim) && is.atomic(a) && !is.null(b) && is.null(bdim) && is.atomic(b))
-		{
-#cat("\n MONTE \n");
-		cs = .cosine.similarity(a,b, ...);
-		as = .angular.similarity(a,b, cs=cs, ...);
-		ad = 1-as;
-		
-		res = cs;	
-		res = property.set("angular.similarity", res, as);
-		res = property.set("angular.distance",   res, ad);
-		return( res );
-		}
-	by = functions.cleanKey(by, 2);
-	if(is.matrix(a) && is.null(b))
-		{
-#cat("\n ALEX \n");
-		if(by == "ro") { a = t(a); } # just transpose 
-		m.names = colnames(a);
-		n = ncol(a);
-		m = matrix(0, nrow=n, ncol=n, dimnames = list(m.names, m.names));
-		d = s = m;  # angular distance, angular similarity, cosine similarity
-		for(i in 1:n)
-			{
-			for(j in i:n)
-				{
-				cs = .cosine.similarity( a[, i], a[, j], ...);
-				as = .angular.similarity(a[, i], a[, j], cs=cs, ...);
-				
-				m[i, j] = m[j, i] = cs;
-				s[i, j] = s[j, i] = as;
-				}
-			}
-		# self-similarity may be NaN ... doing "1" on diag is NOT correct
-		d = 1-s;
-		
-		res = m;	
-		res = property.set("angular.similarity", res, s);
-		res = property.set("angular.distance",   res, d);
-		return( res );
-		}
-		
-	# maybe compare a vector to a matrix 
-	
-	v = NULL;
-	if(is.null(adim) && !is.null(bdim))
-		{
-		v = a;
-		m = b;
-		}
-	if(!is.null(adim) && is.null(bdim))
-		{
-		v = b;
-		m = a;
-		}
-		
-	if(!is.null(v))
-		{
-#cat("\n NAT \n");
-		nv = length(v);	
-		mdim = dim(m);
-		if(by == "co" && (nv != mdim[1]))
-			{
-			if(nv != mdim[2]) { stop("bad dimensions, can't fix"); }
-			if(nv == mdim[2]) { m = t(m); mdim = dim(m); } # just transpose 
-			}
-		if(by == "ro" && (nv != mdim[2]))
-			{
-			if(nv != mdim[1]) { stop("bad dimensions, can't fix"); }
-			if(nv == mdim[1]) { m = t(m); mdim = dim(m); } # just transpose 
-			}
-		## good dimensions ... everything by column ...
-		m.names = colnames(m);
-		n = ncol(m);
-		res = numeric(n);
-		d = s = res;
-		for(i in 1:n)
-			{
-			cs = .cosine.similarity( v, m[, i], ...);
-			as = .angular.similarity(v, m[, i], cs=cs, ...);
-			
-			res[i] = cs;
-			s[i] = as;
-			}
-		d = 1 - s;
-		names(res) = names(d) = names(s) = m.names;
-		res = property.set("angular.similarity", res, s);
-		res = property.set("angular.distance",   res, d);
-		return( res );		
-		}
-		
-		
-	stop("what are you doing here!");	
+gcd.lcm = function(x,y)
+	{
+	a=x;
+	b=y;
+	while (b != 0)
+        {
+		t = b;
+		b = a %% b;
+		a = t;
+        }
+	list("gcd"=a, "lcm"=(x*y)/a);
 	}
 
 
 
+# 4 nCr 2 ... choose vs lchoose ?
+# ?utils::combn  ?choose 
+# library(combinat); library(gtools);
+# choose(4, 2) ... with replacement 
+# make %nCr% and %nPr% functions ... 
+# https://davetang.org/muse/2013/09/09/combinations-and-permutations-in-r/
+# https://www.calculatorsoup.com/calculators/discretemathematics/permutationsreplacement.php
+nCr = function(n, r, replace=FALSE) 
+	{ 
+	# same function (FALSE, with n+r-1)
+	if(replace) { return( nCr( (n+r-1), r, replace=FALSE ) ); } 
+	factorial(n) / ( factorial(r) * factorial(n-r) ); 
+	}
+"%ncr%" = "%nCr%" = nCr;
+
+"%!%" = function(n, r=NULL) { factorial(n); }
+
+nPr = function(n, r, replace=FALSE) 
+	{ 
+	if(replace) { return( n^r ); }
+	factorial(n) / factorial(n-r); 
+	}
+"%npr%" = "%nPr%" = nPr;
 
 
 
-latex.fromCFrac = function() {}
-
-num.toEFrac = function() {} 
-# Egyptian Fractions 
-# http://web.ff.cuni.cz/ustavy/egyptologie/pdf/Gardiner_signlist.pdf
 
 
+
+
+
+
+
+# takes num/den 
+num.den = function(num, den, expand=TRUE) 
+			{ 
+			if(!expand) { return (num/den); }
+			nn = length(num);
+			nd = length(den);			
+			# normal recycling
+			if(nn == 1 || nd == 1) { return (num/den); }
+			
+			# 0:10 %frac% 1:100
+			# this is expand == TRUE
+			# I want 0...10 / 1:100 ... all of them ...
+			# 0:10/1 THEN 0:10/2 THEN 0:10/3 ...
+			res = NULL;
+			for(i in 1:nd)					# could have done nn 
+				{
+				res = c(res, num / den[i]); # could have done num[i]
+				}
+			res;
+			}
+
+"%frac%" = num.den;
+
+
+num.toFrac = function() {}
 num.toFrac = function(x, ..., 
 								return = "last",
 								max.depth = 12,  
@@ -251,6 +95,8 @@ num.toFrac = function(x, ...,
 	e = vector("list", n);
 	cr = character(n);  # character return of last 
 	ce = numeric(n);	# error as attributes of above 
+	nr = character(n); 	# character return of MAX based on return = 1000 (<= 100) in denominator)
+	ne = numeric(n);	# error as attributes of above 
 	for(i in 1:n)
 		{
 		cf = CF[[i]];
@@ -289,10 +135,27 @@ num.toFrac = function(x, ...,
 			cr[i] = cchar;
 			ce[i] = cerr;
 			
+			if(is.numeric(return))
+				{
+				if(cden <= return)
+					{
+					nr[i] = cchar;
+					ne[i] = cerr;
+					}
+				}
+			
 			cidx = 1 + cidx;
 			}
 		
 		e[[i]] = df;
+		}
+	
+	# maybe return a value that has maximum of 1000 in denominator 	
+	if(is.numeric(return))
+		{
+		nr = property.set("x", nr, x);
+		nr = property.set("error.percent", nr, ne);		
+		return(nr);
 		}
 		
 	if(r == "l" || r == "1") # confusion with "ell" vs "one"
@@ -301,6 +164,8 @@ num.toFrac = function(x, ...,
 		cr = property.set("error.percent", cr, ce);		
 		return(cr);
 		}
+	
+		
 	# this returns anything but [l]ast ... everything 
 	e = list.return(e);  # does this preserve internal property.set ? NOPE
 	e = property.set("CF", e, CF);
@@ -308,6 +173,95 @@ num.toFrac = function(x, ...,
 	}
 
 
+# https://en.wikipedia.org/wiki/Continued_fraction#Continued_fraction_expansion_of_%CF%80_and_its_convergents
+# https://oeis.org/A001203
+# pi =  3, 7, 15, 1, 292, 1, 1, 1, 2, 1, 3, 1, 14, 2, 1, 1, 2, 2, 2, 2, 1, 84, 2, 1, 1, 15, 3, 13
+# I am getting 
+# 		3   7  15   1 292   1   1   1   2   1   3   1  14   3   3  23  NA
+num.toCFrac = function() {}
+num.toCFrac = function(x, ..., 
+								max.depth = 12,  
+								tol = sqrt(.Machine$double.eps) , 
+								part="Re"
+						)
+	{
+	x = dots.addTo(x, ...); 
+	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
+	
+	n = length(x);
+	e = vector("list", n);
+	for(i in 1:n)
+		{
+		x_ = x[i];
+		
+		j = 1;		
+		w = as.integer(x_); # whole part 
+		r = x_ - w; 		# remainder 	
+		
+		e[[i]] = c(w);
+		while(j <= max.depth)  # max.depth + 1 allows for abcissa (whole number)
+			{
+			# internally if tolerance of eps (r) is reached, we break ...
+			# for non-convergence, r just jumps around 
+			if(abs(r) < tol) { break; }
+			w = as.integer( 1/r );
+			r = (1/r) - w;			# for next iteration 
+			e[[i]] = c(e[[i]], w);
+			 			
+			j = 1 + j;
+			}
+		#	NA analagous to ... (continues), marker that we stopped manually.
+		if(j > max.depth) { e[[i]] = c(e[[i]], NA); } 	
+		}
+	e = list.return(e);
+	e = property.set("x", e, x);
+	e;
+	}
+
+	
+num.toContinuousFraction = num.toCFrac;
+
+# phi = (1 + sqrt(5)) / 2
+# x = c(1/7, 1/123, pi, phi)
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+latex.fromCFrac = function() {}
+
+num.toEFrac = function() {} 
+# Egyptian Fractions 
+# http://web.ff.cuni.cz/ustavy/egyptologie/pdf/Gardiner_signlist.pdf
 
 egy.lists = function()
 	{
@@ -388,60 +342,6 @@ egy.lists = function()
 # PI == pi ... TRUE ??!>!?
 
 
-# https://en.wikipedia.org/wiki/Continued_fraction#Continued_fraction_expansion_of_%CF%80_and_its_convergents
-# https://oeis.org/A001203
-# pi =  3, 7, 15, 1, 292, 1, 1, 1, 2, 1, 3, 1, 14, 2, 1, 1, 2, 2, 2, 2, 1, 84, 2, 1, 1, 15, 3, 13
-# I am getting 
-# 		3   7  15   1 292   1   1   1   2   1   3   1  14   3   3  23  NA
-num.toCFrac = function() {}
-
-num.toCFrac = function(x, ..., 
-								max.depth = 12,  
-								tol = sqrt(.Machine$double.eps) , 
-								part="Re"
-						)
-	{
-	x = dots.addTo(x, ...); 
-	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
-	
-	n = length(x);
-	e = vector("list", n);
-	for(i in 1:n)
-		{
-		x_ = x[i];
-		
-		j = 1;		
-		w = as.integer(x_); # whole part 
-		r = x_ - w; 		# remainder 	
-		
-		e[[i]] = c(w);
-		while(j <= max.depth)  # max.depth + 1 allows for abcissa (whole number)
-			{
-			# internally if tolerance of eps (r) is reached, we break ...
-			# for non-convergence, r just jumps around 
-			if(abs(r) < tol) { break; }
-			w = as.integer( 1/r );
-			r = (1/r) - w;			# for next iteration 
-			e[[i]] = c(e[[i]], w);
-			 			
-			j = 1 + j;
-			}
-		#	NA analagous to ... (continues), marker that we stopped manually.
-		if(j > max.depth) { e[[i]] = c(e[[i]], NA); } 	
-		}
-	e = list.return(e);
-	e = property.set("x", e, x);
-	e;
-	}
-
-
-
-	
-num.toContinuousFraction = num.toCFrac;
-
-# phi = (1 + sqrt(5)) / 2
-# x = c(1/7, 1/123, pi, phi)
- 
 toFrac = function(x, ...,	max.depth=16, tol = sqrt(.Machine$double.eps) , part="Re", return="n/d")	# could return Euclidean nested
 	{	
 	x = dots.addTo(x, ...); 

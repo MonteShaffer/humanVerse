@@ -26,23 +26,6 @@ temp.isNA = function(degX, Xunits="celsius")
 	degX;	
 	}
 
-# F, C, K, R ... LOL
-# x = c("F", "C", "K", "R");
-# m = e1071::permutations(4);
-# m2 =  matrix(x[m], ncol=2);
-# m3 = m2[!duplicated(m2), ];
-# m4 = m3[ c( which(m3[,1] == x[1]), which(m3[,1] == x[2]), which(m3[,1] == x[3]), which(m3[,1] == x[4]) ),  ];
-
-for(i in 1:12) 
-	{
-	mm = m4[i, ];
-	# temp.c2f = 	function(degC) { temp.convert(degC, "C", "F"); }
-	row = paste0("temp.", tolower(mm[1]), "2", tolower(mm[2]), " = \t function(deg", toupper(mm[1]), ") { temp.convert(deg", toupper(mm[1]), "), \"", toupper(mm[1]), "\", \"", toupper(mm[2]), "\"); } ");
-	# print.noquote(row);
-	cat("\n", row, "\n");
-	}
-
-
 
 temp.convert = function(degX, from="fahrenheit", to="celsius")
 	{
@@ -70,12 +53,68 @@ dput(degX); dput(F); dput(T); dput(ABS_ZERO_R);
 	temp.isNA(degN);
 	}
 
-# 6, or 12, or 16 ??
-temp.c2f = 	function(degC) { temp.convert(degC, "C", "F"); }
-temp.f2c = 	function(degF) { temp.convert(degF, "F", "C"); }
-	
-temp.c2k = 	function(degC) { temp.convert(degC, "C", "K"); }
-temp.k2c = 	function(degK) { temp.convert(degK, "K", "C"); }
+
+# 12 unique, meaningful conversions 
+
+
+# F, C, K, R ... LOL
+# x = c("F", "C", "K", "R");
+# m = e1071::permutations(4);
+# m2 =  matrix(x[m], ncol=2);
+# m3 = m2[!duplicated(m2), ];
+# m4 = m3[ c( which(m3[,1] == x[1]), which(m3[,1] == x[2]), which(m3[,1] == x[3]), which(m3[,1] == x[4]) ),  ];
+# m4 = m3[ c(4,1,8,  2,7,3,  9,6,5, 11,10,12), ];
+
+# for(i in 1:12) 
+	# {
+	# mm = m4[i, ];
+	temp.c2f = 	function(degC) { temp.convert(degC, "C", "F"); }
+	# row = paste0("temp.", tolower(mm[1]), "2", tolower(mm[2]), " = \t function(deg", toupper(mm[1]), ") { temp.convert(deg", toupper(mm[1]), "), \"", toupper(mm[1]), "\", \"", toupper(mm[2]), "\"); } ");
+	print.noquote(row);
+	# cat(row, "\n\n");
+	# }
+
+
+temp.f2c =	  function(degF) { temp.convert(degF), "F", "C"); }  
+
+temp.f2k =	  function(degF) { temp.convert(degF), "F", "K"); }  
+
+temp.f2r =	  function(degF) { temp.convert(degF), "F", "R"); }  
+
+temp.c2k =	  function(degC) { temp.convert(degC), "C", "K"); }  
+
+temp.c2r =	  function(degC) { temp.convert(degC), "C", "R"); }  
+
+temp.c2f =	  function(degC) { temp.convert(degC), "C", "F"); }  
+
+temp.k2r =	  function(degK) { temp.convert(degK), "K", "R"); }  
+
+temp.k2f =	  function(degK) { temp.convert(degK), "K", "F"); }  
+
+temp.k2c =	  function(degK) { temp.convert(degK), "K", "C"); }  
+
+temp.r2f =	  function(degR) { temp.convert(degR), "R", "F"); }  
+
+temp.r2c =	  function(degR) { temp.convert(degR), "R", "C"); }  
+
+temp.r2k =	  function(degR) { temp.convert(degR), "R", "K"); }  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # TI-83
 # Eng (engineering) notation mode is similar to scientific notation. However, the number can have one, two, or three digits before the decimal; and the power-of-10 exponent is a multiple of three, as in 12.34567E3.

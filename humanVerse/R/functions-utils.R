@@ -1,216 +1,41 @@
 
-
-
-#' deg2rad 
-#'
-#' Convert angles from degrees to radians.
-#' Similar to pracma::deg2rad however is vectorized (multivariate).
-#'
-#' @param degs One or more angles in degrees
-#' @param ...  One or more angles in degrees
-#'
-#' @return One or more angles in radians.
+#' @rdname ceil
 #' @export
-#'
-#' @examples
-#' deg2rad(c(1,3,34));
-#' deg2rad(1,3,34);
-#' deg2rad(1,3,"alex");
-#'
-deg2rad = function(degs, ...)
-	{
-	degs = dots.addTo(degs, ...);
-
-	n = length(degs);
-	res = numeric(n);
-	i = 0;
-	for(deg in degs)
-		{
-		i = 1 + i;
-		ndeg = suppressWarnings(as.numeric(deg));
-		rad = NaN;
-		if( !is.na(ndeg) )  { rad = (pi/180) * ndeg; }
-		res[i] = rad;
-		}
-	res;
-	}
-
-
-"%deg%" = function(deg, r=NULL) { deg2rad(deg); }
-
-#' rad2deg
-#'
-#' Convert angles from radians to degrees.
-#' Similar to pracma::rad2deg however is vectorized (multivariate).
-#'
-#' @param degs One or more angles in radians.
-#' @param ...  One or more angles in radians.
-#'
-#' @return One or more angles in degrees.
-#' @export
-#'
-#' @examples
-#' rad2deg(c(1,3,34));
-#' rad2deg(1,3,34);
-#' rad2deg(1,3,"alex");
-#'
-rad2deg = function(rads, ...)
-	{
-	rads = dots.addTo(rads, ...);
-	n = length(rads);
-	res = numeric(n);
-	for(rad in rads)
-		{
-		nrad = suppressWarnings(as.numeric(rad));
-		i = 1 + i;
-		deg = NaN;
-		if( !is.na(nrad) )  { deg = (180/pi) * nrad; }
-		res[i] = deg;
-		}
-	res;
-	}
-	
-"%rad%" = function(rad, d=NULL) { rad2deg(rad); }	
-	
-	
-
 ceil = ceiling;
+
+#' @rdname nchars
+#' @export
+nchars = nchar;
  
-
-
+ 
 dots.addTo = function(key, ...)
 	{
 	more = unlist(list(...));
 	c(key, more);
 	}
-	
-
 
 #' @rdname dots.addToKey
 #' @export
 dots.addToKey = dots.addTo;
 
 
-#' @rdname nchars
-#' @export
-nchars = nchar;
-
-
-
-
-
-
-gcd.lcm = function(x,y)
+# testit = function() { if(rand(0,1) == 1) {stop("ERROR");} else {return(1); }}
+# x = suppressError(testit);
+# x = suppressError(testit(), show.notice=FALSE); str(x);
+# x = suppressError(testit(), msg="-HI-"); str(x); if(is.error(x)) { list.fromError(x); }
+suppressError = function(expression, show.notice = TRUE, msg = "")
 	{
-	a=x;
-	b=y;
-	while (b != 0)
-        {
-		t = b;
-		b = a %% b;
-		a = t;
-        }
-	list("gcd"=a, "lcm"=(x*y)/a);
+	if(show.notice)
+		{
+		if(msg == "") 
+			{
+			msg = "\n\n tldr; \n\n\n\t R-dev believes this is poor programming practice to allow you to \n\t\t suppressError( so they have not included it in base R.  \n\t\t It is probably true, but 'git-r-done' first, and then \n\t\t figure out the minutia such as why this function is \n\t\t throwing an error.  That is why I have past such a \n\t\t VERBOSE message to you, dear reader. \n\n\t By altering this function [set msg to something else, not empty ''], \n\t\t you can reduce the length of this message.  \n\n\t Or you can set the flag show.notice=FALSE to prevent it from printing. \n\t\t  THIS my friends is how choice architecture works!  Cheers and Aloha! \n\n\n";
+			}
+		# cat(msg);
+		warning(msg, call. = FALSE, immediate. = TRUE);
+		}
+	try( expression , silent = TRUE);
 	}
-
-
-
-# 4 nCr 2 ... choose vs lchoose ?
-# ?utils::combn  ?choose 
-# library(combinat); library(gtools);
-# choose(4, 2) ... with replacement 
-# make %nCr% and %nPr% functions ... 
-# https://davetang.org/muse/2013/09/09/combinations-and-permutations-in-r/
-# https://www.calculatorsoup.com/calculators/discretemathematics/permutationsreplacement.php
-nCr = function(n, r, replace=FALSE) 
-	{ 
-	# same function (FALSE, with n+r-1)
-	if(replace) { return( nCr( (n+r-1), r, replace=FALSE ) ); } 
-	factorial(n) / ( factorial(r) * factorial(n-r) ); 
-	}
-"%ncr%" = "%nCr%" = nCr;
-
-"%!%" = function(n, r=NULL) { factorial(n); }
-
-nPr = function(n, r, replace=FALSE) 
-	{ 
-	if(replace) { return( n^r ); }
-	factorial(n) / factorial(n-r); 
-	}
-"%npr%" = "%nPr%" = nPr;
-
-
-
-
-
-math.cleanup = function(x, tol = sqrt(.Machine$double.eps), ...)
-	{
-	# maybe sqrt(3)/2
-	# zeros 
-	z = is.zero(x, tol=tol, ...); # Re / Im also possible.
-	x[z] = 0;
-	x;
-	}
-
-math.sin = function(x, ...)
-	{
-	# maybe do better with fractional components
-	x = dots.addTo(x, ...);
-	math.cleanup( sin(x) );
-	}
-	
-math.cos = function(x, ...)
-	{
-	# maybe do better with fractional components
-	x = dots.addTo(x, ...);
-	math.cleanup( cos(x) );
-	}
-	
-math.tan = function(x, ...)
-	{
-	# maybe do better with fractional components
-	x = dots.addTo(x, ...);
-	math.cleanup( tan(x) );
-	}
-
-cotan 		= function(x, ...) { 1/math.tan(x,...); }
-cosecant 	= function(x, ...) { 1/math.sin(x,...); } 	
-secant 		= function(x, ...) { 1/math.cos(x,...); } 
-	
-	
-math.asin = function(x, ...)
-	{
-	# maybe do better with fractional components
-	x = dots.addTo(x, ...);
-	math.cleanup( asin(x) );
-	}
-
-arcsin = math.asin;	
-
-	
-math.acos = function(x, ...)
-	{
-	# maybe do better with fractional components
-	x = dots.addTo(x, ...);
-	math.cleanup( acos(x) );
-	}
-
-arccos = math.acos;
-
-	
-	
-math.atan = function(x, ...)
-	{
-	# maybe do better with fractional components
-	x = dots.addTo(x, ...);
-	math.cleanup( atan(x) );
-	}
-
-
-arctan = math.atan;
-
-
-
 
 
 
@@ -273,34 +98,117 @@ arctan = math.atan;
 
 
 
-# testit = function() { if(rand(0,1) == 1) {stop("ERROR");} else {return(1); }}
-# x = suppressError(testit);
-# x = suppressError(testit(), show.notice=FALSE); str(x);
-# x = suppressError(testit(), msg="-HI-"); str(x); if(is.error(x)) { list.fromError(x); }
-suppressError = function(expression, show.notice = TRUE, msg = "")
+
+
+#' charAt
+#'
+#' Get the character of a string at position [idx]
+#'
+#' @param str String
+#' @param idx position to get character
+#'
+#' @return single character
+#' @export
+#'
+#' @examples
+#'
+#' charAt("Alex", 2);
+#' charAt(c("Hello","there","Alex"), 2);
+#' charAt("Alex", 8);
+#' charAt("Alexander", 8);
+#'
+charAt = function(str,idx)
+  {
+  substr(str,idx,idx);  # or substring?
+  }
+
+#' lastChar
+#'
+#' Get the last character of a string
+#'
+#' @param str String
+#' @param trim should the string be trimmed first
+#'
+#' @return single character
+#' @export
+#'
+#' @examples
+#'
+#' lastChar("Alex");
+#' lastChar(c("Hello","there","Alex"));
+#' lastChar("Sasha");
+#' lastChar("Alexander");
+#'
+lastChar = function(str, pre.trim=FALSE)
 	{
-	if(show.notice)
-		{
-		if(msg == "") 
-			{
-			msg = "\n\n tldr; \n\n\n\t R-dev believes this is poor programming practice to allow you to \n\t\t suppressError( so they have not included it in base R.  \n\t\t It is probably true, but 'git-r-done' first, and then \n\t\t figure out the minutia such as why this function is \n\t\t throwing an error.  That is why I have past such a \n\t\t VERBOSE message to you, dear reader. \n\n\t By altering this function [set msg to something else, not empty ''], \n\t\t you can reduce the length of this message.  \n\n\t Or you can set the flag show.notice=FALSE to prevent it from printing. \n\t\t  THIS my friends is how choice architecture works!  Cheers and Aloha! \n\n\n";
-			}
-		# cat(msg);
-		warning(msg, call. = FALSE, immediate. = TRUE);
-		}
-	try( expression , silent = TRUE);
+	# this also works:: ... # .substr(str, -1)
+	if(pre.trim){ str = str.trim(str); }
+	slen = str.len(str);
+	charAt(str, s.len);
 	}
 
 
-# general trap function
-# maybe in functions ... 
-# on.error 
-# digest ... errormode=c("stop","warn","silent"),
-# .errorhandler <- function(txt, obj="", mode="stop") 
+#' charCodeAt
+#'
+#' Get the ASCII character code of a string at position [idx]
+#'
+#' @param str String
+#' @param idx position to get character
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#'
+#' charCodeAt("Alex", 2);
+#' charCodeAt(c("Hello","there","Alex"), 2);
+#' charCodeAt("Alex", 8);
+#' charCodeAt("Alexander", 8);
+#'
+charCodeAt = function(str,idx)
+  {
+  charCode ( charAt(str,idx) ); 
+  #  as.numeric( iconv( charAt(str,idx), from="ASCII", to="unicodeFFFE", toRaw=TRUE)[[1]][2] );
+  }
 
 
-					# Error in as.POSIXlt.numeric(vals) : 'origin' must be supplied
-as.type = function(vals, types="character", ...) # could I pass ... dots
+#' charCode
+#'
+#' @param svec A vector of characters
+#'
+#' @return ASCII character code for each character
+#' @export
+#'
+#' @examples
+#'
+#' s = "Alexander"; svec = strsplit(s,"",fixed=TRUE)[[1]];
+#' charCode(svec);
+#'
+charCode = function(svec)
+  {
+  #v1 = iconv( svec, from="ASCII", to="unicodeFFFE", toRaw=TRUE);
+	v1 = iconv( svec, from="UTF-8", to="unicodeFFFE", toRaw=TRUE);
+	v2 = as.integer( unlist(v1) )
+	v2[v2 > 0];
+
+	# https://coolbutuseless.github.io/2021/12/04/base64-encoding/decoding-in-plain-r/
+
+	#unname(vapply(as.character(svec), utf8ToInt, integer(1)))
+  }
+	
+
+
+
+
+
+
+
+
+
+
+
+# could I pass ... dots
+as.type = function(vals, types="character", ...) 
 	{
 	n = length(vals);
 	nt = length(types); if( (n != nt) && (nt != 1) ) { stop("lenghts must match or types must be of length 1;"); }
@@ -493,102 +401,6 @@ dechex = function(intdec, ..., n=NULL, hash=FALSE)
 	
 	
 
-#' charAt
-#'
-#' Get the character of a string at position [idx]
-#'
-#' @param str String
-#' @param idx position to get character
-#'
-#' @return single character
-#' @export
-#'
-#' @examples
-#'
-#' charAt("Alex", 2);
-#' charAt(c("Hello","there","Alex"), 2);
-#' charAt("Alex", 8);
-#' charAt("Alexander", 8);
-#'
-charAt = function(str,idx)
-  {
-  substr(str,idx,idx);  # or substring?
-  }
-
-#' lastChar
-#'
-#' Get the last character of a string
-#'
-#' @param str String
-#' @param trim should the string be trimmed first
-#'
-#' @return single character
-#' @export
-#'
-#' @examples
-#'
-#' lastChar("Alex");
-#' lastChar(c("Hello","there","Alex"));
-#' lastChar("Sasha");
-#' lastChar("Alexander");
-#'
-lastChar = function(str, pre.trim=FALSE)
-	{
-	# this also works:: ... # .substr(str, -1)
-	if(pre.trim){ str = str.trim(str); }
-	slen = str.len(str);
-	charAt(str, s.len);
-	}
-
-
-#' charCodeAt
-#'
-#' Get the ASCII character code of a string at position [idx]
-#'
-#' @param str String
-#' @param idx position to get character
-#'
-#' @return
-#' @export
-#'
-#' @examples
-#'
-#' charCodeAt("Alex", 2);
-#' charCodeAt(c("Hello","there","Alex"), 2);
-#' charCodeAt("Alex", 8);
-#' charCodeAt("Alexander", 8);
-#'
-charCodeAt = function(str,idx)
-  {
-  charCode ( charAt(str,idx) ); 
-  #  as.numeric( iconv( charAt(str,idx), from="ASCII", to="unicodeFFFE", toRaw=TRUE)[[1]][2] );
-  }
-
-
-#' charCode
-#'
-#' @param svec A vector of characters
-#'
-#' @return ASCII character code for each character
-#' @export
-#'
-#' @examples
-#'
-#' s = "Alexander"; svec = strsplit(s,"",fixed=TRUE)[[1]];
-#' charCode(svec);
-#'
-charCode = function(svec)
-  {
-  #v1 = iconv( svec, from="ASCII", to="unicodeFFFE", toRaw=TRUE);
-	v1 = iconv( svec, from="UTF-8", to="unicodeFFFE", toRaw=TRUE);
-	v2 = as.integer( unlist(v1) )
-	v2[v2 > 0];
-
-	# https://coolbutuseless.github.io/2021/12/04/base64-encoding/decoding-in-plain-r/
-
-	#unname(vapply(as.character(svec), utf8ToInt, integer(1)))
-  }
-	
 	
 
 
