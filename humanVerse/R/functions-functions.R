@@ -99,22 +99,26 @@ options.set = function() {}
 # table(df$pkg);
 # xtabs(~pkg+param.value , df)
 
+# DEBIAN: clear ... CMD: cls ... R: CNTRL-SHIFT-L (LOL programming language)
  
 functions.withParameter = function(param="na.rm", 
 									packages=(.packages()), 
-									include.ls = FALSE,
-									json.value=FALSE)
+									include.ls = TRUE,
+									json.value = FALSE
+									)
 	{
-debug = TRUE;
+debug = FALSE;
 if(debug)
 	{
+	op = options();
 	options(warn = 1); # immediate returning warning
+	on.exit( options(op) );
 	}
 	
 	
 	processOneFunction = function(fn.str)
 		{
-		fn.obj = suppressError( match.fun(fn.str), show.notice=!debug, msg="debug functions.listFunctionsWithParameter match.fun(fn.str)");
+		fn.obj = suppressError( match.fun(fn.str), show.notice=debug, msg="debug functions.listFunctionsWithParameter match.fun(fn.str)");
 		if(is.error(fn.obj)) { return(NULL); }
 		
 		
@@ -150,8 +154,7 @@ if(debug)
 	print( f );	
 	}
 				}
-			if(is.null(f)) { return(NULL); }
-				
+			if(is.null(f)) { return(NULL); }	
 			if( !(param %in% names(f) ) ) { return(NULL); }
 			
 if(debug) 
