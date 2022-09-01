@@ -64,11 +64,15 @@ list.toString = function(simpleList, 	sep.keyvalue = "`=`",
 
 list.create = function(keys, vals, types=NULL)
 	{
-	res = list();
+	res = list(); 
 	n = length(keys);
 	for(i in 1:n)
 		{
-		res[[ keys[i] ]] = as.Type(vals[i], types[i]);
+		res[[ keys[i] ]] = vals[i];
+		if(!is.null(types))
+			{
+			res[[ keys[i] ]] = as.Type(vals[i], types[i]);
+			}
 		}
 	res;
 	}

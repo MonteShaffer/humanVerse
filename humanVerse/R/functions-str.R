@@ -1066,11 +1066,13 @@ str.pad = function(str, final.length, padding="0", side="RIGHT", method="stringi
 #'
 #------------------------------------------------#
 str.removeWhiteSpace = function( str, replace=" ", n = 2,
+								method = "base", 
                               pre.trim = TRUE, post.trim = TRUE, ...)
   {
+  m = functions.cleanupKey(method, 1);
 	if(pre.trim) { str = str.trim(str, ...); }
 	# REQUIRES string?
-	if(is.library("stringi"))
+	if(m == "s" && is.library("stringi"))
 		{
 		# p = "\\P{Wspace}";
 		# p <- c("\\w", "\\d", "\\s")
