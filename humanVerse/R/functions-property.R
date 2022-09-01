@@ -208,7 +208,7 @@ property.remove = function()
 # Sys.unsetenv(x)
 # attributes(x) <- NULL ... removes all 
 
-	# cat.stop("monte", "say", "hi");
+	# stop.cat("monte", "say", "hi");
 	}
 
 
@@ -381,7 +381,7 @@ par.set = function(keys, values)
 			{
 			graphics::par(stats::setNames(list(key), value));
 			} else { 
-					cat.warning("key", key, " is either *NOT* a par key on this DEVICE or is READONLY"); 
+					warning.cat("key", key, " is either *NOT* a par key on this DEVICE or is READONLY"); 
 					} 
 		}
 	}

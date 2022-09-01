@@ -1,7 +1,18 @@
 
+warning.clear = function()
+	{
+	# https://stackoverflow.com/questions/5725106/r-how-to-clear-all-warnings
+	assign("last.warning", NULL, envir = baseenv());
+	# unlockBinding("last.warning", baseenv());
+	# If warn is zero (the default), a read-only variable last.warning is created.
+	}
+
+warnings.clear = warning.clear;
+clear.warnings = warning.clear;
+clear.warning = warning.clear;
 
 # https://stackoverflow.com/questions/9596918/r-warning-wrapper-raise-to-parent-function
-cat.warning = function(..., sep=" ")
+warning.cat = function(..., sep=" ")
 	{
 	str = dots.addTo(NULL, ...);
 	res = paste0(str, collapse=sep);
@@ -10,7 +21,9 @@ cat.warning = function(..., sep=" ")
 	warning( paste("In", deparse(parent.call), ":", res) , call.=FALSE);	
 	}
 
-cat.stop = function(..., sep=" ")
+cat.warning = warning.cat;
+
+stop.cat = function(..., sep=" ")
 	{
 	str = dots.addTo(NULL, ...);
 	res = paste0(str, collapse=sep);
@@ -19,7 +32,7 @@ cat.stop = function(..., sep=" ")
 	stop( paste("In", deparse(parent.call), ":", res) , call.=FALSE);	
 	}
 
-
+cat.stop = stop.cat;
 
 
 cat.init = function()

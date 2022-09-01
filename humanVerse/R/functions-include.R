@@ -31,6 +31,9 @@ suppressError = function(expression, show.notice = TRUE, msg = "")
 
 
 
+suppressErrors = suppressError;
+suppressWarning = suppressWarnings;
+
 
 # setwd("C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R")
 
@@ -43,6 +46,7 @@ suppressError = function(expression, show.notice = TRUE, msg = "")
 # # ?source ... sourceDir
 ## cat("\n", res$myerrors[ res$myerrors != ""], sep="\n" );
  
+## setwd("C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R")
 ## res = include.dir(getwd()); View(res); res$myerrors[ res$myerrors != ""]
 
 include.dir = function() {}

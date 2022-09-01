@@ -69,35 +69,36 @@ dput(degX); dput(F); dput(T); dput(ABS_ZERO_R);
 	# {
 	# mm = m4[i, ];
 	temp.c2f = 	function(degC) { temp.convert(degC, "C", "F"); }
-	# row = paste0("temp.", tolower(mm[1]), "2", tolower(mm[2]), " = \t function(deg", toupper(mm[1]), ") { temp.convert(deg", toupper(mm[1]), "), \"", toupper(mm[1]), "\", \"", toupper(mm[2]), "\"); } ");
+	# row = paste0("temp.", tolower(mm[1]), "2", tolower(mm[2]), " = \t function(deg", toupper(mm[1]), ") { temp.convert(deg", toupper(mm[1]), ", \"", toupper(mm[1]), "\", \"", toupper(mm[2]), "\"); } ");
 	print.noquote(row);
 	# cat(row, "\n\n");
 	# }
 
 
-temp.f2c =	  function(degF) { temp.convert(degF), "F", "C"); }  
+temp.f2c =       function(degF) { temp.convert(degF, "F", "C"); }  
 
-temp.f2k =	  function(degF) { temp.convert(degF), "F", "K"); }  
+temp.f2k =       function(degF) { temp.convert(degF, "F", "K"); }  
 
-temp.f2r =	  function(degF) { temp.convert(degF), "F", "R"); }  
+temp.f2r =       function(degF) { temp.convert(degF, "F", "R"); }  
 
-temp.c2k =	  function(degC) { temp.convert(degC), "C", "K"); }  
+temp.c2k =       function(degC) { temp.convert(degC, "C", "K"); }  
 
-temp.c2r =	  function(degC) { temp.convert(degC), "C", "R"); }  
+temp.c2r =       function(degC) { temp.convert(degC, "C", "R"); }  
 
-temp.c2f =	  function(degC) { temp.convert(degC), "C", "F"); }  
+temp.c2f =       function(degC) { temp.convert(degC, "C", "F"); }  
 
-temp.k2r =	  function(degK) { temp.convert(degK), "K", "R"); }  
+temp.k2r =       function(degK) { temp.convert(degK, "K", "R"); }  
 
-temp.k2f =	  function(degK) { temp.convert(degK), "K", "F"); }  
+temp.k2f =       function(degK) { temp.convert(degK, "K", "F"); }  
 
-temp.k2c =	  function(degK) { temp.convert(degK), "K", "C"); }  
+temp.k2c =       function(degK) { temp.convert(degK, "K", "C"); }  
 
-temp.r2f =	  function(degR) { temp.convert(degR), "R", "F"); }  
+temp.r2f =       function(degR) { temp.convert(degR, "R", "F"); }  
 
-temp.r2c =	  function(degR) { temp.convert(degR), "R", "C"); }  
+temp.r2c =       function(degR) { temp.convert(degR, "R", "C"); }  
 
-temp.r2k =	  function(degR) { temp.convert(degR), "R", "K"); }  
+temp.r2k =       function(degR) { temp.convert(degR, "R", "K"); }  
+
 
 
 

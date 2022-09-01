@@ -99,35 +99,68 @@ options.set = function() {}
 # table(df$pkg);
 # xtabs(~pkg+param.value , df)
 
-
-functions.withParameter = function(param="na.rm", packages=(.packages()), json=FALSE)
+ 
+functions.withParameter = function(param="na.rm", 
+									packages=(.packages()), 
+									include.ls = FALSE,
+									json.value=FALSE)
 	{
-debug = FALSE;
-op = options();
-options(warn=2);			# turns warnings into errors
-on.exit( options(op) ); # we need to saveState/restoreState based on options
-  # options(warn=0); # default is 0, 2 is TURN into error ... 
+debug = TRUE;
+if(debug)
+	{
+	options(warn = 1); # immediate returning warning
+	}
+	
+	
 	processOneFunction = function(fn.str)
 		{
-		fn.obj = suppressError( match.fun(fn.str), show.notice=debug, msg="debug functions.listFunctionsWithParameter match.fun()");
+		fn.obj = suppressError( match.fun(fn.str), show.notice=!debug, msg="debug functions.listFunctionsWithParameter match.fun(fn.str)");
 		if(is.error(fn.obj)) { return(NULL); }
-if(debug) { cat("\n fn.str = ", fn.str, "\t pkg = ", pkg, "\t w = ", w, "\n");	}		
-		# is.function (mine vs base::) ? 
+		
+		
+
+if(debug) 
+	{ 
+	cat("\n fn.str = ", fn.str, "\t pkg = ", pkg, "\t w = ", w, "\n");	
+	}		
+ 
 		if(base::is.function(fn.obj))
 			{
-			f = suppressError( formals( fn.obj ), show.notice=debug, msg="debug functions.listFunctionsWithParameter formals()");
-			if(is.error(f)) { return(NULL); }
+			f = formals( fn.obj );
+			
+
+if(debug) 
+	{ 
+	cat("\n STAGE 1 \n");
+	print( f );	
+	}
+
 			if(is.primitive(fn.obj)) 
 				{ 
-				f = suppressError( formals(args(fn.obj)) , show.notice=debug, msg="debug functions.listFunctionsWithParameter formals(args())");
-				if(is.error(f)) { return(NULL); }
+				# "next" [reserved, but found in list] ???
+				# fn.obj = match.fun("next");
+				# LOL, is.function ... is.primitive ... 
+				# Warning in formals(fun) : argument is not a function
+
+				f = suppressWarnings( formals( args(fn.obj) ) );
+
+if(debug) 
+	{
+	cat("\n STAGE 2 \n");
+	print( f );	
+	}
 				}
+			if(is.null(f)) { return(NULL); }
 				
 			if( !(param %in% names(f) ) ) { return(NULL); }
 			
-if(debug) { print( f[param] );	}		
+if(debug) 
+	{ 
+	cat("\n STAGE 3 \n");
+	print( f[[param]] );	
+	}		
 
-			row = switch(toupper(as.character(json)),
+			row = switch(toupper(as.character(json.value)),
 					  "TRUE"	= c(pkg, w, fn.str, JSON.stringify(f[[param]]) ),
 				c(pkg, w, fn.str, as.character(f[[param]]) )	# DEFAULT				# DEFAULT [lower-case]
 				);
@@ -161,17 +194,19 @@ if(debug) { print( f[param] );	}
 			}		
 		}
 	
-	# let's process regular ls()
-	pkg = "zzz.from-ls(GLOBAL)";
-	w = "public";	
-	info = ls(all.names = TRUE, pos=1);  # global environment
-	for(fn.str in info)
+	if(include.ls)
 		{
-		row = processOneFunction(fn.str);
-		df = rbind(df, row);
-		}	
-	# append this PSEUDO-PKG to "packages" list ... 
-		
+		# let's process regular ls()
+		pkg = "zzz.from-ls(GLOBAL)";
+		w = "public";	
+		info = ls(all.names = TRUE, pos=1);  # global environment
+		for(fn.str in info)
+			{
+			row = processOneFunction(fn.str);
+			df = rbind(df, row);
+			}	
+		# append this PSEUDO-PKG to "packages" list ... 
+		}
 		
 		
 	df = as.data.frame(df);
