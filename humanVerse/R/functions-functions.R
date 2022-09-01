@@ -94,6 +94,27 @@ options.set = function() {}
 
 # parameter is currently not a list or a vector ... 
 
+# ?Syntax ... not ?Symbols or ?Operators
+# .end question ... THIS ... based on idx in array (matrix, dataframe, vector)
+# abort()
+# http://127.0.0.1:14469/library/base/html/Reserved.html
+# > ?"for"
+# > ?Control
+# > ?Reserved
+# help...
+# is.name((y = substitute(stats))); as.character(y);
+# is.symbol is more precise ... 
+# casting topic to a string as well ... 
+# ischar <- tryCatch(is.character(topic) && length(topic) ==     1L, error = function(e) FALSE)
+#  deparse1(substitute(topic))
+## utils:::index.search ???
+## ?find.package
+## packages <- .packages(TRUE, lib)
+## .libPaths()
+
+
+
+
 # df = functions.withParameter("na.rm", packages=c("stats","base"));
 # df = functions.withParameter("na.rm");
 # table(df$pkg);

@@ -81,6 +81,9 @@ memory.set = function(key, MEMORY="BASE", value)
 	.GlobalEnv$.humanVerse[["."]][[MEMORY]][[key]] = value;	
 	}
 	
+
+# memory.set TO DISK, not to .humanVerse as OPTION
+
 	
 	
 
