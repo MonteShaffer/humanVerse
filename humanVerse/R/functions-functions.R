@@ -1,5 +1,25 @@
 
+# packageVersion("snow")
+# "Rmpi" %in% loadedNamespaces()
 
+% if("plyr" %in% (.packages())) { detach("package:plyr", unload=TRUE); }
+
+# stringdist is function in pkg stringdist 
+functions.inPackage = function(pkg = "stats")
+	{
+	ctp = check.type(pkg);
+	if(ctp == FALSE || ctp == "closure") { pkg = as.character(deparse(substitute(pkg))); }
+dput(pkg);
+	all 	= ls( getNamespace(pkg), 		all.names = TRUE); 
+	# public has to be loaded ... 
+	pp = paste0("package:", pkg);
+	if(!(pkg %in% (.packages()))) { warning.cat("\n", "The package [", pkg, "] is not attached via library() or require() or humanVerse::include() ... private will show all functions, but not distinguish from public", "\n"); }
+	public 	= ls( pp,	all.names = TRUE);
+	private = set.diff(all, public);
+	list("public" = public, "private" = private);
+	}
+	
+	
 # people.whois, package.whatis, function.whereis
 
 # str( package.NAMESPACE(stringi) );
