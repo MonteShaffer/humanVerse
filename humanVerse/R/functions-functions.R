@@ -4,11 +4,10 @@
 
 % if("plyr" %in% (.packages())) { detach("package:plyr", unload=TRUE); }
 
-# stringdist is function in pkg stringdist 
+# stringdist is function in pkg stringdist ... it is attached as function (enclosure)
 functions.inPackage = function(pkg = "stats")
 	{
-	ctp = check.type(pkg);
-	if(ctp == FALSE || ctp == "closure") { pkg = as.character(deparse(substitute(pkg))); }
+	pkg = str.fromObject(pkg);	
 dput(pkg);
 	all 	= ls( getNamespace(pkg), 		all.names = TRUE); 
 	# public has to be loaded ... 
@@ -17,6 +16,19 @@ dput(pkg);
 	public 	= ls( pp,	all.names = TRUE);
 	private = set.diff(all, public);
 	list("public" = public, "private" = private);
+	}
+	
+	
+
+	
+
+	
+	
+package.install = function(pkg = "stats")
+	{
+	
+	
+	
 	}
 	
 	

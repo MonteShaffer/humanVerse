@@ -16,6 +16,35 @@ math.cleanup = function(x, tol = sqrt(.Machine$double.eps), ...)
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 angle.convert = function(A, ..., from="degrees", to="radians")
 	{
 	A = dots.addTo(A, ...);

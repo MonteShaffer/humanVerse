@@ -75,6 +75,125 @@ num.den = function(num, den, expand=TRUE)
 "%frac%" = num.den;
 
 
+
+num.constants = function(envir=parent.env(environment()))
+	{
+	# units: "m"eters, "g"ram, "s"econd, "a"mpere, "k"elvin, "mol"e, "c"an"d"ela
+	# "l"iter, "m^3", "m/s" ... 
+	# https://www.nist.gov/pml/owm/metric-si-prefixes
+	# force.by == TRUE, why are you here?  SIENCTIFIC
+	# maybe if force.by == TRUE, take all numbers to the same scale ... 
+	# if by = 1, and we don't have a name, map to nearest by = 3
+	# https://physics.nist.gov/cuu/Units/prefixes.html
+	# Because the SI prefixes strictly represent powers of 10, they should not be used to represent powers of 2. Thus, one kilobit, or 1 kbit, is 1000 bit and not 210 bit = 1024 bit. 
+	# # m = c(1, 2, 3, 6, 9, 12, 15, 18, 21, 24);
+	# # m = property.set("-name-", m, c("deka", "hecto", "kilo", "mega", "giga", "tera", "peta", "exa", "zetta", "yotta") );
+	# # m = property.set("-s-", m, c("da", "h", "k", "M", "G", "T", "P", "E", "Z", "Y") );
+	# # mn = -1 * m;
+	# # mn = property.set("-name-", mn, c("deci", "centi", "milli", "micro", "nano", "pico", "femto", "atto", "zepto", "yocto") );
+	# # mn = property.set("-s-", mn, c("d", "c", "m", "µ", "n", "p", "f", "a", "z", "y") );
+	# https://en.wikipedia.org/wiki/Engineering_notation
+	# https://mathjs.org/docs/reference/functions/format.html
+	## mnm = c(mn, m); # properties are lost ...
+	
+	## for file systems, see: https://physics.nist.gov/cuu/Units/binary.html
+	
+	m = c(1, 2, 3, 6, 9, 12, 15, 18, 21, 24);
+	m = c(-1*m, m);
+		my.names = c( c("deci", "centi", "milli", "micro", "nano", "pico", "femto", "atto", "zepto", "yocto"), c("deka", "hecto", "kilo", "mega", "giga", "tera", "peta", "exa", "zetta", "yotta") );
+		my.single = c( c("d", "c", "m", "µ", "n", "p", "f", "a", "z", "y"), c("da", "h", "k", "M", "G", "T", "P", "E", "Z", "Y") );
+	mdf = as.data.frame(cbind(m, my.names, my.single));
+		mdf$m = as.integer(mdf$m);
+		colnames(mdf) = c("SI.idx", "SI.name", "SI.symbol");
+	mdf = mdf[ c(rev(1:10), 11:20), ];
+	
+	assign("SI_PREFIXES", mdf, envir=envir);	
+	}
+
+
+
+num.toEngineering = function(x, ..., 
+									by = 3,
+									force.by = FALSE,
+									signif.digits = 7,
+									units="m",
+									show.only.units = FALSE,
+									prefix.as.symbol = TRUE,
+									e = "E",
+									part="Re"
+							)
+	{
+	num.constants();
+# dput(SI_PREFIXES);
+	x = dots.addTo(x, ...); 
+	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
+	
+	# RealCalc has "normal", "fixed", "scientific", and "engineering" modes ...
+	# 3 digit, 4 digit, or indian grouping
+	# binary/hexadecimal/octar are always displayed in 4 digits 
+	# https://www.sheetzoom.com/Tips/indian-number-grouping-in-excel
+	
+	x = math.cleanup(x);
+	# x.sign = math.sign(x, return="character");
+	# slen = str.len(x.sign);
+	x.neg = is.negative(x);	
+	# x.info = str.explode(".", x.char);
+	# w = list.getElements(x.info, 1);
+	# f = list.getElements(x.info, 2);
+	
+	
+	
+	x.char = as.character(x);  # this is the real value, not printed form
+							   # irrelevant what scipen is 
+	
+	# https://stat.ethz.ch/pipermail/r-help/2006-July/108808.html				
+	# maybe a LATEX out option?
+	# return(paste(s[1]*10^(s[2]%%3),as.integer(s[2]-(s[2]%%3)),sep="e"))
+	
+	x.sci = format(x, scientific=TRUE, digits=signif.digits);
+	x.info = str.split("e", x.sci);
+		w = as.numeric( list.getElements(x.info, 1) );
+		f = as.numeric( list.getElements(x.info, 2) );
+		
+	if(!force.by)
+		{
+		nw = w*10^(f %% 3);
+		nf = as.integer(f-(f %% 3));
+		} else {
+				# force.by = 6;  # should be a multiple of 3 
+				fb = num.round(force.by, 3);
+				force.by = as.integer(force.by);
+				if(!identical(fb, force.by)) { warning.cat("\n", " force.by was [",force.by, "] rounded to nearest multiple of three as [", fb, "] \n"); }
+				nw = w*10^(f %% fb);
+				nf = as.integer(f-(f %% fb));
+				}
+	
+	idx = set.match(nf, SI_PREFIXES$SI.idx);
+	# NA are empty, base UNIT 
+	
+	# prefix.as.symbol = TRUE, ... if symbol, SI.symbol else SI.name
+	add.name = SI_PREFIXES$SI.name[idx]; 	add.name[is.na(add.name)] = "";
+	add.symbol = SI_PREFIXES$SI.symbol[idx];add.symbol[is.na(add.symbol)] = "";
+	
+	if(show.only.units)
+		{		
+		res = paste0(nw, " ", add.symbol, units);
+		} else {
+				res = paste0(nw, e, nf, " ", add.symbol, units); 
+				}
+	return(res);	
+	}
+
+num.round = function(x, by=3, how="round")
+	{
+	# round vs up vs down ... 
+	# integer rounding to the nearest 3 or something ... 
+	
+	x;
+	}
+
+
+
 num.toFrac = function() {}
 num.toFrac = function(x, ..., 
 								return = "last",

@@ -3,6 +3,7 @@
 
 snails.pace = function() {} 
 
+# TODO ... color.setOpacity()
 snails.pace = function(snails = 6, finish.line = 8, moves = 200, 
 							auto.play = NULL,  y.factor = 4/3, 
 							intro.pause = TRUE, snail.par = TRUE, 
@@ -64,9 +65,12 @@ snails.pace = function(snails = 6, finish.line = 8, moves = 200,
 			if(xmax < finish.line) { xmax = finish.line; }
 			}		
 		
+		# utf8ToInt("U+1F40C")
+		# utf8ToInt("\U1F40C"); # 128012; # intToUtf8(128012)
 		# U+1F40C [snail]
+		# plot(1, pch= intToUtf8(128024) )
 		plot(snail.x, snail.y, 
-				col=snail.col, pch=snail.pch, cex=snail.cex, 
+				col=snail.col, pch=intToUtf8(128012), cex= (1/2*snail.cex), 
 				xlim=c(-1, snails.round(xmax, 5) ), 
 				ylim=c(-1, ymax ), 
 				axes=FALSE, frame.plot=FALSE, 

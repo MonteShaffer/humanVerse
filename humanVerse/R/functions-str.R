@@ -348,12 +348,12 @@ str.fromRaw = function(raw)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
-#' str.toObject
+#' str.toObjectName
 #'
 #'
 # eval ... parse 
 #------------------------------------------------#
-str.toObject = function(obj.str) 
+str.toObjectName = function(obj.str) 
 	{ 
 	eval(parse(text = obj.str));  # as-is, no checks?
 	}  
@@ -361,16 +361,19 @@ str.toObject = function(obj.str)
 	
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
-#' str.fromObject
+#' str.fromObjectName
 #'
 #'
-# as.character substitute ... doesn't have to exist ...
-# this does require the object to exist ...  
 #------------------------------------------------#
-str.fromObject = function(obj) 
+str.fromObjectName = function(objname) 
 	{ 
-	if( is.set(obj, TRUE) ) { return(as.character(substitute(obj)));	}
-	return("");
+	ctp = check.type(objname);  # TRUE or FALSE with attribute
+	mytype = property.get("typeof",ctp);
+	if( (!ctp) || (ctp && mytype != "character") ) { objname = as.character(deparse(substitute(objname))); }
+	objname;
+	
+	# if( is.set(obj, TRUE) ) { return(as.character(substitute(obj)));	}
+	# return("");
 	}  
 
 

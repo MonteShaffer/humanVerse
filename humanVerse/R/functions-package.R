@@ -55,6 +55,7 @@
 
 package.install = function(pkg, ...)
 	{
+	pkg = str.fromObject(pkg);	
 	if(!is.character(pkg)) { pkg = as.character(substitute(pkg)); }
 	#package.installed ... 
 	# library woroks on pkg/pkg.str 

@@ -1,4 +1,5 @@
 	
+temp.constants = function() {}
 temp.constants = function(envir=parent.env(environment()))
 	{
 	ABS_ZERO_F = -459.67;

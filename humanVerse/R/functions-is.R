@@ -414,7 +414,7 @@ is.wholeNumber = function() {}
 is.wholeNumber = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
   {
   # See ?is.integer
-  more = unlist(list(...)); x = c(x, more); 
+  x = dots.addTo(x, ...);
   x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
   abs(x - round(x)) < tol;
   }
@@ -485,6 +485,7 @@ is.odd = function(x, ..., part="Re")
 #' is.positive(-1);
 #' is.positive( c(-1*1:5,-sin(pi), 0,0, sin(pi), 1:5) );
 #'
+is.positive = function() {}
 is.positive = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
   {
   x = dots.addTo(x, ...);
@@ -509,6 +510,7 @@ x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
 #' is.negative(-1);
 #' is.negative( c(-1*1:5,-sin(pi), 0,0,0, sin(pi), 1:5, NA, NA) );
 #'
+is.negative = function() {}
 is.negative = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
 	{
 	x = dots.addTo(x, ...); 
@@ -565,6 +567,7 @@ is.equal = function(x, y, tol = sqrt(.Machine$double.eps), part="Re")
 "%~=%" = "%eq%" = is.equal;
 
 # x `~>=` y 
+is.ge = function() {}
 is.ge = function(x, y, tol = sqrt(.Machine$double.eps), part="Re")
 	{
 	check.isCompatibleLength(x, y);
@@ -577,6 +580,7 @@ is.ge = function(x, y, tol = sqrt(.Machine$double.eps), part="Re")
 "%~>%" = "%ge%" = is.ge;
 
 # x `~<=` y 
+is.le = function(x) {}
 is.le = function(x, y, tol = sqrt(.Machine$double.eps), part="Re")
 	{
 	check.isCompatibleLength(x, y);
@@ -609,8 +613,41 @@ is.le = function(x, y, tol = sqrt(.Machine$double.eps), part="Re")
 
 
 
+math.countSignChanges = function() {}
+math.countSignChanges = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
+	{
+	x = dots.addTo(x, ...);
+	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
+	x = math.cleanup( x ); # if close to zero, do this before checking sign 
+	x.sign = sign(x);
+	# https://stackoverflow.com/questions/17220837/
+	sum(diff( x.sign ) != 0);	
+	}
 
 
-
-
-
+math.sign = function() {}
+# lol in ?sign ... what is sign(sin(pi)) vs math.sign(sin(pi))
+math.sign = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re", return="integer")
+	{
+	r = functions.cleanupKey(return, 1);	
+	x = dots.addTo(x, ...);
+	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
+	x = math.cleanup( x ); # if close to zero, do this before checking sign 
+	x.sign = sign(x);
+	if(r == "i") { return(x.sign); }
+	res = x; # NA's are preserved 
+	res[x.sign== 0] = ""; 
+	res[x.sign== 1] = "+";
+	res[x.sign==-1] = "-";
+	res;
+	}
+	
+	
+is.wholeNumber = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
+  {
+  # See ?is.integer
+  more = unlist(list(...)); x = c(x, more); 
+  x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
+  abs(x - round(x)) < tol;
+  }
+  
