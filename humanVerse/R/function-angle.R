@@ -4,91 +4,133 @@
 # (0:30)/6 * pi %rad%.
 
 
-#' deg2rad 
-#'
-#' Convert angles from degrees to radians.
-#'
-#' @param degs One or more angles in degrees
-#' @param ...  One or more angles in degrees
-#'
-#' @return One or more angles in radians.
-#' @export
-#'
-#' @examples
-#' deg2rad(c(1,3,34));
-#' deg2rad(1,3,34);
-#' deg2rad(1,3,"alex");
-#'
-deg2rad = function(degs, ...)
-	{
-	degs = dots.addTo(degs, ...);
-
-	n = length(degs);
-	res = numeric(n);
-	for(i in 1:n)
-		{
-		deg = degs[i];
-		ndeg = suppressWarnings(as.numeric(deg));
-		rad = NaN;
-		if( !is.na(ndeg) )  { rad = (pi/180) * ndeg; }
-		res[i] = rad;
-		}
-	math.cleanup( res );
-	}
-
-
-#' rad2deg
-#'
-#' Convert angles from radians to degrees.
-#' Similar to pracma::rad2deg however is vectorized (multivariate).
-#'
-#' @param degs One or more angles in radians.
-#' @param ...  One or more angles in radians.
-#'
-#' @return One or more angles in degrees.
-#' @export
-#'
-#' @examples
-#' rad2deg(c(1,3,34));
-#' rad2deg(1,3,34);
-#' rad2deg(1,3,"alex");
-#'
-rad2deg = function(rads, ...)
-	{
-	rads = dots.addTo(rads, ...);
-	n = length(rads);
-	res = numeric(n);
-	for(i in 1:n)
-		{
-		rad = rads[i];
-		nrad = suppressWarnings(as.numeric(rad));
-		deg = NaN;
-		if( !is.na(nrad) )  { deg = (180/pi) * nrad; }
-		res[i] = deg;
-		}
-	math.cleanup( res );
-	}
-
-
-"%deg%" = function(deg, r=NULL) { deg2rad(deg); }	
-"%rad%" = function(rad, r=NULL) { rad2deg(rad); }	
-
-# pi %rad%. 
-# 30 %deg%. 
-
-
-
-
 math.cleanup = function() {}
 math.cleanup = function(x, tol = sqrt(.Machine$double.eps), ...)
 	{
-	# maybe sqrt(3)/2
+	# maybe sqrt(3)/2 ... or FRAC/PI ... append as attribute?, go.deep=TRUE
 	# zeros 
 	z = is.zero(x, tol=tol, ...); # Re / Im also possible.
 	x[z] = 0;
 	x;
 	}
 
+
+
+angle.convert = function(A, ..., from="degrees", to="radians")
+	{
+	A = dots.addTo(A, ...);
+	# convert everthing to "degrees" on first pass
+	F = functions.cleanKey(from, 1, case="upper");
+	T = functions.cleanKey(to, 1, case="upper");
+# dput(A); dput(F); dput(T); 
+	deg = switch(F,					  			
+					  "D" 	= A,
+					  "R"	= (180/pi) * A,	
+					  "G"  	= A * 9/10,			
+				A											# DEFAULT
+				);
+	
+	# convert everything from "degrees" on second pass 
+	
+	res = switch(T,					  			
+					  "D" 	= deg,
+					  "R"	= (pi/180) * deg,	
+					  "G"  	= deg * 10/9,					
+				deg											# DEFAULT
+				);
+	math.cleanup( res );
+	}
+
+
+
+
+
+## DRG ... LOL
+# x = c("D", "R", "G");
+# xlon = c("deg", "rad", "gon");
+# m = e1071::permutations(3)[,1:2];
+# m2 =  matrix(x[m], ncol=2);
+# m3 = m2[!duplicated(m2), ];
+# m4 = m3[ c( which(m3[,1] == x[1]), which(m3[,1] == x[2]), which(m3[,1] == x[3]) ),  ];
+# m5 = m4[ c(1,2,  4,3,  5,6), ];
+
+# for(i in 1:6) 
+	# {
+	# mm = m5[i, ];
+	# first = mm[1]; 
+	# flon = xlon[pmatch(tolower(first), xlon)]; 
+	# second = mm[2];
+	# slon = xlon[pmatch(tolower(second), xlon)];
+	temp.c2f = 	function(degC) { temp.convert(degC, "C", "F"); }
+	# row = paste0( flon, "2", slon, " = function(A", tolower(first), ", ...) { angle.convert(A", tolower(first), ", ...,  from=\"", toupper(first), "\", to=\"", toupper(second), "\"); } ");
+	# print.noquote(row);
+	# cat(row, "\n\n");
+	# }
+
+deg2rad = function(Ad, ...) { angle.convert(Ad, ...,  from="D", to="R"); }  
+
+deg2gon = function(Ad, ...) { angle.convert(Ad, ...,  from="D", to="G"); }  
+
+rad2gon = function(Ar, ...) { angle.convert(Ar, ...,  from="R", to="G"); }  
+
+rad2deg = function(Ar, ...) { angle.convert(Ar, ...,  from="R", to="D"); }  
+
+gon2deg = function(Ag, ...) { angle.convert(Ag, ...,  from="G", to="D"); }  
+
+gon2rad = function(Ag, ...) { angle.convert(Ag, ...,  from="G", to="R"); }  
+
+
+	
+"%deg%" = function(deg, to="R") 
+	{ 
+	# default is to="R"
+	# traps the single dot (.) as option 
+	if(!check.type(to)) { to="R"; } 
+	if(is.na(to) || is.null(to)) { to = "R"; }
+	angle.convert(deg, from="D", to=to); 
+	}
+
+"%rad%" = function(rad, to="D") 
+	{ 
+	# default is to="D"
+	# traps the single dot (.) as option 
+	if(!check.type(to)) { to="D"; } 
+	if(is.na(to) || is.null(to)) { to = "D"; }
+	angle.convert(rad, from="R", to=to); 
+	}	
+	
+
+"%gon%" = function(gon, to="D") 
+	{ 
+	# default is to="D"
+	# traps the single dot (.) as option 
+	if(!check.type(to)) { to="D"; } 
+	if(is.na(to) || is.null(to)) { to = "D"; }
+	angle.convert(gon, from="G", to=to); 
+	}
+
+
+# 30  %deg%. 
+# pi  %rad%.  # dot means default... or you could put pi %rad% "G"
+# 100 %gon%. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+####################### REGULAR TRIG ###########################
 math.sin = function(x, ...)
 	{
 	# maybe do better with fractional components
@@ -149,6 +191,67 @@ arctan = function() {}
 arctan = math.atan;
 
 
+####################### HYPERBOLIC TRIG ###########################
+
+
+math.sinh = function(x, ...)
+	{
+	# maybe do better with fractional components
+	x = dots.addTo(x, ...);
+	math.cleanup( sinh(x) );
+	}
+	
+math.cosh = function(x, ...)
+	{
+	# maybe do better with fractional components
+	x = dots.addTo(x, ...);
+	math.cleanup( cosh(x) );
+	}
+	
+math.tanh = function(x, ...)
+	{
+	# maybe do better with fractional components
+	x = dots.addTo(x, ...);
+	math.cleanup( tanh(x) );
+	}
+
+cotanh 		= function(x, ...) { 1/math.tanh(x,...); }
+cosecanth 	= function(x, ...) { 1/math.sinh(x,...); } 	
+secanth 	= function(x, ...) { 1/math.cosh(x,...); } 
+	
+	
+math.asinh = function(x, ...)
+	{
+	# maybe do better with fractional components
+	x = dots.addTo(x, ...);
+	math.cleanup( asinh(x) );
+	}
+
+arcsinh = function() {}
+arcsinh = math.asinh;	
+
+	
+math.acosh = function(x, ...)
+	{
+	# maybe do better with fractional components
+	x = dots.addTo(x, ...);
+	math.cleanup( acosh(x) );
+	}
+
+arccosh = function() {}
+arccosh = math.acosh;
+
+	
+	
+math.atanh = function(x, ...)
+	{
+	# maybe do better with fractional components
+	x = dots.addTo(x, ...);
+	math.cleanup( atanh(x) );
+	}
+
+arctanh = function() {}
+arctanh = math.atanh;
 
 
 
@@ -156,6 +259,24 @@ arctan = math.atan;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+############## COSINE.SIMILARITY (ANGULAR DISTANCE) ###################
 
 # https://stackoverflow.com/questions/1746501/
 		# a = c(2,1,0,2,0,1,1,1)
