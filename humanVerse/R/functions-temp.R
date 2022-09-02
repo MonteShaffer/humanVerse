@@ -34,25 +34,28 @@ temp.convert = function(degX, ..., from="fahrenheit", to="celsius")
 	# convert everthing to "celsius" on first pass
 	F = functions.cleanKey(from, 1, case="upper");
 	T = functions.cleanKey(to, 1, case="upper");
-dput(degX); dput(F); dput(T); dput(ABS_ZERO_R);
+# dput(degX); dput(F); dput(T); dput(ABS_ZERO_R);
+cat("\n START degX ... ", degX, "\n");
 	degC = switch(F,					  			
 					  "F" 	= 5/9 * (degX - 32),
 					  "C"	= degX,	
 					  "K"  	= degX + ABS_ZERO_C,				
-					  "R"  	= (5/9 * (degX - 32)) + ABS_ZERO_R,				
+					  "R"  	= (degX + ABS_ZERO_R - 32) * (5/9),				
 				degX											# DEFAULT
 				);
-	# convert everything from "celsius" on second pass 
-	
+cat("\n in degC ... ", degC, "\n");			
+	# convert everything from "celsius" on second pass 	
 	degN = switch(T,					  			
 					  "F" 	= 9/5 * degC + 32,
 					  "C"	= degC,	
 					  "K"  	= degC - ABS_ZERO_C,				
-					  "R"  	= (9/5 * degC + 32) + ABS_ZERO_R,				
+					  "R"  	= (9/5 * degC) - ABS_ZERO_R + 32,				
 				degC											# DEFAULT
 				);
+cat("\n in degN ... ", degN, "\n");					
 	temp.isNA(degN, to);
 	}
+	
 
 
 # 12 unique, meaningful conversions 
