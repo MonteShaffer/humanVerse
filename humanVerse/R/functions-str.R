@@ -1,4 +1,22 @@
 
+
+
+str.width = function() {}
+str.height = function() {}
+
+str.compare = function(a, b=NULL, methods="all")
+	{
+	# similar to cosine similarity, do matrix(a) ... or vec to matr 
+	# jaro-winkler
+	# leven ... dist/sim 
+	# modified leven 
+	# should we explode into charVectors and do counts / cosine.similarity?
+	# soundex(ASCII)
+	
+	
+	}
+
+
 # conflict with "str" method?
 # http://adv-r.had.co.nz/S3.html
 # .S3PrimitiveGenerics

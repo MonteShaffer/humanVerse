@@ -35,6 +35,20 @@ stop.cat = function(..., sep=" ")
 cat.stop = stop.cat;
 
 
+
+
+
+
+cat.norm = function(str, open=TRUE, set.as.wd = FALSE)
+	{
+	nstr = normalizePath(str);
+	cat( nstr );
+	if(open) { utils::browseURL(nstr); }
+	if(set.as.wd) { setwd( nstr ); }
+	}
+
+
+
 cat.init = function()
 	{
 	# load objects, where to attach?

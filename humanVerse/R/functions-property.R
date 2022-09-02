@@ -218,6 +218,10 @@ property.remove = function()
 
 
 
+# options(warn=2);
+# options("warn");
+options.get = function() {}
+options.set = function() {}
 
 
 

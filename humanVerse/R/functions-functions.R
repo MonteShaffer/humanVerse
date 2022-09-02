@@ -87,10 +87,6 @@ functions.listFromPackage = function(pkg = "stats")
 
 
 
-# options(warn=2);
-# options("warn");
-options.get = function() {}
-options.set = function() {}
 
 # parameter is currently not a list or a vector ... 
 
@@ -102,6 +98,10 @@ options.set = function() {}
 # df = functions.withParameter("na.rm");
 # table(df$pkg);
 # xtabs(~pkg+param.value , df)
+# 
+# df = functions.withParameter(".registration");  # NOTHING 
+# whereis "useDynamicLib"
+# https://cran.r-project.org/doc/manuals/R-exts.html#Load-hooks
 
 # DEBIAN: clear ... CMD: cls ... R: CNTRL-SHIFT-L (LOL programming language)
  
@@ -217,6 +217,7 @@ if(debug)
 		
 		
 	df = as.data.frame(df);
+	if(nrow(df) == 0) { return(NULL); }
 	colnames(df) = c("pkg", "fn.is", "fn.name", "param.value");
 		df$pkg = as.factor(df$pkg);
 		df$fn.is = as.factor(df$fn.is);
