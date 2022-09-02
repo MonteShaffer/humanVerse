@@ -107,24 +107,47 @@ num.constants = function(envir=parent.env(environment()))
 		colnames(mdf) = c("SI.idx", "SI.name", "SI.symbol");
 	mdf = mdf[ c(rev(1:10), 11:20), ];
 	
-	assign("SI_PREFIXES", mdf, envir=envir);	
+	assign("SI_PREFIX", mdf, envir=envir);	
 	}
 
 
+# x = 10^(-4:5) * rnorm(100);
+# num.toEngineering(x);
+# num.toEngineering(x, force.by=6);
+# num.toEngineering(x, units="grams", show.what="units-names");
+# num.toEngineering(x, show.what="exponent");
+# num.toEngineering(x, show.what="exp", e=" E");
+# num.toEng(x, show.what="exp", e=" E", e.pos="+",e.zero="0");
+# num.toEng(x, show.what="exp", e=" * 10 ^ ");
+# num.toEng(x, show.what="exp", e=" × 10^", e.pos="+", e.zero="0");
+# num.toEng(x, show.what="exp", e=paste0(" ",chr(215)," 10^"), e.pos="+", e.zero="+");
+num.toEng(x, show.what="exp", e=" ᴱ", e.pos="+",e.zero="0");
+# https://unicode-table.com/en/sets/superscript-and-subscript-letters/
+# str.replace(NUMS, with UNICODE small ... also hyphen and plus)
+
+# https://en.wikipedia.org/wiki/Unicode_subscripts_and_superscripts
+# U+00D7 ==> 215 ? 
+# ord("×");
+# chr(215);
 
 num.toEngineering = function(x, ..., 
 									by = 3,
 									force.by = FALSE,
 									signif.digits = 7,
 									units="m",
-									show.only.units = FALSE,
-									prefix.as.symbol = TRUE,
 									e = "E",
+									min.e = 2,
+									e.neg = "-", e.pos="", e.zero="",
+									show.what = "units-symbol",
 									part="Re"
 							)
-	{
+	{								
+						# [u]nits-[s]ymbol ... mm
+						# [u]nits-[n]ame   ... millim  (change units="meter")
+						# [e]xponential    ... no [mm] or [millimeter]
+	sw = functions.cleanKey(show.what, n=1, keep="-");
 	num.constants();
-# dput(SI_PREFIXES);
+# dput(SI_PREFIX);
 	x = dots.addTo(x, ...); 
 	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
 	
@@ -134,9 +157,10 @@ num.toEngineering = function(x, ...,
 	# https://www.sheetzoom.com/Tips/indian-number-grouping-in-excel
 	
 	x = math.cleanup(x);
-	# x.sign = math.sign(x, return="character");
+	n = length(x);
+	# x.sign = math.sign(x, return="character", zero="+");
 	# slen = str.len(x.sign);
-	x.neg = is.negative(x);	
+	# x.neg = is.negative(x);	
 	# x.info = str.explode(".", x.char);
 	# w = list.getElements(x.info, 1);
 	# f = list.getElements(x.info, 2);
@@ -158,31 +182,79 @@ num.toEngineering = function(x, ...,
 	if(!force.by)
 		{
 		nw = w*10^(f %% 3);
-		nf = as.integer(f-(f %% 3));
+		ne = as.integer(f-(f %% 3));
 		} else {
 				# force.by = 6;  # should be a multiple of 3 
 				fb = num.round(force.by, 3);
 				force.by = as.integer(force.by);
 				if(!identical(fb, force.by)) { warning.cat("\n", " force.by was [",force.by, "] rounded to nearest multiple of three as [", fb, "] \n"); }
 				nw = w*10^(f %% fb);
-				nf = as.integer(f-(f %% fb));
+				ne = as.integer(f-(f %% fb));
 				}
 	
-	idx = set.match(nf, SI_PREFIXES$SI.idx);
+	idx = set.match(nf, SI_PREFIX$SI.idx);
 	# NA are empty, base UNIT 
 	
 	# prefix.as.symbol = TRUE, ... if symbol, SI.symbol else SI.name
-	add.name = SI_PREFIXES$SI.name[idx]; 	add.name[is.na(add.name)] = "";
-	add.symbol = SI_PREFIXES$SI.symbol[idx];add.symbol[is.na(add.symbol)] = "";
+	add.name = SI_PREFIX$SI.name[idx]; 
+		add.len = max(str.len(add.name), na.rm=TRUE);
+	add.name[is.na(add.name)] = " ";
+	add.name = str.pad(add.name, add.len, " ", "LEFT");
 	
-	if(show.only.units)
-		{		
-		res = paste0(nw, " ", add.symbol, units);
-		} else {
-				res = paste0(nw, e, nf, " ", add.symbol, units); 
-				}
+	add.symbol = SI_PREFIX$SI.symbol[idx];
+		add.len = max(str.len(add.symbol), na.rm=TRUE);
+	add.symbol[is.na(add.symbol)] = " ";
+	add.symbol = str.pad(add.symbol, add.len, " ", "LEFT");
+	
+	# x.neg = is.negative(x);
+	x.more = str.explode(".", as.character(nw));
+	whol = list.getElements(x.more, 1);
+	frac = list.getElements(x.more, 2);
+	
+	# whol.max = max( abs( as.numeric(whol) ) );
+	whol.min = min( abs( as.numeric(whol) ) );
+	# frac.max = max( as.integer(frac) );
+	# we will make pretty-print, an issue of there are 
+	# data that are orders of magnitude different 
+	# alternatively, I can find the MIN and make certain 
+	# it has signif.digits AND over DIGITIZE the bigger numbers
+	digits.remaining = signif.digits - str.len(whol.min);
+	wlen = str.len(whol);
+	wmax = max(wlen);
+	whole = str.pad(whol, wmax, " ", "LEFT");
+	fract = str.pad(frac, digits.remaining, "0", "RIGHT");
+	
+	e.sign = math.sign(nf, return="character", 
+							zero=e.zero, pos=e.pos, neg=e.neg);
+	e.pre  = str.pad(e.sign, 1, " ", "LEFT");
+	# e.len = str.len(e.sign); # assuming 1 is MAX
+	# e.neg = is.negative(nf);
+	es = as.character(abs(nf));
+	e.max = max(str.len( es ) );
+	e.pad = max(e.max, min.e);
+	ex = str.pad(es, e.pad, "0", "LEFT");
+	exp = paste0(e, e.pre, ex);
+	
+	
+		# DEFAULT		# [u]nits-[s]ymbol ... mm
+						# [u]nits-[n]ame   ... millim  (change units="meter")
+						# [e]xponential    ... no [mm] or [millimeter]
+
+	
+	res = switch(sw,					  			
+					  "u-s" = paste0(whole, ".", fract, " ", add.symbol, units),
+					  "u-n"	= paste0(whole, ".", fract, " ", add.name, units),	
+					  "e"  	= paste0(whole, ".", fract, exp),				
+				paste0(whole, ".", fract, " ", add.symbol, units)	# DEFAULT
+				);				
 	return(res);	
 	}
+
+
+
+num.toEng = num.toEngineering;
+
+
 
 num.round = function(x, by=3, how="round")
 	{

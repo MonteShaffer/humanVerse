@@ -630,7 +630,12 @@ math.countSignChanges = function(x, ..., tol = sqrt(.Machine$double.eps), part="
 
 math.sign = function() {}
 # lol in ?sign ... what is sign(sin(pi)) vs math.sign(sin(pi))
-math.sign = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re", return="integer")
+math.sign = function(x, ..., 
+							return="integer",
+							zero="", neg="-", pos="+",
+							tol = sqrt(.Machine$double.eps), 
+							part="Re"
+					)
 	{
 	r = functions.cleanupKey(return, 1);	
 	x = dots.addTo(x, ...);
@@ -639,9 +644,9 @@ math.sign = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re", return=
 	x.sign = sign(x);
 	if(r == "i") { return(x.sign); }
 	res = x; # NA's are preserved 
-	res[x.sign== 0] = ""; 
-	res[x.sign== 1] = "+";
-	res[x.sign==-1] = "-";
+	res[x.sign== 0] = zero; 
+	res[x.sign== 1] = pos;
+	res[x.sign==-1] = neg;
 	res;
 	}
 	

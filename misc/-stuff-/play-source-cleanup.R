@@ -574,7 +574,7 @@ findOutliersUsingIQR = function(x, innerFenceFactor=1.5, outerFenceFactor=3)
 	{
   result = list();
 
-	result$IQR = myIQR = stats::IQR(x, na.rm=TRUE);
+	result$IQR = myIQR = stats::IQR(x, na.rm=TRUE, show.warning=TRUE);
 	result$Quartiles = myQuartiles = as.numeric( stats::quantile(x, na.rm=TRUE, prob=c(.25,.5,.75)) );
 
 	result$inner.fence = innerFence = myIQR * innerFenceFactor;

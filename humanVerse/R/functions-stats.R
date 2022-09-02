@@ -69,10 +69,10 @@ tukeySummary = tukey.summary;
 #' @export
 #'
 #' @examples
-stats.warningNA = function(x)
+stats.warningNA = function(x, show.warning=TRUE)
 	{
 	res = anyNA(x);
-	if(res) 
+	if(res && show.warning) 
 		{ 
 		howMany = sum(is.na(x));
 		values = if(howMany == 1) { "value" } else { "values" }
@@ -109,9 +109,9 @@ stats.countNA = function(x)
 #' @examples
 #' x = c(1, NA, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, NA);
 #' 
-stats.sum = function(x, na.rm=TRUE)
+stats.sum = function(x, na.rm=TRUE, show.warning=TRUE)
 	{
-	warning = stats.warningNA(x);
+	warning = stats.warningNA(x, show.warning=show.warning);
 	res = base::sum(x, na.rm=na.rm)
 	res; 
 	}
@@ -137,7 +137,7 @@ stats.sum = function(x, na.rm=TRUE)
 #' 
 stats.median = function(x, type=1, na.rm=TRUE, names=FALSE, ...)
 	{
-	warning = stats.warningNA(x);
+	warning = stats.warningNA(x, show.warning=show.warning);
 	# sm.type = typeof(x);  # if we lose the type, we could restore 
 	res = stats::quantile(x, prob=c(0.5), type=type, na.rm=na.rm, names=names, ...);
 	res;
@@ -164,7 +164,7 @@ stats.median = function(x, type=1, na.rm=TRUE, names=FALSE, ...)
 #' 
 stats.quantile = function(x, qs=c(0, 0.25,0.5,0.75, 1), type=1, na.rm=TRUE, names=FALSE, ..., tag.me=FALSE)
 	{
-	warning = stats.warningNA(x);
+	warning = stats.warningNA(x, show.warning=show.warning);
 	res = stats::quantile(x, prob=qs, type=type, na.rm=na.rm, names=names, ...);
 	res;
 	}
@@ -193,7 +193,7 @@ getQuantiles = stats.quantile;
 #' 
 stats.mean = function(x, na.rm=TRUE, is.member=TRUE, ...)
 	{
-	warning = stats.warningNA(x);
+	warning = stats.warningNA(x, show.warning=show.warning);
 		# by default, na.rm happens inside b/c na.last=NA
 	x.sort = sort(x, na.last=TRUE);  
 		# this returns [NA] if there are NA's ... WHY?!?
@@ -216,7 +216,7 @@ doMean = stats.mean;
 
 stats.sd = function(x, na.rm=TRUE, is.member=TRUE, ...)
 	{
-	warning = stats.warningNA(x);
+	warning = stats.warningNA(x, show.warning=show.warning);
 	if(!is.member) { sd(x, na.rm=na.rm); }  # plain vanilla 
 	n = length(x);
 	n2 = n - stats.countNA(x);
@@ -283,9 +283,9 @@ stats.sd = function(x, na.rm=TRUE, is.member=TRUE, ...)
 #' which.min( c(23, presidents[1:30], 23) );
 #' stats.whichMin( c(23, presidents[1:30], 23) );
 #'
-stats.whichMin = function(x, na.rm=TRUE)
+stats.whichMin = function(x, na.rm=TRUE, show.warning=TRUE)
 	{
-	warning = stats.warningNA(x);
+	warning = stats.warningNA(x, show.warning=show.warning);
 	# behaves like which.min(x) but returns multiple
 	x.min = min( x, na.rm=na.rm ); 
 	which(x == x.min);
@@ -312,9 +312,9 @@ whichMin = stats.whichMin;
 #' which.max( c(87, presidents[1:30], 87) );
 #' stats.whichMax( c(87, presidents[1:30], 87) );
 #'
-stats.whichMax = function(x, na.rm=TRUE)
+stats.whichMax = function(x, na.rm=TRUE, show.warning=TRUE)
 	{
-	warning = stats.warningNA(x);
+	warning = stats.warningNA(x, show.warning=show.warning);
 	# behaves like which.max(x) but returns multiple
 	x.max = max( x, na.rm=na.rm ); 
 	which(x == x.max);
@@ -350,7 +350,7 @@ whichMax = stats.whichMax;
 #'
 stats.whichMinFrequency = function(x)
 	{
-	warning = stats.warningNA(x);
+	warning = stats.warningNA(x, show.warning=show.warning);
 	x.table = as.data.frame( table(x) );
 		freq.min = min( x.table$Freq );
 	x.list = x.table[x.table$Freq==freq.min,];
@@ -382,7 +382,7 @@ stats.whichMinFrequency = function(x)
 #'
 stats.mode = function(x, force.numeric=TRUE)
 	{
-	warning = stats.warningNA(x);
+	warning = stats.warningNA(x, show.warning=show.warning);
 	# R is a programming language for statistical computing and graphics supported by the R Core Team and the R Foundation for Statistical Computing. Created by statisticians Ross Ihaka and Robert Gentleman, R is used among data miners, bioinformaticians and statisticians for data analysis and developing statistical software. (WIKIPEDIA.com).
 	# R is a free software environment for statistical computing and graphics. It compiles and runs on a wide variety of UNIX platforms, Windows and MacOS. (r-project.org) 
 	# NA?
@@ -421,7 +421,7 @@ whichMinFrequency = stats.whichMinFrequency;
 
 stats.mScores = function(x, x.median = NULL, x.mad = NULL, method="base")
 	{
-	warning = stats.warningNA(x);
+	warning = stats.warningNA(x, show.warning=show.warning);
 	if(is.numeric(x.median) && is.numeric(x.mad)) { return ( (x - x.median) / x.mad ); }
 	m = functions.cleanKey(method, 1);
 	if( is.null(x.median) || is.null(x.mad) )
@@ -433,7 +433,7 @@ stats.mScores = function(x, x.median = NULL, x.mad = NULL, method="base")
 	if( m == "b" )
 		{
 		# base::mad has a constant != 1 by default ...
-		return( (x - median(x, na.rm=TRUE)) / mad(x, na.rm=TRUE) );
+		return( (x - median(x, na.rm=TRUE, show.warning=TRUE)) / mad(x, na.rm=TRUE, show.warning=TRUE) );
 		}
 		
 	x.median = stats.median(x);
@@ -447,7 +447,7 @@ stats.mScores = function(x, x.median = NULL, x.mad = NULL, method="base")
 stats.zScores = function(x, x.bar = NULL, s.hat = NULL, method="base")
 	{
 	if(is.numeric(x.bar) && is.numeric(s.hat)) { return ( (x - x.bar) / s.hat); }
-	warning = stats.warningNA(x);
+	warning = stats.warningNA(x, show.warning=show.warning);
 	m = functions.cleanKey(method, 1);
 	if( is.null(x.bar) || is.null(s.hat) )
       {
@@ -457,7 +457,7 @@ stats.zScores = function(x, x.bar = NULL, s.hat = NULL, method="base")
 	# [b]ase method ... missing values, definition of mean?
 	if( m == "b" )
 		{
-		return( (x - mean(x, na.rm=TRUE)) / sd(x) );
+		return( (x - mean(x, na.rm=TRUE, show.warning=TRUE)) / sd(x) );
 		}
 	
 	x.bar = stats.mean(x);
@@ -468,21 +468,21 @@ stats.zScores = function(x, x.bar = NULL, s.hat = NULL, method="base")
 calculateZscores = stats.zScores;
 
 
-stats.min = function(x, na.rm=TRUE)
+stats.min = function(x, na.rm=TRUE, show.warning=TRUE)
 	{
-	warning = stats.warningNA(x);
+	warning = stats.warningNA(x, show.warning=show.warning);
 	base::min(x, na.rm=na.rm);
 	}
 	
-stats.max = function(x, na.rm=TRUE)
+stats.max = function(x, na.rm=TRUE, show.warning=TRUE)
 	{
-	warning = stats.warningNA(x);
+	warning = stats.warningNA(x, show.warning=show.warning);
 	base::max(x, na.rm=na.rm);
 	}	
 	
-stats.range = function(x, na.rm=TRUE)
+stats.range = function(x, na.rm=TRUE, show.warning=TRUE)
 	{
-	warning = stats.warningNA(x);
+	warning = stats.warningNA(x, show.warning=show.warning);
 	base::diff( base::range(x, na.rm=na.rm) );
 	}
 

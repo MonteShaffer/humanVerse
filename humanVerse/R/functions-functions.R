@@ -958,8 +958,8 @@ indexFunctionsInFile = function(file, key="local", include=TRUE)
 	# keyed on "fn" => `file.name.R` ...
 
 
-	len.start = ceiling( log10( 1 + max(functions$lineno.start, na.rm=TRUE) ) );
-	len.end   = ceiling( log10( 1 + max(functions$lineno.end, na.rm=TRUE) ) );
+	len.start = ceiling( log10( 1 + max(functions$lineno.start, na.rm=TRUE, show.warning=TRUE) ) );
+	len.end   = ceiling( log10( 1 + max(functions$lineno.end, na.rm=TRUE, show.warning=TRUE) ) );
 
 		fn = functions$fn;
 		str = paste0("BODY [",

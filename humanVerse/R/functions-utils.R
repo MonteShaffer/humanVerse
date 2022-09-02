@@ -6,6 +6,9 @@ ceil = ceiling;
 #' @rdname nchars
 #' @export
 nchars = nchar;
+
+ord = utf8ToInt;  # mb_ord ?
+chr = intToUtf8;
  
  
 dots.addTo = function(key, ...)

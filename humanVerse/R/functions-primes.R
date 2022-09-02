@@ -284,7 +284,7 @@ prime.factors = function(x, ..., list.format="factors.{n}", optimus=FALSE)
 	na.check = all(is.na(x));
 	if(na.check) { return(x); }
 	
-	xmax = x; if(nx > 1 ) { xmax = max(x, na.rm=TRUE); }
+	xmax = x; if(nx > 1 ) { xmax = max(x, na.rm=TRUE, show.warning=TRUE); }
 	if(xmax < 5) { xmax = 5; }
 		
 	# 7 * 7 = 49 ... if finding factors of 49, I only need to look to 7

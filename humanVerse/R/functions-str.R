@@ -891,6 +891,11 @@ str.repeat = function(str, times=1, method="base")
 #' @export
 str_repeat = str.repeat;
 
+#++++++++++++++++++++++++#
+#'
+#' @rdname str.rep
+#' @export
+str.rep = str.repeat;
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'

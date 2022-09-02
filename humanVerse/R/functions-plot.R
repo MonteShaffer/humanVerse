@@ -162,8 +162,8 @@ stats.prepareTukeyPlot = function(x.list, heresy=FALSE,
 
 
 	# global min/max
-	myMin = min(all, na.rm=TRUE);
-	myMax = max(all, na.rm=TRUE);
+	myMin = min(all, na.rm=TRUE, show.warning=TRUE);
+	myMax = max(all, na.rm=TRUE, show.warning=TRUE);
 
 	new.stats = setAttribute("min", myMin, new.stats);
 	new.stats = setAttribute("max", myMax, new.stats);
