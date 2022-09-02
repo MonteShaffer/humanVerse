@@ -214,7 +214,7 @@ zipfile = paste0( filestem, ".zip" );
 
 writeToPipe(	df, txtfile);
 	Sys.sleep(1);
-zip::zip(zipfile, txtfile, compression_level = 9);
+zip(zipfile, txtfile);
 	Sys.sleep(1);
 
 # saveRDS(	df, rdsfile);

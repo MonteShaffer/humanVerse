@@ -1,7 +1,7 @@
 
-PI = 3.1415926535897932384626433;
-PHI = (1 + sqrt(5) ) / 2 ;
-E = exp(1);
+# PI = 3.1415926535897932384626433;
+# PHI = (1 + sqrt(5) ) / 2 ;
+# E = exp(1);
 # m = matrix(c(1,0,0,1), nrow=2);
 # exp(m); # works 
 # SI defintions: meter, kg, etc. 
@@ -29,7 +29,7 @@ E = exp(1);
 
 
 
-date.constants = function(envir=parent.frame(1))
+date.constants = function(envir=parent.env(environment()))
 	{
 	# https://www.nist.gov/pml/time-and-frequency-division
 	# https://www.nist.gov/physical-measurement-laboratory/nist-guide-si-appendix-b9#TIME
@@ -59,7 +59,49 @@ date.constants = function(envir=parent.frame(1))
 	assign("SECS_PER_TYEAR",	SECS_PER_TYEAR,	envir=envir);	
 	}
 
-date.formatter = function(input, from, to)
+
+## PAPAL [https://en.wikipedia.org/wiki/1582]
+# Thursday, October 4 (julian) => Next day became Friday, October 15 (gregorian)
+# France followed two months later, letting Sunday, December 9 be followed by Monday, December 20)
+## BRITISH [https://www.postgresql.org/docs/current/datetime-julian-dates.html]
+# The Calendar (New Style) Act 1750 introduced the Gregorian calendar to the British Empire, bringing Britain into line with most of Western Europe.
+# Its introduction was not straightforward. It meant that the year 1751 was a short year, lasting just 282 days from 25th March (New Year in the Julian calendar) to 31st December. The year 1752 then began on 1 January.
+
+### months 
+### daysBetween(d1, d2)... rules ... JULIAN until 9/2/1752; GREG after (as 9/14/1752) ... 11 days lost ... 9/3-9/13 should throw ALARM (NA)
+### calendar.rule[["british]][1] => "JULIAN until 1752-09-02 [ISO]
+###                          [2] => "GREG since 1752-09-14 [ISO]
+### what about FRANCE ... [1] Julian until ..., [2] Greg until [3] French until ... [n] GREG since ...
+### define the French Republic Calendar ... MAP over GREG ...
+
+
+# YYYYj currently assumes our current calendar with ytype = 365.25 as julian ... That is actually not correct.  DOY is off (even in RUTHVEN data because I relied on datetime.com) ... https://www.timeanddate.com/date/duration.html
+
+# https://en.wikipedia.org/wiki/Julian_calendar ... says today is Aug something
+# setwd("C:/_git_/-SANDBOX-/");
+# df = readRDS("RUTHVEN_(-7575,2525).rds");
+# which(df$YYYY == 2022 & df$MM == 8 & df$DD == 20);  # 8/20/2022 => 9/2/2022 (Today GREG)
+# df.printHead(df, row.idx=183855);
+
+# https://www.history.com/this-day-in-history/new-years-da
+# A Calendar as Julian would have March 1/25 as new year? Or January 1?
+# Why did the British change in 1752 from March to January if Julian didn't have that rule?
+
+
+date.formatter = function(envir=parent.env(environment()))
+	{
+	# below will work generally, but ctype = "Papal" or "British" or "French" define a calendar
+	# YYYY=YYYYg j x , MM n nn , WW[1-4], DOW[1-2] n nn, DOY  
+	internal = c("YYYY", "MM", "DD", "WW", "DOW", "DOY", "hh", "mm", "ss"
+	posix = list(
+	php 
+	mysql 
+	
+	}
+
+
+
+date.format = function(input, from, to)
 	{
 	# YYYYg or j or x 
 	# short and seconds ... bad idea ... 

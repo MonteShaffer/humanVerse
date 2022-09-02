@@ -1,13 +1,30 @@
 
 
 
-check.type = function(obj)
+check.type = function(obj, parent=NULL)
 	{
 debug = FALSE;
-	checktype = suppressError( typeof(obj), 
+	if(!is.null(parent)) 
+		{ 
+		# https://stackoverflow.com/a/17257053/184614
+		pcall = sys.call(-1);
+		fn.ob = get(as.character(pcall[[1]]), mode="function", sys.frame(-2));
+		pcalV <- match.call(definition=fn.ob, call=pcall); # verified?
+		x = as.list(pcalV)[-1];
+		# parent function passed in the "key" name in the list 
+		# below is a string form of the object ... 
+		# don't I still need to check the type ... on x[[parent]]
+		# return( deparse( x[[parent]] ) );
+		checktype = suppressError( typeof( x[[parent]] ), 
 								show.notice=debug,
-								msg="debugging typeof is.type" 
+								msg="debugging typeof check.type PARENT" 
 							);
+		} else {
+				checktype = suppressError( typeof(obj), 
+											show.notice=debug,
+											msg="debugging typeof check.type REGULAR" 
+										);
+				}
 	res = TRUE;
 	if(is.error(checktype)) { res = FALSE; }
 	res = property.set("typeof", res, checktype);

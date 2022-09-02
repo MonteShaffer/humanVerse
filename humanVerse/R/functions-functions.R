@@ -2,12 +2,12 @@
 # packageVersion("snow")
 # "Rmpi" %in% loadedNamespaces()
 
-% if("plyr" %in% (.packages())) { detach("package:plyr", unload=TRUE); }
+# if("plyr" %in% (.packages())) { detach("package:plyr", unload=TRUE); }
 
 # stringdist is function in pkg stringdist ... it is attached as function (enclosure)
 functions.inPackage = function(pkg = "stats")
 	{
-	pkg = str.fromObject(pkg);	
+	pkg = str.fromObjectName(pkg, parent="pkg");	
 dput(pkg);
 	all 	= ls( getNamespace(pkg), 		all.names = TRUE); 
 	# public has to be loaded ... 
@@ -18,8 +18,9 @@ dput(pkg);
 	list("public" = public, "private" = private);
 	}
 	
-	
-
+# do some  internal ranking on functions.inPackage based on INTERNAL usagage 
+# "tibble" has like 500 private functions, ridiculous	
+ 
 	
 
 	

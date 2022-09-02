@@ -73,7 +73,7 @@ num.den = function(num, den, expand=TRUE)
 			}
 
 "%frac%" = num.den;
-
+ 
 
 
 num.constants = function(envir=parent.env(environment()))
@@ -193,6 +193,18 @@ num.round = function(x, by=3, how="round")
 	}
 
 
+num.toHEX = function(x, ...)
+	{
+	x = dots.addTo(x, ...); 
+	x = as.integer(x);
+	as.hexmode(x);  # still integers but 'hexmode' int [1:100]
+	}
+	
+num.fromHEX = function(hx, ...)
+	{
+	hx = dots.addTo(hx, ...);
+	as.integer(hx);
+	}
 
 num.toFrac = function() {}
 num.toFrac = function(x, ..., 

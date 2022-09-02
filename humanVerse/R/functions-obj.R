@@ -1,5 +1,20 @@
 
 
+obj.whatis = function(obj)
+	{
+	ty.obj = typeof(obj);
+	tt.obj = v.type(obj);
+	cl.obj = class(obj);
+	ve.obj = is.vector(obj);
+	at.obj = is.atomic(obj);
+	co.obj = is.complex(obj);
+	df.obj = is.data.frame(obj);
+	li.obj = is.list(obj); # df are lists 
+	fu.obj = is.function(obj);
+	# what to return
+	}
+
+
 
 
 	

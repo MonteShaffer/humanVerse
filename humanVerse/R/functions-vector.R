@@ -1,4 +1,71 @@
 
+# this is multivariate ... 
+v.types = function(vecs, ...)
+	{
+	# vecs = dots.addTo(vecs, ...);
+	n = length(vecs);
+	res = character(n);
+	for(i in 1:n)
+		{
+		res[i] = v.type(vec);
+		}
+	res;	
+	}
+
+# this is univariate
+v.type = function(vec)
+	{
+	ntype = typeof(vec);		
+	if(ntype == "integer" && is.factor(vec))
+		{
+		ntype = "factor";
+		}
+	if(ntype == "double")
+		{
+		# intentional cascade ... if multiple, it will cast as the pointer <ct>
+		if(is.POSIXt(vec))   { ntype = "POSIXt";}
+		if(is.POSIXlt(vec))  { ntype = "POSIXlt";}
+		if(is.POSIXct(vec))  { ntype = "POSIXct";}	
+		if(is.Date(vec))     { ntype = "Date";}		
+		}
+	if(ntype == "closure")
+		{
+		# my function, not base  
+		if(is.function(vec)) { ntype = "function"; }
+		}
+		# "call", "expression", and "name"  [symbols]
+		# environment
+	ntype;
+	}
+	
+	
+v.shortTypes = function(types)
+	{
+	n = length(types);
+	res = character(n);
+	for(i in 1:n)
+		{
+		type = types[i];
+		res[i] = switch(type,					  			
+							"character" = "<char>",
+							"factor"	= "<factor>",
+							"integer"	= "<int>",
+							"POSIXlt"	= "<POSIXlt>",
+							"POSIXct"	= "<POSIXct>",
+							"Date"		= "<Date>",
+							"function"	= "<function>",							
+				paste0("<",type,">")		# DEFAULT
+				);		
+		}
+	res;
+	}
+	
+	
+
+
+
+
+
 
 
 vector.appendProperties = function (res, info, keep.source=TRUE)
@@ -42,6 +109,15 @@ vector.useNames = function(info)
 	}
 	
 	
+
+
+
+
+
+
+
+
+
 
 
 #' getNearestIndex

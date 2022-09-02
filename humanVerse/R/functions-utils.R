@@ -10,6 +10,10 @@ nchars = nchar;
  
 dots.addTo = function(key, ...)
 	{
+	a = is.atomic(key);  	# what type is the key ...
+	v = is.vector(key);		# maybe list append
+	l = is.list(key); 		# maybe cbind or rbind
+							
 	more = unlist(list(...));
 	c(key, more);
 	}

@@ -63,11 +63,14 @@ function.exists = is.function;
 
 
 
-
 is.POSIXt  = function(x)	{ inherits(x, "POSIXt");  }
 is.POSIXlt = function(x)	{ inherits(x, "POSIXlt"); }
 is.POSIXct = function(x)	{ inherits(x, "POSIXct"); }
 
+is.Date = function(x)		{ inherits(x, "Date"); }
+
+is.boolean = is.bool = is.logical;
+# is.name EQUIVALENT to is.symbol
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
