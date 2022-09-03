@@ -62,6 +62,32 @@ dcf.get(key = "Version", pkg="stats")
 # i = help.parseFromLibrary(); str(i); dcf = .%$$%("i@dcf"); str(dcf);
 
 
+dcf.uniqueKeys = function(pkgs = (.packages(all.available=TRUE)) )
+	{
+	h = help.parseFromLibrary(); str(h); dcf = .%$$%("h@dcf"); str(dcf);
+	res = list.create(dcf$keys, dcf$values);
+	res2 = list.create(dcf$keys, rep("base", length(dcf$keys)));
+cat("\n", " INIT ... ", length(res), "\n"); Sys.sleep(0.25);
+	# pkgs = (.packages(all.available=TRUE));
+	n = length(pkgs);
+	for(i in 1:n)
+		{
+		pkg = pkgs[i];
+		h = help.get(pkg); dcf = dcf.parse( h$info[[1]] );
+		res = list.update(res, dcf$keys, dcf$values);
+		res2 = list.update(res2, dcf$keys, rep(pkg, length(dcf$keys)));
+cat("\n", "\t ", i, " of ", n, "\t package:", pkg," ... ", length(res), "\n");
+flush.console();
+		}
+	list("values" = res, "pkg" = res2);	
+	}
+	
+# all.keys = dcf.uniqueKeys();  # ... all.keys = 81 with first val 
+# str(all.keys);
+# df = as.data.frame( cbind( names(all.keys$values), all.keys$pkg, all.keys$values ) ); rownames(df) = NULL; colnames(df) = c("keys", "package", "values"); head(df);
+
+
+
 dcf.uniqueVals = function(key="Built", 
 							pkgs = (.packages(all.available=TRUE)) 
 						)
@@ -88,32 +114,9 @@ flush.console();
 	df;	
 	}
 	
-# all.vals = dcf.uniqueVals("Built"); head(all.vals); View(all.vals);	
+# all.vals = dcf.uniqueVals("Built"); head(all.vals); View(all.vals);
+# idx = which.max(str.len(all.vals$val)); val = all.vals$val[idx];	
 	
-dcf.uniqueKeys = function(pkgs = (.packages(all.available=TRUE)) )
-	{
-	h = help.parseFromLibrary(); str(h); dcf = .%$$%("h@dcf"); str(dcf);
-	res = list.create(dcf$keys, dcf$values);
-	res2 = list.create(dcf$keys, rep("base", length(dcf$keys)));
-cat("\n", " INIT ... ", length(res), "\n"); Sys.sleep(0.25);
-	# pkgs = (.packages(all.available=TRUE));
-	n = length(pkgs);
-	for(i in 1:n)
-		{
-		pkg = pkgs[i];
-		h = help.get(pkg); dcf = dcf.parse( h$info[[1]] );
-		res = list.update(res, dcf$keys, dcf$values);
-		res2 = list.update(res2, dcf$keys, rep(pkg, length(dcf$keys)));
-cat("\n", "\t ", i, " of ", n, "\t package:", pkg," ... ", length(res), "\n");
-flush.console();
-		}
-	list("values" = res, "pkg" = res2);	
-	}
-	
-# all.keys = dcf.uniqueKeys();  # ... all.keys = 81 with first val 
-# str(all.keys);
-# df = as.data.frame( cbind( names(all.keys$values), all.keys$pkg, all.keys$values ) ); rownames(df) = NULL; colnames(df) = c("keys", "package", "values"); head(df);
-
 dcf.parse = function(dcfstr)
 	{
 	# h = help.get(pkg); dcf = dcf.parse( h$info[[1]] );
@@ -134,8 +137,8 @@ dcf.parse = function(dcfstr)
 		.key = tolower(key);
 		if(.key == "built")
 			{
-			v = list();			
-			tmp = str.trim(str.explode(";", val));
+			v = list();					
+			tmp = str.removeWhiteSpace(str.explode(";", val));
 			r = str.contains("R", tmp); s = v.find(tmp, r)[1];
 			if(!is.null(s)) 
 				{ 
@@ -157,11 +160,22 @@ dcf.parse = function(dcfstr)
 				{ 
 				v[["ming"]] = tmp[s];
 				}
-			# one is R version 
-			# one is date
-			# slen = str.len(df$val); # from uniqueVals 
-			# which.max(slen);  df[13, ]; df$val[13]
-
+			out[[key]] = v; 
+			next;
+			}
+		
+		if(.key == "suggests")
+			{
+			tmp = str.removeWhiteSpace(str.explode(",", val));
+			tmp2 = str.explode("(", tmp);
+			pkgs = list.getElements(tmp2, 1);
+				depe = list.getElements(tmp2, 2);
+				depe[!is.na(depe)] = paste0("(", depe[!is.na(depe)]);
+				depe[ is.na(depe)] = "";
+			pkgs = property.set("dependencies", pkgs, depe);
+			
+			out[[key]] = pkgs;
+			next;
 			}
 		
 		# DEFAULT
