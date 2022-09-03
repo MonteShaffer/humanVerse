@@ -104,12 +104,30 @@ package.info = function(pkg = "stringi")
 	}
 
 	
-# plural intentional, but make aliases 	
-packages.installed = function()
+# plural intentional, but make aliases 
+								# [b]y-[l]ibrary  ... [a]s-[l]ist 
+								# [r]aw ... [a]s-[d]ataframe
+packages.installed = function(return="by-library")
 	{
-	library()$results[,1];
+	r = functions.cleanKey(return, n=1, keep="-");
+	# functions.inPackage(sessioninfo) vs functions.inPackage(sessionInfo)
+	# all shows lowercase, folder shows upper case .. need to map to all 
+	all = as.data.frame( library()$results ); 
+	if(r == "r" || r == "a-d") { return(all); }
+	mypaths = .libPaths();
+	n = length(mypaths);
+	res = vector("list", n);
+	for(i in 1:n)
+		{
+		# res[[i]] = list.dirs(mypaths[i], full.names = FALSE, recursive = FALSE);
+		s = subset(all, LibPath == mypaths[i]);
+		res[[i]] = s$Package;
+		res[[i]] = property.set("titles", res[[i]], s$Title);
+		}
+	names(res) = mypaths;
+	res;
 	}
-	
+	 
 	
 # .libPaths() # get library location
 # library()   # see all packages installed

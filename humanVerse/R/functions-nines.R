@@ -1,5 +1,5 @@
 # numerology, western, see # http://nephi-john.today/apps/numerology/
-# # 4.0*atan(1.0)
+# # PI =  4.0*atan(1.0)
 # http://md5.mshaffer.com/WSU_STATS419/_EXAMPLES_/fiddle_usmap/
 # https://www.humanverse.today/-highcharts-/maps/examples/latlon-advanced/index.html
 

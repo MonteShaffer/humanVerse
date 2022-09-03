@@ -50,7 +50,36 @@ suppressError = function(expression, show.notice = TRUE, msg = "")
 
 
 
-
+# I am pretty sure this is UNIVARIATE 
+# should be a character already and have length == 1
+access = function(str)
+	{
+	E = str.explode("@", str);
+	k = length(E);
+		if(k==1)
+			{
+			eval(parse(text=str));
+			} else  {
+					# k == 2
+					nstr = paste("attributes(", E[1] ,")", sep="");
+					nstr = paste(nstr,'$', "`", E[2], "`", sep="");
+					if(k > 2) 
+						{
+						for(i in 3:k)
+							{
+							nstr = paste("attributes(",nstr,")",sep="");
+							nstr = paste(nstr,'$',"`",E[i],"`",sep="");
+							}
+						}
+					# recursion 
+					access(nstr);
+					}
+	}
+	
+	
+# leading . will work
+"%$$%" = function(r=NULL, str) { access(str); }
+`$$` = access
 
 
 

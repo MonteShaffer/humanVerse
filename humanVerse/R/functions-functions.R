@@ -5,15 +5,27 @@
 # if("plyr" %in% (.packages())) { detach("package:plyr", unload=TRUE); }
 
 # stringdist is function in pkg stringdist ... it is attached as function (enclosure)
-functions.inPackage = function(pkg = "stats")
+functions.inPackage = function(pkg = "stats", auto.attach=TRUE)
 	{
 	pkg = str.fromObjectName(pkg, parent="pkg");	
 dput(pkg);
 	all 	= ls( getNamespace(pkg), 		all.names = TRUE); 
 	# public has to be loaded ... 
+	public = NULL;
 	pp = paste0("package:", pkg);
-	if(!(pkg %in% (.packages()))) { warning.cat("\n", "The package [", pkg, "] is not attached via library() or require() or humanVerse::include() ... private will show all functions, but not distinguish from public", "\n"); }
-	public 	= ls( pp,	all.names = TRUE);
+	if(!(pkg %in% (.packages()))) 
+		{ 
+		if(!auto.attach)
+			{
+			warning.cat("\n", "The package [", pkg, "] is not attached via library() or require() or humanVerse::include() ... private will show all functions, but not distinguish from public", "\n"); 
+			} else {
+					warning.cat("\n", "Attaching package [", pkg, "] as it is currently NOT attached", "\n"); 
+					library( as.character(pkg), character.only=TRUE );  # strings allowed on library ... WEIRD...
+					public = ls( pp, all.names = TRUE);
+					}
+		} else { public = ls( pp, all.names = TRUE); }
+	
+	
 	private = set.diff(all, public);
 	list("public" = public, "private" = private);
 	}

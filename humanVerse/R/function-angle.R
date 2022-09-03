@@ -220,6 +220,17 @@ arctan = function() {}
 arctan = math.atan;
 
 
+# no atan2h?
+math.atan2 = function(y, x)
+	{
+	# x = dots.addTo(x, ...);
+	math.cleanup( atan(y, x) );
+	}
+
+arctan2 = function() {}
+arctan2 = math.atan2;
+
+
 ####################### HYPERBOLIC TRIG ###########################
 
 

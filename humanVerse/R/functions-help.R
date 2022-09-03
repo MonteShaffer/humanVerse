@@ -219,6 +219,44 @@ help.index = function(deep = TRUE) {}
 ## http://stevehanov.ca/blog/index.php?id=119
 
 
+## http://127.0.0.1:19165/  # lot's of missing stuff
+## http://127.0.0.1:19165/library/base/html/hexmode.html
+## http://127.0.0.1:19165/doc/html/index.html
+## http://127.0.0.1:19165/doc/AUTHORS
+## DIRK is 'outsider' .. Debian packages, maintained by Dirk Eddelbuettel, have long been part of the Debian distribution, and can be accessed through APT, the Debian package maintenance tool. Use e.g. apt-get install r-base r-recommended 
+## he controls 'recommended' list, what is that I wonder 
+## Option na.action is set to "na.omit" by default in R, but not set in S.
+## #In R, For() loops are not necessary and hence not supported.
+## R allows for zero-extent matrices 
+## Named vectors are considered vectors in R but not in S (e.g., is.vector(c(a = 1:3)) returns FALSE in S and TRUE in R).
+## substitute ...  R looks in the local frame only,
+## # In S, the index variable in a for() loop is local to the inside of the loop. In R it is local to the environment where the for() statement is executed.
+## In R, the string "NA" is not treated as a missing value in a character variable. Use as.character(NA) to create a missing character value. [ just NA without as.character --> OUTDATED ]]
+## R disallows repeated formal arguments in function calls. [restrictive ... R for restrictive ... reverse (backwards from S, magically to Q , look at the logo ]
+## deparse( formals(snails.round) );  # alist 
+## deparse( body(snails.round) )
+## deparse( snails.round )
+## In R, indexing a vector, matrix, array or data frame with [ using a character vector index looks only for exact matches (whereas [[ and $ allow partial matches)
+## RUTHVEN ...  df[["YY"]] is NULL ... vs df$YY returns df$YYYY ... I sometimes get confused on this ... I could use [i] on lists not necessarily [[i]]
+## S has a two-argument version of atan and no atan2. 
+## bazaar wrapper choices ... cospi(x), sinpi(x), and tanpi(x), compute cos(pi*x), sin(pi*x), and tan(pi*x).
+## Early references on R web interfaces include Jeff Banfield (1999), “Rweb: Web-based Statistical Analysis” (doi: 10.18637/jss.v004.i01), David Firth (2003), “CGIwithR: Facilities for processing web forms using R” (doi: 10.18637/jss.v008.i10), and Angelo Mineo and Alfredo Pontillo (2006), “Using R via PHP for Teaching Purposes: R-php” (doi: 10.18637/jss.v017.i04).
+## library(stats4); functions.inPackage(stats4)
+## code monkeys, lots of functions (private) ... HADLEY ... no sense of system
+##  > ?coef.hclust ... > ?cluster:coef ... > ?cluster::coef ... > ?cluster:::coef  # by default do wildcar* on input ... if 1 or more ::: limit to that package if installed ... NOT installed? 
+## http://127.0.0.1:19165/doc/html/packages.html
+## Contents of C:/Users/Monte J. Shaffer/AppData/Local/R/win-library/4.2
+## Contents of C:/Program Files/R/R-4.2.1/library
+## http://127.0.0.1:19165/doc/html/packages.html#lib-2 [did I install these?]
+## http://127.0.0.1:19165/doc/html/packages.html#lib-1
+## get by library ... file scan ... 
+##  list.dirs(path = ".", full.names = TRUE, recursive = TRUE)
+## list.files(path = ".", full.names = FALSE, recursive = FALSE)
+## functions.withParameter("recursive")
+
+
+
+
 
 
 

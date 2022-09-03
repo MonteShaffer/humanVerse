@@ -93,6 +93,50 @@ list.fromString = function(str, sep.keyvalue = "`=`",
 	}
 
 
+## y = packages.installed("as-list"); str(y);
+## yy = unlist(y); str(yy);
+## zz = list.collapse(y); str(zz);
+## .%$$% ("zz@-names-"); `$$` ("zz@-names-"); access("zz@-names-");
+## .%$$% ("zz@-info-");  `$$` ("zz@-info-");  access("zz@-info-");
+
+
+list.collapse = function(res)
+	{
+	# if I have attributes, they get lost on unlist ... but names get dubplicated ... 
+	if(is.list(res))
+		{
+		getInfo = function(re)
+			{
+			prop.re = property.getALL(re); # may have key/pairs			
+			prop.names = names(prop.re);
+			prn = length(prop.re);
+			for(j in 1:prn)
+				{
+				prop.name = prop.names[j];
+				prop.vals = prop.re[[j]];
+				props[[prop.name]] = c(props[[prop.name]], prop.vals);
+				}
+			props;
+			}
+		
+		out = NULL;
+		rnames = names(res);
+		n = length(res);
+		rlens = numeric(n);
+		props = NULL;
+		for(i in 1:n)
+			{
+			re = res[[i]];
+			rlens[i] = length(re);
+			out = c(out, re);
+			props = getInfo(re);
+			}
+		out = property.set("-names-", out, rnames);
+		out = property.set("-info-", out, props);
+		}	
+	out;
+	}
+
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
