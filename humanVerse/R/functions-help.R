@@ -29,10 +29,16 @@
 # df = help.parseFromLibrary("stats"); head(df); str(df)
 # mask.ok ... they can make mistakes on NAMING, we can't 
 # fn and line number ?
+help.get = function(pkg = "base", lib.loc = NULL, ...)
+	{
+	library(help = pkg, lib.loc = lib.loc, quietly = TRUE, character.only = TRUE, ...);
+	}
+	
 help.parseFromLibrary = function(pkg = "base", lib.loc = NULL, ...)
 	{
-	x = library(help = pkg, lib.loc = lib.loc, character.only = TRUE, ...);
+	x = help.get(pkg, lib.loc=lib.loc, ...);
 	x.help = x$info[[2]];
+	   dcf = x$info[[1]];
 	
 	### if not a key|value, overflow from previous line ... 
 	lines = str.removeWhiteSpace(x.help, "|"); 
@@ -56,7 +62,7 @@ help.parseFromLibrary = function(pkg = "base", lib.loc = NULL, ...)
 		colnames(df) = c("search", "short.description");
 		
 	df = property.set("path", df, x$path);
-	df = property.set("dcf", df, parseDCF(x$info[[1]]));	
+	df = property.set("dcf", df, dcf.parse(dcf) );	
 	df;
 	}
 	

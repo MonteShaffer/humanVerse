@@ -52,9 +52,72 @@ cleanup.url = function(url)
 	}
 
 
-
-parse.dcf = function(dcfstr)
+dcf.get(key = "Version", pkg="stats")
 	{
+	key = tolower(key); # maybe do a pmatch?
+	
+	
+	}
+
+# i = help.parseFromLibrary(); str(i); dcf = .%$$%("i@dcf"); str(dcf);
+
+
+dcf.uniqueVals = function(key="Built", 
+							pkgs = (.packages(all.available=TRUE)) 
+						)
+	{
+	res = list();
+	h = help.parseFromLibrary(); str(h); dcf = .%$$%("h@dcf"); str(dcf);
+	s = v.find(dcf$keys, key);
+	if(!is.null(s)) { res = list.update(res, "base", dcf$values[s]); }
+	n = length(pkgs);
+	for(i in 1:n)
+		{
+		pkg = pkgs[i];
+		h = help.get(pkg); dcf = dcf.parse( h$info[[1]] );
+		s = v.find(dcf$keys, key);
+		if(!is.null(s)) { res = list.update(res, pkg, dcf$values[s]); }
+cat("\n", "\t ", i, " of ", n, "\t package:", pkg," ... ", length(res), "\n");
+flush.console();
+		}
+	
+	#df = as.data.frame( cbind( names(res), unname(unlist(res)) ) );
+	df = as.data.frame( cbind( names(res), as.character(res) ) );
+		rownames(df) = NULL; colnames(df) = c("pkg", "val");
+	df = df.sortBy(df, "pkg", "ASC"); head(df);
+	df;	
+	}
+	
+# all.vals = dcf.uniqueVals("Built"); head(all.vals); View(all.vals);	
+	
+dcf.uniqueKeys = function(pkgs = (.packages(all.available=TRUE)) )
+	{
+	h = help.parseFromLibrary(); str(h); dcf = .%$$%("h@dcf"); str(dcf);
+	res = list.create(dcf$keys, dcf$values);
+	res2 = list.create(dcf$keys, rep("base", length(dcf$keys)));
+cat("\n", " INIT ... ", length(res), "\n"); Sys.sleep(0.25);
+	# pkgs = (.packages(all.available=TRUE));
+	n = length(pkgs);
+	for(i in 1:n)
+		{
+		pkg = pkgs[i];
+		h = help.get(pkg); dcf = dcf.parse( h$info[[1]] );
+		res = list.update(res, dcf$keys, dcf$values);
+		res2 = list.update(res2, dcf$keys, rep(pkg, length(dcf$keys)));
+cat("\n", "\t ", i, " of ", n, "\t package:", pkg," ... ", length(res), "\n");
+flush.console();
+		}
+	list("values" = res, "pkg" = res2);	
+	}
+	
+# all.keys = dcf.uniqueKeys();  # ... all.keys = 81 with first val 
+# str(all.keys);
+# df = as.data.frame( cbind( names(all.keys$values), all.keys$pkg, all.keys$values ) ); rownames(df) = NULL; colnames(df) = c("keys", "package", "values"); head(df);
+
+dcf.parse = function(dcfstr)
+	{
+	# h = help.get(pkg); dcf = dcf.parse( h$info[[1]] );
+	# h = help.get(pkg); dcfstr = ( h$info[[1]] );
 	# lined string, easily available within R scope ...
 	# see help.parseFromLibrary
 	info = str.explode(":", dcfstr);
@@ -62,16 +125,68 @@ parse.dcf = function(dcfstr)
 	unkeyed = str.trim( str.replace( paste0(keys,":"), "", dcfstr) ); 
 	## unkeyed are RAW, unparsed values 
 	
+	out = NULL;
+	n = length(keys);
+	for(i in 1:n)
+		{
+		key = keys[i];
+		val = unkeyed[i];
+		.key = tolower(key);
+		if(.key == "built")
+			{
+			v = list();			
+			tmp = str.trim(str.explode(";", val));
+			r = str.contains("R", tmp); s = v.find(tmp, r)[1];
+			if(!is.null(s)) 
+				{ 
+				v[["R.raw"]] = tmp[s]; 
+				v[["R.version"]] = str.trim(str.replace("R","",tmp[s]));
+				}
+			d = check.date(tmp); s = v.find(tmp, d)[1];
+			if(!is.null(s)) 
+				{ 
+				v[["date"]] = tmp[s];
+				}			
+			w = str.contains("win", tmp); s = v.find(tmp, d)[1];
+			if(!is.null(s)) 
+				{ 
+				v[["win"]] = tmp[s];
+				}
+			m = str.contains("ming", tmp);  s = v.find(tmp, d)[1];
+			if(!is.null(s)) 
+				{ 
+				v[["ming"]] = tmp[s];
+				}
+			# one is R version 
+			# one is date
+			# slen = str.len(df$val); # from uniqueVals 
+			# which.max(slen);  df[13, ]; df$val[13]
+
+			}
+		
+		# DEFAULT
+		out[[key]] = val;
+		}
+	
 	## find URLs, find EMAILs, <email> prefered 
 	## find [aut, cre, cph]
 	## maybe it has @Rperson so must be evaluated ...
+	##  r_code <- gsub("^`(.*)`$", "\\1", value)
+   ##     if (nchar(r_code) != nchar(value)) {
+    ##        settings[[s]] <- eval(parse(text = r_code))
+     ##   }
+
 	## BUILT is ";" sep 
 	## PACKAGED is ";" TIME/WHO (r-profile?)
 	## 
 	
+	
+	
+	
+	
 	df = as.data.frame( cbind(keys, unkeyed) );
 		colnames(df) = c("keys", "values");
-	
+	df;
 	}
 
 

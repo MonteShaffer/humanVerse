@@ -288,33 +288,33 @@ df.getColumnTypes = function(df)
 
 
 
-df.sortBy = function(df, cols, dir="ASC")
+df.sortBy = function(df, cols, asc="ASC")
 	{
 	dfcols = colnames(df); 
 	# if cols are indexes ... map to colnames 
 	if(!is.character(cols)) { cols = as.integer(cols); cols = dfcols[cols]; }
 	n = length(dfcols);
 	n.cols = length(cols);
-	n.dirs = length(dir);
+	n.asc = length(asc);
 	
 	# return length is n.cols
 	searching = set.match(cols, dfcols);
 	if(anyNA(searching)) { stop("one of the [cols] is not in df"); }
 	
-	if(n.dirs == 1) { dir = rep(dir, n.cols); n.dirs = n.cols; }
-	if(n.dirs != n.cols) { stop("cols length != dir length"); }
+	if(n.asc == 1) { asc = rep(asc, n.cols); n.asc = n.cols; }
+	if(n.asc != n.cols) { stop("cols length != asc length"); }
 	
 	# JOINT sorting # do.call?
-	vecs = matrix(NA, nrow=dim(df)[1],ncol=n.cols);
+	vec.s = matrix(NA, nrow=dim(df)[1],ncol=n.cols);
 
 	for(i in 1:n.cols)
 		{
 		idx = which( dfcols == cols[i] );
-		mycol = df[,idx];
+		mycol = df[,idx]; # alll the data 
 		if(is.factor(mycol)) { mycol = as.character(mycol); } # TMP
-		if(dir[i] == "ASC")
+		if(asc[i] == "ASC")
 			{
-			vecs[,i] = mycol;  # chars work here 
+			vec.s[,i] = mycol;  # chars work here 
 			} else {
 					# DESC
 					# rev(column_a)
@@ -322,16 +322,16 @@ df.sortBy = function(df, cols, dir="ASC")
 					# if character, positive worked ...
 					if(is.character(mycol[1])) 
 						{
-						vecs[,i] = rev(mycol);
+						vec.s[,i] = rev(mycol);
 						} else {
-								vecs[,i] = -mycol;
+								vec.s[,i] = -mycol;
 								}
 					}
 	  }
 
 	# df[order( vecs[,1],vecs[,2],vecs[,3] ), ]; # hacked
 	# Thanks Allan
-	rows = do.call(order, split(vecs, (seq(vecs) - 1) %/% nrow(vecs)));
+	rows = do.call(order, split(vec.s, (seq(vec.s) - 1) %/% nrow(vec.s)));
 	
 	df[rows, ]; 	
 	}

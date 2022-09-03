@@ -12,18 +12,40 @@ v.types = function(vecs, ...)
 	return(res);	
 	}
 
-# this is univariate
-v.remove = function(vec, what="")
+
+v.find = function(vec, what="")
 	{
+	idx = v.which(vec, what=what);
+	if(length(idx) == 0) { return(NULL); }
+	idx;	
+	}
+
+v.which = function(vec, what="")
+	{ 
+	idx = NULL;
+	# type = v.type(what);
+	if(is.logical(what))
+		{
+		idx = which(what == TRUE);	
+		return(idx);
+		}
 	if(is.character(what))
 		{
-		v.find = which(vec == what);			
+		idx = which(vec == what);
+		return(idx);
 		}
 	if(is.na(what))
 		{
-		v.find = which(is.na(vec));
+		idx = which(is.na(vec));
 		}
-	vec[ -c( v.find ) ];
+	idx;
+	}
+
+# this is univariate
+v.remove = function(vec, what="")
+	{
+	idx = v.which(vec, what=what);
+	vec[ -c( idx ) ];
 	}
 
 

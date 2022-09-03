@@ -1,5 +1,25 @@
 
 
+# as.POSIXct("2000-01-01") ... formal replace took, but didn't ... 
+
+
+check.date = function(strs)
+	{
+debug = FALSE;
+	n = length(strs);
+	res = logical(n);
+	for(i in 1:n)
+		{
+		str = strs[i];
+		x = suppressError( as.POSIXct(str, tz="UTC"), 
+								show.notice=debug,
+								msg="debugging check.date" 
+							);
+		res[i] = !is.error(x);
+		}
+	res;
+	}
+
 
 check.type = function(obj, parent=NULL)
 	{

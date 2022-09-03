@@ -62,6 +62,21 @@ list.toString = function(simpleList, 	sep.keyvalue = "`=`",
 	}
 
 
+list.update = function(res, keys, vals, overwrite=FALSE)
+	{
+	n = length(keys);
+	for(i in 1:n)
+		{
+		if(overwrite || is.null(res[[ keys[i] ]])) 
+			{ 
+			res[[ keys[i] ]] = vals[i];
+			}
+		}
+	res;
+	}
+
+
+
 list.create = function(keys, vals, types=NULL)
 	{
 	res = list(); 
@@ -76,6 +91,8 @@ list.create = function(keys, vals, types=NULL)
 		}
 	res;
 	}
+
+
 
 list.fromString = function(str, sep.keyvalue = "`=`", 
 								sep.elements = "`:`",
