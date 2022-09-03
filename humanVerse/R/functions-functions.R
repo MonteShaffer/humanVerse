@@ -1,4 +1,33 @@
 
+
+
+function.info = function(fn.str, ...)
+	{
+	fn.str = dots.addTo(fn.str, ...);
+	
+	str  = str.replace(c(":::","::","::"), ":", fn.str);
+	info = list.pair( str.explode(":", str) );
+	#### = #### pkgs is "" empty if not declared with pkg::fn or pkg:::fn
+	pkgs = list.getElements(info, 1); 
+	fns  = list.getElements(info, 2);
+	
+	
+	n = length(fn.str);
+	res = vector("list", n);
+	for(i in 1:n)
+		{
+		pkg = pkgs[i];
+		fn  = fns[i];
+		f = formals(
+		rec = list("formals" = list("keys" = nam
+		
+		
+		}
+	names(res) = fn.str;
+	res;
+	}
+
+
 # packageVersion("snow")
 # "Rmpi" %in% loadedNamespaces()
 
@@ -149,6 +178,58 @@ functions.listFromPackage = function(pkg = "stats")
 # https://cran.r-project.org/doc/manuals/R-exts.html#Load-hooks
 
 # DEBIAN: clear ... CMD: cls ... R: CNTRL-SHIFT-L (LOL programming language)
+
+#  sum(1,2,3,4)
+
+# args(`+`)
+ 
+ 
+function.info = function(fn.str)
+	{
+debug = FALSE;
+	# if fn.str above is fn.obj, this works! MIRACLES !
+	fn.obj = suppressError( match.fun(fn.str), show.notice=debug, msg="debug function.info match.fun(fn.str)");
+
+	if(is.error(fn.obj)) { return(NULL); }
+	
+	if(is.character(fn.str)) { fstr = fn.str; } else { fstr = str.fromObjectName(fn.str, parent="fn.str"); }
+	
+	if(base::is.function(fn.obj))
+		{
+		p = FALSE;
+		f = formals( fn.obj ); # currently is paired.list	
+		if(is.primitive(fn.obj)) 
+				{ 
+				p = TRUE;
+				f = suppressWarnings( formals( args(fn.obj) ) );
+				}
+		b = body( fn.obj );
+		s = property.get("srcref", fn.obj);
+		# i = functionBody(fn.str);
+		
+		fp = as.list(f);
+		fpn = length(fp);
+		ftypes = character(fpn);
+		for(i in 1:fpn)
+			{
+			ftypes[i] = v.type(fp[[i]]);
+			}
+		params = list(	"keys" = names(fp), 
+						"values" =  as.character(fp), 
+						"types" = ftypes
+					);
+		
+		res = list("params" = params, "body" = b, "source" = s, "primitive" = p);
+		names(res) = fstr;
+		res = property.set("obj", res, fn.obj);
+		return(res);
+		}
+	return(NULL);
+	}
+	
+
+functions.info = function.info;	
+	
  
 functions.withParameter = function(param="na.rm", 
 									packages=(.packages()), 
@@ -167,6 +248,7 @@ if(debug)
 	
 	processOneFunction = function(fn.str)
 		{
+		fn.info = function.info(fn.str);
 		fn.obj = suppressError( match.fun(fn.str), show.notice=debug, msg="debug functions.listFunctionsWithParameter match.fun(fn.str)");
 		if(is.error(fn.obj)) { return(NULL); }
 		

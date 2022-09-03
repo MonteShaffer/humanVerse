@@ -4,6 +4,15 @@ init = function()
 	{
 	memory.init();
 	
+	# maybe add wrapper for formals athat allows base::as.POSIXct for clarity
+	formals(as.POSIXct) = alist(x = , tz="UTC", ... = );
+	formals(as.POSIXlt) = alist(x = , tz="UTC", ... = );
+	# formalArgs(as.Date)
+	# getFunction(name, generic=TRUE, mustFind=TRUE, where)
+	# functionBody
+	# 
+
+
 	}  
 # this function is linked in .onLoad()
 # if we know WHERE a local config file is, go grab it ... 

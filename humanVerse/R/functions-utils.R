@@ -9,6 +9,9 @@ nchars = nchar;
 
 ord = utf8ToInt;  # mb_ord ?
 chr = intToUtf8;
+
+
+as.dataframe = as.data.frame;
  
  
 dots.addTo = function(key, ...)

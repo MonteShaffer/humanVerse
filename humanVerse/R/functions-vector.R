@@ -9,7 +9,7 @@ v.types = function(vecs, ...)
 		{
 		res[i] = v.type(vec);
 		}
-	res;	
+	return(res);	
 	}
 
 # this is univariate

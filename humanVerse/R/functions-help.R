@@ -55,6 +55,22 @@ help.parseFromLibrary = function(pkg = "base", lib.loc = NULL, ...)
 	df = as.data.frame( cbind( names(res), unname(unlist(res)) ) );
 		colnames(df) = c("search", "short.description");
 		
+	df = property.set("path", df, x$path);
+	df = property.set("dcf", df, parseDCF(x$info[[1]]));	
+	df;
+	}
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
 	# is.function
 	# cat( normalizePath("C:/PROGRA~1/R/R-42~1.1/library/base") );
 	# find.package(pkg); # [1] "C:/PROGRA~1/R/R-42~1.1/library/base"
@@ -95,12 +111,11 @@ readRDB <- function(filename, offset, size, type = 'gzip') {
         seek(f, offset + 4)
         unserialize(memDecompress(readBin(f, 'raw', size - 4), type))
 }
-		
-	df = property.set("path", df, x$path);
-	df = property.set("dcf", df, x$info[[1]]);
+			
 	
-	df;
-	}
+	
+	
+	
 	
 	
 help.index = function(deep = TRUE) {}

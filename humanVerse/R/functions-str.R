@@ -114,7 +114,7 @@ str.fromHEX = function(hstr, ...)
 	res = character(n);
 	for(i in 1:n)
 		{
-		tt  = str.splitN(hstr[i], 2);
+		tt  = str.splitN(hstr[i], n=2);
 		ttx = paste0("0x",tt);
 		ttr = as.raw( hexdec(ttx) );		
 		res[i] = rawToChar(ttr);
@@ -1014,6 +1014,18 @@ str.replace = function(search, replace, subject, method="base")
 str_replace = str.replace;
 
 
+str.replaceN = function(search, replace, subject, method="base", times=1)
+	{
+	res = subject;
+	for(i in 1:times)
+		{
+		res = str.replace(search, replace, res, method=method)
+		}
+	res;
+	}
+
+
+
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
@@ -1113,7 +1125,10 @@ str.pad = function(str, final.length, padding="0", side="RIGHT", method="stringi
 #------------------------------------------------#
 str.removeWhiteSpace = function( str, replace=" ", n = 2,
 								method = "base", 
-                              pre.trim = TRUE, post.trim = TRUE, ...)
+								pattern = paste0("[[:space:]]{",n,",}"),
+								pre.trim = TRUE, post.trim = TRUE, 
+								...
+								)
   {
   m = functions.cleanupKey(method, 1);
 	if(pre.trim) { str = str.trim(str, ...); }
@@ -1126,7 +1141,8 @@ str.removeWhiteSpace = function( str, replace=" ", n = 2,
 		regex.s = paste0("\\s{",n,",}");
 		stringi::stri_replace_all_regex(str, regex.s, replace); 
 		} else {
-				regex.s = paste0("[[:space:]]{",n,",}");
+				# regex.s = paste0("[[:space:]]{",n,",}");
+				regex.s = pattern;
 				str = gsub( regex.s, replace, str );  # multivariate works
 				}
 	# likely not necessary, but may be an edge case out there
@@ -1684,21 +1700,24 @@ str.characterFrequency = function(str,
 #'
 #'	
 #------------------------------------------------#
-str.splitN = function(str, ..., n=2, sep="^")
+str.splitN = function(str, ..., n=2, insert.a.sep="`^`")
 	{
-	s.test = str.contains(sep, str);
+	str = dots.addTo(str, ...);
+	# we will INTERNALLY use insert.a.sep to SPLIT the string 
+	# THEREFORE, the string cannot contain it... maybe ^ or `^`
+	s.test = str.contains(insert.a.sep, str);
 	if( sum( s.test ) > 0) 
 		{ 
 		all = paste0(str, collapse="\n"); 
 		all.f = str.characterFrequency(all);
 		print(all.f);
-		stop("Your str has the sep in it, maybe try a different one");
+		stop("Your str has the [insert.a.sep] in it, maybe try a different one");
 		}
 	# https://stackoverflow.com/a/26497699/184614
 	# split a string into disjoint substrings of length [n] = 2
 	pattern = paste0("(.{", n, "})");
-	s.str = gsub(pattern, paste0("\\1", sep), str);
-	str.explode(sep, s.str);	
+	s.str = gsub(pattern, paste0("\\1", insert.a.sep), str);
+	str.explode(insert.a.sep, s.str);	
 	}
 	
 

@@ -48,6 +48,7 @@ are.functions = function(fnV = "sum", ..., suggestion=TRUE)
 is.function = function(fn)
 	{
 debug = FALSE;
+dput(fn);
 	# is.function(match.fun("outer"))
 	if(is.character(fn)) 
 		{ 

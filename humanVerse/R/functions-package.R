@@ -73,6 +73,8 @@ package.version = function(pkg)
 	}
 	
 
+	
+
 
 
 # works like library, but scans all functions/files
@@ -91,6 +93,8 @@ package.attach = function(pkg = "stringi", method="library")
 	# require(pkg);
 	# library(pkg);
 	
+	
+	
 	}
 
 # You cannot detach either the workspace (position 1) nor the base package (the last item in the search list), and attempting to do so will throw an error.
@@ -103,15 +107,24 @@ package.info = function(pkg = "stringi")
 	
 	}
 
+
+packages.version = function(pkgs)
+	{
+	# pkgs are strings 
+	
+	
+	}
+
 	
 # plural intentional, but make aliases 
 								# [b]y-[l]ibrary  ... [a]s-[l]ist 
 								# [r]aw ... [a]s-[d]ataframe
-packages.installed = function(return="by-library")
+packages.installed = function(return="by-library", add.version=TRUE)
 	{
 	r = functions.cleanKey(return, n=1, keep="-");
 	# functions.inPackage(sessioninfo) vs functions.inPackage(sessionInfo)
 	# all shows lowercase, folder shows upper case .. need to map to all 
+	# all = (.packages(all.available=TRUE));
 	all = as.data.frame( library()$results ); 
 	if(r == "r" || r == "a-d") { return(all); }
 	mypaths = .libPaths();
@@ -136,6 +149,21 @@ packages.installed = function(return="by-library")
 	
 packages.attached = function()
 	{
+	# grep("^package:", search(), value = TRUE)
+	# loadedOnly <- loadedNamespaces()
+	# could have referenced a package in search() ls() with stringi::XXX without loading it ... 
+	## lapply("stats", packageDescription, encoding = NA)
+	## PRIORITY = "base" 
+	## lapply("MASS", packageDescription, encoding = NA)
+	## PRIORITY = recommended
+	##  packageDate("stats")
+	## file.path(.Library, "base")
+	## > .Library ##  "C:/PROGRA~1/R/R-42~1.1/library"
+	## notice it is WIN-ENCODE vs "C:/Program Files/R/R-4.2.1/library "
+
+
+
+
 	(.packages());
 	}
 	

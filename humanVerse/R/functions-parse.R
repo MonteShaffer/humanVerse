@@ -53,6 +53,131 @@ cleanup.url = function(url)
 
 
 
+parse.dcf = function(dcfstr)
+	{
+	# lined string, easily available within R scope ...
+	# see help.parseFromLibrary
+	info = str.explode(":", dcfstr);
+	keys = list.getElements(info, 1);
+	unkeyed = str.trim( str.replace( paste0(keys,":"), "", dcfstr) ); 
+	## unkeyed are RAW, unparsed values 
+	
+	## find URLs, find EMAILs, <email> prefered 
+	## find [aut, cre, cph]
+	## maybe it has @Rperson so must be evaluated ...
+	## BUILT is ";" sep 
+	## PACKAGED is ";" TIME/WHO (r-profile?)
+	## 
+	
+	df = as.data.frame( cbind(keys, unkeyed) );
+		colnames(df) = c("keys", "values");
+	
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

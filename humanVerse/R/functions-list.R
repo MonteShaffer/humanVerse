@@ -99,7 +99,7 @@ list.fromString = function(str, sep.keyvalue = "`=`",
 ## .%$$% ("zz@-names-"); `$$` ("zz@-names-"); access("zz@-names-");
 ## .%$$% ("zz@-info-");  `$$` ("zz@-info-");  access("zz@-info-");
 
-
+ 
 list.collapse = function(res)
 	{
 	# if I have attributes, they get lost on unlist ... but names get dubplicated ... 
@@ -135,6 +135,29 @@ list.collapse = function(res)
 		out = property.set("-info-", out, props);
 		}	
 	out;
+	}
+
+
+
+
+
+list.pair = function(res)
+	{
+	# as a "pair", assume the each (list element) is two-long VECTOR
+	# if it is only one, str.explode() didn't split that value 
+	# so let's push it to the correct index ... 
+	if(is.list(res))
+		{
+		n = length(res);
+		for(i in 1:n)
+			{
+			if(length(res[[i]]) == 1)
+				{
+				res[[i]] = c("", res[[i]]);
+				}
+			}
+		}
+	res;
 	}
 
 
