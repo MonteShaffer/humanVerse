@@ -367,26 +367,30 @@ str.toObjectName = function(obj.str)
 #------------------------------------------------#
 str.fromObjectName = function(objname, parent=NULL) 
 	{ 
-	if(!is.null(parent)) 
-		{ 
-		# https://stackoverflow.com/a/17257053/184614
-		pcall = sys.call(-1);
-		fn.ob = get(as.character(pcall[[1]]), mode="function", sys.frame(-2));
-		pcalV = match.call(definition=fn.ob, call=pcall); # verified?
-		x = as.list(pcalV)[-1];
-		#### parent function passed in the "key" name in the list ####
-		y = check.type( x[[parent]] );
-		mytype = property.get("typeof", y);
-		if( mytype == "symbol") 
-			{ 
-			return( deparse( x[[parent]] ) );
-			}
-		if( mytype == "character") 
-			{ 
-			return( ( x[[parent]] ) );
-			}
-		stop("ERROR in str.fromObjectName with PARENT");
-		}
+	# # ctp = check.type(objname);	# TRUE or FALSE with attribute
+	# # mytype = property.get("typeof",ctp);
+# # dput(ctp);
+# # dput(mytype);	
+	# # if(!is.null(parent)) 
+		# # { 
+		# # # https://stackoverflow.com/a/17257053/184614
+		# # pcall = sys.call(-1);
+		# # fn.ob = get(as.character(pcall[[1]]), mode="function", sys.frame(-2));
+		# # pcalV = match.call(definition=fn.ob, call=pcall); # verified?
+		# # x = as.list(pcalV)[-1];
+		# # #### parent function passed in the "key" name in the list ####
+		# # y = check.type( x[[parent]] );
+		# # mytype = property.get("typeof", y);
+		# # if( mytype == "symbol") 
+			# # { 
+			# # return( deparse( x[[parent]] ) );
+			# # }
+		# # if( mytype == "character") 
+			# # { 
+			# # return( ( x[[parent]] ) );
+			# # }
+		# # stop("ERROR in str.fromObjectName with PARENT");
+		# # }
 	ctp = check.type(objname);	# TRUE or FALSE with attribute
 	mytype = property.get("typeof",ctp);
 	if( (!ctp) || (ctp && mytype != "character") ) { objname = as.character(deparse(substitute(objname))); }

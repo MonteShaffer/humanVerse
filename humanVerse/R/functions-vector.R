@@ -13,6 +13,22 @@ v.types = function(vecs, ...)
 	}
 
 # this is univariate
+v.remove = function(vec, what="")
+	{
+	if(is.character(what))
+		{
+		v.find = which(vec == what);			
+		}
+	if(is.na(what))
+		{
+		v.find = which(is.na(vec));
+		}
+	vec[ -c( v.find ) ];
+	}
+
+
+
+# this is univariate
 v.type = function(vec)
 	{
 	ntype = typeof(vec);		

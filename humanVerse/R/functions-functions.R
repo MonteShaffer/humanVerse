@@ -1,7 +1,8 @@
 
 
-
-function.info = function(fn.str, ...)
+# THIS IS MULTIVARIATE ... 
+# verify.in.pkg will attach the PACKAGES to do a DEEP search 
+functions.info = function(fn.str, ..., verify.in.pkg = TRUE)
 	{
 	fn.str = dots.addTo(fn.str, ...);
 	
@@ -9,21 +10,27 @@ function.info = function(fn.str, ...)
 	info = list.pair( str.explode(":", str) );
 	#### = #### pkgs is "" empty if not declared with pkg::fn or pkg:::fn
 	pkgs = list.getElements(info, 1); 
-	fns  = list.getElements(info, 2);
-	
-	
+	fns  = list.getElements(info, 2);	
+
 	n = length(fn.str);
 	res = vector("list", n);
+	exi = logical(n);
 	for(i in 1:n)
 		{
 		pkg = pkgs[i];
 		fn  = fns[i];
-		f = formals(
-		rec = list("formals" = list("keys" = nam
-		
-		
+		res.i = function.info(fn);  exi[i] = TRUE;
+		if(is.null(res.i)) 
+			{ 
+			res.i = list();  exi[i] = FALSE; 
+			}
+		res[[i]] = res.i;	
 		}
-	names(res) = fn.str;
+	rinfo = list(	"fns" = fns,  
+					"pkgs" = pkgs,					
+					"exists" = exi
+				);
+	res = property.set("-info-", res, rinfo);
 	res;
 	}
 
@@ -34,11 +41,18 @@ function.info = function(fn.str, ...)
 # if("plyr" %in% (.packages())) { detach("package:plyr", unload=TRUE); }
 
 # stringdist is function in pkg stringdist ... it is attached as function (enclosure)
-functions.inPackage = function(pkg = "stats", auto.attach=TRUE)
+
+# pkg = "stats"
+# this is univariate, allows the pkg.str or pkg.obj 
+functions.inPackage = function(..., auto.attach=TRUE)
 	{
-	pkg = str.fromObjectName(pkg, parent="pkg");	
-dput(pkg);
-	all 	= ls( getNamespace(pkg), 		all.names = TRUE); 
+debug = FALSE;
+	pkg = str.fromObjectName(...);
+	pkg.ns = suppressError( getNamespace(pkg), show.notice=debug, msg="debug functions.inPackage ");
+	if(is.error(pkg.ns)) { return(NULL); }
+	
+	all  = ls( pkg.ns, all.names = TRUE); 
+	
 	# public has to be loaded ... 
 	public = NULL;
 	pp = paste0("package:", pkg);
@@ -58,6 +72,10 @@ dput(pkg);
 	private = set.diff(all, public);
 	list("public" = public, "private" = private);
 	}
+	
+	
+	
+	
 	
 # do some  internal ranking on functions.inPackage based on INTERNAL usagage 
 # "tibble" has like 500 private functions, ridiculous	
@@ -166,6 +184,39 @@ functions.listFromPackage = function(pkg = "stats")
 
 
 
+## > body(purrr::is.function)
+## Error: 'is.function' is not an exported object from 'namespace:purrr'
+## > body(purrr:::is.function)
+## Error in body(purrr:::is.function) : object 'is.function' not found
+## function.findPackages("is.function")
+## [1] "purrr" "rlang" "base" 
+
+
+# https://stackoverflow.com/a/10553795/184614
+## sos::findFn("is.function") 
+## MULTIVARIATE, these are strings ... 
+function.findPackages = function(fns, ... ) 
+	{
+	fns = dots.addTo(fns, ...);
+	n = length(fns);
+	res = vector("list", n);
+	for(i in 1:n)
+		{
+		h = help.search(paste0("^",fns[i],"$"), agrep=FALSE);
+		# str(h) is interesting 
+		pkgs = h$matches[,"Package"];
+		fas = h$matches[,"Entry"];
+		res.i = pkgs;
+		res.i = property.set("as", res.i, fas);
+		res.i = property.set("exact", res.i, (fas == fns[i]));
+		res[[i]] = res.i;
+		}
+	names(res) = fns;
+	res = list.return(res);
+	res = property.set("-names-", res, fns);
+	res;
+	}
+		
 
 
 # df = functions.withParameter("na.rm", packages=c("stats","base"));
@@ -182,18 +233,18 @@ functions.listFromPackage = function(pkg = "stats")
 #  sum(1,2,3,4)
 
 # args(`+`)
+# function.info("+")
  
- 
-function.info = function(fn.str)
-	{
-debug = FALSE;
-	# if fn.str above is fn.obj, this works! MIRACLES !
-	fn.obj = suppressError( match.fun(fn.str), show.notice=debug, msg="debug function.info match.fun(fn.str)");
+# THIS IS UNIVARIATE 
 
+# 
+function.info = function(...)
+	{
+	fn.str = str.fromObjectName(...);
+debug = FALSE;
+	fn.obj = suppressError( match.fun(fn.str), show.notice=debug, msg="debug function.info match.fun(fn.str)");
 	if(is.error(fn.obj)) { return(NULL); }
-	
-	if(is.character(fn.str)) { fstr = fn.str; } else { fstr = str.fromObjectName(fn.str, parent="fn.str"); }
-	
+			
 	if(base::is.function(fn.obj))
 		{
 		p = FALSE;
@@ -203,9 +254,11 @@ debug = FALSE;
 				p = TRUE;
 				f = suppressWarnings( formals( args(fn.obj) ) );
 				}
-		b = body( fn.obj );
-		s = property.get("srcref", fn.obj);
+		b = as.character( body( fn.obj ) );
+		s = as.character( property.get("srcref", fn.obj) );
 		# i = functionBody(fn.str);
+		# e = function.findPackages(fn.str);
+		e = find(fn.str); # only searching attached ...
 		
 		fp = as.list(f);
 		fpn = length(fp);
@@ -219,17 +272,24 @@ debug = FALSE;
 						"types" = ftypes
 					);
 		
-		res = list("params" = params, "body" = b, "source" = s, "primitive" = p);
-		names(res) = fstr;
-		res = property.set("obj", res, fn.obj);
+		res = list(	"fn.scope" = e,
+					"primitive" = p,
+					"params" = params, 
+					"body" = b, "source" = s 
+					);
+		res = property.set("fn.name", res, fn.str);
+		res = property.set("fn.obj", res, fn.obj);
 		return(res);
 		}
 	return(NULL);
 	}
 	
+#  function.info("is.function")
+#  rm("is.function"); ... rm(is.function);  ALSO works
 
-functions.info = function.info;	
-	
+
+# cat(res$body, sep="\n");
+
  
 functions.withParameter = function(param="na.rm", 
 									packages=(.packages()), 
@@ -249,42 +309,7 @@ if(debug)
 	processOneFunction = function(fn.str)
 		{
 		fn.info = function.info(fn.str);
-		fn.obj = suppressError( match.fun(fn.str), show.notice=debug, msg="debug functions.listFunctionsWithParameter match.fun(fn.str)");
-		if(is.error(fn.obj)) { return(NULL); }
-		
-		
-
-if(debug) 
-	{ 
-	cat("\n fn.str = ", fn.str, "\t pkg = ", pkg, "\t w = ", w, "\n");	
-	}		
- 
-		if(base::is.function(fn.obj))
-			{
-			f = formals( fn.obj );
-			
-
-if(debug) 
-	{ 
-	cat("\n STAGE 1 \n");
-	print( f );	
-	}
-
-			if(is.primitive(fn.obj)) 
-				{ 
-				# "next" [reserved, but found in list] ???
-				# fn.obj = match.fun("next");
-				# LOL, is.function ... is.primitive ... 
-				# Warning in formals(fun) : argument is not a function
-
-				f = suppressWarnings( formals( args(fn.obj) ) );
-
-if(debug) 
-	{
-	cat("\n STAGE 2 \n");
-	print( f );	
-	}
-				}
+		f = fn.info$param 
 			if(is.null(f)) { return(NULL); }	
 			if( !(param %in% names(f) ) ) { return(NULL); }
 			
@@ -521,6 +546,7 @@ functions.getParameterInfo = function(return="dots", truncate=10)
 	main = list();
 	if(length(arg.names)) 
 		{
+		# eval here 
 		main = lapply(arg.names, eval, envir = pf)
 		}
 	main = list.truncateLength(main, truncate);
