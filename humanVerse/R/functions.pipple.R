@@ -8,9 +8,10 @@
 				# = c(1.1430980) ... behaves the same way ... 
 				# = c(1) ... this assumes RIGHT side of [idx = 1]
 				# = c(> dim(df)[1]) ... END 
+pip = function() {}
 pip = function(df, 
-				row.n = 5, row.idx = stats.median(dim(df)[1]),
-				col.n = 5, col.idx = stats.median(dim(df)[2]),
+				row.n = 5, row.idx = as.integer(dim(df)[1]/2),
+				col.n = 5, col.idx = as.integer(dim(df)[2]/2),
 				row.sep = "-", col.sep = "|", int.sep = "+",
 				row.insert.sep = NULL, col.insert.sep = NULL,
 				row.width = FALSE,
@@ -30,7 +31,7 @@ pip = function(df,
 
 
 
-gget = function(x, ...)
+ggget = function(x, ...)
 	{
 debug = FALSE;
 	ginfo = suppressError( get(x, ...), 
@@ -42,39 +43,53 @@ debug = FALSE;
 	ginfo;	
 	}
 
+
+gggassign = function(key, val)
+	{
+	
+cat("\n gggassing key ::: ", key, "\n\t\t");
+print(val);
+cat("\n\n");
+	assign(key, value, envir = .GlobalEnv);
+	}
+	
+"%GLOBAL%" = gggassign;
+
 functions.stepInto = function(...)
 	{
 	# fn = str.fromObjectName(...);
 	finfo = function.info(...);
-	# finfo = function.info("pip");
-	n = length(finfo$params);
+	# finfo = function.info("pip"); 
+	
 		# pdf = as.data.frame( cbind(finfo$params$keys, finfo$params$values, finfo$params$types) );
+	n = length(finfo$params$keys);
 	for(i in 1:n)
 		{
 		key = finfo$params$keys[i];
 		val = finfo$params$values[i];
 		typ = finfo$params$types[i];
  		
-		glo = gget(key, -1);  # TRAPS NULL in error
+		glo = ggget(key, -1);  # TRAPS NULL in error
 		if(typ == "symbol" && !is.null(glo)) 
-			{ 
+			{  
 			value = glo;
-			assign(key, value, envir = .GlobalEnv);
-			#.GlobalEnv[[key]] = value;
+			key %GLOBAL% value;
 			next;
 			}
 			
 		if(typ == "language") 
 			{ 
+			# next;
+# not working
+cat("\n val ", val, "\n");
+print(df);
 			value = eval(parse(text = val));
-			#.GlobalEnv[[key]] = value;
-			assign(key, value, envir = .GlobalEnv);
+			key %GLOBAL% value;
 			next;
 			}
 		
 		value = as.type(val, typ);
-		#.GlobalEnv[[key]] = value;
-		assign(key, value, envir = .GlobalEnv);
+		key %GLOBAL% value;
 		}
 	
 	invisible(finfo$params);	
