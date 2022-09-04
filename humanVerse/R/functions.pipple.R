@@ -1,4 +1,48 @@
 
+
+# cdot ... U+22EF
+
+# u.getSymbol(c("U+1F40C","U+22EF"));
+# uu = u.getSymbol(c("U+22EF","U+1F40C","U+22EF"));
+#  "⋯🐌⋯" ... > length(uu) ... [1] 1 ..... > str.len(uu) ... [1] 3
+## FIXED, something weird about intToUtf8(num); [collapsing]?
+
+# THIS DOES SOMETHING ??? utf8ToInt("U+1F40C")
+u.toNum = function(str = "U+22EF", ...)
+	{
+	str = dots.addTo(str, ...);	
+	# if(str.contains("U+", str))
+	uinfo = list.pair(str.explode("U+", str));
+	utf   = list.getElements(uinfo, 2);
+	
+	
+		# maybe cast \x ... OTHER formats ...
+	# utf8ToInt(utf);
+	as.integer(as.hexmode(utf));
+	}
+	
+u.fromNum = function(num = 	128012, ...)
+	{
+	num = dots.addTo(num, ...);
+	res = intToUtf8(num);  # not keeping separate elements ... collapsed
+	str.explode("",res);
+	}
+	
+u.getSymbol = function(str = "U+22EF", ...)
+	{
+	str = dots.addTo(str, ...);
+	num = u.toNum(str);
+	u.fromNum(num);
+	}
+
+
+
+# utf8ToInt("U+1F40C")
+		# utf8ToInt("\U1F40C"); # 128012; # intToUtf8(128012)
+		# U+1F40C [snail]
+		# plot(1, pch= intToUtf8(128024) )
+
+
 				# row.width ... if chars, it truncates row.n 
 				# row.n is +/-5 rows from center
 				# truncates +/-5 to fit the row.width 
@@ -14,17 +58,25 @@ pip = function(df,
 				col.n = 5, col.idx = as.integer(dim(df)[2]/2),
 				row.sep = "-", col.sep = "|", int.sep = "+",
 				row.insert.sep = NULL, col.insert.sep = NULL,
-				row.width = FALSE,
 				show.types = TRUE, 
 				show.row.names = FALSE, show.row.numbers = TRUE,
 				show.col.names = TRUE,  show.col.numbers = TRUE,
 				use.color = FALSE, 
-				justify = "left",
+				
+				char.width = 12, 
+				char.more = ,
+				number.width = 8,
+				number.format = "fixed",  # scientific, engineering
+				df.width = 80,			  # EVERYTHING is this CHARS
+				df.justify = "left",      # fixed width cols ( )DATA( )
 				sep = " ",
 				...
 				)
 	{
-	
+	# let's calculate the width of everything L-to-R based on 
+	# longest strlen 
+	col.names = colnames(df);
+	col.names.slen = str.len(col.names);
 	
 	
 	}

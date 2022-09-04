@@ -81,7 +81,7 @@ access = function(str)
 					access(nstr);
 					}
 	}
-	
+	 
 	
 # leading . will work
 "%$$%" = function(r="HI", ...) 
@@ -90,9 +90,11 @@ access = function(str)
 			access(str);			
 			}
 			
+#### THIS is *SPECIAL FUNCTION* ... (PARANTHESES) is optional			
+# .%$$% "dcf$Depends@dependencies" ;
+# .%$$% dcf$Depends@dependencies ;			
 # .%$$%("dcf$Depends@dependencies");
-# .%$$%(dcf$Depends@dependencies);			
-			
+# .%$$%(dcf$Depends@dependencies);				
 			
 			
 `$$`   = function(...) 
@@ -101,6 +103,7 @@ access = function(str)
 			access(str);			
 			}
 
+### THIS IS FUNCTION, MUST HAVE (PARANTHESES)
 # `$$`("dcf$Depends@dependencies");
 # `$$`(dcf$Depends@dependencies);
 
