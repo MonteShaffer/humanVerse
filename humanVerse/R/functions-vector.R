@@ -15,6 +15,12 @@ v.types = function(vecs, ...)
 	}
 
 
+v.naTo = function(vec, to="")
+	{
+	vec[is.na(vec)] = to;
+	vec;	
+	}
+
 v.find = function(vec, what="")
 	{
 	idx = v.which(vec, what=what);

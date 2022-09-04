@@ -47,8 +47,15 @@ nPr = function(n, r, replace=FALSE)
 
 
 
-
-
+## yihue ... hack web launch
+## https://stackoverflow.com/questions/12636764/r-built-in-web-server
+## https://github.com/yihui/servr
+## https://cran.r-project.org/web/packages/httpuv/index.html
+## websocket?
+## browseURL()
+## help ... fn
+## port <- tools::startDynamicHelp(NA)
+## 
 
 
 # takes num/den 
@@ -108,6 +115,51 @@ num.constants = function(envir=parent.env(environment()))
 	mdf = mdf[ c(rev(1:10), 11:20), ];
 	
 	assign("SI_PREFIX", mdf, envir=envir);	
+	
+	## codes = c("e","E", "+", "-", "*", "10", 0:9);
+	## utfs = c("ᵉ","ᴱ", "⁺", "⁻", "×", "10", "U+2070", "U+00B9", "U+00B2", "U+00B3", "U+2074", "U+2075", "U+2076", "U+2077", "U+2078", "U+2079"
+	 
+	 ## digits = 0:9;
+	 ## digits.super = c("U+2070", "U+00B9", "U+00B2", "U+00B3", "U+2074", "U+2075", "U+2076", "U+2077", "U+2078", "U+2079");
+	 
+	 ## nums = u.toNum(digits);
+	 ## symbols = u.toSymbol(digits);
+	 
+	 # sqrt: U+221A , cuberoot: U+221B, fourthroot: U+221C
+	 # prop: U+221D, infty: U+221E
+	 ## maybe parse FILE.INFO and build a comprehensive MAP 
+	 ## U+2245	APPROXIMATELY EQUAL TO
+	 ## U+06CA	ARABIC LETTER WAW WITH TWO DOTS ABOVE
+	 
+	 # https://unicode.org/charts/charindex.html
+	 # NOT ALL BUT SOME 
+	 # https://unicode.org/ucd/
+	 # https://www.unicode.org/Public/14.0.0/ucdxml/
+	 # THIS HAS EVERYTHING
+	 
+	 
+	 ## math     = c("+", "-", "*", "/");
+	 ## math.utf = c("U+002B", "U+2212", "U+00D7", "U+00F7");
+
+	 
+	 # c(8304L, 185L, 178L, 179L, 8308L, 8309L, 8310L, 8311L, 8312L, 8313L)
+	 
+	 
+	 
+	 
+	 # U+00D7
+	 # https://www.fileformat.info/info/unicode/category/Sm/list.htm
+	 
+# num.toEng(x, show.what="exp", e=" ᴱ", e.pos="+",e.zero="0");
+# https://unicode-table.com/en/sets/superscript-and-subscript-letters/
+# str.replace(NUMS, with UNICODE small ... also hyphen and plus)
+
+# https://en.wikipedia.org/wiki/Unicode_subscripts_and_superscripts
+# U+00D7 ==> 215 ? 
+# ord("×");
+# chr(215);
+	
+	assign("EXP_UTF", utf, envir=envir);
 	}
 
 
@@ -186,15 +238,16 @@ num.toEng(x, show.what="exp", e=" ᴱ", e.pos="+",e.zero="0");
 # ord("×");
 # chr(215);
 
-num.toEngineering = function(x, ..., 
-									by = 3,
-									force.by = FALSE,
+num.toEngineering = function(x,  
 									signif.digits = 7,
 									units="m",
-									e = "E",
-									min.e = 2,
-									e.neg = "-", e.pos="", e.zero="",
 									show.what = "units-symbol",
+									force.by = FALSE,
+									by = 3,
+									use.utf = FALSE,
+									e = " E",
+									min.e = 2,
+									e.neg = "-", e.pos="+", e.zero="+",
 									part="Re"
 							)
 	{								
@@ -204,7 +257,7 @@ num.toEngineering = function(x, ...,
 	sw = functions.cleanKey(show.what, n=1, keep="-");
 	num.constants();
 # dput(SI_PREFIX);
-	x = dots.addTo(x, ...); 
+ 
 	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
 	
 	# RealCalc has "normal", "fixed", "scientific", and "engineering" modes ...
@@ -235,18 +288,29 @@ num.toEngineering = function(x, ...,
 		w = as.numeric( list.getElements(x.info, 1) );
 		f = as.numeric( list.getElements(x.info, 2) );
 		
-	if(!force.by)
+	# force.by = FALSE,
+	# by = 3,
+	if(!force.by || (force.by && by==3))
 		{
 		nw = w*10^(f %% 3);
 		ne = as.integer(f-(f %% 3));
 		} else {
-				# force.by = 6;  # should be a multiple of 3 
-				fb = num.round(force.by, 3);
-				force.by = as.integer(force.by);
-				if(!identical(fb, force.by)) { warning.cat("\n", " force.by was [",force.by, "] rounded to nearest multiple of three as [", fb, "] \n"); }
-				nw = w*10^(f %% fb);
-				ne = as.integer(f-(f %% fb));
+cat("\n MONTE \n");
+				b = as.integer(by);
+				# should be a multiple of 3 ... SCI is whatever
+				nw = w*10^(f %% b);
+				ne = as.integer(f-(f %% b));
 				}
+		
+		
+		# else {
+				force.by = 6;  # should be a multiple of 3 
+				# fb = num.round(force.by, 3);
+				# force.by = as.integer(force.by);
+				# if(!identical(fb, force.by)) { warning.cat("\n", " force.by was [",force.by, "] rounded to nearest multiple of three as [", fb, "] \n"); }
+				# nw = w*10^(f %% fb);
+				# ne = as.integer(f-(f %% fb));
+				# }
 	
 	idx = set.match(nf, SI_PREFIX$SI.idx);
 	# NA are empty, base UNIT 
@@ -266,6 +330,7 @@ num.toEngineering = function(x, ...,
 	x.more = str.explode(".", as.character(nw));
 	whol = list.getElements(x.more, 1);
 	frac = list.getElements(x.more, 2);
+	frac = v.naTo(frac, "0");
 	
 	# whol.max = max( abs( as.numeric(whol) ) );
 	whol.min = min( abs( as.numeric(whol) ) );

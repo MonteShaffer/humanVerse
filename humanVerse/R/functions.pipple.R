@@ -3,11 +3,11 @@
 # cdot ... U+22EF
 
 # u.getSymbol(c("U+1F40C","U+22EF"));
-# uu = u.getSymbol(c("U+22EF","U+1F40C","U+22EF"));
+# uu = u.getSymbol(c("U+22EF","U+1F40C","U+22EF"), collapse=TRUE);
 #  "⋯🐌⋯" ... > length(uu) ... [1] 1 ..... > str.len(uu) ... [1] 3
 ## FIXED, something weird about intToUtf8(num); [collapsing]?
 ## MORE weirdness
-# > uu = u.getSymbol(c("U+22EF","U+1F40C","U+22EF"));
+# > uu = u.getSymbol(c("U+22EF","U+1F40C","U+22EF"), collapse=FAlSE);
 # > uu
 # [1] "⋯"  "🐌" "⋯" 
 # > char.more = uu[1]
@@ -15,6 +15,9 @@
 # [1] "⋯"
 # > 
 
+
+# MAYBE ALLOW a key ... 'EGYPTIAN HIEROGLYPH C020' or EGYPTIAN_HIEROGLYPH_C020
+# U+13071
 
 # THIS DOES SOMETHING ??? utf8ToInt("U+1F40C")
 u.toNum = function(str = "U+22EF", ...)
@@ -30,23 +33,24 @@ u.toNum = function(str = "U+22EF", ...)
 	as.integer(as.hexmode(utf));
 	}
 	
-u.fromNum = function(num = 	128012, ...)
+u.fromNum = function(num = 	128012, ..., collapse=FALSE)
 	{
 	num = dots.addTo(num, ...);
 	# res = intToUtf8(num);  # not keeping separate elements ... collapsed
 	# str.explode("",res);
 	
-	intToUtf8(num, multiple=TRUE);
+	intToUtf8(num, multiple=!collapse);
 	}
 	
-u.getSymbol = function(str = "U+22EF", ...)
+u.toSymbol = function(str = "U+22EF", ..., collapse=FALSE)
 	{
 	str = dots.addTo(str, ...);
 	num = u.toNum(str);
-	u.fromNum(num);
+	u.fromNum(num, collapse=collapse);
 	}
 
 
+u.getSymbol = u.toSymbol;
 
 # utf8ToInt("U+1F40C")
 		# utf8ToInt("\U1F40C"); # 128012; # intToUtf8(128012)
@@ -119,8 +123,8 @@ pip = function(df,
 	cdata$slen.max = unlist(lapply(cdata$slen, max));
 	
 	
-	show.types = TRUE, 				
-				show.col.names = TRUE,  show.col.numbers = TRUE,
+	# show.types = TRUE, 				
+				# show.col.names = TRUE,  show.col.numbers = TRUE,
 	
 	
 	}

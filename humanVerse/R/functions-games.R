@@ -6,7 +6,7 @@ snails.pace = function() {}
 
 # TODO ... color.setOpacity()
 snails.pace = function(snails = 6, finish.line = 8, moves = 200, 
-							auto.play = NULL,  y.factor = 4/3, 
+							auto.play = 1/32,  y.factor = 4/3, 
 							intro.pause = TRUE, snail.par = TRUE, 
 							snail.pch=16, snail.cex=6,
 							snail.col = c("orange", "blue", "pink", "green", "yellow", "red"), ...
@@ -70,9 +70,11 @@ snails.pace = function(snails = 6, finish.line = 8, moves = 200,
 		# utf8ToInt("\U1F40C"); # 128012; # intToUtf8(128012)
 		# U+1F40C [snail]
 		# plot(1, pch= intToUtf8(128024) )
+		# uu = u.getSymbol(c("U+22EF","U+1F40C","U+22EF"), collapse=TRUE);
 		plot(snail.x, snail.y, 
-				col=snail.col, pch=intToUtf8(128012), cex= (1/2*snail.cex), 
-				xlim=c(-1, snails.round(xmax, 5) ), 
+				col=snail.col, pch=u.getSymbol(c("U+22EF","U+1F40C","U+22EF"), collapse=TRUE), 
+				cex= (1/2*snail.cex), 
+				xlim=c(-4, snails.round(xmax, 5) ), 
 				ylim=c(-1, ymax ), 
 				axes=FALSE, frame.plot=FALSE, 
 				xlab="", ylab="", main=""
@@ -87,10 +89,15 @@ snails.pace = function(snails = 6, finish.line = 8, moves = 200,
 		# overlay doesn't work with BAD UTF character ... weird ?
 		if(snail.par)
 			{
-			points(snail.x, snail.y, col=snail.col, pch=snail.pch, cex=1.3*snail.cex);
+			points(snail.x, snail.y, col=snail.col, pch=snail.pch, cex=snail.cex);
 			}
 		# place text with current number PLUS * rank if finish.line 
-		text(snail.x, y=snail.y, labels=snail.lab, col="black"); 
+		# text(snail.x, y=snail.y, labels=snail.lab, col="black");
+
+		rect(-2 , snail.y-1, 2, snail.y+1, border=NA, col=snail.col[n]);
+			
+			
+		text(0*snail.y, y=snail.y, labels=snail.lab, col="black"); 
 		abline(v = finish.line, col="gray", lty="dashed");
 		
 		# main in plot is updating, so place a textbox (white) to overwrite?

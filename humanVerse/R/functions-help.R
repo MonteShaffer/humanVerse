@@ -1,5 +1,21 @@
 
 
+help.viewPackage = function(...)
+	{
+	pkg = str.fromObjectName(...);
+	if(pkg == "") { pkg = "base"; }
+	port = tools::startDynamicHelp(NA);
+	browser = NULL;
+		html = paste0("http://127.0.0.1:", port, "/library/", pkg, "/html/00Index.html");
+	browseURL(html, browser);
+	
+	# browser <- if (.Platform$GUI == "AQUA") {
+                  # get("aqua.browser", envir = as.environment("tools:RGUI"))
+                # }
+                # else getOption("browser")
+	
+	}
+
 
 # ?Syntax ... not ?Symbols or ?Operators
 # .end question ... THIS ... based on idx in array (matrix, dataframe, vector)
