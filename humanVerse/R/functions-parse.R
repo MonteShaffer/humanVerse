@@ -119,6 +119,9 @@ flush.console();
 # idx = which(all.vals$pkg=="readr"); val = all.vals$val[idx]; all.vals$pkg[idx]; val;
 # idx = rand(1, length(all.vals$pkg)); val = all.vals$val[idx]; all.vals$pkg[idx]; val;
 	
+# first RUN was "tibble" 
+# pkgs = .packages(); np = length(pkgs); idx = sample(1:np, 1); pkg = pkgs[idx];  h = help.get(pkg); dcf = dcf.parse( h$info[[1]] ); str(dcf); print(pkg);
+	
 dcf.parse = function(dcfstr)
 	{
 	# h = help.get(pkg); dcf = dcf.parse( h$info[[1]] );
@@ -184,10 +187,10 @@ dcf.parse = function(dcfstr)
 	
 	
 	
-	
-	df = as.data.frame( cbind(keys, unkeyed) );
-		colnames(df) = c("keys", "values");
-	df;
+	out;
+	# df = as.data.frame( cbind(keys, unkeyed) );
+		# colnames(df) = c("keys", "values");
+	# df;
 	}
 
 
@@ -195,7 +198,7 @@ dcf.parse = function(dcfstr)
 # idx = which(all.vals$pkg=="readr"); val = all.vals$val[idx]; all.vals$pkg[idx]; val;
 # idx = rand(1, length(all.vals$pkg)); val = all.vals$val[idx]; all.vals$pkg[idx]; val;
 # people = dcf.parsePeople(val); str(people);
-
+ 
 ## idx = rand(1, length(all.vals$pkg)); val = all.vals$val[idx]; all.vals$pkg[idx]; val; people = dcf.parsePeople(val); str(people); all.vals$pkg[idx];
 ## rgl is quite long, DIRK
 ## BH (also DIRK) ... with "and"  ... [ , and ]
