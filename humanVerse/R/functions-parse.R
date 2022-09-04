@@ -194,6 +194,13 @@ dcf.parse = function(dcfstr)
 
 # idx = which(all.vals$pkg=="readr"); val = all.vals$val[idx]; all.vals$pkg[idx]; val;
 # idx = rand(1, length(all.vals$pkg)); val = all.vals$val[idx]; all.vals$pkg[idx]; val;
+# people = dcf.parsePeople(val); str(people);
+
+## idx = rand(1, length(all.vals$pkg)); val = all.vals$val[idx]; all.vals$pkg[idx]; val; people = dcf.parsePeople(val); str(people); all.vals$pkg[idx];
+## rgl is quite long, DIRK
+## BH (also DIRK) ... with "and"  ... [ , and ]
+## "Dirk Eddelbuettel, Romain Francois, Doug Bates, Binxiang Ni, and Conrad Sanderson"
+
 
 dcf.parsePeople = function(val)
 	{
@@ -211,7 +218,8 @@ print(words);
 	people = NULL;
 	pidx = 1;
 	while(j <= nwords)
-		{		
+		{
+#if(j == 11) { stop("monte"); }		
 		word = words[j]; print(word);
 		
 		if(newp)
@@ -231,12 +239,16 @@ print(words);
 		has.par = str.contains("(", word);
 		has.parE = str.contains(")", word);
 		has.com = str.contains(",", word);
-		has.and = ( str.contains(" and", word) || str.contains("and ", word) || (word == "and") );	
+		has.and = (word == "and") ;	
+		
+		is.end = (has.and || has.com);
+		end.r = c("and", ",")
 
 		all = c(has.tag, has.bra, has.braE, has.par, has.parE, has.com, has.and);
 		}
 		if(sum(all) == 0) 
 			{ 
+cat("\n ALL \n");
 			stack[[what]] = paste0(stack[[what]], " ", word);
 			j = 1 + j; 
 			next;
@@ -252,7 +264,7 @@ print(words);
 				r = str.explode("]",r)[1];
 				stack[[what]] = c(stack[[what]] , r);
 				what = "";
-				if(has.com) 
+				if(is.end) 
 					{
 					people[[pidx]] = stack;
 					pidx = 1 + pidx;
@@ -280,7 +292,7 @@ print(words);
 						what = "url";
 						}
 			stack[[what]] = e;
-			if(has.com) 
+			if(is.end) 
 				{
 				people[[pidx]] = stack;
 				pidx = 1 + pidx;
@@ -299,19 +311,18 @@ print(words);
 			if(has.parE)
 				{
 				m = str.explode(")",m);	
-				m = m[1];				
-				}
-			stack[[what]] = str.trim( paste0(stack[[what]], " ", m) );
-			if(has.com)
-				{
-				people[[pidx]] = stack;
-				pidx = 1 + pidx;
-				newp = TRUE;
-				}
-			if(has.parE)
-				{
+				m = m[1];
+				stack[[what]] = str.trim( paste0(stack[[what]], " ", m) );									
 				what = "";
-				}
+				if(is.com)  # not and, maybe a word in "more"
+					{
+					people[[pidx]] = stack;
+					pidx = 1 + pidx;
+					newp = TRUE;
+					}	
+				} else {
+						stack[[what]] = str.trim( paste0(stack[[what]], " ", m) );
+						}			
 			j = 1 + j;
 			next;
 			}
@@ -323,17 +334,37 @@ print(words);
 		
 		
 		
-		
-		
-			
-		if(has.com)
+		if(what == "pname")
 			{
-			people[[pidx]] = stack;
-			pidx = 1 + pidx;
-			newp = TRUE;
+			# a person has "and" in their NAME ???
+			m = word;
+			if(is.end)
+				{
+				m = str.replace(end.r , "", m);
+				stack[[what]] = str.trim(paste0( stack[[what]], " ", m));
+				people[[pidx]] = stack;
+				pidx = 1 + pidx;
+				newp = TRUE;
+				j = 1 + j;
+				next;
+				} else { 
+						if(m == "and") { m = ""; }
+						stack[[what]] = str.trim(paste0( stack[[what]], " ", m));						
+						}
+			stack[[what]] = str.trim( str.replace("and ", "", stack[[what]] ) );
 			j = 1 + j;
 			next;
 			}
+		
+			
+		# if(is.end)
+			# {
+			# people[[pidx]] = stack;
+			# pidx = 1 + pidx;
+			# newp = TRUE;
+			# j = 1 + j;
+			# next;
+			# }
 		
 cat("\n END OF THE STACK, HOW??? \n");
 		# print(stack);
@@ -341,9 +372,12 @@ cat("\n END OF THE STACK, HOW??? \n");
 		# j = 1 + j;
 		}
 	## last one ... outside of loop ... words ended 
-	if(length(stack) > 0) { people[[pidx]] = stack; }
+	if(length(stack) > 0) 
+		{ 
+		people[[pidx]] = stack; 
+		}
 	
-	
+print(words);
 	return(people);
 	
 	people = NULL;
@@ -447,7 +481,7 @@ dput(people);
 	# A [rol,rol] (http orc), B [rol]
 	people;
 	}
-
+ 
 
 dcf.parseURL = function(val)
 	{
