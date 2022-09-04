@@ -252,11 +252,8 @@ num.toEngineering = function(x,
 									units="m",
 									show.what = "units-symbol",
 									by = 3,
-									method="ENG",
+									method="Engineering",
 									force.scale = FALSE,
-									force.by = FALSE, # this is for SCI notation
-									by = 3,
-									force.to = NULL, # if force.by && force.to ALL ENG will be same units (by as multiple of 3, negative allowed )
 									use.utf = FALSE,
 									e = " E",
 									min.e = 2,
@@ -268,7 +265,9 @@ num.toEngineering = function(x,
 						# [u]nits-[n]ame   ... millim  (change units="meter")
 						# [e]xponential    ... no [mm] or [millimeter]
 	SHOW_WHAT = functions.cleanKey(show.what, n=1, keep="-");
+	METHOD = functions.cleanKey(method, n=1, case="upper");
 cat("\n SHOW_WHAT ", SHOW_WHAT, "\n");
+cat("\n METHOD ", METHOD, "\n");  # [E]ngineering or [S]cientific
 	num.constants();
 # dput(SI_PREFIX); 
 	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
@@ -284,36 +283,53 @@ options(op);
 	# https://stat.ethz.ch/pipermail/r-help/2006-July/108808.html				
 	x.sci = format(x, scientific=TRUE, digits=signif.digits);
 	x.info = str.split("e", x.sci);
-		w = as.numeric( list.getElements(x.info, 1) );
-		f = as.numeric( list.getElements(x.info, 2) );
+		wh = as.numeric( list.getElements(x.info, 1) );
+		ex = as.numeric( list.getElements(x.info, 2) );
+
+
+## I need to RESCALE ON force.by BEFORE I do the character thing ...
+## two loops? of SCI 
 
 ## if "ENG" and force.by ... maybe FORCE all numbers to that SCALE
-	if(!force.by || (force.by && by==3))
+	if(METHOD == "E")
 		{
-		nw = w*10^(f %% 3);
-		ne = as.integer(f-(f %% 3));
-		} else {
-				if(!is.null(force.to))
-					{
-					force.to = as.integer(force.to); # we should round by 3
-					de = as.integer(f - force.to); # this is delta 
-					ne = force.to;
+		# any multiples of 3 
+		if(!force.scale)
+			{
+			nwh = wh*10^(ex %% 3);
+			nex = as.integer(ex-(ex %% 3));
+			} else {
+					b = as.integer(by); # this needs to be a multiple of 3
+					b = num.round(b, 3, "integer");
+					de = as.integer(f - b); # this is delta 
+					nex = nwh*0 + b;				
 					# if currently is 0 and needs to be 6, much smaller 
-					nw = w*10^(de);
-cat("\n SCALE FORCED to \n");		
-					} else {
-cat("\n SCI FI \n");
-							b = as.integer(by);
-							# SCI is whatever
-							## THIS is what SCI wants ... 
-							nw = w*10^(f %% b);
-							ne = as.integer(f-(f %% b));
-							}
-				}
-#nw as numberWhole (with decimals)
-#ne as numberExp (exponential part)
+					nwh = w*10^(de);
+					}
+		}
+	if(METHOD == "S")
+		{
+		if(!force.scale)
+			{
+			b = as.integer(by);
+			# SCI is whatever
+			## THIS is what SCI wants ... 
+			nwh = wh*10^(ex %% b);
+			nex = as.integer(ex-(ex %% b));
+			} else {
+					b = as.integer(by); # this can be WHATEVER
+					de = as.integer(f - b); # this is delta 
+					nex = nwh*0 + b;					
+					# if currently is 0 and needs to be 6, much smaller 
+					nwh = wh*10^(de);
+					}
+		}
 
-	idx = set.match(ne, SI_PREFIX$SI.idx);
+
+#nwh as newWHOLE (with decimals)
+#nex as newEXP (exponential part)
+
+	idx = set.match(nex, SI_PREFIX$SI.idx);
 	# NA are empty, base UNIT 
 	
 	# prefix.as.symbol = TRUE, ... if symbol, SI.symbol else SI.name
@@ -337,15 +353,17 @@ cat("\n SCI FI \n");
 	wmax = max(wlen);
 	whole = str.pad(whol, wmax, " ", "LEFT");
 	fract = str.pad(frac, digits.remaining, "0", "RIGHT");
+	# need to truncate if too long 
+	fract = substring(fract, 1, digits.remaining); # strwidth in R (strtrim?)
 	
-	e.sign = math.sign(ne, return="character", 
+	e.sign = math.sign(nex, return="character", 
 							zero=e.zero, pos=e.pos, neg=e.neg);
 	e.pre  = str.pad(e.sign, 1, " ", "LEFT");
-	es = as.character(abs(ne));
+	es = as.character(abs(nex));
 	e.max = max(str.len( es ) );
 	e.pad = max(e.max, min.e);
-	ex = str.pad(es, e.pad, "0", "LEFT");
-	exp = paste0(e, e.pre, ex);
+	.ex = str.pad(es, e.pad, "0", "LEFT");
+	.exp = paste0(e, e.pre, .ex);
 	
 	
 		# DEFAULT		# [u]nits-[s]ymbol ... mm
@@ -356,25 +374,25 @@ cat("\n SCI FI \n");
 	res = switch(SHOW_WHAT,					  			
 					  "u-s" = paste0(whole, ".", fract, " ", add.symbol, units),
 					  "u-n"	= paste0(whole, ".", fract, " ", add.name, units),	
-					  "e"  	= paste0(whole, ".", fract, exp),				
+					  "e"  	= paste0(whole, ".", fract, .exp),				
 				paste0(whole, ".", fract, " ", add.symbol, units)	# DEFAULT
 				);				
 	return(res);	
 	}
 
-
+ 
 
 num.toEng = num.toEngineering;
 num.toENG = num.toEngineering;
 "%ENG%" = function(x, r=NULL) { num.toEngineering(x); }
 
 
-num.round = function(x, by=3, how="round")
+num.round = function(x, by=3, how="integer")
 	{
 	# round vs up vs down ... 
 	# integer rounding to the nearest 3 or something ... 
 	
-	x;
+	as.integer(x-(x %% by));
 	}
 
 

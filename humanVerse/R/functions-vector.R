@@ -20,6 +20,8 @@ v.naTo = function(vec, to="")
 	vec[is.na(vec)] = to;
 	vec;	
 	}
+	
+v.naTO = v.naTo;
 
 v.find = function(vec, what="")
 	{
