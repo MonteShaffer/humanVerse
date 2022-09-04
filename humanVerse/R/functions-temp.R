@@ -3,7 +3,7 @@ temp.constants = function() {}
 temp.constants = function(envir=parent.env(environment()))
 	{
 	ABS_ZERO_F = -459.67;
-	ABS_ZERO_C = -273.15;
+	ABS_ZERO_C = -273.15; 
 	ABS_ZERO_K = 0;
 	ABS_ZERO_R = -459.67;
 	

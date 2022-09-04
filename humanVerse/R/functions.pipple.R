@@ -30,12 +30,56 @@ pip = function(df,
 
 
 
+gget = function(x, ...)
+	{
+debug = FALSE;
+	ginfo = suppressError( get(x, ...), 
+								show.notice=debug,
+								msg="debugging gget" 
+							);
+							
+	if(is.error(ginfo)) { return(NULL); }
+	ginfo;	
+	}
+
 functions.stepInto = function(...)
 	{
-	fn = str.fromObjectName(...);
-	finfo = function.info(fn);
+	# fn = str.fromObjectName(...);
+	finfo = function.info(...);
+	# finfo = function.info("pip");
+	n = length(finfo$params);
+		# pdf = as.data.frame( cbind(finfo$params$keys, finfo$params$values, finfo$params$types) );
+	for(i in 1:n)
+		{
+		key = finfo$params$keys[i];
+		val = finfo$params$values[i];
+		typ = finfo$params$types[i];
+		
+		# glo = get(key, -1);  # _GLOBAL_ as constant 
+		# glo = mget(key, ifnotfound=NULL);
+		glo = gget(key, -1);  # TRAPS NULL in error
+		if(typ == "symbol" && !is.null(glo)) 
+			{ 
+			value = glo;
+			# assign GLOBAL
+			# assign(key, value, -1);
+			next;
+			}
+			
+		if(typ == "language") 
+			{ 
+			# no pos -1
+			value = eval(parse(text = val), envir=parent.frame(1));  
+			# assign GLOBAL
+			# assign(key, value, -1);
+			next;
+			}
+		
+		value = as.type(val, typ);
+		assign(key, value, envir=envir);		
+		}
 	
-	
+	invisible(finfo$params);	
 	# not working in RSTUDIO, CLI ... why ?
 	# list.extract( formals(fn), ... ); # by default into GLOBAL
 	}

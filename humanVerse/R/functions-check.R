@@ -43,10 +43,10 @@ debug = FALSE;
 	}
 
 
-check.type = function(obj, parent=NULL)
+check.type = function(...)
 	{
 debug = FALSE;
-	checktype = suppressError( typeof(obj), 
+	checktype = suppressError( typeof(...), 
 								show.notice=debug,
 								msg="debugging typeof check.type REGULAR" 
 							);
