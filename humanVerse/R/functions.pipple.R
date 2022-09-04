@@ -55,28 +55,23 @@ functions.stepInto = function(...)
 		val = finfo$params$values[i];
 		typ = finfo$params$types[i];
 		
-		# glo = get(key, -1);  # _GLOBAL_ as constant 
-		# glo = mget(key, ifnotfound=NULL);
 		glo = gget(key, -1);  # TRAPS NULL in error
 		if(typ == "symbol" && !is.null(glo)) 
 			{ 
 			value = glo;
-			# assign GLOBAL
-			# assign(key, value, -1);
+			.GlobalEnv[[key]] = value;
 			next;
 			}
 			
 		if(typ == "language") 
 			{ 
-			# no pos -1
-			value = eval(parse(text = val), envir=parent.frame(1));  
-			# assign GLOBAL
-			# assign(key, value, -1);
+			value = eval(parse(text = val));
+			.GlobalEnv[[key]] = value;
 			next;
 			}
 		
 		value = as.type(val, typ);
-		assign(key, value, envir=envir);		
+		.GlobalEnv[[key]] = value;
 		}
 	
 	invisible(finfo$params);	
