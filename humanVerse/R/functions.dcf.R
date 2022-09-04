@@ -1,10 +1,36 @@
 
-dcf.get = function(key = "Version", pkg="stats")
+# str(dcf.get("tibble"));
+# str(dcf.get(tibble));
+dcf.get = function(..., return="list")
 	{
-	# key = tolower(key); # maybe do a pmatch?
+debug = FALSE;
+	# univariate, string or obj input
+	pkg = str.fromObjectName(...);
+	r = functions.cleanKey(return, 1);
+	pkg.ns = suppressError( getNamespace(pkg), show.notice=debug, msg="debug dcf.get ");
+	if(is.error(pkg.ns)) { return(NULL); }
+	# CACHING mechanism as JSON files
 	
-	
+	# get the data 
+	h = help.get(pkg); dcf = dcf.parse( h$info[[1]] );
+	if(r == "j") { json = JSON.stringify(dcf); return(dcf); }
+	dcf;
 	}
+
+
+# dcf.getKey(tibble, "Version");
+# dcf.getKey("tibble", "Version");
+dcf.getKey = function(..., key = "Version")
+	{
+	pkg = str.fromObjectName(...);
+	# key = tolower(key); # maybe do a pmatch?
+	# h = help.get(pkg); dcf = dcf.parse( h$info[[1]] ); 
+	dcf = dcf.get(pkg);  # has caching 	
+	dcf[[key]]; # AUTOMATICALLY returns NULL if not found 	
+	}
+
+
+
 
 # first RUN was "tibble" 
 # pkgs = .packages(); np = length(pkgs); idx = sample(1:np, 1); pkg = pkgs[idx];  h = help.get(pkg); dcf = dcf.parse( h$info[[1]] ); str(dcf); print(pkg);
@@ -27,12 +53,16 @@ print(keys);
 	}
 	
 	n = length(keys);
-	out = vector("list", n);	
+	# out = vector("list", n);	
+	out = NULL; # "tibble" has weirdness at top 
 	for(i in 1:n)
 		{
 		key = keys[i];
 		val = unkeyed[i];
 		.key = tolower(key);
+		if(.key == "") { next; }
+		
+		
 		if(.key == "built" || .key == "date" || .key == "date/publication" || .key == "repository/r-forge/datetimestamp" || .key == "packaged")
 			{
 			v = dcf.parseBuild(val);				
@@ -56,6 +86,12 @@ print(keys);
 		
 		if(.key == "author" || .key == "maintainer" || .key == "contact"|| .key == "authors@r")
 			{
+			
+			if(.key == "authors@r")
+				{
+				# needs ", " ... the space is important for *words* parser
+				val = paste0( eval(parse(text = val)), collapse=", ");
+				}
 			people = dcf.parsePeople(val);			
 			out[[key]] = people;
 			next;
@@ -122,7 +158,7 @@ if(debug)
 	pidx = 1;
 	while(j <= nwords)
 		{
-		word = words[j]; print(word);
+		word = words[j]; # print(word);
 		
 		if(newp)
 			{
@@ -173,7 +209,10 @@ cat("\n --ALL-- \n");
 		
 		if(has.bra || what == "role")
 			{
+if(debug)
+	{
 cat("\n --BRACKET-- \n");
+	}
 			what = "role";
 			r = str.replace("[", "", word);
 			if(has.braE)

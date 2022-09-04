@@ -919,6 +919,7 @@ str.rep = str.repeat;
 #------------------------------------------------#
 str.replace = function(search, replace, subject, method="base")
 	{
+debug = FALSE;
 	m = functions.cleanKey(method, 1);
 
 	if(m == "c" && exists("cpp_trim"))
@@ -940,7 +941,10 @@ str.replace = function(search, replace, subject, method="base")
 	### CASE 1
 	if(slen == rlen)  ## pairwise over EACH subject
 		{
-		cat("\n", "CASE 1", "\n");
+if(debug)
+	{
+cat("\n", "CASE 1", "\n");
+	}
 		res = character(nlen);
 		for(j in 1:nlen)
 			{
@@ -958,7 +962,10 @@ str.replace = function(search, replace, subject, method="base")
 	# str.replace(c("{monte}", "{for}"), "MONTE", c("Here is {monte} template", "Here is another {for} sure template {monte}!") );
 	if(rlen == 1)
 		{
-		cat("\n", "CASE 2", "\n");
+if(debug)
+	{
+cat("\n", "CASE 2", "\n");
+	}
 		res = character(nlen);
 		for(j in 1:nlen)
 			{
@@ -976,7 +983,10 @@ str.replace = function(search, replace, subject, method="base")
 	# str.replace(c("{monte}"), c("MONTE","FOR"), c("Here is {monte} template", "Here is another {for} sure template {monte}!") );
 	if(slen == 1 && rlen > nlen)
 		{
-		cat("\n", "CASE 3", "\n");
+if(debug)
+	{
+cat("\n", "CASE 3", "\n");
+	}
 		res = character(rlen);
 		si = 1;
 		for(j in 1:rlen)
@@ -989,7 +999,10 @@ str.replace = function(search, replace, subject, method="base")
 		return (res);
 		}
 
-	cat("\n", "CASE 4", "\n");
+if(debug)
+	{
+cat("\n", "CASE 4", "\n");
+	}
 	# DEFAULT ... all replaces over all subjects
 	res = character(nlen);
 	for(j in 1:nlen)
