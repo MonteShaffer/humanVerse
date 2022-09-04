@@ -54,24 +54,27 @@ functions.stepInto = function(...)
 		key = finfo$params$keys[i];
 		val = finfo$params$values[i];
 		typ = finfo$params$types[i];
-		
+ 		
 		glo = gget(key, -1);  # TRAPS NULL in error
 		if(typ == "symbol" && !is.null(glo)) 
 			{ 
 			value = glo;
-			.GlobalEnv[[key]] = value;
+			assign(key, value, envir = .GlobalEnv);
+			#.GlobalEnv[[key]] = value;
 			next;
 			}
 			
 		if(typ == "language") 
 			{ 
 			value = eval(parse(text = val));
-			.GlobalEnv[[key]] = value;
+			#.GlobalEnv[[key]] = value;
+			assign(key, value, envir = .GlobalEnv);
 			next;
 			}
 		
 		value = as.type(val, typ);
-		.GlobalEnv[[key]] = value;
+		#.GlobalEnv[[key]] = value;
+		assign(key, value, envir = .GlobalEnv);
 		}
 	
 	invisible(finfo$params);	
