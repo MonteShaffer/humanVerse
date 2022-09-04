@@ -47,7 +47,7 @@ functions.info = function(fn.str, ..., verify.in.pkg = TRUE)
 functions.inPackage = function(..., auto.attach=TRUE)
 	{
 debug = FALSE;
-	pkg = str.fromObjectName(...);
+	pkg = str.fromObjectName(...); 
 	pkg.ns = suppressError( getNamespace(pkg), show.notice=debug, msg="debug functions.inPackage ");
 	if(is.error(pkg.ns)) { return(NULL); }
 	

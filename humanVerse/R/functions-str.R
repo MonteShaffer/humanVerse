@@ -367,6 +367,7 @@ str.toObjectName = function(obj.str)
 #------------------------------------------------#
 str.fromObjectName = function(objname, parent=NULL) 
 	{ 
+debug = FALSE;
 	# # ctp = check.type(objname);	# TRUE or FALSE with attribute
 	# # mytype = property.get("typeof",ctp);
 # # dput(ctp);

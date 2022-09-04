@@ -56,7 +56,7 @@ suppressError = function(expression, show.notice = TRUE, msg = "")
 # I am pretty sure this is UNIVARIATE 
 # should be a character already and have length == 1
 access = function(str)
-	{
+	{	
 	E = str.explode("@", str);
 	k = length(E);
 		if(k==1)
@@ -81,10 +81,18 @@ access = function(str)
 	
 	
 # leading . will work
-"%$$%" = function(r=NULL, str) { access(str); }
-`$$` = access
+"%$$%" = function(r=NULL, ...) 
+			{ 
+			str = str.fromObjectName(...);
+			access(str);			
+			}
+`$$`   = function(...) 
+			{ 
+			str = str.fromObjectName(...);
+			access(str);			
+			}
 
-
+# `$$`("dcf$Depends@dependencies")
 
 
 
