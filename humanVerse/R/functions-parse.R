@@ -210,13 +210,17 @@ dcf.parse = function(dcfstr)
 
 dcf.parsePeople = function(val)
 	{
+debug = FALSE;
 	# this is the *HARD* one to do well...
 	# let's just read, right=to=left 
 	tmp = str.replace("\n", " ", val);
 	tmp = str.removeWhiteSpace(tmp);
 	## uuid 
 	words = str.explode(" ",tmp);
-print(words);
+if(debug)
+	{
+	print(words);
+	}
 	nwords = length(words);
 	j = 1;
 	newp = TRUE;
@@ -225,12 +229,14 @@ print(words);
 	pidx = 1;
 	while(j <= nwords)
 		{
-#if(j == 11) { stop("monte"); }		
 		word = words[j]; print(word);
 		
 		if(newp)
 			{
+if(debug)
+	{
 cat("\n --NEW P-- \n");
+	}
 			stack = list();
 			what = "pname";
 			if(word != "and")
@@ -255,11 +261,17 @@ cat("\n --NEW P-- \n");
 		end.r = c("and", ",")
 
 		all = c(has.tag, has.bra, has.braE, has.par, has.parE, has.com, has.and);
+if(debug)
+	{
 print(all);
+	}	
 		}
 		if(sum(all) == 0) 
 			{ 
+if(debug)
+	{
 cat("\n --ALL-- \n");
+	}
 			stack[[what]] = str.trim(paste0(stack[[what]], " ", word));
 			j = 1 + j; 
 			next;
@@ -295,7 +307,10 @@ cat("\n --BRACKET-- \n");
 		
 		if(has.tag)
 			{
+if(debug)
+	{
 cat("\n -- <tag> -- \n");
+	}
 			e = str.between(word, keys=c("<",">"));
 			# shouldn't be NA 
 			if(what == "pname")
@@ -320,7 +335,10 @@ cat("\n -- <tag> -- \n");
 
 		if(has.par || what == "more")
 			{
+if(debug)
+	{
 cat("\n -- (PARA) -- \n");
+	}
 			what = "more";
 			m = str.trim( str.replace("(","",word) );			
 			# (par ONE WORD parE)
@@ -352,7 +370,10 @@ cat("\n -- (PARA) -- \n");
 		
 		if(what == "pname")
 			{
+if(debug)
+	{
 cat("\n --PNAME-- \n");
+	}
 			# a person has "and" in their NAME ==> GONER ???
 			m = word;
 			if(is.end)
@@ -382,7 +403,10 @@ cat("\n --PNAME-- \n");
 			# next;
 			# }
 		
+if(debug)
+	{
 cat("\n END OF THE STACK, HOW??? \n");
+	}
 		# print(stack);
 		# stack[[what]] = paste0( stack[[what]], " ", word);
 		# j = 1 + j;
@@ -393,7 +417,11 @@ cat("\n END OF THE STACK, HOW??? \n");
 		people[[pidx]] = stack; 
 		}
 	
+if(debug)
+	{
 print(words);
+	}
+	
 	return(people);
 	
 	people = NULL;
@@ -501,11 +529,16 @@ dput(people);
 
 dcf.parseURL = function(val)
 	{
+debug = FALSE;
 	# anything that looks like only URLS , 
 	# idx = rand(1, length(all.vals$pkg)); val = all.vals$val[idx]; all.vals$pkg[idx]; val;
 	# "dendextend"
 	# "multcomp"
-
+if(debug) {
+			print(val); 
+			dput(val);
+			stop("monte");
+			}
 	tmp = str.removeWhiteSpace(str.explode(",", val));
 	# "antiword" ... missing a comma
 	tmp2 = unlist(str.explode(" ", tmp));
