@@ -52,11 +52,14 @@ suppressError = function(expression, show.notice = TRUE, msg = "")
 
 
 
-
+### 
+###	res = str.trimFromAny(res, "()");  # so .%$$%(obj) WORKS (remove)
 # I am pretty sure this is UNIVARIATE 
 # should be a character already and have length == 1
 access = function(str)
 	{	
+	str = str.trimFromFixed(str, "(", "left");
+	str = str.trimFromFixed(str, ")", "right");
 	E = str.explode("@", str);
 	k = length(E);
 		if(k==1)
@@ -81,22 +84,52 @@ access = function(str)
 	
 	
 # leading . will work
-"%$$%" = function(r=NULL, ...) 
+"%$$%" = function(r="HI", ...) 
 			{ 
 			str = str.fromObjectName(...);
 			access(str);			
 			}
+			
+# .%$$%("dcf$Depends@dependencies");
+# .%$$%(dcf$Depends@dependencies);			
+			
+			
+			
 `$$`   = function(...) 
 			{ 
 			str = str.fromObjectName(...);
 			access(str);			
 			}
 
-# `$$`("dcf$Depends@dependencies")
+# `$$`("dcf$Depends@dependencies");
+# `$$`(dcf$Depends@dependencies);
 
 
 
 
+
+
+ggget = function(x, ...)
+	{
+debug = FALSE;
+	ginfo = suppressError( get(x, ...), 
+								show.notice=debug,
+								msg="debugging gget" 
+							);
+							
+	if(is.error(ginfo)) { return(NULL); }
+	ginfo;	
+	}
+
+
+gggassign = function(key, val)
+	{
+# cat("\n gggassing key ::: ", key, "\t val ::: ", val, "\n\n");
+	assign(key, val, envir = .GlobalEnv);
+	return(invisible(NULL));
+	}
+	
+"%GLOBAL%" = gggassign;
 
 
 

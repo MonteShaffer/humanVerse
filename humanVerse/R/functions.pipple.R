@@ -31,27 +31,37 @@ pip = function(df,
 
 
 
-ggget = function(x, ...)
-	{
-debug = FALSE;
-	ginfo = suppressError( get(x, ...), 
-								show.notice=debug,
-								msg="debugging gget" 
-							);
-							
-	if(is.error(ginfo)) { return(NULL); }
-	ginfo;	
-	}
 
 
-gggassign = function(key, val)
-	{
-# cat("\n gggassing key ::: ", key, "\t val ::: ", val, "\n\n");
-	assign(key, val, envir = .GlobalEnv);
-	return(invisible(NULL));
-	}
-	
-"%GLOBAL%" = gggassign;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # # pdf = as.data.frame( cbind(finfo$params$keys, finfo$params$values, finfo$params$types) );
 functions.stepInto = function(...)
