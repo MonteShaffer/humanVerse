@@ -238,12 +238,25 @@ num.toEng(x, show.what="exp", e=" ᴱ", e.pos="+",e.zero="0");
 # ord("×");
 # chr(215);
 
+	# RealCalc has "normal", "fixed", "scientific", and "engineering" modes ... 
+	# 3 digit, 4 digit, or indian grouping
+	# binary/hexadecimal/octar are always displayed in 4 digits 
+	# https://www.sheetzoom.com/Tips/indian-number-grouping-in-excel
+	
+	# maybe a LATEX out option?
+	# ## return(paste(s[1]*10^(s[2]%%3),as.integer(s[2]-(s[2]%%3)),sep="e"))
+	
+
 num.toEngineering = function(x,  
 									signif.digits = 7,
 									units="m",
 									show.what = "units-symbol",
-									force.by = FALSE,
 									by = 3,
+									method="ENG",
+									force.scale = FALSE,
+									force.by = FALSE, # this is for SCI notation
+									by = 3,
+									force.to = NULL, # if force.by && force.to ALL ENG will be same units (by as multiple of 3, negative allowed )
 									use.utf = FALSE,
 									e = " E",
 									min.e = 2,
@@ -254,103 +267,81 @@ num.toEngineering = function(x,
 						# [u]nits-[s]ymbol ... mm
 						# [u]nits-[n]ame   ... millim  (change units="meter")
 						# [e]xponential    ... no [mm] or [millimeter]
-	sw = functions.cleanKey(show.what, n=1, keep="-");
+	SHOW_WHAT = functions.cleanKey(show.what, n=1, keep="-");
+cat("\n SHOW_WHAT ", SHOW_WHAT, "\n");
 	num.constants();
-# dput(SI_PREFIX);
- 
+# dput(SI_PREFIX); 
 	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
 	
-	# RealCalc has "normal", "fixed", "scientific", and "engineering" modes ...
-	# 3 digit, 4 digit, or indian grouping
-	# binary/hexadecimal/octar are always displayed in 4 digits 
-	# https://www.sheetzoom.com/Tips/indian-number-grouping-in-excel
-	
 	x = math.cleanup(x);
-	n = length(x);
-	# x.sign = math.sign(x, return="character", zero="+");
-	# slen = str.len(x.sign);
-	# x.neg = is.negative(x);	
-	# x.info = str.explode(".", x.char);
-	# w = list.getElements(x.info, 1);
-	# f = list.getElements(x.info, 2);
+	n = length(x);	
 	
-	
-	
-	x.char = as.character(x);  # this is the real value, not printed form
-							   # irrelevant what scipen is 
+op = options();
+options(scipen = 0);
+	x.char = as.character(x);  # this is the real value
+options(op);
 	
 	# https://stat.ethz.ch/pipermail/r-help/2006-July/108808.html				
-	# maybe a LATEX out option?
-	# return(paste(s[1]*10^(s[2]%%3),as.integer(s[2]-(s[2]%%3)),sep="e"))
-	
 	x.sci = format(x, scientific=TRUE, digits=signif.digits);
 	x.info = str.split("e", x.sci);
 		w = as.numeric( list.getElements(x.info, 1) );
 		f = as.numeric( list.getElements(x.info, 2) );
-		
-	# force.by = FALSE,
-	# by = 3,
+
+## if "ENG" and force.by ... maybe FORCE all numbers to that SCALE
 	if(!force.by || (force.by && by==3))
 		{
 		nw = w*10^(f %% 3);
 		ne = as.integer(f-(f %% 3));
 		} else {
-cat("\n MONTE \n");
-				b = as.integer(by);
-				# should be a multiple of 3 ... SCI is whatever
-				nw = w*10^(f %% b);
-				ne = as.integer(f-(f %% b));
+				if(!is.null(force.to))
+					{
+					force.to = as.integer(force.to); # we should round by 3
+					de = as.integer(f - force.to); # this is delta 
+					ne = force.to;
+					# if currently is 0 and needs to be 6, much smaller 
+					nw = w*10^(de);
+cat("\n SCALE FORCED to \n");		
+					} else {
+cat("\n SCI FI \n");
+							b = as.integer(by);
+							# SCI is whatever
+							## THIS is what SCI wants ... 
+							nw = w*10^(f %% b);
+							ne = as.integer(f-(f %% b));
+							}
 				}
-		
-		
-		# else {
-				force.by = 6;  # should be a multiple of 3 
-				# fb = num.round(force.by, 3);
-				# force.by = as.integer(force.by);
-				# if(!identical(fb, force.by)) { warning.cat("\n", " force.by was [",force.by, "] rounded to nearest multiple of three as [", fb, "] \n"); }
-				# nw = w*10^(f %% fb);
-				# ne = as.integer(f-(f %% fb));
-				# }
-	
-	idx = set.match(nf, SI_PREFIX$SI.idx);
+#nw as numberWhole (with decimals)
+#ne as numberExp (exponential part)
+
+	idx = set.match(ne, SI_PREFIX$SI.idx);
 	# NA are empty, base UNIT 
 	
 	# prefix.as.symbol = TRUE, ... if symbol, SI.symbol else SI.name
 	add.name = SI_PREFIX$SI.name[idx]; 
 		add.len = max(str.len(add.name), na.rm=TRUE);
-	add.name[is.na(add.name)] = " ";
+	add.name = v.naTo(add.name, " ");
 	add.name = str.pad(add.name, add.len, " ", "LEFT");
 	
 	add.symbol = SI_PREFIX$SI.symbol[idx];
 		add.len = max(str.len(add.symbol), na.rm=TRUE);
-	add.symbol[is.na(add.symbol)] = " ";
+	add.symbol = v.naTo(add.symbol, " ");
 	add.symbol = str.pad(add.symbol, add.len, " ", "LEFT");
 	
-	# x.neg = is.negative(x);
 	x.more = str.explode(".", as.character(nw));
 	whol = list.getElements(x.more, 1);
 	frac = list.getElements(x.more, 2);
 	frac = v.naTo(frac, "0");
 	
-	# whol.max = max( abs( as.numeric(whol) ) );
 	whol.min = min( abs( as.numeric(whol) ) );
-	# frac.max = max( as.integer(frac) );
-	# we will make pretty-print, an issue of there are 
-	# data that are orders of magnitude different 
-	# alternatively, I can find the MIN and make certain 
-	# it has signif.digits AND over DIGITIZE the bigger numbers
-	digits.remaining = signif.digits - str.len(whol.min);
 	wlen = str.len(whol);
 	wmax = max(wlen);
 	whole = str.pad(whol, wmax, " ", "LEFT");
 	fract = str.pad(frac, digits.remaining, "0", "RIGHT");
 	
-	e.sign = math.sign(nf, return="character", 
+	e.sign = math.sign(ne, return="character", 
 							zero=e.zero, pos=e.pos, neg=e.neg);
 	e.pre  = str.pad(e.sign, 1, " ", "LEFT");
-	# e.len = str.len(e.sign); # assuming 1 is MAX
-	# e.neg = is.negative(nf);
-	es = as.character(abs(nf));
+	es = as.character(abs(ne));
 	e.max = max(str.len( es ) );
 	e.pad = max(e.max, min.e);
 	ex = str.pad(es, e.pad, "0", "LEFT");
@@ -362,7 +353,7 @@ cat("\n MONTE \n");
 						# [e]xponential    ... no [mm] or [millimeter]
 
 	
-	res = switch(sw,					  			
+	res = switch(SHOW_WHAT,					  			
 					  "u-s" = paste0(whole, ".", fract, " ", add.symbol, units),
 					  "u-n"	= paste0(whole, ".", fract, " ", add.name, units),	
 					  "e"  	= paste0(whole, ".", fract, exp),				
