@@ -201,6 +201,9 @@ dcf.parse = function(dcfstr)
 ## BH (also DIRK) ... with "and"  ... [ , and ]
 ## "Dirk Eddelbuettel, Romain Francois, Doug Bates, Binxiang Ni, and Conrad Sanderson"
 
+## Atsushi Yasumoto in "rmarkdown"
+# "Atsushi" "Yasumoto"  "[ctb,"  "cph]"  "(<https://orcid.org/0000-0002-8335-495X>," "Number"  "sections" "Lua" "filter),"
+
 
 dcf.parsePeople = function(val)
 	{
@@ -224,9 +227,13 @@ print(words);
 		
 		if(newp)
 			{
+cat("\n --NEW P-- \n");
 			stack = list();
 			what = "pname";
-			stack[[what]] = word;			
+			if(word != "and")
+				{
+				stack[[what]] = word;	
+				}
 			newp = FALSE;
 			j = 1 + j; 
 			next;
@@ -245,11 +252,12 @@ print(words);
 		end.r = c("and", ",")
 
 		all = c(has.tag, has.bra, has.braE, has.par, has.parE, has.com, has.and);
+print(all);
 		}
 		if(sum(all) == 0) 
 			{ 
-cat("\n ALL \n");
-			stack[[what]] = paste0(stack[[what]], " ", word);
+cat("\n --ALL-- \n");
+			stack[[what]] = str.trim(paste0(stack[[what]], " ", word));
 			j = 1 + j; 
 			next;
 			} 
@@ -257,6 +265,7 @@ cat("\n ALL \n");
 		
 		if(has.bra || what == "role")
 			{
+cat("\n --BRACKET-- \n");
 			what = "role";
 			r = str.replace("[", "", word);
 			if(has.braE)
@@ -283,6 +292,7 @@ cat("\n ALL \n");
 		
 		if(has.tag)
 			{
+cat("\n -- <tag> -- \n");
 			e = str.between(word, keys=c("<",">"));
 			# shouldn't be NA 
 			if(what == "pname")
@@ -291,8 +301,10 @@ cat("\n ALL \n");
 				} else {
 						what = "url";
 						}
+# "Atsushi" "Yasumoto"  "[ctb,"  "cph]"  "(<https://orcid.org/0000-0002-8335-495X>," "Number"  "sections" "Lua" "filter),"
 			stack[[what]] = e;
-			if(is.end) 
+			if(has.par) { what = "more"; } # for next iteration
+			if(is.end && has.parE) 
 				{
 				people[[pidx]] = stack;
 				pidx = 1 + pidx;
@@ -305,6 +317,7 @@ cat("\n ALL \n");
 
 		if(has.par || what == "more")
 			{
+cat("\n -- (PARA) -- \n");
 			what = "more";
 			m = str.trim( str.replace("(","",word) );			
 			# (par ONE WORD parE)
@@ -314,7 +327,7 @@ cat("\n ALL \n");
 				m = m[1];
 				stack[[what]] = str.trim( paste0(stack[[what]], " ", m) );									
 				what = "";
-				if(is.com)  # not and, maybe a word in "more"
+				if(has.com)  # not and, maybe a word in "more"
 					{
 					people[[pidx]] = stack;
 					pidx = 1 + pidx;
@@ -336,11 +349,12 @@ cat("\n ALL \n");
 		
 		if(what == "pname")
 			{
-			# a person has "and" in their NAME ???
+cat("\n --PNAME-- \n");
+			# a person has "and" in their NAME ==> GONER ???
 			m = word;
 			if(is.end)
 				{
-				m = str.replace(end.r , "", m);
+				m = str.replace("," , "", m);
 				stack[[what]] = str.trim(paste0( stack[[what]], " ", m));
 				people[[pidx]] = stack;
 				pidx = 1 + pidx;
@@ -348,10 +362,9 @@ cat("\n ALL \n");
 				j = 1 + j;
 				next;
 				} else { 
-						if(m == "and") { m = ""; }
 						stack[[what]] = str.trim(paste0( stack[[what]], " ", m));						
 						}
-			stack[[what]] = str.trim( str.replace("and ", "", stack[[what]] ) );
+			# stack[[what]] = str.trim( str.replace("and ", "", stack[[what]] ) );
 			j = 1 + j;
 			next;
 			}
