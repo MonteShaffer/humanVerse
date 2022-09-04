@@ -6,6 +6,15 @@
 # uu = u.getSymbol(c("U+22EF","U+1F40C","U+22EF"));
 #  "⋯🐌⋯" ... > length(uu) ... [1] 1 ..... > str.len(uu) ... [1] 3
 ## FIXED, something weird about intToUtf8(num); [collapsing]?
+## MORE weirdness
+# > uu = u.getSymbol(c("U+22EF","U+1F40C","U+22EF"));
+# > uu
+# [1] "⋯"  "🐌" "⋯" 
+# > char.more = uu[1]
+# > char.more
+# [1] "⋯"
+# > 
+
 
 # THIS DOES SOMETHING ??? utf8ToInt("U+1F40C")
 u.toNum = function(str = "U+22EF", ...)
@@ -24,8 +33,10 @@ u.toNum = function(str = "U+22EF", ...)
 u.fromNum = function(num = 	128012, ...)
 	{
 	num = dots.addTo(num, ...);
-	res = intToUtf8(num);  # not keeping separate elements ... collapsed
-	str.explode("",res);
+	# res = intToUtf8(num);  # not keeping separate elements ... collapsed
+	# str.explode("",res);
+	
+	intToUtf8(num, multiple=TRUE);
 	}
 	
 u.getSymbol = function(str = "U+22EF", ...)
@@ -58,25 +69,50 @@ pip = function(df,
 				col.n = 5, col.idx = as.integer(dim(df)[2]/2),
 				row.sep = "-", col.sep = "|", int.sep = "+",
 				row.insert.sep = NULL, col.insert.sep = NULL,
-				show.types = TRUE, 
-				show.row.names = FALSE, show.row.numbers = TRUE,
+				show.types = TRUE, 				
 				show.col.names = TRUE,  show.col.numbers = TRUE,
+				show.row.names = FALSE, show.row.numbers = TRUE,
 				use.color = FALSE, 
 				
 				char.width = 12, 
-				char.more = ,
+				char.more = u.getSymbol(c("U+22EF")),
 				number.width = 8,
 				number.format = "fixed",  # scientific, engineering
 				df.width = 80,			  # EVERYTHING is this CHARS
-				df.justify = "left",      # fixed width cols ( )DATA( )
+				df.justify = "center",      # fixed width cols ( )DATA( )
 				sep = " ",
 				...
 				)
 	{
+	n.f = functions.cleanKey(number.format, 1);
+	NUM_FORMAT = switch(n.f, 
+							"s" = "sci",
+							"e" = "eng",
+						"fix"
+						);
+	df.j = functions.cleanKey(df.justify, 1);
+	JUSTIFY = switch(df.j, 
+						"l" = "left",
+						"r" = "right",
+					"center"
+					);
+				
 	# let's calculate the width of everything L-to-R based on 
 	# longest strlen 
-	col.names = colnames(df);
-	col.names.slen = str.len(col.names);
+	cols = list();
+	cols$names = colnames(df);
+	cols$names.slen = str.len(cols$names);
+	cols$types = v.types(df);
+	cols$types.short = v.shortTypes( cols$types );
+	cols$types.short.slen = str.len(cols$types.short);
+	# str(cols);
+	
+	cdata = list();
+	# let's format each column based on constraint ...
+	
+	
+	show.types = TRUE, 				
+				show.col.names = TRUE,  show.col.numbers = TRUE,
 	
 	
 	}
@@ -118,6 +154,7 @@ pip = function(df,
 # # pdf = as.data.frame( cbind(finfo$params$keys, finfo$params$values, finfo$params$types) );
 functions.stepInto = function(...)
 	{
+debug = FALSE;
 	finfo = function.info(...);
 	if(is.null(finfo$params$keys)) { return(NULL); }
 	n = length(finfo$params$keys);
@@ -126,8 +163,10 @@ functions.stepInto = function(...)
 		key = finfo$params$keys[i];
 		val = finfo$params$values[i];
 		typ = finfo$params$types[i];
+if(debug)
+	{
 cat("\n key ::: ", key, "\t typ ::: ", typ, "\t val ::: ", val, "\n\n");
-		
+	}	
 		
 		if(key == "...") { next; }
 		
