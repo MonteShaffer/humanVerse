@@ -46,55 +46,55 @@ debug = FALSE;
 
 gggassign = function(key, val)
 	{
-	
-cat("\n gggassing key ::: ", key, "\n\t\t");
-print(val);
-cat("\n\n");
-	assign(key, value, envir = .GlobalEnv);
+# cat("\n gggassing key ::: ", key, "\t val ::: ", val, "\n\n");
+	assign(key, val, envir = .GlobalEnv);
+	return(invisible(NULL));
 	}
 	
 "%GLOBAL%" = gggassign;
 
+# # pdf = as.data.frame( cbind(finfo$params$keys, finfo$params$values, finfo$params$types) );
 functions.stepInto = function(...)
 	{
-	# fn = str.fromObjectName(...);
 	finfo = function.info(...);
-	# finfo = function.info("pip"); 
-	
-		# pdf = as.data.frame( cbind(finfo$params$keys, finfo$params$values, finfo$params$types) );
+	if(is.null(finfo$params$keys)) { return(NULL); }
 	n = length(finfo$params$keys);
 	for(i in 1:n)
 		{
 		key = finfo$params$keys[i];
 		val = finfo$params$values[i];
 		typ = finfo$params$types[i];
- 		
-		glo = ggget(key, -1);  # TRAPS NULL in error
-		if(typ == "symbol" && !is.null(glo)) 
+cat("\n key ::: ", key, "\t typ ::: ", typ, "\t val ::: ", val, "\n\n");
+		
+		
+		if(key == "...") { next; }
+		
+		if(typ == "symbol")
 			{  
-			value = glo;
-			key %GLOBAL% value;
+			#### why ggget and setback ... just SKIP 
+			# glo = ggget(key, -1);  # TRAPS NULL in error
+			# if(!is.null(glo))
+				# {
+				# value = glo;
+				# key %GLOBAL% value;
+				# }
 			next;
 			}
 			
 		if(typ == "language") 
 			{ 
-			# next;
-# not working
-cat("\n val ", val, "\n");
-print(df);
 			value = eval(parse(text = val));
 			key %GLOBAL% value;
 			next;
 			}
-		
-		value = as.type(val, typ);
+			
+		if(typ != "NULL")
+			{
+			value = as.type(val, typ);
+			} else { value = val; }
 		key %GLOBAL% value;
 		}
-	
-	invisible(finfo$params);	
-	# not working in RSTUDIO, CLI ... why ?
-	# list.extract( formals(fn), ... ); # by default into GLOBAL
+	invisible(finfo$params);
 	}
 
 
