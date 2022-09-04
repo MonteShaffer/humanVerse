@@ -139,186 +139,30 @@ dcf.parse = function(dcfstr)
 		.key = tolower(key);
 		if(.key == "built" || .key == "date" || .key == "date/publication" || .key == "repository/r-forge/datetimestamp" || .key == "packaged")
 			{
-			v = list();					
-			tmp = str.removeWhiteSpace(str.explode(";", val));
-			s = v.find(tmp, str.contains("R", tmp) )[1];
-			if(!is.null(s)) 
-				{ 
-				v[["R.raw"]] = tmp[s]; 
-				v[["R.version"]] = str.trim(str.replace("R","",tmp[s]));
-				}
-			s = v.find(tmp, check.date(tmp) )[1];
-			if(!is.null(s)) 
-				{ 
-				v[["date"]] = tmp[s];
-				}			
-			s = v.find(tmp, str.contains("win", tmp))[1];
-			if(!is.null(s)) 
-				{ 
-				v[["win"]] = tmp[s];
-				}
-			s = v.find(tmp, str.contains("ming", tmp))[1];
-			if(!is.null(s)) 
-				{ 
-				v[["ming"]] = tmp[s];
-				}
-				
-			s = v.find(tmp, str.contains("tap", tmp))[1];
-			if(!is.null(s)) 
-				{ 
-				v[["tap"]] = tmp[s];
-				}	
-				
-				
+			v = dcf.parseBuild(val);				
 			out[[key]] = v; 
 			next;
 			}
 		
 		if(.key == "suggests" || .key == "depends" || .key == "imports")
 			{
-			tmp = str.removeWhiteSpace(str.explode(",", val));
-			tmp2 = str.explode("(", tmp);
-			pkgs = list.getElements(tmp2, 1);
-				depe = list.getElements(tmp2, 2);
-				depe[!is.na(depe)] = paste0("(", depe[!is.na(depe)]);
-				depe[ is.na(depe)] = "";
-			pkgs = property.set("dependencies", pkgs, depe);
-			
+			pkgs = dcf.parseDepends(val);
 			out[[key]] = pkgs;
 			next;
 			}
 		
 		if(.key == "url" || .key == "bugreports" || .key == "urlnote"|| .key == "additional_repositories" || .key == "urlnote")
 			{
-			# idx = rand(1, length(all.vals$pkg)); val = all.vals$val[idx]; all.vals$pkg[idx]; val;
-			# "dendextend"
-			# "multcomp"
-
-			tmp = str.removeWhiteSpace(str.explode(",", val));
-			# "antiword" ... missing a comma
-			tmp2 = unlist(str.explode(" ", tmp));
-			u = check.url(tmp2);
-			
-			s = v.find(tmp2, u );
-			ns = v.find(tmp2, !u );
-			if(!is.null(s)) 
-				{ 
-				ukey = tmp2[s];
-				if(!is.null(ns)) 
-					{
-					uval = tmp2[ns];
-					ukey = property.set("more", ukey, uval);
-					# names(ukey) = uval;
-					}
-				}			
-				# ukey;
-				
-				
+			ukey = dcf.parseURL(val);				
 			out[[key]] = ukey;
+			next;
 			}
 		
 		if(.key == "author" || .key == "maintainer" || .key == "contact"|| .key == "authors@r")
 			{
-			people = NULL;
-			# idx = rand(1, length(all.vals$pkg)); val = all.vals$val[idx]; all.vals$pkg[idx]; val;
-			
-			is.complete = FALSE;
-			# "viridisLite"
-			if(str.contains("]", val))
-				{
-				tmp = str.removeWhiteSpace(val);
-				if(str.contains("] (", val))
-					{
-					tmp = str.replace(")","]", tmp);
-					}
-				# ] (
-				# "viridisLite"
-				tmp = str.replace("] ,", "],", tmp);
-				tmp2 = str.explode("],", tmp);
-				tmp3 = str.explode("[", tmp2);
-				tmp3 = check.list(tmp3);
-					
-				np = length(tmp3);
-				people = vector("list", np);
-				for(j in 1:np)
-					{
-					rec = tmp3[[j]];
-					pname = str.trim(rec[1]);
-					rvals = str.trim(str.replace("]","", str.explode("," , rec[2])));
-					rlen = length(rvals);
-					rlast = rvals[rlen];					
-					rurl = NULL;
-					e = str.between(rlast, keys=c("<",">"));
-					if(!is.na(e))
-						{
-						rurl = e;
-						rlast = str_replace(paste0("<",e,">"), "", rlast);
-						rlast = str.replace("(", "", rlast);
-						}
-					cwhat = NULL;
-					if(str.contains("(", rlast))
-						{
-						paren = str.explode("(", rlast);
-						if(!is.na(paren[2])) { cwhat = paren[2]; }
-						rlast = str.trim(paren[1]);
-						}
-						
-					rlast = str.trim(rlast);
-					rvals[rlen] = rlast;
-					
-					people[[j]] = list("name" = pname, "roles" = rvals);
-					if(!is.null(rurl)) { people[[j]]$url = rurl; }
-					if(!is.null(cwhat)) { people[[j]]$more = cwhat; }
-					}
-				is.complete = TRUE;
-				}
-			
-			# readr 
-			#  RStudio [cph, fnd], https://github.com/mandreyel/ [cph] (mio library), 
-			# Jennifer Bryan [aut, cre] (<https://orcid.org/0000-0002-6983-2759>),
-			
-			# "scatterplot3d"
-			# "Uwe Ligges <ligges@statistik.tu-dortmund.de>, Martin Maechler, Sarah Schnackenberg"
-			
-			## TODO :: "uuid"
-			## Simon Urbanek <Simon.Urbanek@r-project.org> (R package), Theodore Ts'o <tytso@thunk.org> (libuuid)
-			## ... almost a left-to-right reader ... 
-			## start reading ... PNAME ... [ ... roles ... <  ... email ... ( ... more or ORC url 
-			## ? person 
-			## http://127.0.0.1:19165/library/utils/html/person.html
-			## keys of roles ... 
-			if(!is.complete)
-				{
-				tmp = str.removeWhiteSpace(val);
-				tmp = str.explode("," , tmp);
-				np = length(tmp);
-				people = vector("list", np);
-				for(j in 1:np)
-					{
-					rec = tmp[[j]];
-					
-					pname = rec;
-					email = NULL;
-					
-					e = str.between(rec, keys=c("<",">"));
-					if(!is.na(e))
-						{
-						pname = str_replace(paste0("<",e,">"), "", pname);
-						email = e;
-						}
-						
-					people[[j]] = list("name" = str.trim(pname) );	
-					if(!is.null(email)) { people[[j]]$email = email; }
-					}
-				}
-					
-dput(people);	
-			
-			# A, B <email>, and C 
-			# A and B 
-			# A [rol,rol] (http orc), B [rol]
-			
+			people = dcf.parsePeople(val);			
 			out[[key]] = people;
+			next;
 			}
 		
 		# DEFAULT
@@ -348,16 +192,340 @@ dput(people);
 
 
 
+# idx = which(all.vals$pkg=="readr"); val = all.vals$val[idx]; all.vals$pkg[idx]; val;
+# idx = rand(1, length(all.vals$pkg)); val = all.vals$val[idx]; all.vals$pkg[idx]; val;
+
+dcf.parsePeople = function(val)
+	{
+	# this is the *HARD* one to do well...
+	# let's just read, right=to=left 
+	tmp = str.replace("\n", " ", val);
+	tmp = str.removeWhiteSpace(tmp);
+	## uuid 
+	words = str.explode(" ",tmp);
+print(words);
+	nwords = length(words);
+	j = 1;
+	newp = TRUE;
+	stack = list();
+	people = NULL;
+	pidx = 1;
+	while(j <= nwords)
+		{		
+		word = words[j]; print(word);
+		
+		if(newp)
+			{
+			stack = list();
+			what = "pname";
+			stack[[what]] = word;			
+			newp = FALSE;
+			j = 1 + j; 
+			next;
+			}
+			
+		{
+		has.tag = str.contains("<", word);	
+		has.bra = str.contains("[", word);
+		has.braE = str.contains("]", word);
+		has.par = str.contains("(", word);
+		has.parE = str.contains(")", word);
+		has.com = str.contains(",", word);
+		has.and = ( str.contains(" and", word) || str.contains("and ", word) || (word == "and") );	
+
+		all = c(has.tag, has.bra, has.braE, has.par, has.parE, has.com, has.and);
+		}
+		if(sum(all) == 0) 
+			{ 
+			stack[[what]] = paste0(stack[[what]], " ", word);
+			j = 1 + j; 
+			next;
+			} 
+		
+		
+		if(has.bra || what == "role")
+			{
+			what = "role";
+			r = str.replace("[", "", word);
+			if(has.braE)
+				{
+				r = str.explode("]",r)[1];
+				stack[[what]] = c(stack[[what]] , r);
+				what = "";
+				if(has.com) 
+					{
+					people[[pidx]] = stack;
+					pidx = 1 + pidx;
+					newp = TRUE;
+					j = 1 + j;
+					next;
+					}
+				} else {
+						r = str.replace("," , "", r);
+						stack[[what]] = c(stack[[what]] , r);
+						}
+			j = 1 + j;
+			next;
+			}
+		
+		
+		if(has.tag)
+			{
+			e = str.between(word, keys=c("<",">"));
+			# shouldn't be NA 
+			if(what == "pname")
+				{
+				what = "email";				
+				} else {
+						what = "url";
+						}
+			stack[[what]] = e;
+			if(has.com) 
+				{
+				people[[pidx]] = stack;
+				pidx = 1 + pidx;
+				newp = TRUE;			
+				}
+			j = 1 + j;
+			next;
+			}
+		
+
+		if(has.par || what == "more")
+			{
+			what = "more";
+			m = str.trim( str.replace("(","",word) );			
+			# (par ONE WORD parE)
+			if(has.parE)
+				{
+				m = str.explode(")",m);	
+				m = m[1];				
+				}
+			stack[[what]] = str.trim( paste0(stack[[what]], " ", m) );
+			if(has.com)
+				{
+				people[[pidx]] = stack;
+				pidx = 1 + pidx;
+				newp = TRUE;
+				}
+			if(has.parE)
+				{
+				what = "";
+				}
+			j = 1 + j;
+			next;
+			}
+		
+
+		
+		
+		
+		
+		
+		
+		
+		
+			
+		if(has.com)
+			{
+			people[[pidx]] = stack;
+			pidx = 1 + pidx;
+			newp = TRUE;
+			j = 1 + j;
+			next;
+			}
+		
+cat("\n END OF THE STACK, HOW??? \n");
+		# print(stack);
+		# stack[[what]] = paste0( stack[[what]], " ", word);
+		# j = 1 + j;
+		}
+	## last one ... outside of loop ... words ended 
+	if(length(stack) > 0) { people[[pidx]] = stack; }
+	
+	
+	return(people);
+	
+	people = NULL;
+	# idx = rand(1, length(all.vals$pkg)); val = all.vals$val[idx]; all.vals$pkg[idx]; val;
+	
+	is.complete = FALSE;
+	# "viridisLite"
+	if(str.contains("]", val))
+		{
+		tmp = str.removeWhiteSpace(val);
+		if(str.contains("] (", val))
+			{
+			tmp = str.replace(")","]", tmp);
+			}
+		# ] (
+		# "viridisLite"
+		tmp = str.replace("] ,", "],", tmp);
+		tmp2 = str.explode("],", tmp);
+		tmp3 = str.explode("[", tmp2);
+		tmp3 = check.list(tmp3);
+			
+		np = length(tmp3);
+		people = vector("list", np);
+		for(j in 1:np)
+			{
+			rec = tmp3[[j]];
+			pname = str.trim(rec[1]);
+			rvals = str.trim(str.replace("]","", str.explode("," , rec[2])));
+			rlen = length(rvals);
+			rlast = rvals[rlen];					
+			rurl = NULL;
+			e = str.between(rlast, keys=c("<",">"));
+			if(!is.na(e))
+				{
+				rurl = e;
+				rlast = str_replace(paste0("<",e,">"), "", rlast);
+				rlast = str.replace("(", "", rlast);
+				}
+			cwhat = NULL;
+			if(str.contains("(", rlast))
+				{
+				paren = str.explode("(", rlast);
+				if(!is.na(paren[2])) { cwhat = paren[2]; }
+				rlast = str.trim(paren[1]);
+				}
+				
+			rlast = str.trim(rlast);
+			rvals[rlen] = rlast;
+			
+			people[[j]] = list("name" = pname, "roles" = rvals);
+			if(!is.null(rurl)) { people[[j]]$url = rurl; }
+			if(!is.null(cwhat)) { people[[j]]$more = cwhat; }
+			}
+		is.complete = TRUE;
+		}
+	
+	# readr 
+	#  RStudio [cph, fnd], https://github.com/mandreyel/ [cph] (mio library), 
+	# Jennifer Bryan [aut, cre] (<https://orcid.org/0000-0002-6983-2759>),
+	
+	# "scatterplot3d"
+	# "Uwe Ligges <ligges@statistik.tu-dortmund.de>, Martin Maechler, Sarah Schnackenberg"
+	
+	## TODO :: "uuid"
+	## Simon Urbanek <Simon.Urbanek@r-project.org> (R package), Theodore Ts'o <tytso@thunk.org> (libuuid)
+	## ... almost a left-to-right reader ... 
+	## start reading ... PNAME ... [ ... roles ... <  ... email ... ( ... more or ORC url 
+	## "and" ... to BIBTEX ... 
+	## ? person 
+	## http://127.0.0.1:19165/library/utils/html/person.html
+	## keys of roles ... 
+	if(!is.complete)
+		{
+		tmp = str.removeWhiteSpace(val);
+		tmp = str.explode("," , tmp);
+		np = length(tmp);
+		people = vector("list", np);
+		for(j in 1:np)
+			{
+			rec = tmp[[j]];
+			
+			pname = rec;
+			email = NULL;
+			
+			e = str.between(rec, keys=c("<",">"));
+			if(!is.na(e))
+				{
+				pname = str_replace(paste0("<",e,">"), "", pname);
+				email = e;
+				}
+				
+			people[[j]] = list("name" = str.trim(pname) );	
+			if(!is.null(email)) { people[[j]]$email = email; }
+			}
+		}
+			
+dput(people);	
+	
+	# A, B <email>, and C 
+	# A and B 
+	# A [rol,rol] (http orc), B [rol]
+	people;
+	}
+
+
+dcf.parseURL = function(val)
+	{
+	# anything that looks like only URLS , 
+	# idx = rand(1, length(all.vals$pkg)); val = all.vals$val[idx]; all.vals$pkg[idx]; val;
+	# "dendextend"
+	# "multcomp"
+
+	tmp = str.removeWhiteSpace(str.explode(",", val));
+	# "antiword" ... missing a comma
+	tmp2 = unlist(str.explode(" ", tmp));
+	u = check.url(tmp2);
+	
+	s = v.find(tmp2, u );
+	ns = v.find(tmp2, !u );
+	if(!is.null(s)) 
+		{ 
+		ukey = tmp2[s];
+		if(!is.null(ns)) 
+			{
+			uval = tmp2[ns];
+			ukey = property.set("more", ukey, uval);
+			# names(ukey) = uval;
+			}
+		}			
+	ukey;
+	}
 
 
 
+dcf.parseDepends = function(val)
+	{
+	# pkgs with (>version)
+	tmp = str.removeWhiteSpace(str.explode(",", val));
+	tmp2 = str.explode("(", tmp);
+	pkgs = list.getElements(tmp2, 1);
+		depe = list.getElements(tmp2, 2);
+		depe[!is.na(depe)] = paste0("(", depe[!is.na(depe)]);
+		depe[ is.na(depe)] = "";
+	pkgs = property.set("dependencies", pkgs, depe);
+	pkgs;
+	}
 
 
-
-
-
-
-
+dcf.parseBuild = function(val)
+	{
+	# has dates ... 
+	v = list();					
+	tmp = str.removeWhiteSpace(str.explode(";", val));
+	s = v.find(tmp, str.contains("R", tmp) )[1];
+	if(!is.null(s)) 
+		{ 
+		v[["R.raw"]] = tmp[s]; 
+		v[["R.version"]] = str.trim(str.replace("R","",tmp[s]));
+		}
+	s = v.find(tmp, check.date(tmp) )[1];
+	if(!is.null(s)) 
+		{ 
+		v[["date"]] = tmp[s];
+		}			
+	s = v.find(tmp, str.contains("win", tmp))[1];
+	if(!is.null(s)) 
+		{ 
+		v[["win"]] = tmp[s];
+		}
+	s = v.find(tmp, str.contains("ming", tmp))[1];
+	if(!is.null(s)) 
+		{ 
+		v[["ming"]] = tmp[s];
+		}
+		
+	s = v.find(tmp, str.contains("tap", tmp))[1];
+	if(!is.null(s)) 
+		{ 
+		v[["tap"]] = tmp[s];
+		}
+	v;
+	}
 
 
 
