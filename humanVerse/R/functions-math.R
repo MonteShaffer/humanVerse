@@ -111,6 +111,58 @@ num.constants = function(envir=parent.env(environment()))
 	}
 
 
+
+num.toScientific = function(x, ... )
+	{
+	# follow same logic as toENG 
+	# maybe wrap ... INSIDE with force = 7 and override
+	# x.sci = format(x, scientific=TRUE, digits=signif.digits);
+	}
+
+num.toSci = num.toScientific;
+num.toSCI = num.toScientific;
+
+# will return more if necessary ... too big ... 
+num.toFixed = function(x, ..., total.digits = 7, part="Re")
+	{
+	# fixed format 
+	x = dots.addTo(x, ...); 
+	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
+op = options();
+options(scipen = 999);
+	x = math.cleanup(x);
+	# n = length(x);
+	x.char = as.character(x);
+options(op);
+	# decimal align ... 
+	
+	x.info = str.split(".", x.char);
+	numb = list.getElements(x.info, 1);
+	frac = list.getElements(x.info, 2);
+	
+	numblen = max(str.len(numb));
+	fraclen = max(str.len(frac));
+	
+	numb = str.pad(numb, numblen, " ", "LEFT");
+	numb = paste0(numb);
+	
+	numblen = max(str.len(numb));
+	remaining = total.digits - numblen - 1;  # -1 for period 
+	if(remaining < 1)
+		{
+		return(numb);
+		}
+	
+	frac = substring(str.pad(frac, remaining, "0", "RIGHT"), 1, remaining);
+	
+	# if(str.contains(".") is FALSE, then what ???) 
+	## ALL BIG NUMBERS, FORCE to wider with WARNING
+	paste0(numb, ".", frac);
+	}
+
+num.toFix = num.toFixed;
+num.toFIX = num.toFixed;
+
 # x = 10^(-4:5) * rnorm(100);
 # num.toEngineering(x);
 # num.toEngineering(x, force.by=6);
@@ -253,7 +305,7 @@ num.toEngineering = function(x, ...,
 
 
 num.toEng = num.toEngineering;
-
+num.toENG = num.toEngineering;
 
 
 num.round = function(x, by=3, how="round")

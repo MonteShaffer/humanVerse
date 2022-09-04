@@ -7,6 +7,8 @@ v.types = function(vecs, ...)
 	res = character(n);
 	for(i in 1:n)
 		{
+		vec = vecs[i];
+		if(is.list(vec)) { vec = vecs[ , i]; } # dataframe
 		res[i] = v.type(vec);
 		}
 	return(res);	
@@ -26,7 +28,15 @@ v.which = function(vec, what="")
 	# type = v.type(what);
 	if(is.logical(what))
 		{
-		idx = which(what == TRUE);	
+		if(length(what) == 1)
+			{
+			idx = which(vec == what);
+			} else {
+					if(length(what) == length(vec))
+						{
+						idx = which(what == TRUE);	
+						}
+					}
 		return(idx);
 		}
 	if(is.character(what))
@@ -37,8 +47,11 @@ v.which = function(vec, what="")
 	if(is.na(what))
 		{
 		idx = which(is.na(vec));
+		return(idx);
 		}
-	idx;
+	## DEFAULT
+	idx = which(vec == what);
+	return(idx);
 	}
 
 # this is univariate

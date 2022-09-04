@@ -153,9 +153,12 @@ df.applyFunctionToColumn = function() {}
 # df2 = df.setColumnType(df, c("start"), c("numeric","POSIXlt" )); str(df2);
 df.setColumnType = function(df, cols=NULL, type="numeric", ...)
 	{
+	
 	# if cols is.integer, skip first part ??
 	# searching = set.intersect(1:n, cols) ... if length(search) != length(cols) ... STOP ... index out of bounds 
-	dfcols = colnames(df); 
+	dfcols = colnames(df);
+	ALL = as.character(substitute(cols));
+	if(ALL == "ALL") { cols = dfcols; }
 	if(is.null(cols)) { cols = dfcols; } # all the columns
 	n = length(dfcols);
 	n.cols = length(cols);

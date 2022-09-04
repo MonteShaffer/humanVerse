@@ -74,6 +74,7 @@ pip = function(df,
 				show.row.names = FALSE, show.row.numbers = TRUE,
 				use.color = FALSE, 
 				
+				equal.width = TRUE, # to min(char.width, number.width)
 				char.width = 12, 
 				char.more = u.getSymbol(c("U+22EF")),
 				number.width = 8,
@@ -105,10 +106,17 @@ pip = function(df,
 	cols$types = v.types(df);
 	cols$types.short = v.shortTypes( cols$types );
 	cols$types.short.slen = str.len(cols$types.short);
-	# str(cols);
+	# str(cols); 
 	
 	cdata = list();
 	# let's format each column based on constraint ...
+	sdf = df.setColumnType(df, ALL, type="character");
+	## we need to format NUMBERS to FIXED in either
+	## FIXED, SCI, ENG ...
+	
+	
+	cdata$slen = str.len(sdf);
+	cdata$slen.max = unlist(lapply(cdata$slen, max));
 	
 	
 	show.types = TRUE, 				
