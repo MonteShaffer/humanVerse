@@ -122,6 +122,8 @@ num.toScientific = function(x, ... )
 num.toSci = num.toScientific;
 num.toSCI = num.toScientific;
 
+"%SCI%" = function(x, r=NULL) { num.toScientific(x); }
+
 # will return more if necessary ... too big ... 
 num.toFixed = function(x, ..., total.digits = 7, part="Re")
 	{
@@ -162,6 +164,8 @@ options(op);
 
 num.toFix = num.toFixed;
 num.toFIX = num.toFixed;
+
+"%FIX%" = function(x, r=NULL) { num.toFixed(x); }
 
 # x = 10^(-4:5) * rnorm(100);
 # num.toEngineering(x);
@@ -306,6 +310,7 @@ num.toEngineering = function(x, ...,
 
 num.toEng = num.toEngineering;
 num.toENG = num.toEngineering;
+"%ENG%" = function(x, r=NULL) { num.toEngineering(x); }
 
 
 num.round = function(x, by=3, how="round")
