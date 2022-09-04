@@ -1,10 +1,32 @@
 
-
-# as.POSIXct("2000-01-01") ... formal replace took, but didn't ... 
-
-
-check.date = function(strs)
+check.url = function(urls, ...)
 	{
+	urls = dots.addTo(urls, ...);
+	# https://mathiasbynens.be/demo/url-regex
+	# librarian:::is_valid_url
+	(grepl("(https?|ftp)://[^\\s/$.?#].[^\\s]*", urls));
+	}
+
+regex.url = functions(urls, ...)
+	{
+	urls = dots.addTo(urls, ...);
+	
+	# get values 
+	
+	# get positions ??? 
+	
+	}
+
+
+
+
+
+# as.POSIXct("2000-01-01") ... formal replace took tz, but didn't implement ... 
+
+
+check.date = function(strs, ...)
+	{
+	strs = dots.addTo(strs, ...);
 debug = FALSE;
 	n = length(strs);
 	res = logical(n);
@@ -80,7 +102,7 @@ check.isCompatibleLength = function(x, y,
 
 # this literally "pings" the url via `base::curlGetHeaders()`
 # if `base::url()` loads ...
-check.url = function(urls, timeout=2, verify.certificate=FALSE,  ...)
+ping.url = function(urls, timeout=2, verify.certificate=FALSE,  ...)
 	{
 debug = FALSE;
 	n = length(urls);
@@ -110,5 +132,5 @@ debug = FALSE;
 	
 #' @rdname url.testConnection
 #' @export
-url.testConnection = check.url;
+url.testConnection = ping.url;
 

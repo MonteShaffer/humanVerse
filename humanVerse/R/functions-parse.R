@@ -114,8 +114,10 @@ flush.console();
 	df;	
 	}
 	
-# all.vals = dcf.uniqueVals("Built"); head(all.vals); View(all.vals);
-# idx = which.max(str.len(all.vals$val)); val = all.vals$val[idx];	
+# all.vals = dcf.uniqueVals("Author"); head(all.vals); View(all.vals);
+# idx = which.max(str.len(all.vals$val)); val = all.vals$val[idx]; all.vals$pkg[idx]; val; 
+# idx = which(all.vals$pkg=="readr"); val = all.vals$val[idx]; all.vals$pkg[idx]; val;
+# idx = rand(1, length(all.vals$pkg)); val = all.vals$val[idx]; all.vals$pkg[idx]; val;
 	
 dcf.parse = function(dcfstr)
 	{
@@ -135,36 +137,44 @@ dcf.parse = function(dcfstr)
 		key = keys[i];
 		val = unkeyed[i];
 		.key = tolower(key);
-		if(.key == "built")
+		if(.key == "built" || .key == "date" || .key == "date/publication" || .key == "repository/r-forge/datetimestamp" || .key == "packaged")
 			{
 			v = list();					
 			tmp = str.removeWhiteSpace(str.explode(";", val));
-			r = str.contains("R", tmp); s = v.find(tmp, r)[1];
+			s = v.find(tmp, str.contains("R", tmp) )[1];
 			if(!is.null(s)) 
 				{ 
 				v[["R.raw"]] = tmp[s]; 
 				v[["R.version"]] = str.trim(str.replace("R","",tmp[s]));
 				}
-			d = check.date(tmp); s = v.find(tmp, d)[1];
+			s = v.find(tmp, check.date(tmp) )[1];
 			if(!is.null(s)) 
 				{ 
 				v[["date"]] = tmp[s];
 				}			
-			w = str.contains("win", tmp); s = v.find(tmp, d)[1];
+			s = v.find(tmp, str.contains("win", tmp))[1];
 			if(!is.null(s)) 
 				{ 
 				v[["win"]] = tmp[s];
 				}
-			m = str.contains("ming", tmp);  s = v.find(tmp, d)[1];
+			s = v.find(tmp, str.contains("ming", tmp))[1];
 			if(!is.null(s)) 
 				{ 
 				v[["ming"]] = tmp[s];
 				}
+				
+			s = v.find(tmp, str.contains("tap", tmp))[1];
+			if(!is.null(s)) 
+				{ 
+				v[["tap"]] = tmp[s];
+				}	
+				
+				
 			out[[key]] = v; 
 			next;
 			}
 		
-		if(.key == "suggests")
+		if(.key == "suggests" || .key == "depends" || .key == "imports")
 			{
 			tmp = str.removeWhiteSpace(str.explode(",", val));
 			tmp2 = str.explode("(", tmp);
@@ -178,8 +188,141 @@ dcf.parse = function(dcfstr)
 			next;
 			}
 		
+		if(.key == "url" || .key == "bugreports" || .key == "urlnote"|| .key == "additional_repositories" || .key == "urlnote")
+			{
+			# idx = rand(1, length(all.vals$pkg)); val = all.vals$val[idx]; all.vals$pkg[idx]; val;
+			# "dendextend"
+			# "multcomp"
+
+			tmp = str.removeWhiteSpace(str.explode(",", val));
+			# "antiword" ... missing a comma
+			tmp2 = unlist(str.explode(" ", tmp));
+			u = check.url(tmp2);
+			
+			s = v.find(tmp2, u );
+			ns = v.find(tmp2, !u );
+			if(!is.null(s)) 
+				{ 
+				ukey = tmp2[s];
+				if(!is.null(ns)) 
+					{
+					uval = tmp2[ns];
+					ukey = property.set("more", ukey, uval);
+					# names(ukey) = uval;
+					}
+				}			
+				# ukey;
+				
+				
+			out[[key]] = ukey;
+			}
+		
+		if(.key == "author" || .key == "maintainer" || .key == "contact"|| .key == "authors@r")
+			{
+			people = NULL;
+			# idx = rand(1, length(all.vals$pkg)); val = all.vals$val[idx]; all.vals$pkg[idx]; val;
+			
+			is.complete = FALSE;
+			# "viridisLite"
+			if(str.contains("]", val))
+				{
+				tmp = str.removeWhiteSpace(val);
+				if(str.contains("] (", val))
+					{
+					tmp = str.replace(")","]", tmp);
+					}
+				# ] (
+				# "viridisLite"
+				tmp = str.replace("] ,", "],", tmp);
+				tmp2 = str.explode("],", tmp);
+				tmp3 = str.explode("[", tmp2);
+				tmp3 = check.list(tmp3);
+					
+				np = length(tmp3);
+				people = vector("list", np);
+				for(j in 1:np)
+					{
+					rec = tmp3[[j]];
+					pname = str.trim(rec[1]);
+					rvals = str.trim(str.replace("]","", str.explode("," , rec[2])));
+					rlen = length(rvals);
+					rlast = rvals[rlen];					
+					rurl = NULL;
+					e = str.between(rlast, keys=c("<",">"));
+					if(!is.na(e))
+						{
+						rurl = e;
+						rlast = str_replace(paste0("<",e,">"), "", rlast);
+						rlast = str.replace("(", "", rlast);
+						}
+					cwhat = NULL;
+					if(str.contains("(", rlast))
+						{
+						paren = str.explode("(", rlast);
+						if(!is.na(paren[2])) { cwhat = paren[2]; }
+						rlast = str.trim(paren[1]);
+						}
+						
+					rlast = str.trim(rlast);
+					rvals[rlen] = rlast;
+					
+					people[[j]] = list("name" = pname, "roles" = rvals);
+					if(!is.null(rurl)) { people[[j]]$url = rurl; }
+					if(!is.null(cwhat)) { people[[j]]$more = cwhat; }
+					}
+				is.complete = TRUE;
+				}
+			
+			# readr 
+			#  RStudio [cph, fnd], https://github.com/mandreyel/ [cph] (mio library), 
+			# Jennifer Bryan [aut, cre] (<https://orcid.org/0000-0002-6983-2759>),
+			
+			# "scatterplot3d"
+			# "Uwe Ligges <ligges@statistik.tu-dortmund.de>, Martin Maechler, Sarah Schnackenberg"
+			
+			## TODO :: "uuid"
+			## Simon Urbanek <Simon.Urbanek@r-project.org> (R package), Theodore Ts'o <tytso@thunk.org> (libuuid)
+			## ... almost a left-to-right reader ... 
+			## start reading ... PNAME ... [ ... roles ... <  ... email ... ( ... more or ORC url 
+			## ? person 
+			## http://127.0.0.1:19165/library/utils/html/person.html
+			## keys of roles ... 
+			if(!is.complete)
+				{
+				tmp = str.removeWhiteSpace(val);
+				tmp = str.explode("," , tmp);
+				np = length(tmp);
+				people = vector("list", np);
+				for(j in 1:np)
+					{
+					rec = tmp[[j]];
+					
+					pname = rec;
+					email = NULL;
+					
+					e = str.between(rec, keys=c("<",">"));
+					if(!is.na(e))
+						{
+						pname = str_replace(paste0("<",e,">"), "", pname);
+						email = e;
+						}
+						
+					people[[j]] = list("name" = str.trim(pname) );	
+					if(!is.null(email)) { people[[j]]$email = email; }
+					}
+				}
+					
+dput(people);	
+			
+			# A, B <email>, and C 
+			# A and B 
+			# A [rol,rol] (http orc), B [rol]
+			
+			out[[key]] = people;
+			}
+		
 		# DEFAULT
-		out[[key]] = val;
+		out[[key]] = str.removeWhiteSpace(val);
 		}
 	
 	## find URLs, find EMAILs, <email> prefered 
