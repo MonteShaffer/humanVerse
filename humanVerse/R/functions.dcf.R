@@ -376,8 +376,8 @@ stop("monte");
 	tmp2 = unlist(str.explode(" ", tmp));
 	u = check.url(tmp2);
 	
-	s = v.find(tmp2, u );
-	ns = v.find(tmp2, !u );
+	s = v.which(tmp2, u );
+	ns = v.which(tmp2, !u );
 	if(!is.null(s)) 
 		{ 
 		ukey = tmp2[s];
@@ -423,29 +423,29 @@ if(debug)
 	{
 print(tmp);
 	}
-	s = v.find(tmp, str.contains("R", tmp) )[1];
+	s = v.which(tmp, str.contains("R", tmp) )[1];
 	if(!is.null(s)) 
 		{ 
 		v[["R.raw"]] = tmp[s]; 
 		v[["R.version"]] = str.trim(str.replace("R","",tmp[s]));
 		}
-	s = v.find(tmp, check.date(tmp) )[1];
+	s = v.which(tmp, check.date(tmp) )[1];
 	if(!is.null(s)) 
 		{ 
 		v[["date"]] = tmp[s];
 		}			
-	s = v.find(tmp, str.contains("win", tmp))[1];
+	s = v.which(tmp, str.contains("win", tmp))[1];
 	if(!is.null(s)) 
 		{ 
 		v[["win"]] = tmp[s];
 		}
-	s = v.find(tmp, str.contains("ming", tmp))[1];
+	s = v.which(tmp, str.contains("ming", tmp))[1];
 	if(!is.null(s)) 
 		{ 
 		v[["ming"]] = tmp[s];
 		}
 		
-	s = v.find(tmp, str.contains("tap", tmp))[1];
+	s = v.which(tmp, str.contains("tap", tmp))[1];
 	if(!is.null(s)) 
 		{ 
 		v[["tap"]] = tmp[s];
@@ -497,14 +497,14 @@ dcf.uniqueVals = function(key="Built",
 	{
 	res = list();
 	h = help.parseFromLibrary(); str(h); dcf = .%$$%("h@dcf"); str(dcf);
-	s = v.find(dcf$keys, key);
+	s = v.which(dcf$keys, key);
 	if(!is.null(s)) { res = list.update(res, "base", dcf$values[s]); }
 	n = length(pkgs);
 	for(i in 1:n)
 		{
 		pkg = pkgs[i];
 		h = help.get(pkg); dcf = dcf.parse( h$info[[1]] );
-		s = v.find(dcf$keys, key);
+		s = v.which(dcf$keys, key);
 		if(!is.null(s)) { res = list.update(res, pkg, dcf$values[s]); }
 cat("\n", "\t ", i, " of ", n, "\t package:", pkg," ... ", length(res), "\n");
 flush.console();

@@ -236,11 +236,17 @@ function.findPackages = function(fns, ... )
 # function.info("+")
  
 # THIS IS UNIVARIATE 
+# https://realpython.com/python-refactoring/
 
 # 
-function.info = function(...)
+function.info = function(..., character.only=FALSE)
 	{
-	fn.str = str.fromObjectName(...);
+	if(character.only) 
+		{ 
+		fn.str = unlist(list(...)); 
+		} else {
+				fn.str = str.fromObjectName(...);
+				}
 debug = FALSE;
 	fn.obj = suppressError( match.fun(fn.str), show.notice=debug, msg="debug function.info match.fun(fn.str)");
 	if(is.error(fn.obj)) { return(NULL); }
@@ -272,9 +278,13 @@ debug = FALSE;
 						"types" = ftypes
 					);
 		
+		pdf = as.data.frame( cbind(params$keys, params$values, params$types) );
+			rownames(pdf) = NULL;
+			colnames(pdf) = c("keys", "values", "types");
+			
 		res = list(	"fn.scope" = e,
 					"primitive" = p,
-					"params" = params, 
+					"params" = pdf,
 					"body" = b, "source" = s 
 					);
 		res = property.set("fn.name", res, fn.str);
@@ -308,29 +318,20 @@ if(debug)
 	
 	processOneFunction = function(fn.str)
 		{
-		fn.info = function.info(fn.str);
-		f = fn.info$param 
-			if(is.null(f)) { return(NULL); }	
-			if( !(param %in% names(f) ) ) { return(NULL); }
-			
-if(debug) 
-	{ 
-	cat("\n STAGE 3 \n");
-	print( f[[param]] );	
-	}		
-
-			row = switch(toupper(as.character(json.value)),
-					  "TRUE"	= c(pkg, w, fn.str, JSON.stringify(f[[param]]) ),
-				c(pkg, w, fn.str, as.character(f[[param]]) )	# DEFAULT				# DEFAULT [lower-case]
-				);
-
-			return(row);
-			}
-		return(NULL);
+		fn.info = function.info(fn.str, character.only=TRUE);
+		f = fn.info$param; 
+		if(is.null(f)) { return(NULL); }	
+		if( !(param %in% names(f) ) ) { return(NULL); }
+				
+		DO_JSON = substring(toupper(as.character(json.value)), 1, 1);
+		row = switch(DO_JSON,
+						"T"	= c(pkg, w, fn.str, JSON.stringify(f[[param]]) ),
+					c(pkg, w, fn.str, as.character(f[[param]]) )	# DEFAULT
+					);
+		return(row);
 		}
 	
-	df = NULL;
-	
+	df = NULL;	
 	## LOOP OVER PACKAGES
 	if(!is.null(packages))
 		{
@@ -353,6 +354,7 @@ if(debug)
 			}		
 		}
 	
+	pkg = NULL;
 	if(include.ls)
 		{
 		# let's process regular ls()
@@ -380,9 +382,10 @@ if(debug)
 	
 	print( summary );
 	
-	attr(df, "param") = param;
-	attr(df, "packages") = c(packages, pkg);
-	attr(df, "summary") = summary;
+	df = property.set("param", df, param);
+	df = property.set("packages", df, c(packages, pkg) );
+	df = property.set("summary", df, summary);
+
 	invisible(df);
 	}
 

@@ -159,16 +159,17 @@ num.constants = function(envir=parent.env(environment()))
 # ord("×");
 # chr(215);
 	
-	assign("EXP_UTF", utf, envir=envir);
+	# assign("EXP_UTF", utf, envir=envir);
 	}
 
 
 
-num.toScientific = function(x, ... )
+num.toScientific = function(x, ..., force.scale=0 )
 	{
 	# follow same logic as toENG 
 	# maybe wrap ... INSIDE with force = 7 and override
 	# x.sci = format(x, scientific=TRUE, digits=signif.digits);
+	num.toEngineering(x, ..., force.scale=force.scale, show.what="exp", method="Scientific");
 	}
 
 num.toSci = num.toScientific;
@@ -176,11 +177,32 @@ num.toSCI = num.toScientific;
 
 "%SCI%" = function(x, r=NULL) { num.toScientific(x); }
 
+
+
+
+num.toNatural = function(x, part="Re")
+	{
+	# aligns on decimal as-is 
+	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
+op = options();
+options(scipen = 999);
+	x = math.cleanup(x);
+	# n = length(x); 
+	x.char = as.character(x);
+options(op);
+	# decimal align ... 
+	maxlen = max(str.len(x.char));
+	num.toFixed(x, total.width = maxlen, part=part);	
+	}
+	
+num.toNat = num.toNatural;
+num.toNAT = num.toNatural;
+
+# how to deal with COMPLEX in formatter?
 # will return more if necessary ... too big ... 
-num.toFixed = function(x, ..., total.digits = 7, part="Re")
+num.toFixed = function(x, total.width = 7, part="Re")
 	{
 	# fixed format 
-	x = dots.addTo(x, ...); 
 	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
 op = options();
 options(scipen = 999);
@@ -190,27 +212,40 @@ options(scipen = 999);
 options(op);
 	# decimal align ... 
 	
-	x.info = str.split(".", x.char);
-	numb = list.getElements(x.info, 1);
-	frac = list.getElements(x.info, 2);
+	if(any(str.contains(".", x.char)))
+		{
+		x.info = str.split(".", x.char);
+		numb = list.getElements(x.info, 1);
+		frac = list.getElements(x.info, 2);
+		frac = v.naTo(frac, "0");
+		} else {
+				x.info = x.char;
+				numb = x.info;
+				frac = NULL;
+				}
 	
-	numblen = max(str.len(numb));
-	fraclen = max(str.len(frac));
 	
-	numb = str.pad(numb, numblen, " ", "LEFT");
+	fmax = 0;
+	if(!is.null(frac))
+		{
+		fmax = max(str.len(frac));
+		}		
+	nmax = max(str.len(numb));
+	
+	numb = str.pad(numb, nmax, " ", "LEFT");
 	numb = paste0(numb);
 	
-	numblen = max(str.len(numb));
-	remaining = total.digits - numblen - 1;  # -1 for period 
-	if(remaining < 1)
+	nmax.new = max(str.len(numb));
+	remaining = total.width - nmax.new - 1;  # -1 for DECIMAL_POINT 
+	if(remaining < 1 || is.null(frac))
 		{
 		return(numb);
 		}
 	
+	## not null on frac 
 	frac = substring(str.pad(frac, remaining, "0", "RIGHT"), 1, remaining);
 	
-	# if(str.contains(".") is FALSE, then what ???) 
-	## ALL BIG NUMBERS, FORCE to wider with WARNING
+	## ALL BIG NUMBERS, FORCE to wider with WARNING ?
 	paste0(numb, ".", frac);
 	}
 
@@ -229,7 +264,7 @@ num.toFIX = num.toFixed;
 # num.toEng(x, show.what="exp", e=" * 10 ^ ");
 # num.toEng(x, show.what="exp", e=" × 10^", e.pos="+", e.zero="0");
 # num.toEng(x, show.what="exp", e=paste0(" ",chr(215)," 10^"), e.pos="+", e.zero="+");
-num.toEng(x, show.what="exp", e=" ᴱ", e.pos="+",e.zero="0");
+# num.toEng(x, show.what="exp", e=" ᴱ", e.pos="+",e.zero="0");
 # https://unicode-table.com/en/sets/superscript-and-subscript-letters/
 # str.replace(NUMS, with UNICODE small ... also hyphen and plus)
 
@@ -251,7 +286,6 @@ num.toEngineering = function(x,
 									signif.digits = 7,
 									units="m",
 									show.what = "units-symbol",
-									by = 3,
 									method="Engineering",
 									force.scale = FALSE,
 									use.utf = FALSE,
@@ -276,86 +310,55 @@ cat("\n METHOD ", METHOD, "\n");  # [E]ngineering or [S]cientific
 	n = length(x);	
 	
 op = options();
-options(scipen = 0);
-	x.char = as.character(x);  # this is the real value
-options(op);
+options(scipen = -999);
+
 	
 	# https://stat.ethz.ch/pipermail/r-help/2006-July/108808.html				
 	x.sci = format(x, scientific=TRUE, digits=signif.digits);
-	x.info = str.split("e", x.sci);
-		wh = as.numeric( list.getElements(x.info, 1) );
-		ex = as.numeric( list.getElements(x.info, 2) );
+	x.exp = str.split("e", x.sci);
+		wh = as.numeric( list.getElements(x.exp, 1) );
+		ex = as.integer( list.getElements(x.exp, 2) );
 
+options(op);
 
 ## I need to RESCALE ON force.by BEFORE I do the character thing ...
 ## two loops? of SCI 
+## fractions are changing ... maybe set scipen=999 to do this???
 
 ## if "ENG" and force.by ... maybe FORCE all numbers to that SCALE
 	if(METHOD == "E")
-		{
-		# any multiples of 3 
-		if(!force.scale)
+		{		
+		if(is.numeric(force.scale))
 			{
-			nwh = wh*10^(ex %% 3);
-			nex = as.integer(ex-(ex %% 3));
+			b = as.integer(force.scale); # this needs to be a multiple of 3
+			b = num.round(b, 3, "integer");
+			de = as.integer(f - b); # this is delta 
+			nex = nwh*0 + b;				
+			# if currently is 0 and needs to be 6, much smaller 
+			nwh = w*10^(de);
 			} else {
-					b = as.integer(by); # this needs to be a multiple of 3
-					b = num.round(b, 3, "integer");
-					de = as.integer(f - b); # this is delta 
-					nex = nwh*0 + b;				
-					# if currently is 0 and needs to be 6, much smaller 
-					nwh = w*10^(de);
+					# any multiples of 3 
+					nwh = wh*10^(ex %% 3);
+					nex = as.integer(ex-(ex %% 3));					
 					}
 		}
 	if(METHOD == "S")
 		{
-		if(!force.scale)
+		if(is.numeric(force.scale))
 			{
-			b = as.integer(by);
-			# SCI is whatever
-			## THIS is what SCI wants ... 
-			nwh = wh*10^(ex %% b);
-			nex = as.integer(ex-(ex %% b));
-			} else {
-					b = as.integer(by); # this can be WHATEVER
-					de = as.integer(f - b); # this is delta 
-					nex = nwh*0 + b;					
-					# if currently is 0 and needs to be 6, much smaller 
-					nwh = wh*10^(de);
+			b = as.integer(force.scale); # this can be WHATEVER
+			de = as.integer(f - b); # this is delta 
+			nex = nwh*0 + b;					
+			# if currently is 0 and needs to be 6, much smaller 
+			nwh = wh*10^(de);
+			} else {				
+					nwh = wh;
+					nex = ex;					
 					}
 		}
 
 
-#nwh as newWHOLE (with decimals)
-#nex as newEXP (exponential part)
 
-	idx = set.match(nex, SI_PREFIX$SI.idx);
-	# NA are empty, base UNIT 
-	
-	# prefix.as.symbol = TRUE, ... if symbol, SI.symbol else SI.name
-	add.name = SI_PREFIX$SI.name[idx]; 
-		add.len = max(str.len(add.name), na.rm=TRUE);
-	add.name = v.naTo(add.name, " ");
-	add.name = str.pad(add.name, add.len, " ", "LEFT");
-	
-	add.symbol = SI_PREFIX$SI.symbol[idx];
-		add.len = max(str.len(add.symbol), na.rm=TRUE);
-	add.symbol = v.naTo(add.symbol, " ");
-	add.symbol = str.pad(add.symbol, add.len, " ", "LEFT");
-	
-	x.more = str.explode(".", as.character(nw));
-	whol = list.getElements(x.more, 1);
-	frac = list.getElements(x.more, 2);
-	frac = v.naTo(frac, "0");
-	
-	whol.min = min( abs( as.numeric(whol) ) );
-	wlen = str.len(whol);
-	wmax = max(wlen);
-	whole = str.pad(whol, wmax, " ", "LEFT");
-	fract = str.pad(frac, digits.remaining, "0", "RIGHT");
-	# need to truncate if too long 
-	fract = substring(fract, 1, digits.remaining); # strwidth in R (strtrim?)
-	
 	e.sign = math.sign(nex, return="character", 
 							zero=e.zero, pos=e.pos, neg=e.neg);
 	e.pre  = str.pad(e.sign, 1, " ", "LEFT");
@@ -366,16 +369,65 @@ options(op);
 	.exp = paste0(e, e.pre, .ex);
 	
 	
+#nwh as newWHOLE (with decimals)
+#nex as newEXP (exponential part)
+
+	idx = set.match(nex, SI_PREFIX$SI.idx);
+	# NA are empty, base UNIT 
+	
+	# prefix.as.symbol = TRUE, ... if symbol, SI.symbol else SI.name
+	add.name = SI_PREFIX$SI.name[idx]; 
+	add.name = v.naTo(add.name, " ");
+		add.len = max(str.len(add.name), na.rm=TRUE);	
+	add.name = str.pad(add.name, add.len, " ", "LEFT");
+	
+	add.symbol = SI_PREFIX$SI.symbol[idx];
+	add.symbol = v.naTo(add.symbol, " ");
+		add.len = max(str.len(add.symbol), na.rm=TRUE);	
+	add.symbol = str.pad(add.symbol, add.len, " ", "LEFT");
+	
+	x.char = as.character(nwh);
+	if(any(str.contains(".", x.char)))
+		{
+		x.info = str.split(".", x.char);
+		numb = list.getElements(x.info, 1);
+		frac = list.getElements(x.info, 2);
+		frac = v.naTo(frac, "0");
+		} else {
+				x.info = x.char;
+				numb = x.info;
+				frac = NULL;
+				}
+				
+	whol = numb;
+	
+	whol.max = max( abs( as.numeric(whol) ) );
+	wmax = str.len(whol.max);  # -sign isn't SIGNIF DIGITS
+	wneg = any(is.negative(as.numeric(whol))); 
+	whole = str.pad(whol, (wmax+wneg), " ", "LEFT");
+	digits.remaining = signif.digits - wmax - e.pad; # COUNTING EXP as SIGNIF DIGITS
+	
+	fmax = 0;
+	if(!is.null(frac))
+		{
+		fract = str.pad(frac, digits.remaining, "0", "RIGHT");
+		# need to truncate if too long 
+		fract = substring(fract, 1, digits.remaining); # strwidth in R (strtrim?)
+		fmax = max(str.len(fract));
+		}
+	
 		# DEFAULT		# [u]nits-[s]ymbol ... mm
 						# [u]nits-[n]ame   ... millim  (change units="meter")
 						# [e]xponential    ... no [mm] or [millimeter]
 
 	
+	stem = whole;
+	if(fmax > 0) { stem = paste0(stem, ".", fract); }
 	res = switch(SHOW_WHAT,					  			
-					  "u-s" = paste0(whole, ".", fract, " ", add.symbol, units),
-					  "u-n"	= paste0(whole, ".", fract, " ", add.name, units),	
-					  "e"  	= paste0(whole, ".", fract, .exp),				
-				paste0(whole, ".", fract, " ", add.symbol, units)	# DEFAULT
+					  "u-s" = paste0(stem, " ", add.symbol, units),
+					  "u-n"	= paste0(stem, " ", add.name, units),	
+					  "e"  	= paste0(stem, .exp),				
+				paste0(stem, " ", add.symbol, units)	# DEFAULT
 				);				
 	return(res);	
 	}

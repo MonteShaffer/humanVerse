@@ -23,9 +23,19 @@ v.naTo = function(vec, to="")
 	
 v.naTO = v.naTo;
 
-v.find = function(vec, what="")
+
+
+v.between = function(vec, lower, upper, sort = TRUE, ...)
 	{
-	idx = v.which(vec, what=what);
+	if(sort) { sort(vec, ...); }
+	idx = v.return( which(vec >= lower & vec <= upper) );
+	if(is.null(idx)) { return(NULL); }
+	vec[idx];
+	}
+
+v.return = function(idx)
+	{
+	if(is.null(idx)) { return(NULL); }
 	if(length(idx) == 0) { return(NULL); }
 	idx;	
 	}
@@ -45,21 +55,21 @@ v.which = function(vec, what="")
 						idx = which(what == TRUE);	
 						}
 					}
-		return(idx);
+		return(v.return(idx));
 		}
 	if(is.character(what))
 		{
 		idx = which(vec == what);
-		return(idx);
+		return(v.return(idx));
 		}
 	if(is.na(what))
 		{
 		idx = which(is.na(vec));
-		return(idx);
+		return(v.return(idx));
 		}
 	## DEFAULT
 	idx = which(vec == what);
-	return(idx);
+	return(v.return(idx));
 	}
 
 # this is univariate

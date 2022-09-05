@@ -92,10 +92,10 @@ date.formatter = function(envir=parent.env(environment()))
 	{
 	# below will work generally, but ctype = "Papal" or "British" or "French" define a calendar
 	# YYYY=YYYYg j x , MM n nn , WW[1-4], DOW[1-2] n nn, DOY  
-	internal = c("YYYY", "MM", "DD", "WW", "DOW", "DOY", "hh", "mm", "ss"
-	posix = list(
-	php 
-	mysql 
+	# internal = c("YYYY", "MM", "DD", "WW", "DOW", "DOY", "hh", "mm", "ss"
+	# posix = list(
+	# php 
+	# mysql 
 	
 	}
 

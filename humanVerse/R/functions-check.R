@@ -7,7 +7,7 @@ check.url = function(urls, ...)
 	(grepl("(https?|ftp)://[^\\s/$.?#].[^\\s]*", urls));
 	}
 
-regex.url = functions(urls, ...)
+regex.url = function(urls, ...)
 	{
 	urls = dots.addTo(urls, ...);
 	
