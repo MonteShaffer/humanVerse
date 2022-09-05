@@ -332,7 +332,7 @@ options(op);
 			{
 			b = as.integer(force.scale); # this needs to be a multiple of 3
 			b = num.round(b, 3, "integer");
-			de = as.integer(f - b); # this is delta 
+			de = as.integer(ex - b); # this is delta 
 			nex = nwh*0 + b;				
 			# if currently is 0 and needs to be 6, much smaller 
 			nwh = w*10^(de);
@@ -347,7 +347,7 @@ options(op);
 		if(is.numeric(force.scale))
 			{
 			b = as.integer(force.scale); # this can be WHATEVER
-			de = as.integer(f - b); # this is delta 
+			de = as.integer(ex - b); # this is delta 
 			nex = nwh*0 + b;					
 			# if currently is 0 and needs to be 6, much smaller 
 			nwh = wh*10^(de);
