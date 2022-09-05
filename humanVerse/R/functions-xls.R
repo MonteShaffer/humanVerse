@@ -1,4 +1,6 @@
 
+# https://bert-toolkit.com/
+
 xls.AVERAGE = function(x, na.rm=TRUE, show.warning=TRUE)
 	{ 
 	warning = stats.warningNA(x, show.warning=show.warning);
@@ -110,6 +112,203 @@ xls.PERMUT = function(n, r)
 	{
 	n %nPr% r;	
 	}
+	
+xls.T.DIST = function(x, df, cdf=TRUE)
+	{
+	if(cdf) 	{ return(pt(x, df)); }  # cdf 
+	if(!cdf) 	{ return(dt(x, df)); }  # pdf 	
+	}
+	
+xls.T.DIST.2T = function(x, df)
+	{
+	2*pt(x, df, lower.tail=FALSE);	
+	}
+	
+xls.T.DIST.RT = function(x, df)
+	{
+	pt(x, df, lower.tail=FALSE);	
+	}
+	
+xls.T.INV = function(prob, df)
+	{
+	qt(prob, df);
+	}
+	
+xls.T.INV.2T = function(prob, df)
+	{
+	qt(prob/2, df);
+	}
+	
+	
+xls.T.TEST = function(x, y, tails=1, type=1)
+	{
+	paired = FALSE; 	if(type == 1) { paired = TRUE; }
+	var.equal = TRUE; 	if(type == 3) { var.equal = FALSE; }
+	alternative = "two.sided"; if(tails == 1) { alternative = "less"; } # or greater ?
+	# alternative ... a character string specifying the alternative hypothesis, must be one of "two.sided" (default), "greater" or "less". You can specify just the initial letter
+	
+	res = t.test(x, y, alternative = alternative, paired = paired, var.equal = var.equal);
+	res$p.value;
+	}
+	
+## not directly fns in EXCEL but needed to do "HW"
+xls.TCRIT.SAMPLE = function(x, mu=0, ...)
+	{
+	# t-critical from data ...  ( HO mu - mean(x) ) / ( sd.p(x) / sqrt(n))
+	x.bar = xls.AVERAGE(x, ...);
+	s.hat = xls.STDEV.S(x, ...);
+	n     = xls.COUNT(x, ...);  # mu = 1 has test.stat of 4.1 
+	xls.TCRIT2.SAMPLE(x.bar, mu, s.hat, n);
+	## 2* (1-pt(t.crit, n-1)) ... to match t.test(df$x) output
+	## xls.T.DIST.2T(t.crit, n-1) ... 
+	}
+	
+xls.TCRIT2.SAMPLE = function(x.bar, mu=0, s.hat, n)
+	{
+	# t-value from data ...  ( HO mu - mean(x) ) / ( sd.p(x) / sqrt(n))
+	(x.bar - mu) / (s.hat/sqrt(n));
+	#  ( mean(df$x) - 1 ) / (sd(df$x)/sqrt(n))
+	}
+	
+# df = structure(list(x = c(3, 4, 5, 8, 9, 1, 2, 4, 5), y = c(6, 19, 3, 2, 14, 4, 5, 17, 1)), row.names = c(NA, -9L), class = "data.frame")	
+	
+	
+res$moments = list();
+		for(i in 0:5)
+			{
+			mo = paste0("m",i);
+			res$moments[[mo]] = sum(t.mean.d^i)/n2;
+			}
+	
+	
+xls.SKEW = function(x, ...)
+	{
+	n = xls.COUNT(x, ...);
+	x.bar = xls.AVERAGE(x, ...);
+	x.dev = (x - x.bar);
+	
+	# See stats.summary(x) for more info about moments 
+	m2 = sum(x.dev ^2)/n;
+	m3 = sum(x.dev ^3)/n;
+	
+	# G1
+	skew.g1 = m3 / ( (m2)^(3/2) );
+	skew.G1 = skew.g1 * sqrt(n * (n-1)) / (n - 2) ;
+	skew.b1 = skew.g1 * ((n-1)/n) ^ (3/2);
+
+	skew.G1;
+	}
+	
+	
+	
+	
+xls.KURT = function(x, ...)
+	{
+	n = xls.COUNT(x, ...);
+	x.bar = xls.AVERAGE(x, ...);
+	x.dev = (x - x.bar);
+	
+	# See stats.summary(x) for more info about moments 
+	m2 = sum(x.dev ^2)/n;
+	m4 = sum(x.dev ^4)/n;
+	
+	# G2 
+	kurt.g2 = m4 / (m2)^2 - 3;
+	kurt.G2 = ((n+1)*kurt.g2 + 6)*(n-1)/((n-2)*(n-3));
+	kurt.b2 = (kurt.g2 + 3) * (1 - 1/n)^2 - 3;
+
+	kurt.G2;
+	}	
+
+
+xls.AVEDEV = function(x, ...)
+	{
+	n = xls.COUNT(x, ...);
+	x.bar = xls.AVERAGE(x, ...);
+	x.dev = (x - x.bar);
+	 
+	xls.AVERAGE( xls.ABS(x.dev), ... );
+	}
+	
+xls.ABS = function(x)
+	{
+	abs(x);
+	}
+	
+	
+xls.COVARIANCES.S = function(x, y, ...)
+	{
+	cov(x,y);
+	}
+	
+xls.COVARIANCES.P = function(x, y, ...)
+	{
+	nx = xls.COUNT(x, ...);
+	ny = xls.COUNT(y, ...);  # equal lengths N (nx == ny == N)
+	cov.s = cov(x,y);
+	cov.s*(nx-1)/nx;
+	}
+	
+	
+xls.CORREL = function(x, y, ...)
+	{
+	cor(x,y);
+	}
+
+
+xls.AVERAGEIF = function(data, group="Sex")
+	{
+	data[[group]] = as.factor(data[[group]]); 
+	group.keys = unique(data[[group]]);		# Male, Female 
+	
+	
+	data.keys = set.diff( colnames(data), group ); # all keys BUT group 
+													# must be numeric 
+	
+	ngroups = length(group.keys);
+	ncolumns = length(data.keys);
+	result = NULL;
+	for(i in 1:ngroups)
+		{
+		row = NULL;
+		data.sub = subset(data, data[[group]] == group.keys[i]);
+		for(j in 1:ncolumns)
+			{
+			data.key = data.keys[j];
+			cdata = data.sub[[data.key]];
+			cdata = as.numeric(cdata);
+			cmean = mean(cdata);
+			row = c(row, cmean);			
+			}
+		result = rbind(result, row)
+		}
+		
+	result = as.data.frame(result);
+		rownames(result) = group.keys;
+		colnames(result) = data.keys;
+	result;
+	}
+ 
+ # pip( xls.AVERAGEIF(data,"Sex"), show.row.names=TRUE, number.format="Fixed: total.width=5")fs # data = structure(list(Sex = structure(c(1L, 2L, 1L, 2L, 1L, 2L, 2L, 2L, 1L, 1L, 1L, 1L, 2L, 2L, 1L, 2L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 2L, 2L, 1L, 2L), levels = c("Female", "Male"), class = "factor"), Clothing = c(246, 171, 95, 125, 368, 148, 48, 147, 91, 324, 258, 79, 84, 48, 399, 126, 364, 306, 94, 315, 217, 14, 176, 351, 348, 14, 67, 335, 144), Health = c(185, 78, 15, 16, 100, 139, 74, 108, 46, 80, 142, 55, 146, 48, 174, 29, 69, 118, 12, 18, 168, 127, 24, 159, 113, 174, 140, 11, 90), Tech = c(64, 345, 47, 493, 82, 347, 108, 532, 86, 12, 92, 13, 522, 383, 94, 462, 40, 92, 12, 57, 91, 10, 81, 11, 26, 525, 579, 23, 560), Misc = c(75, 10, 90, 13, 109, 107, 176, 146, 182, 51, 119, 296, 184, 61, 25, 74, 208, 242, 54, 138, 67, 226, 123, 291, 204, 183, 72, 200, 149)), row.names = c(NA, -29L), class = "data.frame");
+
+xls.UNIQUE = function(x)
+	{
+	unique(x);
+	}
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # xls.COMBINE = function(n, r) {}

@@ -538,7 +538,7 @@ stats.summary = function(x, type=1, sort.ASC = FALSE,
 					
 					
 		t.mean.d = xx - res$base$mean;
-	res$extended = list(
+	res$extended = list( 
 						"mean.deviation" = t.mean.d,
 						"mean.mad" 	= mean( abs( t.mean.d ) ),
 						"mean.se"	= ( res$base$sd.p / sqrt(n2) ),
@@ -635,8 +635,8 @@ stats.summary = function(x, type=1, sort.ASC = FALSE,
 
 	skew.g1 = res$moments$m3 / ( (res$moments$m2)^(3/2) );
 	skew.G1 = skew.g1 * sqrt(n2 * (n2-1)) / (n2 - 2) ;
-	skew.b1 = skew.g1 * ((n2-1)/n) ^ (3/2);
-	
+	skew.b1 = skew.g1 * ((n2-1)/n2) ^ (3/2);
+	 
 	res$skewness = list(
 						"g1" = skew.g1,
 						"G1" = skew.G1,

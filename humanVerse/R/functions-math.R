@@ -325,6 +325,7 @@ options(op);
 ## two loops? of SCI 
 ## fractions are changing ... maybe set scipen=999 to do this???
 
+
 ## if "ENG" and force.by ... maybe FORCE all numbers to that SCALE
 	if(METHOD == "E")
 		{		
@@ -332,10 +333,10 @@ options(op);
 			{
 			b = as.integer(force.scale); # this needs to be a multiple of 3
 			b = num.round(b, 3, "integer");
-			de = as.integer(ex - b); # this is delta 
-			nex = nwh*0 + b;				
+			de = as.integer(ex - b); # this is delta							
 			# if currently is 0 and needs to be 6, much smaller 
 			nwh = w*10^(de);
+			nex = nwh*0 + b;
 			} else {
 					# any multiples of 3 
 					nwh = wh*10^(ex %% 3);
@@ -347,17 +348,15 @@ options(op);
 		if(is.numeric(force.scale))
 			{
 			b = as.integer(force.scale); # this can be WHATEVER
-			de = as.integer(ex - b); # this is delta 
-			nex = nwh*0 + b;					
+			de = as.integer(ex - b); # this is delta 							
 			# if currently is 0 and needs to be 6, much smaller 
 			nwh = wh*10^(de);
-			} else {				
+			nex = nwh*0 + b;	
+			} else {	
 					nwh = wh;
 					nex = ex;					
 					}
 		}
-
-
 
 	e.sign = math.sign(nex, return="character", 
 							zero=e.zero, pos=e.pos, neg=e.neg);
