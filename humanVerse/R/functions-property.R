@@ -94,15 +94,19 @@ setAttribute = property.set;
 # has to be "key" first, or "system" has to pass in a NULL
 property.get = function(key, obj, 
 								property.type="attributes",
-								wildcard = "keys-values"
-								
+								wildcard = "keys-values"	
 								)
 	{
-	pt = prep.arg(property.type, 1);
-	w  = prep.arg(wildcard, 1, keep = "-");
+# dput(property.type);  
+	pt = prep.arg(property.type, n=1);
+#dput(wildcard);
+	w  = prep.arg(wildcard, n=1, keep = "-");
+#dput(pt);
 	if(pt == "a")  # attributes
 		{
 		res = attributes(obj)[[key]];
+#dput(obj); 
+#dput(res); 
 		return (res);
 		}
 

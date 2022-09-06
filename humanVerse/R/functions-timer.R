@@ -1,5 +1,13 @@
 
 
+timer.tz = function()
+	{
+	# 
+	tz = Sys.timezone();
+	# doesn't look like tz="GMT" or tz="UTC" works ...in as.POSIXct 
+	
+	}
+
 # https://www.alexejgossmann.com/benchmarking_r/
 # microbenchmark ... C getting to nanoticker ... rbenchmark, one 'R' function by DIRK ... LOL tinyverse 
 # if you want to clear internals, use timer.clear ... or timer.clearALL

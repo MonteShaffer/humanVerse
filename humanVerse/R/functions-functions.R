@@ -16,8 +16,11 @@
 
 # extra = "! #"
 prep.arg = function(key, n=1, keep="", case = "lower", extra = "")
-	{ 
-	key = str.toCase(key, case=case);
+	{  
+	str = str.toCase(key, case=case);
+#dput(key); 
+#dput(str);   
+#dput(extra); 
 	if(extra != "")
 		{
 		n = nchar(extra);  # nchars 
@@ -31,6 +34,8 @@ prep.arg = function(key, n=1, keep="", case = "lower", extra = "")
 		}
 	if(keep != "")
 		{
+#dput(keep);
+#dput(str);  
 		tmp = strsplit(str, keep, fixed=TRUE)[[1]];
 		res = paste0( substring(tmp, 1, n), collapse=keep);
 		return(res);
@@ -48,12 +53,116 @@ functions.cleanKey = prep.arg;
 #' @export
 functions.cleanUpKey = prep.arg;
  
+ 
 
 
+function.arguments = function(return="dots", truncate=NULL)
+	{ 
+	pf = parent.frame(1);
+	fn = as.character(sys.call(1L)[[1L]]);
+	arg.names = ls(envir = pf, all.names = TRUE, sorted = FALSE);
+	
+	dots = list();
+	if("..." %in% arg.names) 
+		{ 
+		dots = eval(quote(list(...)), envir = pf); 
+		}
+	if(!is.null(truncate))
+		{
+		dots = list.truncateLength(dots, truncate);
+		}
+	
+	# remove dots, remaining is main
+	arg.names = sapply(setdiff(arg.names, "..."), as.name)
+	 
+	main = list();
+	if(length(arg.names)) 
+		{
+		# eval here 
+		main = lapply(arg.names, eval, envir = pf)
+		}
+	if(!is.null(truncate))
+		{
+		main = list.truncateLength(main, truncate);
+		}
+	
+	r = prep.arg(return, 1);
+	if(r == "f") { return(fn); }
+	if(r == "p") { return(pf); }
+	if(r == "m") { return(main); }
+	if(r == "d") { return(dots); }
+	# fallback is ALL
+	list("fn" = fn, "pf" = pf, "main" = main, "dots" = dots);
+	}
+	
+	
+f.arguments = f.args = function.arguments;	
 
 
+ 
+function.methods = function(..., character.only=FALSE)
+	{
+	# if from top level, ... works as expected
+	# if calling from another function, specify character.only=TRUE 
+	if(character.only) 
+		{ 
+		fn.str = unlist(list(...)); 
+		} else {
+				fn.str = str.fromObjectName(...);
+				}	
+debug = FALSE;
+	fn.obj = suppressError( methods(fn.str), show.notice=debug, msg="debug function.methods methods(fn.str)");
+	if(is.error(fn.obj)) { return(NULL); }
+	
+	tmp = as.character(fn.obj); if(length(tmp) == 0) { return(NULL); }
+	
+	fn.obj;  
+	}
+
+f.methods = function.methods;
 
 
+function.find = function(..., character.only=FALSE)
+	{
+	# if from top level, ... works as expected
+	# if calling from another function, specify character.only=TRUE 
+	if(character.only) 
+		{ 
+		fn.str = unlist(list(...)); 
+		} else {
+				fn.str = str.fromObjectName(...);
+				}
+				
+	# currently can't specify base::is.function vs GLOBAL::is.function 
+	# whichever is top of stack, unmasked 
+debug = FALSE;
+	## this can't get multiple objects (stats::mean vs pkg::mean)
+	## it returns the one on the stack to be executed from GLOBAL 
+	fn.obj = suppressError( match.fun(fn.str), show.notice=debug, msg="debug function.find match.fun(fn.str)");
+	if(is.error(fn.obj)) { return(NULL); }
+	
+	fn.obj;
+	}
+
+f.find = function.find;
+
+
+function.sourceInfo = function() {}
+function.sourceInfo = function(src.obj, to.rm=c("parseData"))
+	{  
+	keys = names(src.obj);
+	res = NULL;
+	for(key in keys)
+		{  
+		if(key %in% to.rm) { next; }
+		val = src.obj[[key]];
+							# so cat(val); works ...
+		if(key == "lines") { val = paste0( paste0(val, collapse="\n"), "\n\n"); }
+		res[[key]] = val; 
+		# as.character(val);
+		}
+	res;	
+	}
 
 
 
@@ -69,8 +178,9 @@ function.info = function(..., character.only=FALSE)
 				fn.str = str.fromObjectName(...);
 				}
 debug = FALSE;
-	fn.obj = suppressError( match.fun(fn.str), show.notice=debug, msg="debug function.info match.fun(fn.str)");
-	if(is.error(fn.obj)) { return(NULL); }
+dput(fn.str);
+	fn.obj = function.find(fn.str, character.only=TRUE);
+	if(is.null(fn.obj)) { return(NULL); }
 			
 	if(base::is.function(fn.obj))
 		{
@@ -81,8 +191,23 @@ debug = FALSE;
 				p = TRUE;
 				f = suppressWarnings( formals( args(fn.obj) ) );
 				}
-		b = as.character( body( fn.obj ) );
-		s = as.character( property.get("srcref", fn.obj) );
+		b = deparse( body( fn.obj ) );  #  cat(b);
+		b = paste0(paste0(as.character(b), collapse="\n"), "\n\n");
+		
+		m = function.methods(fn.str, character.only=TRUE);
+		if(!is.null(m)) { m = as.character(m); } # as.character(NULL) != NULL 
+		 
+		 ## # "srcref" "srcfile" "wholeSrcref"
+		ss = s = ( property.get("srcref", fn.obj) );
+		if(!is.null(s))
+			{
+			src.info = function.sourceInfo( property.get("srcfile", s) );
+			# this contains ALL lines in the file ... if that was how sourced 
+			# redundant with other functions ... 
+			ss = list(	"info" = src.info, 
+						"code" = paste0(paste0(as.character(s), collapse="\n"), "\n\n")
+					);
+			}
 		# i = functionBody(fn.str);
 		# e = function.findPackages(fn.str);
 		e = find(fn.str); # only searching attached ...
@@ -98,7 +223,7 @@ debug = FALSE;
 						"values" =  as.character(fp), 
 						"types" = ftypes
 					);
-		
+		  
 		pdf = as.data.frame( cbind(params$keys, params$values, params$types) );
 			rownames(pdf) = NULL;
 			colnames(pdf) = c("keys", "values", "types");
@@ -106,10 +231,11 @@ debug = FALSE;
 		res = list(	"fn.scope" = e,
 					"primitive" = p,
 					"params" = pdf,
-					"body" = b, "source" = s 
+					"methods" = m,
+					"body" = b, "source" = ss 
 					);
 		res = property.set("fn.name", res, fn.str);
-		res = property.set("fn.obj", res, fn.obj);
+		res = property.set("fn.obj", res, removeSource(fn.obj) ); 
 		return(res);
 		}
 	return(NULL);

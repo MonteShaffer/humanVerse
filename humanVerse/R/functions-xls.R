@@ -173,14 +173,6 @@ xls.TCRIT2.SAMPLE = function(x.bar, mu=0, s.hat, n)
 # df = structure(list(x = c(3, 4, 5, 8, 9, 1, 2, 4, 5), y = c(6, 19, 3, 2, 14, 4, 5, 17, 1)), row.names = c(NA, -9L), class = "data.frame")	
 	
 	
-res$moments = list();
-		for(i in 0:5)
-			{
-			mo = paste0("m",i);
-			res$moments[[mo]] = sum(t.mean.d^i)/n2;
-			}
-	
-	
 xls.SKEW = function(x, ...)
 	{
 	n = xls.COUNT(x, ...);
@@ -200,7 +192,7 @@ xls.SKEW = function(x, ...)
 	}
 	
 	
-	
+	 
 	
 xls.KURT = function(x, ...)
 	{

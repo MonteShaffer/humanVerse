@@ -62,7 +62,7 @@ cat("\n QUICK: ", sfile, " with idx: ", idx, "\n");
 ## cat("\n", res$myerrors[ res$myerrors != ""], sep="\n" );
  
 ## setwd("C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R")
-## res = include.dir(getwd()); View(res); res$myerrors[ res$myerrors != ""]; fn = ls(); str(fn); View(fn);
+## alex = include.dir(getwd()); View(alex); alex$myerrors[ alex$myerrors != ""]; fn = ls(); str(fn); View(fn);
 
 
 include.dir = function() {}

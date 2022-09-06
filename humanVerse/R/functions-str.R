@@ -311,7 +311,7 @@ str.fromMD5 = function(str, times=1, method="digest", ...)
 #'
 #' str.toRaw
 #'
-#'
+#' 
 #------------------------------------------------#
 str.toRaw = function(str)
 	{
@@ -485,6 +485,11 @@ str.between = function() {}
 str.between = function(str, keys=c("__B64_", "_B64__"))
 	{
 	info = str.explode(keys[1], str);
+	if(keys[2] == "") 
+		{
+		# we are at the END of the string ...
+		return( list.getElements(info, 2) );
+		}
 	info2 = str.explode(keys[2], list.getElements(info, 2) );
 	list.getElements(info2, 1);
 	}
@@ -547,21 +552,26 @@ strlen = str.len;
 str.length = str.len;
 
 
-
+ 
 str.toCase = function(str, ..., case="lower")
 	{
+#cat("\n str.toCase: ", str, "\n");  # was there a weird str() collision?
 	str = dots.addTo(str, ...);
+#dput(str);
 	cas = substring(tolower(case), 1, 3);
+#dput(cas);
 			# has to be base-R (not str.tolower, recursion)
-	str = switch(cas,
-					
+	res = switch(cas,					
 					  "low"	= tolower(str),		# lowercase
 					  "upp" = toupper(str),		# uppercase 
- 					  "ucf" = ucfirst(key),		# ucfirst
-					  "ucw" = ucwords(key),		# ucwords
+ 					  "ucf" = ucfirst(str),		# ucfirst
+					  "ucw" = ucwords(str),		# ucwords
 				str								# DEFAULT [as-is]
 				);	
-	str;	
+#dput(str);
+#dput(res); 	
+ 	
+	res;	
 	}
 
 

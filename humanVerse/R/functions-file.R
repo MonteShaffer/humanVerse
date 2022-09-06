@@ -1,4 +1,17 @@
 
+
+file.init = function()
+	{
+	# grab settings from MEMORY if exists ... 
+	
+	}
+
+
+
+
+
+
+
 #' writeToPipe
 #'
 #' This is the inverse of 'readFromPipe'
@@ -268,9 +281,12 @@ file.init = function(
 
 # file.init = function(path.data, path.code, path.humanVerse, base.path="", verbose = TRUE)
 # file.init = function(my.path = "C:/_R-TEMP_/", verbose = TRUE,
+	# SECRET = ~/.ssh/R/ 
 	# CONFIG = paste0(Sys.getenv("R_USER"),"/R/humanVerse/"),
-	# CACHE = paste0(Sys.getenv("TEMP"),"/R/humanVerse/"),
+	# SANDBOX = paste0(Sys.getenv("TEMP"),"/R/humanVerse/"),
 	# DATA = "C:/_R-DATA_/",
+	# below will have include.paths to search, this is the first 
+	
 	# CODE = "C:/_git_/github/MonteShaffer/humanVerse/notebooks/-functions-/",
 	# base.path = getwd()
 # ;
