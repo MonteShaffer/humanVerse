@@ -292,7 +292,7 @@ is.ascii = function(str) {}
 
 
 
-
+# showMethods("coerce")
 # could I pass ... dots
 as.type = function(vals, types="character", ...) 
 	{

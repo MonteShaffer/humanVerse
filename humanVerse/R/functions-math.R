@@ -5,7 +5,7 @@ check.hex = function(hexstr, ..., prepend="0x", case="lower")
 	hexstr = dots.addTo(hexstr, ...)
 	hexstr = str.trim(str.replace(c("0x","#"), "", hexstr));
 	# rather than checking, let's remove and add leading "0x"
-	hexstr = paste0(prepend, str.trim(tolower(hexstr))) );
+	hexstr = paste0(prepend, str.trim(tolower(hexstr)));
 	hexstr;	
 	}
 	

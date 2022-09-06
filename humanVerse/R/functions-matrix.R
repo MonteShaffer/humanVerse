@@ -1,5 +1,12 @@
 
 
+matrix.ginv = function() {}  # C++ and MASS 
+matrix.inv = function() {}   # C++ and solve?
+
+matrix.rank = function() {}  # a few options (C++, linear workout, and so on)
+
+
+
 ## eigen 
 ## https://eigen.tuxfamily.org/dox/group__SVD__Module.html
 ## two flavors of SVD 
@@ -261,7 +268,7 @@ matrix.pow = function(A, pow, ...)
 			{
 			for(i in 2:(-pow))
 				{
-				A.copy = A.copy %*% A.inv;
+				A.copy = A.copy %*% A.inv;  #LHS = RHS multiplication?
 				}
 			}
 		}
