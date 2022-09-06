@@ -450,3 +450,21 @@ par.restoreState = function(key="DEFAULT")
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+# get/set
+# saveState(key)
+# restoreState(key)
+
+## similar to par ... see include.dir function 
+
+

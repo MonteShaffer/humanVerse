@@ -46,10 +46,15 @@ set.match = function(searching, set, ...)
 	}
 	
 # maybe just set.match = match 
+set.diff = function() {}
 set.diff = setdiff;
+set.union = function() {}
 set.union = union;
+set.intersect = function() {}
 set.intersect = intersect;
+set.equal = function() {}
 set.equal = setequal;
+set.isElement = function() {}
 set.isElement = is.element;
 	
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -72,3 +77,4 @@ set.remove = function(elements, set, ...)
 	if(length(x) == 0) { return(set); }
 	set[-c(x)];
 	}
+	

@@ -120,9 +120,3 @@ temp.r2k = function(degR, ...) { temp.convert(degR, ...,  from="R", to="K"); }
 
 
 
-
-
-# TI-83
-# Eng (engineering) notation mode is similar to scientific notation. However, the number can have one, two, or three digits before the decimal; and the power-of-10 exponent is a multiple of three, as in 12.34567E3.
-
-# randBin(# of coin flips, prob of heads, # of simulations)
