@@ -2496,7 +2496,7 @@ dec2hex = dechex;
 #' z = dechex(y); 
 #' y2 = hexdec(z); stopifnot(identical(y,y2));
 hexdec = function(hexstr, ..., use.names.if.available=TRUE)
-	{
+	{ 
 	hexstr = dots.addTo(hexstr, ...);
 	o.hexstr = hexstr;
 	res = vector.useNames(hexstr);

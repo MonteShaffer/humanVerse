@@ -286,7 +286,7 @@ xls.AVERAGEIF = function(data, group="Sex")
 	result = as.data.frame(result);
 		rownames(result) = group.keys;
 		colnames(result) = data.keys;
-	result;
+	result; 
 	}
  
  # pip( xls.AVERAGEIF(data,"Sex"), show.row.names=TRUE, number.format="Fixed: total.width=5")fs # data = structure(list(Sex = structure(c(1L, 2L, 1L, 2L, 1L, 2L, 2L, 2L, 1L, 1L, 1L, 1L, 2L, 2L, 1L, 2L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 2L, 2L, 1L, 2L), levels = c("Female", "Male"), class = "factor"), Clothing = c(246, 171, 95, 125, 368, 148, 48, 147, 91, 324, 258, 79, 84, 48, 399, 126, 364, 306, 94, 315, 217, 14, 176, 351, 348, 14, 67, 335, 144), Health = c(185, 78, 15, 16, 100, 139, 74, 108, 46, 80, 142, 55, 146, 48, 174, 29, 69, 118, 12, 18, 168, 127, 24, 159, 113, 174, 140, 11, 90), Tech = c(64, 345, 47, 493, 82, 347, 108, 532, 86, 12, 92, 13, 522, 383, 94, 462, 40, 92, 12, 57, 91, 10, 81, 11, 26, 525, 579, 23, 560), Misc = c(75, 10, 90, 13, 109, 107, 176, 146, 182, 51, 119, 296, 184, 61, 25, 74, 208, 242, 54, 138, 67, 226, 123, 291, 204, 183, 72, 200, 149)), row.names = c(NA, -29L), class = "data.frame");
@@ -298,10 +298,64 @@ xls.UNIQUE = function(x)
 	
 	
 
+# do this like data conversion ... from and to 
+
+# BIN2DEC
+# BIN2HEX
+# BIN2OCT
+
+ 
+
+xls.POISSON.DIST = function(x, mean, cdf=TRUE)
+	{
+	# mean as lambda ... 
+	if(cdf) 	{ return(ppois(x, mean)); }  # cdf 
+	if(!cdf) 	{ return(dpois(x, mean)); }  # pdf 	
+	}
+
+xls.POISSON.INV = function(prob, mean)
+	{
+	# mean as lambda ... 
+	qpois(prob, mean); 
+	}
+	
+
+xls.BINOM.DIST = function(successes, trials, prob.success, cdf=TRUE)
+	{
+	if(cdf) 	{ return(pbinom(successes, trials, prob.success)); }  # cdf 
+	if(!cdf) 	{ return(dbinom(successes, trials, prob.success)); }  # pdf 	
+	}
+
+xls.BINOM.INV = function(prob, trials, prob.success)
+	{
+	qbinom(prob, trials, prob.success); 
+	}
+	
+	
+
+xls.NORM.DIST = function(x, mean, sd, cdf=TRUE)
+	{
+	if(cdf) 	{ return(pnorm(x, mean, sd)); }  # cdf 
+	if(!cdf) 	{ return(dnorm(x, mean, sd)); }  # pdf 	
+	}
+	
+xls.NORM.S.DIST = function(z, cdf=TRUE)
+	{
+	if(cdf) 	{ return(pnorm(z, 0, 1)); }  # cdf 
+	if(!cdf) 	{ return(dnorm(z, 0, 1)); }  # pdf 	
+	}
 
 
-
-
+xls.NORM.INV = function(prob, mean, sd)
+	{
+	qnorm(prob, mean, sd); 
+	}
+	
+xls.NORM.S.INV = function(prob)
+	{
+	qnorm(prob, 0, 1); 
+	}
+	
 
 
 

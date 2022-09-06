@@ -501,8 +501,8 @@ stats.summary = function(x, type=1, sort.ASC = FALSE,
 	res = list();
 	n = length(x);
 	xx = stats::na.omit(x);
-	n2 = length(xx);
-	
+	n2 = length(xx);  
+	 
 		t.var = stats::var(xx);
 		t.var.p = t.var*(n2-1)/n2;
 		t.mean = base::mean(xx);
