@@ -35,7 +35,7 @@ pip = function(df,
 				show.row.names = FALSE, show.row.numbers = TRUE,
 				use.color = FALSE, 			 	
 				char.more = u.toSymbol("U+22EF"),
-				col.width = 12, # could set to a VECTOR for EACH col ... if length mismatch, DEFAULT = 12 will be used ... with warning
+				col.width = 20, # could set to a VECTOR for EACH col ... if length mismatch, DEFAULT = 12 will be used ... with warning
 				number.format = "Natural",	
 				df.width = options("width"), # EVERYTHING is this CHARS
 				use.max.width = TRUE,
@@ -195,7 +195,7 @@ pip = function(df,
 					x = df[, i];
 					y = pip.truncator(x, cols$width[i], " ", "BOTH", char.more);
 					df[, i] = y;
-					}
+					} 
 		}
 	### UNNECESSARY NOW ### 
 	cols$slen.max = unlist(lapply( str.len(sdf) , max));
@@ -531,8 +531,8 @@ pip = function(df,
 
 
 
-
-pip.truncator = function(x, cwidth=12, sep=" ", side="BOTH", trunc.sym = ">")
+ 
+pip.truncator = function(x, cwidth=22, sep=" ", side="BOTH", trunc.sym = ">")
 	{
 	x = as.character(x); # assuming string, but may be FACTOR
 	x.slen = str.len(x);

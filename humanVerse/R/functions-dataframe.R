@@ -158,8 +158,9 @@ df.setColumnType = function(df, cols=NULL, type="numeric", ...)
 	# searching = set.intersect(1:n, cols) ... if length(search) != length(cols) ... STOP ... index out of bounds 
 	dfcols = colnames(df);
 	ALL = as.character(substitute(cols));
+	if(length(ALL) == 0) { cols = dfcols; }  # NULL 
 	if(ALL == "ALL") { cols = dfcols; }
-	if(is.null(cols)) { cols = dfcols; } # all the columns
+	#if(is.null(cols)) { cols = dfcols; } # all the columns
 	n = length(dfcols);
 	n.cols = length(cols);
 	n.types = length(type);
@@ -177,7 +178,7 @@ df.setColumnType = function(df, cols=NULL, type="numeric", ...)
 	for(i in 1:n.cols)
 		{
 		idx = searching[i];
-cat("\n i = ", i, " \t idx = ", idx, " \t type = ", type[i], " \n");
+# cat("\n i = ", i, " \t idx = ", idx, " \t type = ", type[i], " \n");
 		
 		df[ , idx] = as.type( df[ , idx], type[i], ...);
 		

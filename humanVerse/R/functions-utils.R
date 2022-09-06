@@ -290,6 +290,16 @@ charCode = function(svec)
 as.ascii = function(str) {}
 is.ascii = function(str) {} 
 
+minvisible.get = function(key="LAST")
+	{
+	memory.get(key, "INVISIBLE");
+	}
+
+minvisible = function(x, key="LAST")
+	{
+	memory.set(key, "INVISIBLE", x);
+	invisible(x);	
+	}
 
 
 # showMethods("coerce")

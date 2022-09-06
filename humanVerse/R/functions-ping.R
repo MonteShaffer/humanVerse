@@ -1,11 +1,13 @@
 
 
-check.internet = function(domain="8.8.8.8")
+check.internet = function(domain="8.8.8.8", count=1)
 	{
-	ping.domain(domain, 1);
+	res = ping.domain(domain, count);
+	# print(res$result$data); # already printed  
+	invisible(res);
 	}
   
-ping.domain = function(domain="humanVerse.today", count=1, 
+ping.domain = function(domain="humanVerse.today", count=5, 
 							intern = TRUE, ...
 						)
 	{   
@@ -19,7 +21,7 @@ ping.domain = function(domain="humanVerse.today", count=1,
 	cmd = paste0("ping -", flag, " ",count, " ", domain);	
 	args$cmd = cmd;
 	
-cat("\n\n\n\t\t ping.domain :: ", cmd, "\n\n\n");
+cat("\n\n\n\t\t ping.domain :: ", cmd, "\n\n\n"); flush.console();
 	res = system( cmd , intern = intern, ...);
 	args$time$end = as.numeric(Sys.time());   # as.POSIXct tz="GMT");  # GMT doesn't work 
 	res = property.set("args", res, args);
@@ -114,12 +116,17 @@ cat("\n\n", lines[1], "\n\n");
 			# if not, I can remove it from the data frame 
 				types = c("character", "numeric", "numeric", "numeric");
 		result$data = df.setColumnType(result$data, ALL, types);
-		# IP address
+		# IP address 
 		# bytes 
 		# rec ... bytes, ms, TTL
 		# sum ... sent, success, failure ... 
 	info$result = result;	
-	return(invisible(info));
+	# print(result$data);
+		ping.summary = result$data;
+	pip(ping.summary, isolate.row=FALSE, col.width=22); 
+	# return(invisible(info));  # with invisible() would be nice if there was one MEMORY elment in stack "get.last" ... I can make that happen with my own invisible wrapper ...  
+	# minvisible(info);
+	return(minvisible(info)); 
 	}
 
 
@@ -145,44 +152,6 @@ cat("\n\n", lines[1], "\n\n");
 # https://stackoverflow.com/questions/7012796/ping-a-website-in-r
 ## windows ... ping -n 5 google.com
 ## debian ... ping -c 5 google.com
-# ping.domain = function(domain.com="humanVerse.today", count = 5, stderr = FALSE, stdout = "", ...)
-	# {
-	# # do we need a -n on NOT windows ...
-	# flag = "c"; if(is.windows()) { flag = "n"; }
-	# cmd = paste0("ping -", flag, " ",count, " ", domain.com);
-	# cat("\n\n\n\t\t", cmd, "\n\n\n");
-    # cli = system2(cmd, stderr = stderr, stdout = stdout, ...);
-    # if (cli == 0) { TRUE } else { FALSE }
-	# }
-
-
-
-# ping <- function(x, stderr = "", stdout = "", ...){
-    # pingvec <- system2("ping", x,
-                       # stderr = stderr,
-                       # stdout = stdout,...)
-    # if (pingvec == 0) TRUE else FALSE
-# }
-
-
-# ping.domain = function(domain.com="humanVerse.today", count=5, intern = TRUE, ...)
-	# {
-	# args = function.arguments("main");
-	# args = functions.getParameterInfo("main");
-	# # do we need a -n on NOT windows ...
-	# flag = "c"; if(is.windows()) { flag = "n"; args$windows = TRUE; }
-	# cmd = paste0("ping -", flag, " ",count, " ", domain.com);
-	# args$cmd = cmd;
-	# cat("\n\n\n\t\t", cmd, "\n\n\n");
-	# res = system( cmd , intern = intern, ...);
-	# res = property.set("args", res, unlist(args));
-	# res;
-	# }
-
-
-
-# ping.domain("8.8.8.8", 1)
-# 
 
 # WINDOZE
 # (x = system("ping -n 5 google.com", intern = TRUE, show.output.on.console=TRUE))
