@@ -1,4 +1,62 @@
 
+include.dir = function() 
+	{
+	# if remote, we make it local, and include there ... force.override?
+	
+	
+	}
+	
+	
+include = function(..., character.only=FALSE)
+	{
+	if(character.only) 
+		{ 
+		what = unlist(list(...)); 
+		} else {
+				what = str.fromObjectName(...);
+				}
+				
+	# is it a library or a file ?
+	# is it LOCAL/REMOTE file?
+				
+	# include(library) ... we maybe do sourceME on it 
+	# include(file) ... if not local, we download, and store to a CACHE [SANDBOX]/R/include/web/FULL-PATH/ or /R/include/github/SHORT-PATH/
+	# [SANDBOX]/R/packages/CRAN/ or /packages/github/ or /packages/web/ or ???
+	
+	
+	
+	}
+	
+	
+# would be nice if __FILE__ and __DIR__ worked with R ?!!!?	
+# include_path=".:/php/includes"
+# include_path=".;c:\php\includes"	
+
+include_path.show = function()
+	{
+	
+	
+	}
+	
+	
+include_path.add = function(path, where="last")
+	{
+	# must be a string
+	}
+	
+include_path.remove = function(path)
+	{
+	# string / idx 
+	}
+	
+include_path.order = function(new.order)
+	{
+	# can be string or idx 
+	# v.arrange with ALL elements ... 
+	}
+
+
+
 # mytype = suppressError(
 # may be different for tryCatch(
 is.error = function(e, where="suppressError")
@@ -74,7 +132,7 @@ quick.dir = function()
 	minvisible(alex);
 	}
 
-
+ 
 
 include.dir = function() {}
 include.dir = function(path = getwd(), verbose = TRUE, pattern = "[.][RrSsQq]$")

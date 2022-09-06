@@ -215,10 +215,11 @@ v.mode = function(vec)
 
 # original = c("P.1", "P.2", "P.3", "P.4", "P.5", "P.6", "P.7", "P.8", "P.9", "P.10");
 # new = c("P.7", "P.1", "P.3", "P.6", "P.5", "P.8", "P.4", "P.9", "P.10", "P.2")
-v.arrange = function(orig, new)
+v.arrange = function(orig, new, append.missing=TRUE)
 	{
 	# from 'orig' to 'new'
 	# set.match(orig, new);
+							# if they missed an element warning and append 
 	set.match(new, orig); # I think this is correct 
 	}
 

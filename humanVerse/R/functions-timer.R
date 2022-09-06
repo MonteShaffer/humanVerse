@@ -318,7 +318,7 @@ cat("\n", " FORMA: ", forma, "\n\n");
 
 
  
-
+ 
 timer.printALL = function(key="---PRINT-EVERYTHING---", ..., format="pretty", 
 							units.name = "seconds",
 							units.factor = 1,

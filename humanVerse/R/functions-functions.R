@@ -18,7 +18,7 @@
 prep.arg = function(key, n=1, keep="", case = "lower", extra = "")
 	{  
 	# str = str.toCase(key, case=case); # recursion issue here ... HARD CODE for this function only 
-	  
+	   
 	cas = substring(tolower(case), 1, 3);
 	str = switch(cas,					
 					  "low"	= tolower(key),		# lowercase
