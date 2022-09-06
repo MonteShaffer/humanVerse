@@ -1,12 +1,22 @@
 
 
+timer.getOrigin = function()
+	{
+	# maybe these are also in MEMORY set ?
+	structure(0, class = "POSIXct" ); # compact only
+	} 
+	
 timer.tz = function()
 	{
 	# 
 	tz = Sys.timezone();
+	# good data analytics would include this ELEMENT ... how to append to everything ... 
 	# doesn't look like tz="GMT" or tz="UTC" works ...in as.POSIXct 
-	
+	tz;
 	}
+	
+	
+
 
 # https://www.alexejgossmann.com/benchmarking_r/
 # microbenchmark ... C getting to nanoticker ... rbenchmark, one 'R' function by DIRK ... LOL tinyverse 
@@ -15,31 +25,50 @@ timer.tz = function()
 timer.init = function(purge.memory = FALSE, 
 							show.msg = TRUE)
 	{
-	TIMER = "timer"; 
-	
 	memory.init();
-	
+#cat("\n INIT 0 ... \n\n");	
 	#################################################
-	
-	if(purge.memory) 
-		{ 
-		.GlobalEnv$.humanVerse[[TIMER]] = list(); 
+	if( purge.memory || is.null(memory.get("timer", "TIMERS")) )
+		{
+#cat("\n INIT 1 ... \n\n");
+		# public timers 
+		memory.start("timer", "TIMERS", 
+								params = list("tz" = timer.tz())
+					);		
 		}
+	if( purge.memory || is.null(memory.get(".timer", "TIMERS")) )
+		{
+#cat("\n INIT 2  ... \n\n");
+		# private (system) timers  [AUTOSAVE]
+		memory.start(".timer", "TIMERS", 
+								params = list("tz" = timer.tz())
+					);		
+		}
+		
+
+	PUBLIC_TIMER = "timer"; 
+	PUBLIC_OBJ = memory.get(PUBLIC_TIMER, "TIMER");
 	# THIS should only be called once, 
-	#    but every time, gets a new INIT timer 
-	now = as.numeric(Sys.time());
-	md5 = str.toMD5( (now) );
-	key = paste0("SESSION-", md5 );	
-	n = length(.GlobalEnv$.humanVerse[[TIMER]]);
-	TIMER = ".timer";
-	n2 = length(.GlobalEnv$.humanVerse[[TIMER]]);
+	#### but every time, gets a new INIT timer 
+		now = as.numeric(Sys.time());
+		
+	N_PUBLIC = length(PUBLIC_OBJ);
+	
+	PRIVATE_TIMER = ".timer"; 
+	PRIVATE_OBJ = memory.get(PRIVATE_TIMER, "TIMER");
+	N_PRIVATE = length(PRIVATE_OBJ);
 		## INTERNAL RAINBOW TABLE ... 
 		## if we save .humanVerse (autosave), we can recover MD5 from previous sessions
-	.GlobalEnv$.humanVerse[["md5"]][[md5]] = paste0("TIMER:SESSION-",now);  
+		## PRIVATE NAME 
+		md5 = str.toMD5( (now) );
+		key = paste0("SESSION-", md5 );	
+#dput(key);
+	memory.set(md5, "MD5", paste0("PRIVATE_TIMER:SESSION-",now) ); 
+		## PUBLIC NAME is key 
 		# so don't have to parse, and have a lookup
-	timer.start( key , as.internal = TRUE);
+	timer.start( key , as.internal = TRUE);  # recursion on timer.start ...
 	if(show.msg) 
-		{ 
+		{  
 		# could "cat" have a color?
 		# https://www.r-project.org/nosvn/pandoc/crayon.html
 		# It is easy to define your own themes:
@@ -59,11 +88,11 @@ timer.init = function(purge.memory = FALSE,
 		# have append final length, and left, pad ...
 		
 
-		cat( msg );
+		cat( msg ); 
 		cat("\n", "The [timer] module is running", "\n");
 		cat("\n", "\t\t", "Currently, there are:",  "\n");
-		cat("\t\t\t\t", "[", n , "] USER ", str.grammaticalNumber("timer",n), "running", "\n");
-		cat("\t\t\t\t", "[", n1, "] INTERNAL ", str.grammaticalNumber("timer",n), "running", "\n");
+		cat("\t\t\t\t", "[", N_PUBLIC , "] USER ", str.grammaticalNumber("timer",n), "running", "\n");
+		cat("\t\t\t\t", "[", N_PRIVATE, "] INTERNAL ", str.grammaticalNumber("timer",n), "running", "\n");
 		cat("\n\n", "Just now, an INTERNAL timer started: [", key, "]", "\n\n\n");
 		
 		}
@@ -71,7 +100,7 @@ timer.init = function(purge.memory = FALSE,
 	
 	
 	
-	
+	 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' timer.start
@@ -92,7 +121,8 @@ timer.start = function(key="DEFAULT", ...,
 	memory.init();
 	
 ###############################################
-	timer = .GlobalEnv$.humanVerse[[TIMER]];
+	timer = memory.get(TIMER, "TIMERS");
+	if(is.null(timer)) { timer.init(); } # maybe "quietly", recursion if BUG
 ###############################################
 	
 	now = Sys.time(); 		# vs. proc.time()
@@ -100,8 +130,9 @@ timer.start = function(key="DEFAULT", ...,
 		{
 		timer[[key]]$start = now;  
 		}
+cat("\n timer with key :: [",key,"] has started \n\n");
 ###############################################
-	.GlobalEnv$.humanVerse[[TIMER]] = timer;
+	memory.set(TIMER, "TIMERS", timer);
 ###############################################
 	}
 
@@ -117,7 +148,7 @@ timer.start = function(key="DEFAULT", ...,
 #' @param key (what is the unique storage 'key')
 #'
 #' @export
-#'
+#' 
 #' @examples	# marker is not multivariate ... 
 ## TODO:: can I shorten with `with`
 timer.stop = function(key="DEFAULT", ..., marker="STOP-{n}", 
@@ -130,7 +161,8 @@ timer.stop = function(key="DEFAULT", ..., marker="STOP-{n}",
 	memory.init();
 	
 ###############################################
-	timer = .GlobalEnv$.humanVerse[[TIMER]];
+	timer = memory.get(TIMER, "TIMERS");
+	if(is.null(timer)) { timer.init(); } # maybe "quietly", recursion if BUG
 ###############################################
 	
 	now = Sys.time();
@@ -143,7 +175,7 @@ timer.stop = function(key="DEFAULT", ..., marker="STOP-{n}",
 		i = 1 + i;
 		if(is.null(timer[[key]]))
 			{
-			warning(paste0("Nothing to stop as timer.start for key: ", key, " not called yet!"));
+			warning.cat("Nothing to stop as timer.start for key: ", key, " not called yet!");
 			next;
 			}
 		
@@ -173,12 +205,14 @@ timer.stop = function(key="DEFAULT", ..., marker="STOP-{n}",
 			}
 		
 		res[[i]] = timer.formatPrettyUnits(relative[i], "seconds");
-		cat("\n", "KEY: [",key,"]", "\t\t", "RELATIVE TIME AT [",mark,"] \t ", res[[i]], "\n");
+# cat("\n", "KEY: [",key,"]", "\t\t", "RELATIVE TIME AT [",mark,"] \t ", res[[i]], "\n");
+		
+cat("\n timer with key :: [",key,"] has recorded *a* stop labeled [",mark,"] \n\t\t\t at absolute time: [",diff,"] \t which is \n\t\t\t at relative time:: [",relative[i],"] \t *to the previous stop* \n\n");  
 		}
 ###############################################
-	.GlobalEnv$.humanVerse[[TIMER]] = timer;
+	memory.set(TIMER, "TIMERS", timer);
 ###############################################
-	invisible(relative);
+	minvisible(relative); 
 	}
 
 
@@ -228,7 +262,8 @@ timer.print = function(key="DEFAULT", ...,
 	memory.init();
 	
 ###############################################
-	timer = .GlobalEnv$.humanVerse[[TIMER]];
+	timer = memory.get(TIMER, "TIMERS");
+	if(is.null(timer)) { timer.init(); } # maybe "quietly", recursion if BUG
 ###############################################
 	# seconds, pretty-seconds, pretty ...
 	# port to obj.exists #NULL
@@ -282,31 +317,34 @@ cat("\n", " FORMA: ", forma, "\n\n");
 
 
 
+ 
 
-
-
-# can't use ... as already used on timer.print ... dots[1], dots[2]
-# "k" is bogus, preventing passing a string into format since all other functions require the same string
-timer.printALL = function(k=NULL, format="pretty", 
+timer.printALL = function(key="---PRINT-EVERYTHING---", ..., format="pretty", 
 							units.name = "seconds",
 							units.factor = 1,
 							append.names=TRUE, 
 							digits=2, 
 							as.internal = FALSE)
 	{
+	if(key != "---PRINT-EVERYTHING---")
+		{
+		keys = dots.addToKey(key, ...);
+		} else { keys = NULL; }
 	TIMER = "timer"; if(as.internal) { TIMER = ".timer"; }
 	
 	forma = prep.arg(format, 5, keep="-");
 
 ###############################################
-	timer = .GlobalEnv$.humanVerse[[TIMER]];
+	timer = memory.get(TIMER, "TIMERS");
+	if(is.null(timer)) { timer.init(); } # maybe "quietly", recursion if BUG
 ###############################################	
 	if(is.null(timer))
 			{
 			warning(paste0("Nothing to print as timer.start has not been called yet!"));
 			# next;
 			} else {
-					keys = names( timer );
+					allkeys = names( timer );
+					if(is.null(keys)) { keys = allkeys; }
 					j = 1;
 					res = NULL;  # PANEL of DATA (PANEL FORM)
 					for(key in keys)
@@ -338,8 +376,8 @@ timer.printALL = function(k=NULL, format="pretty",
 		
 					# df = df.setColumnType(df, c("start","stop","absolute"), "numeric"); 
 					df$idx = as.integer(df$idx);
-					df$start = as.POSIXct( as.numeric(df$start), origin=date.getOrigin() );
-					df$stop = as.POSIXct( as.numeric(df$stop), origin=date.getOrigin() );
+					df$start = as.POSIXct( as.numeric(df$start), origin=timer.getOrigin() );
+					df$stop = as.POSIXct( as.numeric(df$stop), origin=timer.getOrigin() );
 					df$absolute = ( as.numeric(df$absolute) );
 					# last column is likely a string 
 					return(df);
@@ -434,7 +472,8 @@ timer.clear = function(key="DEFAULT", ...,
 	memory.init();
 	
 ###############################################
-	timer = .GlobalEnv$.humanVerse[[TIMER]];
+	timer = memory.get(TIMER, "TIMERS");
+	if(is.null(timer)) { timer.init(); } # maybe "quietly", recursion if BUG
 ###############################################
 	
 	for(key in keys)
@@ -449,8 +488,8 @@ timer.clear = function(key="DEFAULT", ...,
 					}		
 		}
 ###############################################
-	.GlobalEnv$.humanVerse[[TIMER]] = timer;
-###############################################	
+	memory.set(TIMER, "TIMERS", timer);
+###############################################
 	}
 
 
@@ -462,7 +501,8 @@ timer.clearALL = function(notice=TRUE, call.init=TRUE,
 
 	memory.init();
 ###############################################
-	timer = .GlobalEnv$.humanVerse[[TIMER]];
+	timer = memory.get(TIMER, "TIMERS");
+	if(is.null(timer)) { timer.init(); } # maybe "quietly", recursion if BUG
 ###############################################	
 	# this will erase ALL timers, 
 	# including INTERNALS (e.g., AUTOSAVE, if as.internal=TRUE)
@@ -480,10 +520,11 @@ timer.clearALL = function(notice=TRUE, call.init=TRUE,
 					if(notice) { warning(paste0(" -- CLEAR from timers ALL [n  = ", howMany, "] was successful!")); }
 					}		
 ###############################################
-	.GlobalEnv$.humanVerse[[TIMER]] = timer;
+	memory.set(TIMER, "TIMERS", timer);
 ###############################################
 	if(call.init && purge) { timer.init(); }
 	}
 
 
 
+ 

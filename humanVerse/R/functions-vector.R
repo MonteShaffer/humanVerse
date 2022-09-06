@@ -1,6 +1,27 @@
 
 
 
+v.match = function(a, B.len, B.nam)
+	{
+	# a is subset of B (hopefully)
+	# could be comparing on names or idxs ... I don't know 
+	# return idxs of set.match ...
+	
+	if(is.null(a)) { return(NULL); }
+	if(is.numeric(a))
+		{
+		idx = set.match( a, 1:B.len );
+		} else {
+				idx = set.match( a, B.nam);
+				}
+	# if(is.na(idx)) { return(NULL); }  # no matches 
+	# if(anyNA(idx)) { return(NULL); }  # no matches is one NA ... idx are integers otherwis 
+	if(is.na(idx[1])) { return(NULL); }  # no matches 
+	idx;	
+	}
+
+
+
 
 # this is multivariate ... 
 v.types = function(vecs, ...)

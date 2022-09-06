@@ -33,7 +33,7 @@ temp.convert = function(degX, ..., from="fahrenheit", to="celsius")
 	degX = dots.addTo(degX, ...);
 	temp.constants();
 	# convert everthing to "celsius" on first pass
-	F = prep.arg(from, 1, case="upper");
+	F = prep.arg(from, 1, case="upper");  # good thing F doesn't mean FALSE anymore!?!
 	T = prep.arg(to, 1, case="upper");
 # dput(degX); dput(F); dput(T); dput(ABS_ZERO_R);
 cat("\n START degX ... ", degX, "\n");

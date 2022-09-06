@@ -247,15 +247,30 @@ xls.CORREL = function(x, y, ...)
 	cor(x,y);
 	}
 
-
-xls.AVERAGEIF = function(data, group="Sex")
+xls.AVERAGEIF = function(data, group="Sex", group.order=NULL, include.cols=NULL)
 	{
-	data[[group]] = as.factor(data[[group]]); 
+	# unnecessary on "==" comparison 
+	# data[[group]] = as.factor(data[[group]]); 
 	group.keys = unique(data[[group]]);		# Male, Female 
-	
+	# 'by' ... I tried ...
 	
 	data.keys = set.diff( colnames(data), group ); # all keys BUT group 
 													# must be numeric 
+	if(!is.null(include.cols))
+		{
+		idxs = v.match(include.cols, ncol(data), colnames(data));
+		if(is.null(idxs)) { stop("error with include.cols"); }
+		data.keys = colnames(data)[idxs];
+		}
+		
+	if(!is.null(group.order))
+		{
+		# this will TRUNCATE and put in desired order based on INPUT
+		idxs = v.match(group.order, length(group.keys), group.keys);
+		if(is.null(idxs)) { stop("error with group.order"); }
+		group.keys = group.keys[idxs];
+		}
+	
 	
 	ngroups = length(group.keys);
 	ncolumns = length(data.keys);
@@ -266,6 +281,7 @@ xls.AVERAGEIF = function(data, group="Sex")
 		data.sub = subset(data, data[[group]] == group.keys[i]);
 		for(j in 1:ncolumns)
 			{
+			# this is in order of the INPUT 
 			data.key = data.keys[j];
 			cdata = data.sub[[data.key]];
 			cdata = as.numeric(cdata);
@@ -276,12 +292,14 @@ xls.AVERAGEIF = function(data, group="Sex")
 		}
 		
 	result = as.data.frame(result);
+		# all.numerics, no problem ... 
 		rownames(result) = group.keys;
 		colnames(result) = data.keys;
 	result; 
 	}
  
- # pip( xls.AVERAGEIF(data,"Sex"), show.row.names=TRUE, number.format="Fixed: total.width=5")fs # data = structure(list(Sex = structure(c(1L, 2L, 1L, 2L, 1L, 2L, 2L, 2L, 1L, 1L, 1L, 1L, 2L, 2L, 1L, 2L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 2L, 2L, 1L, 2L), levels = c("Female", "Male"), class = "factor"), Clothing = c(246, 171, 95, 125, 368, 148, 48, 147, 91, 324, 258, 79, 84, 48, 399, 126, 364, 306, 94, 315, 217, 14, 176, 351, 348, 14, 67, 335, 144), Health = c(185, 78, 15, 16, 100, 139, 74, 108, 46, 80, 142, 55, 146, 48, 174, 29, 69, 118, 12, 18, 168, 127, 24, 159, 113, 174, 140, 11, 90), Tech = c(64, 345, 47, 493, 82, 347, 108, 532, 86, 12, 92, 13, 522, 383, 94, 462, 40, 92, 12, 57, 91, 10, 81, 11, 26, 525, 579, 23, 560), Misc = c(75, 10, 90, 13, 109, 107, 176, 146, 182, 51, 119, 296, 184, 61, 25, 74, 208, 242, 54, 138, 67, 226, 123, 291, 204, 183, 72, 200, 149)), row.names = c(NA, -29L), class = "data.frame");
+ # pip( xls.AVERAGEIF(data,"Sex"), show.row.names=TRUE, number.format="Fixed: total.width=5");
+ # fs # data = structure(list(Sex = structure(c(1L, 2L, 1L, 2L, 1L, 2L, 2L, 2L, 1L, 1L, 1L, 1L, 2L, 2L, 1L, 2L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 2L, 2L, 1L, 2L), levels = c("Female", "Male"), class = "factor"), Clothing = c(246, 171, 95, 125, 368, 148, 48, 147, 91, 324, 258, 79, 84, 48, 399, 126, 364, 306, 94, 315, 217, 14, 176, 351, 348, 14, 67, 335, 144), Health = c(185, 78, 15, 16, 100, 139, 74, 108, 46, 80, 142, 55, 146, 48, 174, 29, 69, 118, 12, 18, 168, 127, 24, 159, 113, 174, 140, 11, 90), Tech = c(64, 345, 47, 493, 82, 347, 108, 532, 86, 12, 92, 13, 522, 383, 94, 462, 40, 92, 12, 57, 91, 10, 81, 11, 26, 525, 579, 23, 560), Misc = c(75, 10, 90, 13, 109, 107, 176, 146, 182, 51, 119, 296, 184, 61, 25, 74, 208, 242, 54, 138, 67, 226, 123, 291, 204, 183, 72, 200, 149)), row.names = c(NA, -29L), class = "data.frame");
 
 xls.UNIQUE = function(x)
 	{

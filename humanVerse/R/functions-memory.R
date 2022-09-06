@@ -13,7 +13,7 @@
 #' @return
 #' @export
 #'
-#' @examples
+#' @examples 
 memory.init = function(purge.memory = FALSE, verbose = TRUE)
   {
   if(!exists(".humanVerse") || purge.memory)
@@ -34,6 +34,12 @@ memory.init = function(purge.memory = FALSE, verbose = TRUE)
 #' @rdname initMemory
 #' @export
 initMemory = memory.init;
+
+
+
+
+
+
 
 
 # getBASE64 key from Sys.getenv("humanVerse")
@@ -61,8 +67,25 @@ memory.restoreState = function() {}
 
 
 
+# params are properties
+memory.start = function() {}
+memory.start = function(key="timer", MEMORY="TIMER", params = list("tz" = timer.tz()), force.purge=FALSE )
+	{
+	what = .GlobalEnv$.humanVerse[["."]][[MEMORY]][[key]];
+	if(is.null(what) || force.purge )
+		{
+		what = list();
+		for(param in names(params))
+			{
+			what = property.set(param, what, params[[param]] );
+			} 
+		.GlobalEnv$.humanVerse[["."]][[MEMORY]][[key]] = what;
+		}	
+	}
 
- 
+
+
+  
 
 memory.get = function(key, MEMORY="BASE", unused=NULL) 
 	{	
@@ -70,11 +93,6 @@ memory.get = function(key, MEMORY="BASE", unused=NULL)
 	}
 
 
-# 
-	# if(is.null(.GlobalEnv$.humanVerse)) { memory.init(); }
-	# if(is.null(.GlobalEnv$.humanVerse["."])) { .GlobalEnv$.humanVerse["."] = list(); }
-	# if(is.null(.GlobalEnv$.humanVerse["."][[MEMORY]])) { .GlobalEnv$.humanVerse["."][[MEMORY]] = list(); }
-# different than property.set (key, OBJ, Value)
 # now the same ... KEY on OBJ to VAL
 memory.set = function(key, MEMORY="BASE", value) 
 	{
