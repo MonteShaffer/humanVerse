@@ -40,7 +40,7 @@
 
 str.trimFixed = function(str, trim="#", side="both")
 	{
-	s = functions.cleanKey(side, 1);
+	s = prep.arg(side, 1);
 	str.pos = str.getPositions(str, trim);
 
 	n.str = length(str);

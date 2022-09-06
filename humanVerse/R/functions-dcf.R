@@ -6,7 +6,7 @@ dcf.get = function(..., return="list")
 debug = FALSE;
 	# univariate, string or obj input
 	pkg = str.fromObjectName(...);
-	r = functions.cleanKey(return, 1);
+	r = prep.arg(return, 1);
 	pkg.ns = suppressError( getNamespace(pkg), show.notice=debug, msg="debug dcf.get ");
 	if(is.error(pkg.ns)) { return(NULL); }
 	# CACHING mechanism as JSON files
@@ -16,6 +16,10 @@ debug = FALSE;
 	if(r == "j") { json = JSON.stringify(dcf); return(dcf); }
 	dcf;
 	}
+
+
+
+
 
 
 # dcf.getKey(tibble, "Version");
@@ -28,6 +32,7 @@ dcf.getKey = function(..., key = "Version")
 	dcf = dcf.get(pkg);  # has caching 	
 	dcf[[key]]; # AUTOMATICALLY returns NULL if not found 	
 	}
+
 
 
 
@@ -121,6 +126,9 @@ print(keys);
 		# colnames(df) = c("keys", "values");
 	# df;
 	}
+
+
+
 
 
 
@@ -358,6 +366,12 @@ print(words);
 	}
  
 
+
+
+
+
+
+
 dcf.parseURL = function(val)
 	{
 debug = FALSE;
@@ -393,6 +407,11 @@ stop("monte");
 
 
 
+
+
+
+
+
 dcf.parseDepends = function(val)
 	{
 debug = FALSE;
@@ -411,6 +430,11 @@ print(tmp2);
 	pkgs = property.set("dependencies", pkgs, depe);
 	pkgs;
 	}
+
+
+
+
+
 
 
 dcf.parseBuild = function(val)
@@ -458,6 +482,21 @@ print(tmp);
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ###################### USEFUL FOR EDGE CASES
 ### DEBUGGER functions ... get uniqueKeys from PKGS
 ###                    ... get uniqueVals for KEY from PKGS 
@@ -488,6 +527,14 @@ flush.console();
 # all.keys = dcf.uniqueKeys();  # ... all.keys = 81 with first val 
 # str(all.keys);
 # df = as.data.frame( cbind( names(all.keys$values), all.keys$pkg, all.keys$values ) ); rownames(df) = NULL; colnames(df) = c("keys", "package", "values"); head(df);
+
+
+
+
+
+
+
+
 
 
 dcf.uniqueVals = function() {}
@@ -521,4 +568,33 @@ flush.console();
 # idx = which.max(str.len(all.vals$val)); val = all.vals$val[idx]; all.vals$pkg[idx]; val; 
 # idx = which(all.vals$pkg=="readr"); val = all.vals$val[idx]; all.vals$pkg[idx]; val;
 # idx = rand(1, length(all.vals$pkg)); val = all.vals$val[idx]; all.vals$pkg[idx]; val;
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	

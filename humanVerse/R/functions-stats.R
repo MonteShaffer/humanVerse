@@ -32,7 +32,7 @@ tukey.summary = function(x, type=1, signif.digits=5, return="five",
 							tnames = c("min", "-Hinge1-", "median", "-Hinge3-", "max"), 
 						... )
 	{
-	r = functions.cleanKey(return, 1);
+	r = prep.arg(return, 1);
 	
 	res = summary(x, digits=signif.digits, quantile.type=type, ...);
 	res = res[c(1:3,5:6)];  # tukey 
@@ -88,8 +88,9 @@ stats.warningNA = function(x, show.warning=TRUE)
 
 # maybe stats.countWhere = function(x, "x > 3") {}
 # analagous to COUNTIF ... 
-stats.countNA = function(x)
+stats.countNA = function(x, ...)
 	{
+	x = dots.addTo(x, ...);
 	sum(is.na(x));  # adding TRUEs as 1's in binary (0,1) sense 
 	}
 
@@ -109,8 +110,9 @@ stats.countNA = function(x)
 #' @examples
 #' x = c(1, NA, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, NA);
 #' 
-stats.sum = function(x, na.rm=TRUE, show.warning=TRUE)
+stats.sum = function(x, ..., na.rm=TRUE, show.warning=na.rm)
 	{
+	x = dots.addTo(x, ...);
 	warning = stats.warningNA(x, show.warning=show.warning);
 	res = base::sum(x, na.rm=na.rm)
 	res; 
@@ -135,11 +137,13 @@ stats.sum = function(x, na.rm=TRUE, show.warning=TRUE)
 #' @examples
 #' x = c(1, NA, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, NA);
 #' 
-stats.median = function(x, type=1, na.rm=TRUE, names=FALSE, ...)
+stats.median = function(x, ..., type=1, na.rm=TRUE, show.warning=na.rm, names=FALSE, digits=7)
 	{
+	x = dots.addTo(x, ...);
 	warning = stats.warningNA(x, show.warning=show.warning);
-	# sm.type = typeof(x);  # if we lose the type, we could restore 
-	res = stats::quantile(x, prob=c(0.5), type=type, na.rm=na.rm, names=names, ...);
+	# how to pass q.args into quantile ... 
+	res = stats::quantile(x, prob=c(0.5), type=type, 
+							na.rm=na.rm, names=names, digits=digits);
 	res;
 	}
 
@@ -162,8 +166,9 @@ stats.median = function(x, type=1, na.rm=TRUE, names=FALSE, ...)
 #' @examples
 #' x = c(1, NA, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, NA);
 #' 
-stats.quantile = function(x, qs=c(0, 0.25,0.5,0.75, 1), type=1, na.rm=TRUE, names=FALSE, ..., tag.me=FALSE)
+stats.quantile = function(x, ..., qs=c(0, 0.25,0.5,0.75, 1), type=1, na.rm=TRUE, names=FALSE, digits=7)
 	{
+	x = dots.addTo(x, ...);
 	warning = stats.warningNA(x, show.warning=show.warning);
 	res = stats::quantile(x, prob=qs, type=type, na.rm=na.rm, names=names, ...);
 	res;
@@ -191,21 +196,17 @@ getQuantiles = stats.quantile;
 #' @examples
 #' x = c(1, NA, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, NA);
 #' 
-stats.mean = function(x, na.rm=TRUE, is.member=TRUE, ...)
+stats.mean = function(x, ..., na.rm=TRUE, is.member=TRUE, show.warning=na.rm, trim=0)
 	{
+	x = dots.addTo(x, ...);
+	m = mean(x, na.rm=na.rm, trim=trim);	
+	if(!is.member) { return(m); } # plain vanilla 
+	
 	warning = stats.warningNA(x, show.warning=show.warning);
-		# by default, na.rm happens inside b/c na.last=NA
-	x.sort = sort(x, na.last=TRUE);  
-		# this returns [NA] if there are NA's ... WHY?!?
-		# sort not really necessary?
-	m = mean(x.sort, na.rm=na.rm, ...); 
-
-		# plain vanilla with 'sort' overhead
-	if(!is.member) { return(m); }  
-
+	
 	# this returns the first (smallest) if deviations tied
-	m.dev = abs(x.sort - m);	 			m.mins = stats.whichMin(m.dev);
-											x.bar = x.sort[ m.mins[1] ]; 
+	m.dev = abs(x.sort - m); 	m.mins = stats.whichMin(m.dev);
+								x.bar = x[ m.mins[1] ]; 
 	x.bar; 
 	}
 
@@ -214,14 +215,16 @@ stats.mean = function(x, na.rm=TRUE, is.member=TRUE, ...)
 doMean = stats.mean;
 
 
-stats.sd = function(x, na.rm=TRUE, is.member=TRUE, ...)
+stats.sd = function(x, ..., na.rm=TRUE, is.member=FALSE, show.warning=na.rm)
 	{
-	warning = stats.warningNA(x, show.warning=show.warning);
+	x = dots.addTo(x, ...);
 	if(!is.member) { sd(x, na.rm=na.rm); }  # plain vanilla 
+	warning = stats.warningNA(x, show.warning=show.warning);
+	
+	# I don't know about sd and MEMBERSHIP ... maybe a z-score of 1 (from the data) ... 
+	
 	n = length(x);
-	n2 = n - stats.countNA(x);
-		# by default, na.rm happens inside b/c na.last=NA
-	x.sort = sort(x, na.last=TRUE);  
+	n2 = n - stats.countNA(x); 
 	
 	x.sum = x.sum2 = 0;
 	# NAIVE algorithm, so-called
@@ -283,8 +286,9 @@ stats.sd = function(x, na.rm=TRUE, is.member=TRUE, ...)
 #' which.min( c(23, presidents[1:30], 23) );
 #' stats.whichMin( c(23, presidents[1:30], 23) );
 #'
-stats.whichMin = function(x, na.rm=TRUE, show.warning=TRUE)
+stats.whichMin = function(x, ..., na.rm=TRUE, show.warning=na.rm)
 	{
+	x = dots.addTo(x, ...);
 	warning = stats.warningNA(x, show.warning=show.warning);
 	# behaves like which.min(x) but returns multiple
 	x.min = min( x, na.rm=na.rm ); 
@@ -312,8 +316,9 @@ whichMin = stats.whichMin;
 #' which.max( c(87, presidents[1:30], 87) );
 #' stats.whichMax( c(87, presidents[1:30], 87) );
 #'
-stats.whichMax = function(x, na.rm=TRUE, show.warning=TRUE)
+stats.whichMax = function(x, ..., na.rm=TRUE, show.warning=na.rm)
 	{
+	x = dots.addTo(x, ...);
 	warning = stats.warningNA(x, show.warning=show.warning);
 	# behaves like which.max(x) but returns multiple
 	x.max = max( x, na.rm=na.rm ); 
@@ -348,17 +353,14 @@ whichMax = stats.whichMax;
 #' whichMinFrequency( c(1, 1:9, 9, 9) );
 #' stats.whichMinFrequency( c("monte", "says", "hi", "Alex", "likes", "and", "says", "hi", "monte") );
 #'
-stats.whichMinFrequency = function(x)
+stats.whichMinFrequency = function(x, ..., force.numeric=TRUE)
 	{
-	warning = stats.warningNA(x, show.warning=show.warning);
-	x.table = as.data.frame( table(x) );
-		freq.min = min( x.table$Freq );
-	x.list = x.table[x.table$Freq==freq.min,];
-	xs = as.vector (x.list$x) ;
-	xs;
+	x = dots.addTo(x, ...);
+	stats.mode(x, force.numeric=force.numeric, do.min=TRUE);
 	}
 
-
+whichMinFrequency = stats.whichMinFrequency;
+whichMinFreq = stats.whichMinFrequency;
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
@@ -380,42 +382,30 @@ stats.whichMinFrequency = function(x)
 #' stats.mode( c(1, 1:9, 9, 9) );
 #' stats.mode( c("monte", "says", "hi", "Alex", "likes", "and", "says", "hi", "monte") );
 #'
-stats.mode = function(x, force.numeric=TRUE)
+stats.mode = function(x, ..., force.numeric=TRUE, do.min=FALSE)
 	{
-	warning = stats.warningNA(x, show.warning=show.warning);
+	x = dots.addTo(x, ...);
+	# NA maybe the "mode"
 	# R is a programming language for statistical computing and graphics supported by the R Core Team and the R Foundation for Statistical Computing. Created by statisticians Ross Ihaka and Robert Gentleman, R is used among data miners, bioinformaticians and statisticians for data analysis and developing statistical software. (WIKIPEDIA.com).
 	# R is a free software environment for statistical computing and graphics. It compiles and runs on a wide variety of UNIX platforms, Windows and MacOS. (r-project.org) 
 	# NA?
 	x.table = as.data.frame( table(x) );
-		freq.max = max( x.table$Freq );  # why named 'Freq', hopefully it doesn't change its name 
-	x.list = x.table[x.table$Freq==freq.max,];
-	xs = as.vector (x.list$x);
-	if(force.numeric){ xs = as.numeric(xs);}
-	xs;
+		freq = x.table[, 2];
+		freq.search = stats.max(freq);
+		if(do.min) { freq.search = stats.min(freq); }
+		idx = which(freq == freq.search);
+		
+	res = x[idx];
+	if(force.numeric) { res = as.numeric(res);}
+	res;
 	}
 
 #' @rdname stats.whichMaxFrequency
 #' @export
 stats.whichMaxFrequency = stats.mode;
-
-
-
-#' whichMinFreq( c(1:9) );
-#' whichMinFreq( c(1, 1:9, 9) );
-#' whichMinFreq( c(1, 1:9, 9, 9) );
-#'
-whichMinFreq = function(x) # opposite of doMode
-	{
-	x.table = as.data.frame( table(x) );
-		freq.min = min( x.table$Freq );
-	x.list = x.table[x.table$Freq==freq.min,];
-	xs = as.numeric( as.vector (x.list$x) );
-	xs;
-	}
-
-#' @rdname whichMinFrequency
-#' @export
-whichMinFrequency = stats.whichMinFrequency;
+stats.whichMaxFreq = stats.mode;
+whichMaxFrequency = stats.mode;
+whichMaxFreq = stats.mode;
 
 
 
@@ -423,7 +413,7 @@ stats.mScores = function(x, x.median = NULL, x.mad = NULL, method="base")
 	{
 	warning = stats.warningNA(x, show.warning=show.warning);
 	if(is.numeric(x.median) && is.numeric(x.mad)) { return ( (x - x.median) / x.mad ); }
-	m = functions.cleanKey(method, 1);
+	m = prep.arg(method, 1);
 	if( is.null(x.median) || is.null(x.mad) )
       {
       warning("Only one value was entered for x.median / x.mad ... Computing from the data instead.")
@@ -448,7 +438,7 @@ stats.zScores = function(x, x.bar = NULL, s.hat = NULL, method="base")
 	{
 	if(is.numeric(x.bar) && is.numeric(s.hat)) { return ( (x - x.bar) / s.hat); }
 	warning = stats.warningNA(x, show.warning=show.warning);
-	m = functions.cleanKey(method, 1);
+	m = prep.arg(method, 1);
 	if( is.null(x.bar) || is.null(s.hat) )
       {
       warning("Only one value was entered for x.bar / s.hat ... Computing from the data instead.")
@@ -468,20 +458,23 @@ stats.zScores = function(x, x.bar = NULL, s.hat = NULL, method="base")
 calculateZscores = stats.zScores;
 
 
-stats.min = function(x, na.rm=TRUE, show.warning=TRUE)
+stats.min = function(x, ..., na.rm=TRUE, show.warning=na.rm)
 	{
+	x = dots.addTo(x, ...);
 	warning = stats.warningNA(x, show.warning=show.warning);
 	base::min(x, na.rm=na.rm);
 	}
 	
-stats.max = function(x, na.rm=TRUE, show.warning=TRUE)
+stats.max = function(x, ..., na.rm=TRUE, show.warning=na.rm)
 	{
+	x = dots.addTo(x, ...);
 	warning = stats.warningNA(x, show.warning=show.warning);
 	base::max(x, na.rm=na.rm);
 	}	
 	
-stats.range = function(x, na.rm=TRUE, show.warning=TRUE)
+stats.range = function(x, ..., na.rm=TRUE, show.warning=na.rm)
 	{
+	x = dots.addTo(x, ...);
 	warning = stats.warningNA(x, show.warning=show.warning);
 	base::diff( base::range(x, na.rm=na.rm) );
 	}
@@ -491,13 +484,14 @@ stats.range = function(x, na.rm=TRUE, show.warning=TRUE)
 # x.info = stats.summary(x);
 # str(x.info);
 stats.summary = function() {}
-stats.summary = function(x, type=1, sort.ASC = FALSE,
+stats.summary = function(x, ..., type=1, sort.ASC = FALSE,
 								outlier.z = c(-3, 3), 
 								outlier.m = c(-3, 3),
 								outlier.IQR = c(1.5, 3),
 								sharpe.R = 0
 						)
 	{
+	x = dots.addTo(x, ...);
 	res = list();
 	n = length(x);
 	xx = stats::na.omit(x);

@@ -1520,7 +1520,7 @@ path.openInExplorer = function(key = "wd")
 is.url = function(files)
 	{
 	files = str.trim(files);
-	fil = functions.cleanKey(files, 3);
+	fil = prep.arg(files, 3);
 	x = (fil == "htt"); y = (fil == "ftp");  # multivariate, truth tables
 	return ( (x+y > 0) );
 	}
@@ -1763,7 +1763,7 @@ is.windows = function()
 is.url = function(files)
 	{
 	files = str.trim(files);
-	fil = functions.cleanKey(files, 3);
+	fil = prep.arg(files, 3);
 	x = (fil == "htt"); y = (fil == "ftp");  # multivariate, truth tables
 	return ( (x+y > 0) );
 	}

@@ -223,7 +223,7 @@ primes.inRange = function(xmin, xmax, ...)
 #' # NOT RUN # z = primes.get(100, method="sfsmisc");	stopifnot(identical(x,z));
 primes.get = function(n, first=TRUE, optimus=FALSE, method="base")
 	{
-	mm = functions.cleanKey(method, 2);
+	mm = prep.arg(method, 2);
 		
 	if(mm == "cp" && exists("cpp_primes"))
 		{

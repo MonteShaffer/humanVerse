@@ -31,7 +31,7 @@ bit.RShift = function(x, bits=1, method="cpp", unsigned=FALSE)
 		}
 
 	# necessary overhead
-	m = functions.cleanKey(method, 1);
+	m = prep.arg(method, 1);
 
 	if(m == "c" && exists("bits_RShift"))
 		{
@@ -87,7 +87,7 @@ bit.LShift = function(x, bits=1, method="cpp", unsigned=FALSE)
 		}
 
 	# necessary overhead
-	m = functions.cleanKey(method, 1);
+	m = prep.arg(method, 1);
 
 	if(m == "c" && exists("bits_LShift"))
 		{

@@ -214,8 +214,8 @@ timer.print = function(key="DEFAULT", ...,
 	
 	TIMER 	= "timer"; if(as.internal) { TIMER = ".timer"; }
 	
-	forma 	= functions.cleanKey(format, 1, keep="-");
-	tim 	= functions.cleanKey(time.is, 3);
+	forma 	= prep.arg(format, 1, keep="-");
+	tim 	= prep.arg(time.is, 3);
 	
 	memory.init();
 	
@@ -288,7 +288,7 @@ timer.printALL = function(k=NULL, format="pretty",
 	{
 	TIMER = "timer"; if(as.internal) { TIMER = ".timer"; }
 	
-	forma = functions.cleanKey(format, 5, keep="-");
+	forma = prep.arg(format, 5, keep="-");
 
 ###############################################
 	timer = .GlobalEnv$.humanVerse[[TIMER]];

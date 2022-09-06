@@ -1,5 +1,329 @@
 
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#'
+#' prep.arg
+#'
+#' This INTENTIONALLY uses internal base R to prevent 'recursion'
+#'
+#' @param key (what is the character string to be keyed)
+#' @param n=1 (how many characters of key to return)
+#'
+#' @return Updated key
+#' @export
+#' 
+#' @examples
+
+# extra = "! #"
+prep.arg = function(key, n=1, keep="", case = "lower", extra = "")
+	{ 
+	key = str.toCase(key, case=case);
+	if(extra != "")
+		{
+		n = nchar(extra);  # nchars 
+		extra_ = strsplit(extra, "", fixed=TRUE)[[1]];
+		res = str;
+		for(i in 1:n)
+			{			
+			res = gsub(extra_[i], "", res, fixed=TRUE);
+			}
+		str = res;
+		}
+	if(keep != "")
+		{
+		tmp = strsplit(str, keep, fixed=TRUE)[[1]];
+		res = paste0( substring(tmp, 1, n), collapse=keep);
+		return(res);
+		}
+	substring(str, 1, n);
+	} 
+
+
+#' @rdname functions.cleanupKey
+#' @export
+functions.cleanupKey = prep.arg;
+functions.cleanKey = prep.arg;
+
+#' @rdname functions.cleanUpKey
+#' @export
+functions.cleanUpKey = prep.arg;
+ 
+
+
+
+
+
+
+
+
+
+# function.info("+")
+# THIS IS UNIVARIATE 
+# https://realpython.com/python-refactoring/
+function.info = function(..., character.only=FALSE)
+	{
+	if(character.only) 
+		{ 
+		fn.str = unlist(list(...)); 
+		} else {
+				fn.str = str.fromObjectName(...);
+				}
+debug = FALSE;
+	fn.obj = suppressError( match.fun(fn.str), show.notice=debug, msg="debug function.info match.fun(fn.str)");
+	if(is.error(fn.obj)) { return(NULL); }
+			
+	if(base::is.function(fn.obj))
+		{
+		p = FALSE;
+		f = formals( fn.obj ); # currently is paired.list	
+		if(is.primitive(fn.obj)) 
+				{ 
+				p = TRUE;
+				f = suppressWarnings( formals( args(fn.obj) ) );
+				}
+		b = as.character( body( fn.obj ) );
+		s = as.character( property.get("srcref", fn.obj) );
+		# i = functionBody(fn.str);
+		# e = function.findPackages(fn.str);
+		e = find(fn.str); # only searching attached ...
+		
+		fp = as.list(f);
+		fpn = length(fp);
+		ftypes = character(fpn);
+		for(i in 1:fpn)
+			{
+			ftypes[i] = v.type(fp[[i]]);
+			}
+		params = list(	"keys" = names(fp), 
+						"values" =  as.character(fp), 
+						"types" = ftypes
+					);
+		
+		pdf = as.data.frame( cbind(params$keys, params$values, params$types) );
+			rownames(pdf) = NULL;
+			colnames(pdf) = c("keys", "values", "types");
+			
+		res = list(	"fn.scope" = e,
+					"primitive" = p,
+					"params" = pdf,
+					"body" = b, "source" = s 
+					);
+		res = property.set("fn.name", res, fn.str);
+		res = property.set("fn.obj", res, fn.obj);
+		return(res);
+		}
+	return(NULL);
+	}
+	
+#  function.info("is.function")
+#  rm("is.function"); ... rm(is.function);  ALSO works
+
+
+
+
+
+
+
+
+
+
+# pkg = "stats"
+# this is univariate, allows the pkg.str or pkg.obj 
+functions.inPackage = function(..., character.only=FALSE, auto.attach=TRUE)
+	{
+	if(character.only) 
+		{ 
+		pkg = unlist(list(...)); 
+		} else {
+				pkg = str.fromObjectName(...);
+				}
+debug = FALSE;
+	pkg.ns = suppressError( getNamespace(pkg), show.notice=debug, msg="debug functions.inPackage ");
+	if(is.error(pkg.ns)) { return(NULL); }
+	
+	all  = ls( pkg.ns, all.names = TRUE); 
+	
+	# public has to be loaded ... 
+	public = NULL;
+	pp = paste0("package:", pkg);
+	if(!(pkg %in% (.packages()))) 
+		{ 
+		if(!auto.attach)
+			{
+			warning.cat("\n", "The package [", pkg, "] is not attached via library() or require() or humanVerse::include() ... private will show all functions, but not distinguish from public", "\n"); 
+			} else {
+					warning.cat("\n", "Attaching package [", pkg, "] as it is currently NOT attached", "\n"); 
+					library( as.character(pkg), character.only=TRUE );  # strings allowed on library ... WEIRD...
+					public = ls( pp, all.names = TRUE);
+					}
+		} else { public = ls( pp, all.names = TRUE); }
+	
+	
+	private = set.diff(all, public);
+	list("public" = public, "private" = private);
+	}
+	
+
+
+
+
+# pip.info = functions.stepInto(pip); 
+
+functions.stepInto = function(...)
+	{
+debug = FALSE;
+	fparams = function.info(...)$params;
+	if(is.null(fparams$keys)) { return(NULL); }
+	n = length(fparams$keys);
+	count = 0; unassigned = NULL;
+	fparams$inserted = ""
+	for(i in 1:n)
+		{
+		key = fparams$keys[i];
+		val = fparams$values[i];
+		typ = fparams$types[i];
+if(debug)
+	{
+cat("\n key ::: ", key, "\t typ ::: ", typ, "\t val ::: ", val, "\n\n");
+	}	
+		
+		if(key == "...") 
+			{ 
+			fparams$inserted[i] = "-UNASSIGNED-";
+			unassigned = c(unassigned, key);
+			next; 
+			}
+		
+		if(typ == "symbol")
+			{
+			fparams$inserted[i] = "-UNASSIGNED-";
+			unassigned = c(unassigned, key);
+			#### why ggget and setback ... just SKIP 
+			# glo = ggget(key, -1);  # TRAPS NULL in error
+			# if(!is.null(glo))
+				# {
+				# value = glo;
+				# key %GLOBAL% value;
+				# }
+			next;
+			}
+			
+		if(typ == "language") 
+			{ 
+			count = 1 + count;
+			value = eval(parse(text = val));
+			fparams$inserted[i] = list.toString(value);
+			key %GLOBAL% value;
+			next;
+			}
+			
+		if(typ != "NULL")
+			{
+			value = as.type(val, typ);
+			} else { value = val; }
+		count = 1 + count;
+		fparams$inserted[i] = list.toString(value);
+		key %GLOBAL% value;
+		}
+cat("\n \t ", count, " KEYS were assigned.  The following were *NOT* assigned: \n\n"); 
+cat( paste0("\n\t\t\t\t\t", 
+			paste0(unassigned, collapse="\n\n\t\t\t\t\t"), 
+			"\n\n")
+	);
+cat("\n\n");
+print(fparams);
+
+	invisible(fparams);
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#' castStringAsFunction
+#'
+#' @param fstr The RHS (right hand side) of a function in string form.
+#' @param ... The elements in RHS that are parameters (e.g., x) ... casts as a symbol 
+#' @param envir The scope of the environment for the function
+#'
+#' @return A function
+#' @export
+#'
+#' @examples
+#' x = -3:3;
+#' FUN = "exp( 3 * x^2 + 2 * x + 1)";
+#' myFunction = castStringAsFunction (  FUN, x );
+#' myFunction;
+#' myFunction(x);
+#'
+function.fromString = function() {}
+function.fromString = function(fstr, ..., envir = parent.frame() )
+	{
+	# https://stackoverflow.com/questions/66266860/
+	dots			= match.call(expand.dots = FALSE)$... ;
+	form_ls			= rep(list(bquote()), length(dots));
+	names(form_ls)	= as.character(dots);
+
+	f = function(tol = sqrt(.Machine$double.eps)) {} 
+		formals(f)		= form_ls;
+		body(f)			= str2lang(fstr);
+		environment(f)	= envir;
+	f;
+	}
+
+
+castStringAsFunction = function.fromString;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
 # THIS IS MULTIVARIATE ... 
 # verify.in.pkg will attach the PACKAGES to do a DEEP search 
 functions.info = function(fn.str, ..., verify.in.pkg = TRUE)
@@ -42,38 +366,6 @@ functions.info = function(fn.str, ..., verify.in.pkg = TRUE)
 
 # stringdist is function in pkg stringdist ... it is attached as function (enclosure)
 
-# pkg = "stats"
-# this is univariate, allows the pkg.str or pkg.obj 
-functions.inPackage = function(..., auto.attach=TRUE)
-	{
-debug = FALSE;
-	pkg = str.fromObjectName(...); 
-	pkg.ns = suppressError( getNamespace(pkg), show.notice=debug, msg="debug functions.inPackage ");
-	if(is.error(pkg.ns)) { return(NULL); }
-	
-	all  = ls( pkg.ns, all.names = TRUE); 
-	
-	# public has to be loaded ... 
-	public = NULL;
-	pp = paste0("package:", pkg);
-	if(!(pkg %in% (.packages()))) 
-		{ 
-		if(!auto.attach)
-			{
-			warning.cat("\n", "The package [", pkg, "] is not attached via library() or require() or humanVerse::include() ... private will show all functions, but not distinguish from public", "\n"); 
-			} else {
-					warning.cat("\n", "Attaching package [", pkg, "] as it is currently NOT attached", "\n"); 
-					library( as.character(pkg), character.only=TRUE );  # strings allowed on library ... WEIRD...
-					public = ls( pp, all.names = TRUE);
-					}
-		} else { public = ls( pp, all.names = TRUE); }
-	
-	
-	private = set.diff(all, public);
-	list("public" = public, "private" = private);
-	}
-	
-	
 	
 	
 	
@@ -233,69 +525,6 @@ function.findPackages = function(fns, ... )
 #  sum(1,2,3,4)
 
 # args(`+`)
-# function.info("+")
- 
-# THIS IS UNIVARIATE 
-# https://realpython.com/python-refactoring/
-
-# 
-function.info = function(..., character.only=FALSE)
-	{
-	if(character.only) 
-		{ 
-		fn.str = unlist(list(...)); 
-		} else {
-				fn.str = str.fromObjectName(...);
-				}
-debug = FALSE;
-	fn.obj = suppressError( match.fun(fn.str), show.notice=debug, msg="debug function.info match.fun(fn.str)");
-	if(is.error(fn.obj)) { return(NULL); }
-			
-	if(base::is.function(fn.obj))
-		{
-		p = FALSE;
-		f = formals( fn.obj ); # currently is paired.list	
-		if(is.primitive(fn.obj)) 
-				{ 
-				p = TRUE;
-				f = suppressWarnings( formals( args(fn.obj) ) );
-				}
-		b = as.character( body( fn.obj ) );
-		s = as.character( property.get("srcref", fn.obj) );
-		# i = functionBody(fn.str);
-		# e = function.findPackages(fn.str);
-		e = find(fn.str); # only searching attached ...
-		
-		fp = as.list(f);
-		fpn = length(fp);
-		ftypes = character(fpn);
-		for(i in 1:fpn)
-			{
-			ftypes[i] = v.type(fp[[i]]);
-			}
-		params = list(	"keys" = names(fp), 
-						"values" =  as.character(fp), 
-						"types" = ftypes
-					);
-		
-		pdf = as.data.frame( cbind(params$keys, params$values, params$types) );
-			rownames(pdf) = NULL;
-			colnames(pdf) = c("keys", "values", "types");
-			
-		res = list(	"fn.scope" = e,
-					"primitive" = p,
-					"params" = pdf,
-					"body" = b, "source" = s 
-					);
-		res = property.set("fn.name", res, fn.str);
-		res = property.set("fn.obj", res, fn.obj);
-		return(res);
-		}
-	return(NULL);
-	}
-	
-#  function.info("is.function")
-#  rm("is.function"); ... rm(is.function);  ALSO works
 
 
 # cat(res$body, sep="\n");
@@ -427,69 +656,6 @@ functions.whereIs = function(fn = "base:::curlDownload")
 # functions as mapping ... abstract algebra
 
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-#'
-#' functions.cleanKey
-#'
-#' This INTENTIONALLY uses internal base R to prevent 'recursion'
-#'
-#' @param key (what is the character string to be keyed)
-#' @param n=1 (how many characters of key to return)
-#'
-#' @return Updated key
-#' @export
-#' 
-#' @examples
-functions.cleanKey = function() {}
-# extra = "! #"
-functions.cleanKey = function(key, n=1, keep="", case="lower", extra = "")
-	{ 
-	ca = substring(tolower(case), 1, 2);
-			# has to be base-R (not str.tolower, recursion)
-	str = switch(ca,
-					  "lo"	= tolower(key),		# lower-case
-					  "up" 	= toupper(key),		# upper-case 
- 					  "un"  = key,				# unchanged (as-is)
-					  "no"  = key,				# no changes (as-is)
-				tolower(key)					# DEFAULT [lower-case]
-				);	
-	if(extra != "")
-		{
-		# recursion, these functions are calling cleanup 
-		# Error: node stack overflow
-		# Error: no more error handlers available (recursive errors?); invoking 'abort' restart
-		n = nchar(extra);  # nchars 
-		extra_ = strsplit(extra, "", fixed=TRUE)[[1]];
-		res = str;
-		for(i in 1:n)
-			{			
-			res = gsub(extra_[i], "", res, fixed=TRUE);
-			}
-		str = res;
-		}
-	if(keep != "")
-		{
-		tmp = strsplit(str, keep, fixed=TRUE)[[1]];
-		res = paste0( substring(tmp, 1, n), collapse=keep);
-		return(res);
-		}
-		
-	# we could explode(extra[i]).implode("") ## REMOVE
-	# if keep, explode("-"), return n elements 
-	# separated by keep ([f]irst-[s]econd-[t]hird]) ... f-s-t
-	# substr(str,1,n);  # or 
-	substring(str, 1, n);
-	} 
-
-
-#' @rdname functions.cleanupKey
-#' @export
-functions.cleanupKey = functions.cleanKey;
-
-#' @rdname functions.cleanUpKey
-#' @export
-functions.cleanUpKey = functions.cleanKey;
-
 
 # Functions will only be recorded in the profile log if they put a context on the call stack (see sys.calls). Some primitive functions do not do so: specifically those which are of type "special" (see the ‘R Internals’ manual for more details).
 # Rprof("copy.out")
@@ -554,7 +720,7 @@ functions.getParameterInfo = function(return="dots", truncate=10)
 		}
 	main = list.truncateLength(main, truncate);
 	
-	r = functions.cleanKey(return, 1);
+	r = prep.arg(return, 1);
 	if(r == "f") { return(fn); }
 	if(r == "p") { return(pf); }
 	if(r == "m") { return(main); }
@@ -1693,41 +1859,6 @@ if(out.dput)
 
 
 
-
-#' castStringAsFunction
-#'
-#' @param fstr The RHS (right hand side) of a function in string form.
-#' @param ... The elements in RHS that are parameters (e.g., x)
-#' @param envir The scope of the environment for the function
-#'
-#' @return A function
-#' @export
-#'
-#' @examples
-#' x = -3:3;
-#' FUN = "exp( 3 * x^2 + 2 * x + 1)";
-#' myFunction = castStringAsFunction (  FUN, x );
-#' myFunction;
-#' myFunction(x);
-#'
-castStringAsFunction = function(fstr, ..., envir = parent.frame() )
-  {
-  # https://stackoverflow.com/questions/66266860/
-  dots            = match.call(expand.dots = FALSE)$... ;
-  form_ls         = rep(list(bquote()), length(dots));
-  names(form_ls)  = as.character(dots);
-############### .INTERNAL FUNCTIONS ###############
-  f = function()
-    {
-    }
-############### INTERNAL FUNCTIONS. ###############
-
-    formals(f)      = form_ls;
-    body(f)         = str2lang(fstr);
-    environment(f)  = envir;
-
-  f;
-  }
 
 
 # R> library(fortunes)

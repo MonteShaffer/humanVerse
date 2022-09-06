@@ -163,8 +163,8 @@ date.calculateLeapDays = function(cyear,
 									)
 	{
 	# cyear is 1AD => 1, 1BC => 0, 2BC => -1
-	ytyp = functions.cleanKey(ytype, 4);
-	ret = functions.cleanKey(return, 3);
+	ytyp = prep.arg(ytype, 4);
+	ret = prep.arg(return, 3);
 	# ytype="julian"
 	if(ytyp == "juli")
 		{

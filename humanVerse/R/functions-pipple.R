@@ -1,63 +1,3 @@
-
-
-# cdot ... U+22EF
-
-# u.getSymbol(c("U+1F40C","U+22EF"));
-# uu = u.getSymbol(c("U+22EF","U+1F40C","U+22EF"), collapse=TRUE);
-#  "⋯🐌⋯" ... > length(uu) ... [1] 1 ..... > str.len(uu) ... [1] 3
-## FIXED, something weird about intToUtf8(num); [collapsing]?
-## MORE weirdness
-# > uu = u.getSymbol(c("U+22EF","U+1F40C","U+22EF"), collapse=FAlSE);
-# > uu
-# [1] "⋯"  "🐌" "⋯" 
-# > char.more = uu[1]
-# > char.more
-# [1] "⋯"
-# > 
-
-
-# MAYBE ALLOW a key ... 'EGYPTIAN HIEROGLYPH C020' or EGYPTIAN_HIEROGLYPH_C020
-# U+13071
-
-# THIS DOES SOMETHING ??? utf8ToInt("U+1F40C")
-u.toNum = function(str = "U+22EF", ...)
-	{
-	str = dots.addTo(str, ...);	
-	# if(str.contains("U+", str))
-	uinfo = list.pair(str.explode("U+", str));
-	utf   = list.getElements(uinfo, 2);
-	
-	
-		# maybe cast \x ... OTHER formats ...
-	# utf8ToInt(utf);
-	as.integer(as.hexmode(utf));
-	}
-	
-u.fromNum = function(num = 	128012, ..., collapse=FALSE)
-	{
-	num = dots.addTo(num, ...);
-	# res = intToUtf8(num);  # not keeping separate elements ... collapsed
-	# str.explode("",res);
-	
-	intToUtf8(num, multiple=!collapse);
-	}
-	
-u.toSymbol = function(str = "U+22EF", ..., collapse=FALSE)
-	{
-	str = dots.addTo(str, ...);
-	num = u.toNum(str);
-	u.fromNum(num, collapse=collapse);
-	}
-
-
-u.getSymbol = u.toSymbol;
-
-# utf8ToInt("U+1F40C")
-		# utf8ToInt("\U1F40C"); # 128012; # intToUtf8(128012)
-		# U+1F40C [snail]
-		# plot(1, pch= intToUtf8(128024) )
-
-
 				# row.width ... if chars, it truncates row.n 
 				# row.n is +/-5 rows from center
 				# truncates +/-5 to fit the row.width 
@@ -68,18 +8,7 @@ u.getSymbol = u.toSymbol;
 				# = c(1) ... this assumes RIGHT side of [idx = 1]
 				# = c(> dim(df)[1]) ... END 
 				
-# source( res$
-## assuming res is alive from include.dir
-quick.source = function(key="pipple", res, verbose=FALSE)
-	{
-	sfile = paste0("functions-",key,".R");
-	idx = v.which(res$myfiles, sfile);
-cat("\n QUICK: ", sfile, " with idx: ", idx, "\n");
-	if(!is.null(idx))
-		{
-		source(res$myfullpaths[idx], verbose=verbose);
-		}
-	}
+
 	
 
 # quick.source("math", res);
@@ -150,7 +79,7 @@ pip = function(df,
 	df.name = substitute(df);
 	o.df = df; # original COPY 
 	
-	df.j = functions.cleanKey(df.justify, 1);
+	df.j = prep.arg(df.justify, 1);
 	JUSTIFY = switch(df.j, 
 						"l" = "left",
 						"r" = "right",
@@ -618,7 +547,7 @@ pip.truncater = pip.truncator;
 					
 pip.numFunction = function(format="Natural")
 	{
-	f = functions.cleanKey(format, n=1, case="upper");
+	f = prep.arg(format, n=1, case="upper");
 	NUM_FUNCTION = switch(f, 
 							"E" = "num.toEng",
 							"F" = "num.toFix",
@@ -701,78 +630,6 @@ pip.formattor = pip.formatter;
 
 
 
-
-
-
-
-# pip.info = functions.stepInto(pip); 
-
-functions.stepInto = function(...)
-	{
-debug = FALSE;
-	fparams = function.info(...)$params;
-	if(is.null(fparams$keys)) { return(NULL); }
-	n = length(fparams$keys);
-	count = 0; unassigned = NULL;
-	fparams$inserted = ""
-	for(i in 1:n)
-		{
-		key = fparams$keys[i];
-		val = fparams$values[i];
-		typ = fparams$types[i];
-if(debug)
-	{
-cat("\n key ::: ", key, "\t typ ::: ", typ, "\t val ::: ", val, "\n\n");
-	}	
-		
-		if(key == "...") 
-			{ 
-			fparams$inserted[i] = "-UNASSIGNED-";
-			unassigned = c(unassigned, key);
-			next; 
-			}
-		
-		if(typ == "symbol")
-			{
-			fparams$inserted[i] = "-UNASSIGNED-";
-			unassigned = c(unassigned, key);
-			#### why ggget and setback ... just SKIP 
-			# glo = ggget(key, -1);  # TRAPS NULL in error
-			# if(!is.null(glo))
-				# {
-				# value = glo;
-				# key %GLOBAL% value;
-				# }
-			next;
-			}
-			
-		if(typ == "language") 
-			{ 
-			count = 1 + count;
-			value = eval(parse(text = val));
-			fparams$inserted[i] = list.toString(value);
-			key %GLOBAL% value;
-			next;
-			}
-			
-		if(typ != "NULL")
-			{
-			value = as.type(val, typ);
-			} else { value = val; }
-		count = 1 + count;
-		fparams$inserted[i] = list.toString(value);
-		key %GLOBAL% value;
-		}
-cat("\n \t ", count, " KEYS were assigned.  The following were *NOT* assigned: \n\n"); 
-cat( paste0("\n\t\t\t\t\t", 
-			paste0(unassigned, collapse="\n\n\t\t\t\t\t"), 
-			"\n\n")
-	);
-cat("\n\n");
-print(fparams);
-
-	invisible(fparams);
-	}
 
 
 

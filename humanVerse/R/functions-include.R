@@ -35,6 +35,21 @@ suppressErrors = suppressError;
 suppressWarning = suppressWarnings;
 
 
+
+
+# source( res$
+## assuming res is alive from include.dir
+quick.source = function(key="pipple", res, verbose=FALSE)
+	{
+	sfile = paste0("functions-",key,".R");
+	idx = v.which(res$myfiles, sfile);
+cat("\n QUICK: ", sfile, " with idx: ", idx, "\n");
+	if(!is.null(idx))
+		{
+		source(res$myfullpaths[idx], verbose=verbose);
+		}
+	}
+
 # setwd("C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R")
 
 

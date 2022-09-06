@@ -33,7 +33,7 @@ base64.decode = function(b64.vec, method="JSON", ...)
 base64.enc = function(obj, method="JSON", ...)
 	{	
 	# necessary overhead
-	m = functions.cleanKey(method, 1); 
+	m = prep.arg(method, 1); 
 	if(m == "j") { obj.str = JSON.stringify(obj, ...); }
 	if(m == "s") { obj.str = serialize(obj, NULL, ascii=TRUE, ...); }
 	obj.raw = charToRaw(obj.str);
@@ -45,7 +45,7 @@ base64.enc = function(obj, method="JSON", ...)
 base64.dec = function(b64.str, method="JSON", ...)
 	{
 	# necessary overhead
-	m = functions.cleanKey(method, 1);
+	m = prep.arg(method, 1);
 	obj.raw = b64.dec(b64.str);
 	obj.str = rawToChar(obj.raw);
 	if(m == "j") { obj = JSON.parse(obj.str); } ## no ... on this function

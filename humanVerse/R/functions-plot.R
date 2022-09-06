@@ -43,7 +43,7 @@ gr.setPosition = function(where="top")
 	# https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/axis.html
 	# [side] an integer specifying which side of the plot the axis is to be drawn on. The axis is placed as follows: 1=below, 2=left, 3=above and 4=right.
 	# argh! can't ever remember the numbers ...
-	w = functions.cleanKey(where, 1);
+	w = prep.arg(where, 1);
 	if(w == "b") 				{ return(1); }  				# below, bottom
 	if(w == "l") 				{ return(2); }  				# left
 	if(w == "a" || w == "t") 	{ return(3); }  				# above, top

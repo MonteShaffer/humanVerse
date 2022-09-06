@@ -210,7 +210,7 @@ str.fromBASE64 = function(bstr, ...)
 str.toMD5 = function(str, times=1, method="digest", ...)
 	{
 	# necessary overhead
-	m = functions.cleanKey(method, 1);
+	m = prep.arg(method, 1);
 	times = as.integer(times);  # make certain it's an integer
 	str = as.character(str);	# make certain it's a string (character)
 	if(times < 1) 
@@ -388,7 +388,7 @@ str.trimFromAny = function(str, search="#me", side="both", ...)
 	{
 	search = as.character(search);
 	if(search == "") { stop("you need to enter at least one character"); }
-		s = functions.cleanKey(side, 1);
+		s = prep.arg(side, 1);
 
 	# let's explode on "" to get chars as list
 	search = str.explode("", search); # turn into a set
@@ -443,7 +443,7 @@ str.trimFromAny = function(str, search="#me", side="both", ...)
 str.trimFromFixed = function() {}
 str.trimFromFixed = function(str, trim="#", side="both", ...)
 	{
-	s = functions.cleanKey(side, 1);
+	s = prep.arg(side, 1);
 	len.str = str.len(str);
 	n.str = length(str);
 	slen = str.len(trim);
@@ -512,7 +512,7 @@ str.len = function(str, method="stringi", locale="")
 
 # LOCALE is a TODO
 	# necessary overhead
-	m = functions.cleanKey(method, 1);
+	m = prep.arg(method, 1);
 
 	if(m == "s" && is.library("stringi") )
 		{		
@@ -547,6 +547,25 @@ strlen = str.len;
 str.length = str.len;
 
 
+
+str.toCase = function(str, ..., case="lower")
+	{
+	str = dots.addTo(str, ...);
+	cas = substring(tolower(case), 1, 3);
+			# has to be base-R (not str.tolower, recursion)
+	str = switch(cas,
+					
+					  "low"	= tolower(str),		# lowercase
+					  "upp" = toupper(str),		# uppercase 
+ 					  "ucf" = ucfirst(key),		# ucfirst
+					  "ucw" = ucwords(key),		# ucwords
+				str								# DEFAULT [as-is]
+				);	
+	str;	
+	}
+
+
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.tolower
@@ -566,7 +585,7 @@ str.tolower = function(str, method="cpp", locale="en_US.UTF-8")
 # stri_trans_tolower(string, locale = locale)
 
 	# necessary overhead
-	m = functions.cleanKey(method, 1);
+	m = prep.arg(method, 1);
 
 	if(m == "s" && is.library("stringi") )
 		{		
@@ -609,7 +628,7 @@ strtolower = str.tolower;
 str.toupper = function(str, method="cpp", locale="en_US.UTF-8")
 	{
 	# necessary overhead
-	m = functions.cleanKey(method, 1);
+	m = prep.arg(method, 1);
 
 	if(m == "s" && is.library("stringi") )
 		{		
@@ -664,8 +683,8 @@ strtoupper = str.toupper;
 str.trim = function(str, side="both", method="stringi", pattern="", ...)
   {
 	# necessary overhead
-	s = functions.cleanKey(side, 1);
-	m = functions.cleanKey(method, 1);
+	s = prep.arg(side, 1);
+	m = prep.arg(method, 1);
 	
 
 	if(m == "s" && is.library("stringi") )
@@ -742,7 +761,7 @@ str_trim = str.trim;
 str.explode = function(sep = " ", str = "hello friend", method="base",  ...)
 	{
 	# necessary overhead
-	m = functions.cleanKey(method, 1);
+	m = prep.arg(method, 1);
 
 	hasResult = FALSE;
 
@@ -795,7 +814,7 @@ str.split = str.explode;
 str.implode = function(sep, str, method="base", ...)
 	{
 	# necessary overhead
-	m = functions.cleanKey(method, 1);
+	m = prep.arg(method, 1);
 	# if(!is.list(str)) { tmp = str; str = list(); str[[1]] = tmp; }
 	str = check.list(str);  # maybe redundant of a check from another function
 
@@ -842,7 +861,7 @@ str.unsplit = str.implode;
 #------------------------------------------------#
 str.repeat = function(str, times=1, method="base")
 	{
-	m = functions.cleanKey(method, 1);
+	m = prep.arg(method, 1);
 
 	if(m == "c" && exists("cpp_trim"))
 		{
@@ -891,7 +910,7 @@ str.rep = str.repeat;
 str.replace = function(search, replace, subject, method="base")
 	{
 debug = FALSE;
-	m = functions.cleanKey(method, 1);
+	m = prep.arg(method, 1);
 
 	if(m == "c" && exists("cpp_trim"))
 		{
@@ -1060,8 +1079,8 @@ str.pad = function(str, final.length, padding="0", side="RIGHT", method="stringi
 	{
 	str = as.character(str);
 	# necessary overhead
-	s = functions.cleanKey(side, 1);
-	m = functions.cleanKey(method, 1);
+	s = prep.arg(side, 1);
+	m = prep.arg(method, 1);
 
 	if(m == "s" && is.library("stringi") )
 		{
@@ -1628,7 +1647,7 @@ str.characterFrequency = function(str,
 										space.char = "[sp]"
 									)
 	{
-	ca  = functions.cleanKey(case, 2);
+	ca  = prep.arg(case, 2);
 	# we collapse all to get FREQ of what was entered
 	all = paste0(str, collapse="");  # we added a character here ... "\n"
 	if(ca == "lo") { all = tolower(all); }
@@ -1648,7 +1667,7 @@ str.characterFrequency = function(str,
 	nt = nrow(mytable);
 	
 	# sort 
-	sb  = functions.cleanKey(sort.by, 1, keep = "-");
+	sb  = prep.arg(sort.by, 1, keep = "-");
 	te = str.explode("-", sb);
 	so = te[1]; by = te[2]; if(is.na(by)) { by = ""; }
 

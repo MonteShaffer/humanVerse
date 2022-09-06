@@ -336,7 +336,7 @@ file.init = function()
 # add basic save/load ... save.image 
 file.readFrom = function(filename, ..., method="stringi")
 	{
-	mmm = functions.cleanKey(method, 3);
+	mmm = prep.arg(method, 3);
 
 	if(mmm == "csv" || mmm == "pip")
 		{

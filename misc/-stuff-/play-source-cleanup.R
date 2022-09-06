@@ -824,7 +824,7 @@ strip_style <- function(string) {
 date.isLeapYear = function(cyear, calendar="gregorian")
 	{
 	# cyear is 1AD => 1, 1BC => 0, 2BC => -1
-	cale = functions.cleanKey(calendar, 4);
+	cale = prep.arg(calendar, 4);
 	# calendar="julian"
 	if(cale == "juli")
 		{
@@ -1512,7 +1512,7 @@ file.writeLine = writeLine;
 #' @export
 storeToFile = function (str, file, method="cat", ...)
 	{
-	mmm = functions.cleanKey(method, 3);
+	mmm = prep.arg(method, 3);
 	if(mmm == "cha") { writeChar(str, file, ... ); }
 	if(mmm == "cat") { cat(str, file=file, append=FALSE); }	
 	}
@@ -1958,7 +1958,7 @@ date.init = function()
 
 date.getVar = function(key)
 	{
-	ke = functions.cleanKey(key, 2, keep=".");
+	ke = prep.arg(key, 2, keep=".");
 	if(key == "l.t")  # local.tz
 		{
 		
@@ -1991,7 +1991,7 @@ date.getDaysInTropicalYear = function()
 
 date.getTimeZone = function(which.tz="in")
 	{
-	wt = functions.cleanKey(which.tz, 2);
+	wt = prep.arg(which.tz, 2);
 	# if from INIT, we have other parameters, use them 
 	
 	## [lo]cal ... 
@@ -2092,7 +2092,7 @@ date.fromUnix = function(unixNumeric, ..., return="lt")
 	# date.defaults will choose the default, or value from dots ... 
 	date.defaults(args$dots); # assign in date.defaults return here ... 
 	
-	re = functions.cleanKey(return, 2);  # "lt" or "ct"
+	re = prep.arg(return, 2);  # "lt" or "ct"
 	
 	if(re == "ct") 
 		{ 

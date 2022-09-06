@@ -20,7 +20,7 @@ set.mix = function() {}
 #' @examples
 na.remove = function(x, method="omit", ...)
 	{
-	m = functions.cleanKey(method, 1);
+	m = prep.arg(method, 1);
 	if(m == "o") { return( na.omit(x, ...) )	; }
 	if(m == "e") { return( na.exclude(x, ...) )	; }	
 	}

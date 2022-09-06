@@ -142,9 +142,9 @@ xls.T.INV.2T = function(prob, df)
 	
 xls.T.TEST = function(x, y, tails=1, type=1)
 	{
-	paired = FALSE; 	if(type == 1) { paired = TRUE; }
-	var.equal = TRUE; 	if(type == 3) { var.equal = FALSE; }
-	alternative = "two.sided"; if(tails == 1) { alternative = "less"; } # or greater ?
+	paired = FALSE; 	if(type == 1)  { paired = TRUE; }
+	var.equal = TRUE; 	if(type == 3)  { var.equal = FALSE; }
+	alternative = NULL;	if(tails == 2) { alternative = "two.sided"; } 
 	# alternative ... a character string specifying the alternative hypothesis, must be one of "two.sided" (default), "greater" or "less". You can specify just the initial letter
 	
 	res = t.test(x, y, alternative = alternative, paired = paired, var.equal = var.equal);

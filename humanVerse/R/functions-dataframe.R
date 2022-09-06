@@ -199,7 +199,7 @@ cat("\n i = ", i, " \t idx = ", idx, " \t type = ", type[i], " \n");
 # [s]tart or [b]eginning or [f]irst
 df.addRow = function(df, row, where = "end")
 	{
-	w  = functions.cleanKey(where, 1);
+	w  = prep.arg(where, 1);
 	dftypes = df.getColumnTypes(df);
 		dfnames = colnames(df);
 	
@@ -385,7 +385,7 @@ df.removeDuplicatesFromKey = function(df, key, val) { }
 
 df.moveColumns = function(df, cols, where="after", anchor)
 	{
-	w = functions.cleanKey(where, 1);  # [b]efore, [a]fter
+	w = prep.arg(where, 1);  # [b]efore, [a]fter
 	dfcols = colnames(df); 
 	n = length(dfcols);
 	n.cols = length(cols);

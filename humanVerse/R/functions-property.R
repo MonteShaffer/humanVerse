@@ -21,7 +21,7 @@ property.set = function(key, obj, value=NULL,
 									recycle = FALSE
 									)
 	{
-	pt = functions.cleanKey(property.type, 1);
+	pt = prep.arg(property.type, 1);
 
 
 
@@ -98,8 +98,8 @@ property.get = function(key, obj,
 								
 								)
 	{
-	pt = functions.cleanKey(property.type, 1);
-	w  = functions.cleanKey(wildcard, 1, keep = "-");
+	pt = prep.arg(property.type, 1);
+	w  = prep.arg(wildcard, 1, keep = "-");
 	if(pt == "a")  # attributes
 		{
 		res = attributes(obj)[[key]];
@@ -161,7 +161,7 @@ getAttribute = property.get;
 # as dataframe?
 property.getALL = function(obj=NULL, property.type="attributes")
 	{
-	pt = functions.cleanKey(property.type, 1);
+	pt = prep.arg(property.type, 1);
 	if(pt == "a")  # attributes
 		{
 		res = attributes(obj);

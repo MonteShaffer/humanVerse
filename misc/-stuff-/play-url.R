@@ -363,7 +363,7 @@ is.validURL = function(urls, deep=FALSE)
 	urls = str.trim(urls);
 	if(!deep)
 		{
-		fil = functions.cleanKey(urls, 3);
+		fil = prep.arg(urls, 3);
 		x = (fil == "htt"); y = (fil == "ftp");  # multivariate, truth tables
 		return ( (x+y > 0) );
 		}

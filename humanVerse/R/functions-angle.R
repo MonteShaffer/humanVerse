@@ -49,8 +49,8 @@ angle.convert = function(A, ..., from="degrees", to="radians")
 	{
 	A = dots.addTo(A, ...);
 	# convert everthing to "degrees" on first pass
-	F = functions.cleanKey(from, 1, case="upper");
-	T = functions.cleanKey(to, 1, case="upper");
+	F = prep.arg(from, 1, case="upper");
+	T = prep.arg(to, 1, case="upper");
 # dput(A); dput(F); dput(T); 
 	deg = switch(F,					  			
 					  "D" 	= A,
@@ -350,8 +350,8 @@ arctanh = math.atanh;
 # property.get("srcref", .cosine.similarity); # lsa is NULL
 .cosine.similarity = function(a, b, method="cpp", technique="crossprod")
 	{
-	m = functions.cleanKey(method, 1);
-	tech = functions.cleanKey(technique, 4);
+	m = prep.arg(method, 1);
+	tech = prep.arg(technique, 4);
 	# The cosine of two non-zero vectors (WIKI: Cosine similarity)
 	if(anyNA(a) || anyNA(b))
 		{
@@ -394,7 +394,7 @@ arctanh = math.atanh;
 #'
 .angular.similarity = function(a, b, return="similarity", set.properties=FALSE, cs=NULL, ...)
 	{
-	r = functions.cleanKey(return, 1); # [s]imilarity or [d]istance 
+	r = prep.arg(return, 1); # [s]imilarity or [d]istance 
 	if(is.null(cs)) { cs = .cosine.similarity( a,b, ... ); }
 	if(is.nan(cs)) { return(NaN); } 
 	# any element in either is negative
@@ -458,7 +458,7 @@ cosine.similarity = function(a, b=NULL, by="col", ...)
 		res = property.set("angular.distance",   res, ad);
 		return( res );
 		}
-	by = functions.cleanKey(by, 2);
+	by = prep.arg(by, 2);
 	if(is.matrix(a) && is.null(b))
 		{
 #cat("\n ALEX \n");

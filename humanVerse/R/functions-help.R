@@ -17,6 +17,21 @@ help.viewPackage = function(...)
 	}
 
 
+
+
+## yihue ... hack web launch
+## https://stackoverflow.com/questions/12636764/r-built-in-web-server
+## https://github.com/yihui/servr
+## https://cran.r-project.org/web/packages/httpuv/index.html
+## websocket?
+## browseURL()
+## help ... fn
+## port <- tools::startDynamicHelp(NA)
+## 
+
+
+
+
 # ?Syntax ... not ?Symbols or ?Operators
 # .end question ... THIS ... based on idx in array (matrix, dataframe, vector)
 # abort()

@@ -5,7 +5,7 @@ date.computeProlepticOffsetGregorian = function(NUM, dir=-1,
 								offset=NULL
 								)
 	{
-	off = functions.cleanKey(offset.for, 3);
+	off = prep.arg(offset.for, 3);
 	NUM = as.numeric(NUM);
 	# dir == -1 ... this is toGregorianDayNumber
 	# dir == 1 ... this is fromGregorianDayNumber
@@ -177,7 +177,7 @@ date.generateProlepticGregorian = function(n, dir="FORWARD",
 									cdoy = 288 # build AS-IF this was correct ???
 								)
 	{	
-	ytyp = functions.cleanKey(ytype, 1);
+	ytyp = prep.arg(ytype, 1);
 	# Jan, Feb, Mar, ...
 	MONTHS_ = format(ISOdate(2000, 1:12, 1), "%b");
 	LENS_ = c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
@@ -194,7 +194,7 @@ date.generateProlepticGregorian = function(n, dir="FORWARD",
 	clen = LENS_[cmonth];
 	
 	
-	DIRE = toupper(functions.cleanKey(dir, 4));
+	DIRE = toupper(prep.arg(dir, 4));
 	dir = "FORWARD"; if(DIRE == "BACK") { dir = "BACKWARD"; }
 	if(is.negative(n)) 
 		{ 
@@ -202,7 +202,7 @@ date.generateProlepticGregorian = function(n, dir="FORWARD",
 		# REVERSE FORWARD/BACKWARD ...
 		dir = if(dir == "FORWARD") { "BACKWARD"; } else { "FORWARD"; }
 		}  
-	DIRE = toupper(functions.cleanKey(dir, 4));
+	DIRE = toupper(prep.arg(dir, 4));
 		filename = str.replace( "{EPOCH}", toupper(epochname), filename );
 		filename = str.replace( "{n}", n, filename );
 		filename = str.replace( "{dir}", dir, filename );

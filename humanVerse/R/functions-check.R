@@ -81,8 +81,8 @@ check.isCompatibleLength = function(x, y,
 									msg = " obj1 [x] and obj2 [y] are incompatible lengths, you may get spurious results."
 								)
 	{
-	met = functions.cleanKey(method, 3, keep="-");
-	acti = functions.cleanKey(action, 4);
+	met = prep.arg(method, 3, keep="-");
+	acti = prep.arg(action, 4);
 	xlen = length(x);
 	ylen = length(y);
 	b = (ylen == xlen);  

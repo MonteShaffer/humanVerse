@@ -1,4 +1,7 @@
 
+
+
+
 # this is multivariate ... 
 v.types = function(vecs, ...)
 	{
@@ -15,6 +18,40 @@ v.types = function(vecs, ...)
 	}
 
 
+
+
+
+
+# this is univariate
+v.type = function(vec)
+	{
+	ntype = typeof(vec);		
+	if(ntype == "integer" && is.factor(vec))
+		{
+		ntype = "factor";
+		}
+	if(ntype == "double")
+		{
+		# intentional cascade ... if multiple, it will cast as the pointer <ct>
+		if(is.POSIXt(vec))   { ntype = "POSIXt";}
+		if(is.POSIXlt(vec))  { ntype = "POSIXlt";}
+		if(is.POSIXct(vec))  { ntype = "POSIXct";}	
+		if(is.Date(vec))     { ntype = "Date";}		
+		}
+	if(ntype == "closure")
+		{
+		# my function, not base  
+		if(is.function(vec)) { ntype = "function"; }
+		}
+		# "call", "expression", and "name"  [symbols]
+		# environment
+	ntype;
+	}
+
+
+
+
+
 v.naTo = function(vec, to="")
 	{
 	vec[is.na(vec)] = to;
@@ -22,8 +59,6 @@ v.naTo = function(vec, to="")
 	}
 	
 v.naTO = v.naTo;
-
-
 
 v.between = function(vec, lower, upper, sort = TRUE, ...)
 	{
@@ -39,6 +74,7 @@ v.return = function(idx)
 	if(length(idx) == 0) { return(NULL); }
 	idx;	
 	}
+
 
 v.which = function(vec, what="")
 	{ 
@@ -81,33 +117,8 @@ v.remove = function(vec, what="")
 
 
 
-# this is univariate
-v.type = function(vec)
-	{
-	ntype = typeof(vec);		
-	if(ntype == "integer" && is.factor(vec))
-		{
-		ntype = "factor";
-		}
-	if(ntype == "double")
-		{
-		# intentional cascade ... if multiple, it will cast as the pointer <ct>
-		if(is.POSIXt(vec))   { ntype = "POSIXt";}
-		if(is.POSIXlt(vec))  { ntype = "POSIXlt";}
-		if(is.POSIXct(vec))  { ntype = "POSIXct";}	
-		if(is.Date(vec))     { ntype = "Date";}		
-		}
-	if(ntype == "closure")
-		{
-		# my function, not base  
-		if(is.function(vec)) { ntype = "function"; }
-		}
-		# "call", "expression", and "name"  [symbols]
-		# environment
-	ntype;
-	}
-	
-	
+
+
 v.shortTypes = function(types)
 	{
 	n = length(types);
@@ -129,6 +140,69 @@ v.shortTypes = function(types)
 	res;
 	}
 	
+
+
+.begin = function(x)
+	{
+	1;
+	}
+ 
+.end = function(x)  # could it be from THIS
+	{
+	length(x);
+	}
+
+
+v.nearest = function(vec, what, howmany=1)
+	{
+	idx = v.nearest.idx(vec, what, howmany=howmany);
+	vec[ idx ];
+	}
+
+v.nearest.idx = function(vec, what, howmany=1)
+	{
+	vec.dev = abs(what-vec);
+	if(is.null(howmany)) { return( stats.whichMin(vec.dev) ); } # all results
+	stats.whichMin(vec.dev)[1:howmany];
+	}
+	
+
+v.freq = function(vec, what)
+	{
+	length(v.which(vec, what));
+	}
+	
+v.mode = function(vec)
+	{
+	m = stats.mode(vec, force.numeric=FALSE); # values
+	set.match(m, vec);	# idx
+	}
+
+
+
+
+
+# original = c("P.1", "P.2", "P.3", "P.4", "P.5", "P.6", "P.7", "P.8", "P.9", "P.10");
+# new = c("P.7", "P.1", "P.3", "P.6", "P.5", "P.8", "P.4", "P.9", "P.10", "P.2")
+v.arrange = function(orig, new)
+	{
+	# from 'orig' to 'new'
+	# set.match(orig, new);
+	set.match(new, orig); # I think this is correct 
+	}
+
+computeIndexFromOriginalToNew = v.arrange;
+
+
+
+
+
+
+
+
+
+
+
 	
 
 
@@ -165,19 +239,6 @@ vector.useNames = function(info)
 	
 
 
-
-
-.begin = function(x)
-	{
-	1;
-	}
- 
-.end = function(x)  # could it be from THIS
-	{
-	length(x);
-	}
-	
-	
 
 
 

@@ -121,7 +121,7 @@ packages.version = function(pkgs)
 								# [r]aw ... [a]s-[d]ataframe
 packages.installed = function(return="by-library", add.version=TRUE)
 	{
-	r = functions.cleanKey(return, n=1, keep="-");
+	r = prep.arg(return, n=1, keep="-");
 	# functions.inPackage(sessioninfo) vs functions.inPackage(sessionInfo)
 	# all shows lowercase, folder shows upper case .. need to map to all 
 	# all = (.packages(all.available=TRUE));
