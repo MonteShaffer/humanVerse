@@ -4,7 +4,7 @@ check.internet = function(domain="8.8.8.8", count=1)
 	{
 	res = ping.domain(domain, count);
 	# print(res$result$data); # already printed  
-	invisible(res);
+	minvisible(res);
 	}
   
 ping.domain = function(domain="humanVerse.today", count=5, 
@@ -12,6 +12,7 @@ ping.domain = function(domain="humanVerse.today", count=5,
 						)
 	{   
 	args = function.arguments("main");
+# dput(args); 
 	flag = "c"; if(is.windows()) { flag = "n"; args$windows = TRUE; }
 	args$time$tz = Sys.timezone();
 	args$time$start = as.numeric(Sys.time());  # as.POSIXct , tz="UTC");  # UTC doesn't work   
@@ -30,19 +31,23 @@ cat("\n\n\n\t\t ping.domain :: ", cmd, "\n\n\n"); flush.console();
 	}  
 
  
-ping.parse = function(res)
-	{
+
 #dput(res);
 	# res = structure(c("", "Pinging humanVerse.today [66.29.141.54] with 32 bytes of data:", "Reply from 66.29.141.54: bytes=32 time=93ms TTL=49", "Reply from 66.29.141.54: bytes=32 time=90ms TTL=49", "Reply from 66.29.141.54: bytes=32 time=199ms TTL=49", "Reply from 66.29.141.54: bytes=32 time=90ms TTL=49", "Reply from 66.29.141.54: bytes=32 time=190ms TTL=49", "", "Ping statistics for 66.29.141.54:", "    Packets: Sent = 5, Received = 5, Lost = 0 (0% loss),", "Approximate round trip times in milli-seconds:",  "    Minimum = 90ms, Maximum = 199ms, Average = 132ms"), args = list( "humanVerse.today", 5, TRUE, windows = TRUE, time = list( tz = "America/New_York", start = 1662477836.51212, end = 1662477841.07391),  cmd = "ping -n 5 humanVerse.today"));
 
-	## args = .%$$% "res@args"
+
+ping.parse = function(res)
+	{
+	# args = .%$$% "res@args"
+	args = property.get("args", res);  
 	info = NULL;
 	info$cmd = list("cmd" = args$cmd, "domain" = args[[1]], "pings" = args[[2]], "internal" = args[[3]]);
 	info$timer = list("tz" = args$time$tz, "start" = args$time$start, "stop" = args$time$end, "time.secs" = (args$time$end - args$time$start) );
 	 
 	result = NULL;
 	
-	lines = as.character(res);
+	lines = as.character(res);     
+		info$raw = paste0("\n", paste0(lines, collapse="\n"), "\n\n");
 	# may need to compile a list of ERRORs
 	if(str.contains("Ping request could not find", lines[1]))
 		{
@@ -60,8 +65,11 @@ cat("\n\n", lines[1], "\n\n");
 		if(what == "pinging")
 			{
 			if(str.contains("Pinging", line))
-				{
-				IP = str.between(line, keys=c("[", "]"));
+				{ 
+				# doesn't work if IP is passed in 
+				# IP = str.between(line, keys=c("[", "]"));
+				IP = str.trim(str.between(line, keys=c("Pinging", "with")));
+				IP = str.trim(str.replace( c("[", "]"), "", IP)); # in case was [IP]
 				bytes = str.trim(str.between(line, keys=c("with", "bytes")));
 				
 				result$IP = IP;
@@ -129,6 +137,8 @@ cat("\n\n", lines[1], "\n\n");
 	return(minvisible(info)); 
 	}
 
+  
+ping = ping.domain;
 
 
 
