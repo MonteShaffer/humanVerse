@@ -387,11 +387,15 @@ xls.NORM.S.INV = function(prob)
 # p's and q's ... q = 1-p 		
 
 
-# df = structure(list(x = c(246L, 171L, 95L, 125L, 368L, 148L, 48L, 147L, 91L, 324L, 258L, 79L, 84L, 48L, 399L, 126L, 364L, 306L, 94L, 315L, 217L, 14L, 176L, 351L, 348L, 14L, 67L, 335L, 144L, 140L, 313L), y = c(185L, 78L, 15L, 16L, 100L, 139L, 74L, 108L, 46L, 80L, 142L, 55L, 146L, 48L, 174L, 29L, 69L, 118L, 12L, 18L, 168L, 127L, 24L, 159L, 113L, 174L, 140L, 11L, 90L, 91L, 53L)), class = "data.frame", row.names = c(NA, -31L)); list.extract(df); 
+# df = structure(list(x = c(246L, 171L, 95L, 125L, 368L, 148L, 48L, 147L, 91L, 324L, 258L, 79L, 84L, 48L, 399L, 126L, 364L, 306L, 94L, 315L, 217L, 14L, 176L, 351L, 348L, 14L, 67L, 335L, 144L, 140L, 313L), y = c(185L, 78L, 15L, 16L, 100L, 139L, 74L, 108L, 46L, 80L, 142L, 55L, 146L, 48L, 174L, 29L, 69L, 118L, 12L, 18L, 168L, 127L, 24L, 159L, 113L, 174L, 140L, 11L, 90L, 91L, 53L)), class = "data.frame", row.names = c(NA, -31L)); list.extract(df);  functions.stepInto(xls.TRENDLINE);
+
+
+
+# df = structure(list(x = 0:10, y = c(3L, 4L, 11L, 24L, 43L, 68L, 100L, 136L, 179L, 228L, 283L)), class = "data.frame", row.names = c(NA, -11L)); list.extract(df);  functions.stepInto(xls.TRENDLINE);
 
 # can't live on same line with ";" ... weird stepInto behavior ... no LHS?
 ## WEIRD ???
-# functions.stepInto(xls.TRENDLINE);  # old STEP INTO ???
+#   # old STEP INTO ???
 
 # Exponential, Linear, Logarithmic, Polynomial-2, Power, MovingAverage-2
 # Intercept = 0, Show Equation, Display R^2
@@ -401,27 +405,38 @@ xls.NORM.S.INV = function(prob)
 # =slope(A1:A10, B1:B10)
 # =intercept(...)
 
-xls.TRENDLINE = function(x, y, method="Linear", set.intercept=FALSE, intercept.to=0, no = 2)
+
+xls.TRENDLINE = function(x, y, method="Exp", set.intercept=FALSE, intercept.val=0, no = 2)
 	{
 	df = data.frame(x, y);
 	METHOD = prep.arg(method, n=3, case="upper");
-	if(!set.intercept) { INT = 1; } else { INT = intercept.to; }
+	if(!set.intercept) { INT = 1; } else { INT = 0; }
+	# https://stackoverflow.com/a/7333292/184614
+	
 	# ?lm lm.D90 <- lm(weight ~ group - 1) # omitting intercept ??? 0 ?
-	# if intercept.to ... I could do it with forced to ORIGIN then just add/subtract ? 
+	# if intercept.val ... I could do it with forced to ORIGIN then just add/subtract ? 
+	
+	# https://answers.microsoft.com/en-us/msoffice/forum/all/excel-formula-for-logarithmic-and-polynomial/54d75ca2-a598-4483-bca5-775325c333f3
+	# y = a*ln(x) + b 
+						# 
+						# "EXP" = "y ~ exp({c}x) + exp({INT})",
+	
 	model.str = switch(METHOD,
-						"EXP" = "y ~ {INT} + {x}",
-						"LIN" = "y ~ {INT} + {x}",
-						"LOG" = paste0("y ~ ",INT," + x"),
+						"EXP" = "log(y) ~ {c}x + {INT}",
+						"LIN" = "y ~ {c}x + {INT}",
+						"LOG" = "y ~ {c}log(x) + {INT}",
 						"POL" = paste0("y ~ ",INT," + x"),
 						"POW" = paste0("y ~ ",INT," + x"),
 						"MOV" = paste0("y ~ ",INT," + x"),
-					paste0("y ~ ",INT," + x")  # DEFAULT is linear
+					"y ~ {x} + {INT}"  # DEFAULT is linear
 					)
 	
-	model.f = str.replace(c("{INT}", "{x}"), c(INT, "x"), model.str);
+	model.f = str.replace(c("{INT}", "{c}"), c(INT, ""), model.str);
 		
 	model = eval(parse(text = model.f));  # now a language ...
-	m.fit = lm(model, data=df);
+		ndf = df; if(set.intercept) { ndf$y = df$y - intercept.val; }
+		# if (LN) ndf$y = log(y)
+	m.fit = lm(model, data=ndf);
 	m.fitsum = summary(m.fit);
 	
 	m.R2 = round( m.fitsum$r.squared, 5);
@@ -436,17 +451,31 @@ xls.TRENDLINE = function(x, y, method="Linear", set.intercept=FALSE, intercept.t
 	
 	# plot data ... easy
 	# plot fn as line with PARAM estimates 
-	fn.str = str.replace(	c("{INT}", 	"{x}"), 
-							c(coef[1], 	paste0(coef[2],"*x")), 
+	# if INT is forced to, REPLACE WITH INT, not coef[1]
+	rcoef = coef;  # remaining coefficients ... 
+	mINT = INT; 
+		if(set.intercept) { mINT = intercept.val; } # don't put in MODEL, just shift it ... 
+		if(!set.intercept) { mINT = coef[1]; rcoef = coef[-c(1)]; }
+		
+	# this is default ... 
+	fn.str = str.replace(	c("{INT}", 	"{c}"), 
+							c( mINT, 	paste0(rcoef[1],"*")), 
 						model.str
-						);
+						); 
+	if(METHOD == "EXP")
+		{
+		# "EXP" = "log(y) ~ {c}x + {INT}",
+		# "EXP" = "y ~ exp({c}x) + exp({INT})",
+		fn.str = paste0( c("y ~ ", round(exp(mINT),3), "*exp(", rcoef[1], "*x)"), collapse="");
+		}
+						
 	fn = function.fromString(str.replace("y ~", "", fn.str), x);  # need bogus data for x to be symbol
 	xlim = c(min(x), max(x));
 		# we want y range expanded to allow 20% for LEGEND in TOP
 	ylim = c(min(y), max(y));  ydiff = diff(ylim); yadd = 1.20 * ydiff;
 	ylim.new = c(ylim[1], ylim[1] + yadd);
 		
-		
+		 
 	
 	# dxi ... # 100 determines smoothness of curve
 	xfn = seq(xlim[1], xlim[2], length.out=100);  
@@ -476,6 +505,7 @@ par.saveState();
 	
 	yline = (ylim.new[2] - ylim[2])/3;  # 3 lines
 	
+	## abline(intercept, coef(fit))
 	# text 
 	# align stars below "y" for MODEL.fit, INT and x for PARAM.fit 
 	# show R^2 ...  m.R2 
@@ -490,8 +520,9 @@ par.saveState();
 	# show stars ... coef.stars; m.stars
 	stars = paste0( c(m.stars, coef.stars), collapse=" ");
 	text(x = xlim[1], y = ylim[2] + 1*yline, labels = stars, pos=4);
-	
+	# if(set.intercept), STARS needs to put FIXED 
 
+	par(new=FALSE);
 
 	
 par.restoreState();	

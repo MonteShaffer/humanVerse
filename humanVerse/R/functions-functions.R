@@ -445,8 +445,8 @@ function.fromString = function(fstr, ..., envir = parent.frame() )
 	names(form_ls)	= as.character(dots);
 
 	f = function(tol = sqrt(.Machine$double.eps)) {} 
-		formals(f)		= str2lang(form_ls);
-		body(f)			= (fstr);
+		formals(f)		= form_ls;
+		body(f)			= str2lang(fstr);
 		environment(f)	= envir;
 	f;
 	}

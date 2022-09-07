@@ -57,6 +57,9 @@ help.viewPackage = function(...)
 ## x.more = str.removeWhiteSpace(x.help, "|", pre.trim=FALSE);
 ## lines = str.removeWhiteSpace(x.help, "|"); # if not a key|value, overflow from previous line ... 
 	
+## pkg <- "stats"
+## packageDescription(pkg)
+
 # df = help.parseFromLibrary("stats"); head(df); str(df)
 # mask.ok ... they can make mistakes on NAMING, we can't 
 # fn and line number ?

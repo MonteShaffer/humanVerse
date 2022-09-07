@@ -217,8 +217,7 @@ include = function(..., character.only=FALSE)
 	 ## R CMD INSTALL works in Windows to install source packages.
 	 ## update.packages() 
 	 ## 18,000  ... license, no author?
-	 ## inst <- packageStatus()$inst
-	##	> inst[inst$Status != "ok", c("Package", "Version", "Status")]
+	 ## inst <- packageStatus()$inst; inst[inst$Status != "ok", c("Package", "Version", "Status")]
 	## mostly httr ... world, constantly needs updates ... 
 	## Packages can be removed in a number of ways. From a command prompt they can be removed by 
 		## R CMD REMOVE -l /path/to/library pkg1 pkg2 …
