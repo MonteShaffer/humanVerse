@@ -2,8 +2,34 @@
 	
 	
 
+# https://cran.r-project.org/web/packages/pvaluefunctions/vignettes/pvaluefun.html
+# https://stackoverflow.com/questions/57231854/substitute-p-values-for-stars-in-data-frame-in-r
+stats.stars = function(pvals, ... , 
+							cuts =c(0.001, 0.01, 0.05, 0.10, 1), 
+							stars=c("***", "**", "*", ".", "N.S.")
+						)
+	{ 
+	pvals = dots.addTo(pvals, ...);
+	n = length(pvals);
+	nc = length(cuts);
+	ns = length(stars);
+	res = character(n);
+	# check.compatibleLength?
+	
+	# findInterval is zero-offset, the "-NULL-" accounts for this ... 
+	idx = 1 + findInterval(pvals, cuts, left.open=TRUE);  
+	stars[idx];	
+	}
+	
+	# gtools::stars.pval
+	# unclass(symnum(p.value, corr = FALSE, na = FALSE, cutpoints = c(0, 0.001, 0.01, 0.05, 0.1, 1), symbols = c("***", "**", "*", ".", " ")))
+		
+	## stats::symnum ... CONTORTIONS !!
+	# stop("number of 'cutpoints' must be one less than number of symbols")
+	# stop("'symbols' must be unique
 
 
+ 
 
 
 

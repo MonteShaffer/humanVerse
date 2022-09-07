@@ -52,6 +52,8 @@ prep.arg = function(key, n=1, keep="", case = "lower", extra = "")
 	} 
 
 
+arg.prep = prep.arg; 
+
 #' @rdname functions.cleanupKey
 #' @export
 functions.cleanupKey = prep.arg;
@@ -130,6 +132,8 @@ debug = FALSE;
 f.methods = function.methods;
 
 
+# uses match.fun ... can't separate "by base"
+# function.findOnStack ... vs function.findInHelp
 function.find = function(..., character.only=FALSE)
 	{
 	# if from top level, ... works as expected
@@ -172,6 +176,29 @@ function.sourceInfo = function(src.obj, to.rm=c("parseData"))
 	res;	
 	}
 
+#base::str2lang; 
+	# str = "x + 2*y"; slang = str2lang(str); str2 = lang2str(slang); 
+	# str; str2; identical(str, str2);
+lang2str = function(lang.obj)
+	{
+	deparse(lang.obj); 		# eval(parse(text = lang.obj));
+	}
+	
+strlang.RFormat = function(str)
+	{
+	lang2str(str2lang(str))
+	}
+	
+# symbols ...  is.symbol 
+# ?is.symbol ... "mode"
+symb2str = function(symb) 
+	{
+	as.character(symb);
+	}
+str2symb = function(str="alex") 
+	{
+	as.symbol(str);
+	}
 
 
 # function.info("+")
@@ -301,9 +328,16 @@ debug = FALSE;
 
 
 
+
+#' stepIntoFunction
+#'
+#' The idea is to call this function so you don't have to
+#' prepopulate default parameters.
+#'
+
 # pip.info = functions.stepInto(pip); 
 
-functions.stepInto = function(...)
+function.stepInto = function(...)
 	{
 debug = FALSE;
 	fparams = function.info(...)$params;
@@ -371,8 +405,8 @@ print(fparams);
 	}
 
 
-
-
+functions.stepInto = function.stepInto; 
+f.stepInto = function.stepInto; 
 
 
 
@@ -411,8 +445,8 @@ function.fromString = function(fstr, ..., envir = parent.frame() )
 	names(form_ls)	= as.character(dots);
 
 	f = function(tol = sqrt(.Machine$double.eps)) {} 
-		formals(f)		= form_ls;
-		body(f)			= str2lang(fstr);
+		formals(f)		= str2lang(form_ls);
+		body(f)			= (fstr);
 		environment(f)	= envir;
 	f;
 	}
@@ -440,7 +474,7 @@ castStringAsFunction = function.fromString;
 
 
 
-
+ 
 
 
 
@@ -942,14 +976,6 @@ dput(dots);
  
 
 # so we can "step into" function for debugging
-functions.setDefaultValues = function(fn, ...)
-	{
-	if(is.character(fn)) { fn = str.toObject(fn); }
-	# not working in RSTUDIO, CLI ... why ?
-	list.extract( formals(fn), ... ); # by default into GLOBAL
-	}
-
-functions.stepInto = functions.setDefaultValues
 
 functions.trapErrors = function(expression)
 	{
@@ -1639,28 +1665,6 @@ extractKeysValuesFunctionParameters = function(Keys, Vals, envir = .GlobalEnv)
     }
 
 
-
-
-#' stepIntoFunction
-#'
-#' The idea is to call this function so you don't have to
-#' prepopulate default parameters.
-#'
-#' @param obj
-#'
-#' @return
-#' @export
-stepIntoFunction = function(obj)
-	{
-
-	# obj is from getFunctionParameters(TRUE);
-
-
-	# dput(obj);
-
-	extractKeysValuesFunctionParameters(obj$.keys.      , obj$.vals.        );
-	extractKeysValuesFunctionParameters(obj$.dots.keys. , obj$.dots.vals.   );
-	}
 
 
 

@@ -60,14 +60,28 @@ help.viewPackage = function(...)
 # df = help.parseFromLibrary("stats"); head(df); str(df)
 # mask.ok ... they can make mistakes on NAMING, we can't 
 # fn and line number ?
-help.get = function(pkg = "base", lib.loc = NULL, ...)
+help.get = function(..., lib.loc = NULL, character.only = FALSE)
 	{
-	library(help = pkg, lib.loc = lib.loc, quietly = TRUE, character.only = TRUE, ...);
+	if(character.only) 
+		{ 
+		pkg = unlist(list(...)); 
+		} else {
+				pkg = str.fromObjectName(...);
+				} 
+	# pkg = "base";
+	library(help = pkg, lib.loc = lib.loc, quietly = TRUE, character.only = TRUE);
 	}
-	
-help.parseFromLibrary = function(pkg = "base", lib.loc = NULL, ...)
+	 
+help.parseFromLibrary = function(..., lib.loc = NULL, character.only=FALSE)
 	{
-	x = help.get(pkg, lib.loc=lib.loc, ...);
+	if(character.only) 
+		{ 
+		pkg = unlist(list(...)); 
+		} else {
+				pkg = str.fromObjectName(...);
+				} 
+	# pkg = "base";
+	x = help.get(pkg, lib.loc=lib.loc, character.only = TRUE);
 	x.help = x$info[[2]];
 	   dcf = x$info[[1]];
 	
@@ -91,10 +105,11 @@ help.parseFromLibrary = function(pkg = "base", lib.loc = NULL, ...)
 
 	df = as.data.frame( cbind( names(res), unname(unlist(res)) ) );
 		colnames(df) = c("search", "short.description");
-		
+		   
 	df = property.set("path", df, x$path);
 	df = property.set("dcf", df, dcf.parse(dcf) );	
-	df;
+	print(str(df));
+	minvisible(df);
 	}
 	
 

@@ -81,12 +81,58 @@ v.naTo = function(vec, to="")
 	
 v.naTO = v.naTo;
 
-v.between = function(vec, lower, upper, sort = TRUE, ...)
+ 
+v.between = function(vec, lower, upper, 
+							lower.equal = TRUE,
+							upper.equal = TRUE,
+							return = "vector",
+					sort = TRUE, ...)
 	{
-	if(sort) { sort(vec, ...); }
-	idx = v.return( which(vec >= lower & vec <= upper) );
+	# return = [v]ector or [i]ndex
+	r = prep.arg(return, n = 1);
+	# should return idx or vec? ... THIS RETURNS vec, not idx ...
+
+	# lower can be NULL ... skip 
+	# upper can be NULL ... skip 
+	
+	# 2 x 2 here ... with null 3 x 2 
+	# TRUTH table
+	if(!is.null(lower))
+		{
+		idx1 = NULL;
+		# THIS is OR
+		if(lower.equal) { idx1 = (vec == lower); } 
+		idx2 = (vec > lower);
+		idx.lower = idx2;
+		if(!is.null(idx1)) { idx.lower = idx1 | idx2; }
+		}
+	if(!is.null(upper))
+		{
+		idx1 = NULL;
+		# THIS is OR
+		if(upper.equal) { idx1 = (vec == upper); } 
+		idx2 = (vec < upper);
+		idx.upper = idx2;
+		if(!is.null(idx1)) { idx.upper = idx1 | idx2; }
+		}
+	# COMBINED IS 'AND'
+	if(!is.null(lower) && !is.null(upper)) 
+		{ 
+		idx = idx.lower & idx.upper; 
+		} 
+	if(!is.null(lower) && is.null(upper)) 
+		{ 
+		idx = idx.lower; 
+		}
+	if(is.null(lower) && !is.null(upper)) 
+		{ 
+		idx = idx.upper; 
+		} 
 	if(is.null(idx)) { return(NULL); }
-	vec[idx];
+	if(r == "i") { return(idx); }
+	vec = vec[idx];  # truncate 
+	if(sort) { vec = sort(vec, ...); }
+	vec;
 	}
 
 v.return = function(idx)
@@ -105,10 +151,14 @@ v.which = function(vec, what="")
 		{
 		if(length(what) == 1)
 			{
-			idx = which(vec == what);
+			if(is.logical(vec))
+				{
+				idx = which(vec == what);
+				} else { if(what) { idx = 1; } }  # vec is of length one ... TRUE
 			} else {
 					if(length(what) == length(vec))
 						{
+						# if you have FALSE, !FALSE to get TRUE on what   
 						idx = which(what == TRUE);	
 						}
 					}
@@ -133,7 +183,16 @@ v.which = function(vec, what="")
 v.remove = function(vec, what="")
 	{
 	idx = v.which(vec, what=what);
-	vec[ -c( idx ) ];
+	if(is.null(idx)) { return(vec); } # nothing to remove
+	vec[ -c( idx ) ];  
+	}
+	 
+v.truncate = function(vec, parent)
+	{
+	# shorten parent by removing vec 
+	res = set.diff(parent, vec);
+	if(length(res) == 0) { return(NULL); }
+	res;
 	}
 
 

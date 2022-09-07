@@ -1,7 +1,13 @@
 
+# dataframe(x, y) : could not find function "dataframe"
+ 
+dataframe = data.frame;
+
 #' @rdname ceil
 #' @export
 ceil = ceiling;
+
+axes = axis;
 
 #' @rdname nchars
 #' @export

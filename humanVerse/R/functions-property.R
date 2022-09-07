@@ -384,10 +384,23 @@ par.set = function(keys, values)
 	for(i in 1:n)
 		{
 		key = keys[i];
-		value = values[i];
+		value = values[i]; 
+			if(n == 1) {value = values;}  # par(mar)
+			if(is.list(values)) { value = values[[i]]; }  # don't know if this arises with 'par'
 		if( key %in% pnames)
 			{
-			graphics::par(stats::setNames(list(key), value));
+			### str.replace("{value}", value) ... value is longer 1->m ... EDGE CASE ... I want it to be 1->1 
+			TMP = "graphics::par({key} = {value});"; 
+			TMP = str.replace("{key}", key, TMP);
+			if(is.character(value)) 
+				{ 
+				value = paste0('"',value,'"'); 
+				} else { 
+						value = deparse(value);
+						}
+			TMP = gsub("{value}", value, TMP, fixed=TRUE);				
+			eval(parse(text=TMP));			
+			# graphics::par(stats::setNames(list(key), value));
 			} else { 
 					warning.cat("key", key, " is either *NOT* a par key on this DEVICE or is READONLY"); 
 					} 
@@ -411,13 +424,18 @@ setPar = par.set;
 #' @examples
 par.get = function(keys, vals=NULL, no.readonly = TRUE)
 	{
-	pnames = names( graphics::par(no.readonly = no.readonly) );
+	# NO HOPS ... NUMBER TICS ... call par() once, not three times 
+	plist = graphics::par(no.readonly = no.readonly);	
+	pnames = names( plist );
 	n = length(keys);
 	res = vector("list", n);
+		# par.list = par();  # par()$key also works ... 
+		# maybe list function that performs 
+		# par.list[[keys]] ... par.list[[c(1,3]] ... ???
 	for(i in 1:n)
 		{
-		key = keys[i];
-		res[[i]] = graphics::par(key);
+		key = keys[i];	
+		res[[i]] = plist[[key]];
 		}
 	list.return(res);
 	}
@@ -437,6 +455,19 @@ par.saveState = function(key="DEFAULT", no.readonly = TRUE)
 	{
 	memory.set(key, "PAR", par(no.readonly = no.readonly) );	
 	}
+	
+par.saveInitialState = function()
+	{
+	mhash = str.HASH();  # rainbow table?! nO 
+	memory.set("par.INITIAL", "SYSTEM", mhash);
+	par.saveState(mhash);
+	}
+
+par.restoreInitialState = function()
+	{
+	mhash = memory.get("par.INITIAL", "SYSTEM");
+	par.restoreState(mhash);
+	}
 
 	
 par.restoreState = function(key="DEFAULT")
@@ -444,7 +475,8 @@ par.restoreState = function(key="DEFAULT")
 	old.par = memory.get(key, "PAR");
 	if(!is.null(old.par))
 		{
-		par(old.par);
+		# in case the no.readonly protocol wasn't follwed
+		suppressWarning( par(old.par) ); 
 		return(invisible(TRUE));
 		}
 	warning("There is no memory for par key=XXX, nothing updated");

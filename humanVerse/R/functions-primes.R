@@ -5,7 +5,15 @@ primes.scan = function() {}
 # MATH has 1,000,000; 				max 15485863
 # because of gn I have 1,057,662;	max 16441303
 # bits didn't save as expected ... 
+ 
 
+optimus.logic = function(p, n, first=TRUE, optimus=FALSE)
+	{
+	# I have a list of primes that is length(p) >= n ... NO OPTIMUS
+	if(optimus) { p = c(1,p); }
+	p = as.integer(p);
+	if(first) { p[1:n]; } else { p[p<=n]; }
+	}
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
@@ -31,7 +39,7 @@ primes.scan = function() {}
 #' x = primes.bit(100, FALSE, FALSE); length(x);	# gets primes <= 100
 #' x = primes.bit(100, TRUE, TRUE); length(x);
 #' x = primes.bit(100, FALSE, FALSE); length(x);
-primes.bit = function(n, first=TRUE, optimus=FALSE)
+primes.bit = function(n, first=TRUE)
 	{
 # timer.start("bits"); x = prime.bits((1*1000)); length(x); max(x); timer.stop("bits");
 	# you could build a bits-table, and search primes within 
@@ -80,9 +88,9 @@ primes.bit = function(n, first=TRUE, optimus=FALSE)
 		
 	p = which(bits.prime == TRUE); # indexes are primes (zero indexed???)
 	# gn is upper bound, so ... truncate ... 
-	if(first) { p = p[1:n];  	if(optimus) { p = c(1,p); } }
-	if(!first) { p = p[p < n];	if(optimus) { p = c(1,p); } }  
-	
+	if(first)  { p = p[1:n];    } 
+	if(!first) { p = p[p <= n]; }   
+		
 	p = property.set("bits", p, bits.prime);
 	return(p);
 	}
@@ -119,7 +127,7 @@ prime.bits = primes.bit;
 #' x = primes.pracma(100, FALSE, FALSE); length(x); 	# gets primes <= 100
 #' x = primes.pracma(100, TRUE, TRUE); length(x);
 #' x = primes.pracma(100, FALSE, FALSE); length(x);	
-primes.pracma = function(n, first=TRUE, optimus=FALSE)
+primes.pracma = function(n, first=TRUE)
 	{
 	# this duplicates the primary logic of pracma::primes
 	# by computing 'sqrt' one time, it speeds up things 'slightly'
@@ -151,9 +159,9 @@ primes.pracma = function(n, first=TRUE, optimus=FALSE)
 
 	p = p[p > 0]; # why?
 
-	if(first) { p = p[1:n]; }
-	if(!first) { p = p[p < n]; }
-	if(optimus) { p = c(1,p); }
+	if(first)  { p = p[1:n];    } 
+	if(!first) { p = p[p <= n]; }  
+	
 	return(p);
 	}
 
@@ -184,7 +192,7 @@ primes.inRange = function(xmin, xmax, ...)
 	{
 	# primes.default function would be nice, still would have to compare
 	if( !exists("method", inherits = FALSE ) ) { method	= "base"; }
-	p = primes.get(xmax, first=FALSE, method=method, optimus=FALSE);
+	p = primes.get(xmax, first=FALSE, method=method);
 	
 	p = p[(p >= xmin)];
 	p = p[(p <= xmax)];
@@ -223,46 +231,61 @@ primes.inRange = function(xmin, xmax, ...)
 #' # NOT RUN # z = primes.get(100, method="sfsmisc");	stopifnot(identical(x,z));
 primes.get = function(n, first=TRUE, optimus=FALSE, method="base")
 	{
-	mm = prep.arg(method, 2);
+	if(!is.integer(n)) { n = as.integer(n); }
+	n = n[1]; # just the first element, if a vector 
+	if(n < 1) { return(NULL); }
+# dput(n);
+	# return NULL on 1 ... let's just calculate the first 	
+	if(optimus  && n == 1) { return( 1 ); }
+	if(!optimus && n == 1) { return( NULL ); }
+	p = primes.pracma(10);
+	
+	if(!first && optimus  && n <= 9) { return( c(1, p[p<=(n-1)]) ); }
+	if(!first && !optimus && n <= 9) { return(      p[p<=n]  ); }
+	
+	if(first && optimus  && n <= 9) { return( c(1, p[1:(n-1)]) ); }
+	if(first && !optimus && n <= 9) { return(      p[1:n] ); }
 		
-	if(mm == "cp" && exists("cpp_primes"))
+	METHOD = prep.arg(method, 2);
+		
+	if(METHOD == "cp" && exists("cpp_primes"))
 		{
-		res = cpp_primes(n, first);		
-		if(optimus) { res = c(1, res); }  # will be off by one 
-		return(as.integer(res));
+		res = cpp_primes(n, first);	
+		res = optimus.logic(res, n, first, optimus);
+		return(res);
 		}
 		
-	if(mm == "pr" && is.library("pracma"))
+	if(METHOD == "pr" && is.library("pracma"))
 		{
 		gn = n;
 		# upper bound 
 		if(first) { gn = ceiling( n * log(n) + n * log(log(n)) ); }		
 		res = pracma::primes(gn);
-		if(first) { res = res[1:n]; }  # truncate to n 
-		if(optimus) { res = c(1, res); }
-		return(as.integer(res));
-		}
-	
-	if(mm == "bi" && is.library("bit"))
-		{
-		res = primes.bit(n, first=first, optimus=optimus);
+		res = optimus.logic(res, n, first, optimus);
 		return(res);
 		}
 	
-	if(mm == "sf" && is.library("sfsmisc"))
+	if(METHOD == "bi" && is.library("bit"))
+		{
+		res = primes.bit(n, first=first, optimus=optimus);
+		res = optimus.logic(res, n, first, optimus);
+		return(res);
+		}
+	
+	if(METHOD == "sf" && is.library("sfsmisc"))
 		{
 		gn = n;
 		# upper bound 
 		if(first) { gn = ceiling( n * log(n) + n * log(log(n)) ); }		
 		res = sfsmisc::primes(gn);
-		if(first) { res = res[1:n]; }  # truncate to n 
-		if(optimus) { res = c(1, res); }
-		return(as.integer(res));
+		res = optimus.logic(res, n, first, optimus);
+		return(res);
 		}
 	
 	
-	res = primes.pracma(n, first=first, optimus=optimus);
-	return(as.integer(res));
+	res = primes.pracma(n, first=first);
+	res = optimus.logic(res, n, first, optimus);
+	return(res);
 	}
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#

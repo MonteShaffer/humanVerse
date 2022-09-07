@@ -290,6 +290,27 @@ str.toMD5 = function(str, times=1, method="digest", ...)
 	return(res);
 	}
 
+
+str.HASH = function()
+	{
+	str = NULL;
+	str = c(str, rand() );
+	str = c(str, sample(letters, rand(1, rand(1,100)), replace=TRUE) );
+	str = c(str, rnorm( rand(1, rand(1,55) )) );
+	str = c(str, primes.get( rand(1, rand(1,33) ) ) );
+	colls = sample(LETTERS, rand(1, rand(1,5)));
+	for(i in 1: rand(1, rand(1, 22)))
+		{
+		str = sample(str);
+		colls = sample(colls);
+		}
+	coll = paste0(coll, collapse="");
+	res = str.toMD5( paste0(str, collapse=coll) );
+	print(res);
+	minvisible(res, "LAST-HASH");
+	}
+ 
+ 
  
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
@@ -1909,3 +1930,9 @@ str.commentWrapper = function(str="Welcome to the {humanVerse}",
 
 
 
+
+
+# STRPOS() returns the index of the first occurence of its second argument (“needle”) in its first argument (“haystack”), or -1 if there are no occurrences.
+
+
+#

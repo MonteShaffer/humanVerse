@@ -390,6 +390,7 @@ stop("monte");
 	tmp2 = unlist(str.explode(" ", tmp));
 	u = check.url(tmp2);
 	
+	ukey = NULL; 
 	s = v.which(tmp2, u );
 	ns = v.which(tmp2, !u );
 	if(!is.null(s)) 
@@ -452,28 +453,39 @@ print(tmp);
 		{ 
 		v[["R.raw"]] = tmp[s]; 
 		v[["R.version"]] = str.trim(str.replace("R","",tmp[s]));
+		tmp = v.truncate(tmp[s], tmp);
+		if(is.null(tmp)) { return(v); }
 		}
 	s = v.which(tmp, check.date(tmp) )[1];
 	if(!is.null(s)) 
 		{ 
 		v[["date"]] = tmp[s];
+		tmp = v.truncate(tmp[s], tmp);
+		if(is.null(tmp)) { return(v); }
 		}			
 	s = v.which(tmp, str.contains("win", tmp))[1];
 	if(!is.null(s)) 
 		{ 
 		v[["win"]] = tmp[s];
+		tmp = v.truncate(tmp[s], tmp);
+		if(is.null(tmp)) { return(v); }
 		}
 	s = v.which(tmp, str.contains("ming", tmp))[1];
 	if(!is.null(s)) 
 		{ 
 		v[["ming"]] = tmp[s];
+		tmp = v.truncate(tmp[s], tmp);
+		if(is.null(tmp)) { return(v); }
 		}
 		
 	s = v.which(tmp, str.contains("tap", tmp))[1];
 	if(!is.null(s)) 
 		{ 
 		v[["tap"]] = tmp[s];
+		tmp = v.truncate(tmp[s], tmp);
+		if(is.null(tmp)) { return(v); }
 		}
+		v[["more"]] = tmp; 
 	v;
 	}
 

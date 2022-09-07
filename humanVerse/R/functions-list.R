@@ -200,15 +200,27 @@ list.pair = function(res)
 ## envir = .GlobalEnv
 list.extract = function(myList, envir = .GlobalEnv, ...)
 	{
+	ndim = dim(myList);
 	n.myList = length(myList);
 	myNames = names(myList);  # if names are NULL
+# dput(myNames);
+# dput(ndim);
 	if(n.myList > 0)
 	  {
 	  for(i in 1:n.myList)
 		{
-		assign(myNames[i], myList[[i]]);
+		if(is.null(ndim))
+			{
+# cat("\n KCASE 1 \n");
+			assign(myNames[i], myList[[i]], envir=envir);
+			# assign(key, val, envir = .GlobalEnv);
+			} else { 
+# cat("\n CASE 2 \n");
+					# it's a dataframe 
+					assign(myNames[i], myList[, i], envir=envir);
+					}
 		}
-	  }
+	  }	
 	}
 
 # keyed of names or idx?

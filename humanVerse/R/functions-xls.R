@@ -386,3 +386,116 @@ xls.NORM.S.INV = function(prob)
 # P(a </= x </= b); P(a >/= x >/= b);		=> 8?
 # p's and q's ... q = 1-p 		
 
+
+# df = structure(list(x = c(246L, 171L, 95L, 125L, 368L, 148L, 48L, 147L, 91L, 324L, 258L, 79L, 84L, 48L, 399L, 126L, 364L, 306L, 94L, 315L, 217L, 14L, 176L, 351L, 348L, 14L, 67L, 335L, 144L, 140L, 313L), y = c(185L, 78L, 15L, 16L, 100L, 139L, 74L, 108L, 46L, 80L, 142L, 55L, 146L, 48L, 174L, 29L, 69L, 118L, 12L, 18L, 168L, 127L, 24L, 159L, 113L, 174L, 140L, 11L, 90L, 91L, 53L)), class = "data.frame", row.names = c(NA, -31L)); list.extract(df); 
+
+# can't live on same line with ";" ... weird stepInto behavior ... no LHS?
+## WEIRD ???
+# functions.stepInto(xls.TRENDLINE);  # old STEP INTO ???
+
+# Exponential, Linear, Logarithmic, Polynomial-2, Power, MovingAverage-2
+# Intercept = 0, Show Equation, Display R^2
+# Name Linear(y) 
+
+# https://chem.libretexts.org/Courses/BethuneCookman_University/B-CU%3A_CH-345_Quantitative_Analysis/Book%3A_Analytical_Chemistry_2.1_(Harvey)/05%3A_Standardizing_Analytical_Methods/5.06%3A_Using_Excel_and_R_for_a_Linear_Regression
+# =slope(A1:A10, B1:B10)
+# =intercept(...)
+
+xls.TRENDLINE = function(x, y, method="Linear", set.intercept=FALSE, intercept.to=0, no = 2)
+	{
+	df = data.frame(x, y);
+	METHOD = prep.arg(method, n=3, case="upper");
+	if(!set.intercept) { INT = 1; } else { INT = intercept.to; }
+	# ?lm lm.D90 <- lm(weight ~ group - 1) # omitting intercept ??? 0 ?
+	# if intercept.to ... I could do it with forced to ORIGIN then just add/subtract ? 
+	model.str = switch(METHOD,
+						"EXP" = "y ~ {INT} + {x}",
+						"LIN" = "y ~ {INT} + {x}",
+						"LOG" = paste0("y ~ ",INT," + x"),
+						"POL" = paste0("y ~ ",INT," + x"),
+						"POW" = paste0("y ~ ",INT," + x"),
+						"MOV" = paste0("y ~ ",INT," + x"),
+					paste0("y ~ ",INT," + x")  # DEFAULT is linear
+					)
+	
+	model.f = str.replace(c("{INT}", "{x}"), c(INT, "x"), model.str);
+		
+	model = eval(parse(text = model.f));  # now a language ...
+	m.fit = lm(model, data=df);
+	m.fitsum = summary(m.fit);
+	
+	m.R2 = round( m.fitsum$r.squared, 5);
+	m.F = as.numeric(m.fitsum$fstatistic);
+	m.pvalue = 1-pf(m.F[1], m.F[2], m.F[3]);
+	m.stars = stats.stars(m.pvalue);
+
+	# getAnywhere("print.lm")
+	coef = round( as.numeric(m.fit$coefficients), 3);
+	coef.pvalues = as.numeric(m.fitsum$coefficients[, 4]);
+	coef.stars = stats.stars(coef.pvalues);
+	
+	# plot data ... easy
+	# plot fn as line with PARAM estimates 
+	fn.str = str.replace(	c("{INT}", 	"{x}"), 
+							c(coef[1], 	paste0(coef[2],"*x")), 
+						model.str
+						);
+	fn = function.fromString(str.replace("y ~", "", fn.str), x);  # need bogus data for x to be symbol
+	xlim = c(min(x), max(x));
+		# we want y range expanded to allow 20% for LEGEND in TOP
+	ylim = c(min(y), max(y));  ydiff = diff(ylim); yadd = 1.20 * ydiff;
+	ylim.new = c(ylim[1], ylim[1] + yadd);
+		
+		
+	
+	# dxi ... # 100 determines smoothness of curve
+	xfn = seq(xlim[1], xlim[2], length.out=100);  
+	
+par.saveState();
+
+# http://rfunction.com/archives/1302	
+# mar – A numeric vector of length 4, which sets the margin sizes in the following order: bottom, left, top, and right. The default is c(5.1, 4.1, 4.1, 2.1).  y,x ... y, x .... not x,y ... x,y 
+	
+	
+	
+	par.set("mar", c(2, 2, 0, 0));
+	{
+	plot(x, 	y, 		xlim = xlim, ylim = ylim.new, 
+			axes = FALSE, frame.plot = FALSE
+		);
+	axis(1); # x 
+	axis(2); # y  
+	par(new=TRUE);
+	plot(xfn, fn(xfn), 	xlim = xlim, ylim = ylim.new, 
+			axes = FALSE, frame.plot = FALSE,	
+			col="darkgreen", lwd = 2, 
+			type="l", xlab = "", ylab = "", main = ""
+		);
+	}
+	
+	
+	yline = (ylim.new[2] - ylim[2])/3;  # 3 lines
+	
+	# text 
+	# align stars below "y" for MODEL.fit, INT and x for PARAM.fit 
+	# show R^2 ...  m.R2 
+	# https://lukemiller.org/index.php/2012/10/adding-p-values-and-r-squared-values-to-a-plot-using-expression/
+	mylabel = bquote(italic(R)^2 == .(format(m.R2, digits = 3)));
+	text(x = xlim[1], y = ylim[2] + 3*yline, labels = mylabel, pos=4);
+	
+	# show fitted EQU ... fn.str 
+	fn.str.f = strlang.RFormat(fn.str);
+	text(x = xlim[1], y = ylim[2] + 2*yline, labels = fn.str.f, pos=4);
+		
+	# show stars ... coef.stars; m.stars
+	stars = paste0( c(m.stars, coef.stars), collapse=" ");
+	text(x = xlim[1], y = ylim[2] + 1*yline, labels = stars, pos=4);
+	
+
+
+	
+par.restoreState();	
+	
+	}
+
+	
