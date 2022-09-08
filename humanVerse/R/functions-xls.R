@@ -412,26 +412,16 @@ xls.NORM.S.INV = function(prob)
 
 xls.TRENDLINE = function(x, y, type="Exp", set.intercept=FALSE, intercept.val=0, order.num = 2)
 	{
-	
 	# https://www.statology.org/power-regression-in-r/
 	# https://www.statology.org/power-regression-in-excel/
-	x=1:20;
-	y=c(1, 8, 5, 7, 6, 20, 15, 19, 23, 37, 33, 38, 49, 50, 56, 52, 70, 89, 97, 115);
-	
-	df = data.frame(x, y);
-	
-	
-	## TODO POLYNOMIAL AND MOVING AVERAGE 
 	## https://www.statology.org/polynomial-regression-excel/
 	## https://www.statology.org/polynomial-regression-r/
-	
-	set.seed(1);  df <- data.frame(x = runif(50, 5, 15), y=50);
-	df$y = df$y + df$x^3/150 + df$x*runif(50, 1, 2)
-
-	
-	
+	## # https://stackoverflow.com/a/7333292/184614
+		
 	TYPE = prep.arg(type, n=3, case="upper");
+	
 	if(TYPE == "MOV") { warning.cat("MOVING AVERAGE changes the dataframe, reducing it in size.  It is an important function and R has many ways to deal with lags() and rolling averages (or medians) in other functions.  Sorry, for now, it will not be implemented here.  As I believe it doesn't have an R^2 or FIT formula in EXCEL.  It can be developed, just not right now.  Don't see the benefit."); stop("Have a nice day!");}
+	
 	if(!set.intercept) { INT = 1; } else { INT = 0; }
 	if(set.intercept && (TYPE=="POW" || TYPE == "EXP") )
 		{
@@ -442,20 +432,9 @@ xls.TRENDLINE = function(x, y, type="Exp", set.intercept=FALSE, intercept.val=0,
 		
 	# if(any == 0 in certain TYPES ... warning (data for y has 0 ln ... x has ln ) ... POLITE directon on what is wrong 
 	
-	# https://stackoverflow.com/a/7333292/184614
+	df = data.frame(x, y);
 	
-	# ?lm lm.D90 <- lm(weight ~ group - 1) # omitting intercept ??? 0 ?
-	# if intercept.val ... I could do it with forced to ORIGIN then just add/subtract ? 
 	
-	# https://answers.microsoft.com/en-us/msoffice/forum/all/excel-formula-for-logarithmic-and-polynomial/54d75ca2-a598-4483-bca5-775325c333f3
-	# y = a*ln(x) + b 
-						# 
-						# "EXP" = "y ~ exp({c}x) + exp({INT})",
-						# "POW" = log10(y) = log10(3.6) + 1.86(x)
-						# POW = y = 3.6*x ^ 1.86
-# lm(score ~ poly(hours,2, raw=T), data=df)
-# no advantage of using poly as I have to rebuild the function anyway 
-# https://www.geeksforgeeks.org/polynomial-regression-in-r-programming/
 	if(TYPE == "POL")
 		{
 		pol = c("y ~ ");
@@ -479,10 +458,11 @@ xls.TRENDLINE = function(x, y, type="Exp", set.intercept=FALSE, intercept.val=0,
 	model.f = str.replace(c("{INT}", "{c}"), c(INT, ""), model.str);
 		
 	model = eval(parse(text = model.f));  # now a language ...
-		# fix UNACCEPTABLE above, intercept.val = 0 and INT = 1 for POW/EXP
+	
 		ndf = df; if(set.intercept) { ndf$y = df$y - intercept.val; }
 	m.fit = lm(model, data=ndf);
 	m.fitsum = summary(m.fit);
+	m.cor = cor(ndf$x,ndf$y);  # cor of input (x,y) is just linear ... ? alternative to R^2 is sample correlation, how to address in POLY or exp ... cor(ln(x),y) ... etc. ... TODO to think about this as 
 	
 	m.R2 = round( m.fitsum$r.squared, 5);
 	m.F = as.numeric(m.fitsum$fstatistic);
@@ -494,9 +474,6 @@ xls.TRENDLINE = function(x, y, type="Exp", set.intercept=FALSE, intercept.val=0,
 	coef.pvalues = as.numeric(m.fitsum$coefficients[, 4]);
 	coef.stars = stats.stars(coef.pvalues);
 	
-	# plot data ... easy
-	# plot fn as line with PARAM estimates 
-	# if INT is forced to, REPLACE WITH INT, not coef[1]
 	rcoef = coef;  # remaining coefficients ... 
 	mINT = INT; 
 		if(set.intercept) { mINT = intercept.val; } # don't put in MODEL, just shift it ... 
@@ -538,22 +515,23 @@ xls.TRENDLINE = function(x, y, type="Exp", set.intercept=FALSE, intercept.val=0,
 						
 	fn = function.fromString(str.replace("y ~", "", fn.str), x);  # need bogus data for x to be symbol
 	xlim = c(min(x), max(x));
+
 		# we want y range expanded to allow 20% for LEGEND in TOP
 	ylim = c(min(y), max(y));  ydiff = diff(ylim); yadd = 1.20 * ydiff;
 	ylim.new = c(ylim[1], ylim[1] + yadd);
 		
-		 
-	
-	# dxi ... # 100 determines smoothness of curve
+
+	# dxi ... # 100 determines smoothness of 'model' as fn.curve
 	xfn = seq(xlim[1], xlim[2], length.out=100);  
 	
 par.saveState();
 
 # http://rfunction.com/archives/1302	
 # mar – A numeric vector of length 4, which sets the margin sizes in the following order: bottom, left, top, and right. The default is c(5.1, 4.1, 4.1, 2.1).  y,x ... y, x .... not x,y ... x,y 
-	
-	
-	
+
+	# keystrokes ... par("mar" = c(2, 2, 0, 0)); 
+	# getter/setter
+	# I treat it like a "property" [with memory] not a function ...
 	par.set("mar", c(2, 2, 0, 0));
 	{
 	plot(x, 	y, 		xlim = xlim, ylim = ylim.new, 
@@ -581,6 +559,7 @@ par.saveState();
 	text(x = xlim[1], y = ylim[2] + 3*yline, labels = mylabel, pos=4);
 	
 	# show fitted EQU ... fn.str 
+	# this formatter puts exact "R spacing"
 	fn.str.f = strlang.RFormat(fn.str);
 	text(x = xlim[1], y = ylim[2] + 2*yline, labels = fn.str.f, pos=4);
 		
@@ -594,6 +573,10 @@ par.saveState();
 	
 par.restoreState();	
 	
+	# what to return?
+	# a df or list of key elements of the analysis ... maybe a 'updated' object that mirrors how EXCEL now shows a regression.
+	# a way to have the list or data frame be prepped so I call
+	# a fn `excel.paste`(obj) ... go to EXCEL and it is tab delimited and ready to be added to the SPREADSHEET manually.
 	}
 
 	
