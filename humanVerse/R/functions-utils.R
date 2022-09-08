@@ -7,6 +7,9 @@ dataframe = data.frame;
 #' @export
 ceil = ceiling;
 
+# natural log as log ... log10 is other, AS-IS so no collision ... 
+ln = log; 
+
 axes = axis;
 
 #' @rdname nchars

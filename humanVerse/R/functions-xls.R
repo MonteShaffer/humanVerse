@@ -389,6 +389,10 @@ xls.NORM.S.INV = function(prob)
 
 # df = structure(list(x = c(246L, 171L, 95L, 125L, 368L, 148L, 48L, 147L, 91L, 324L, 258L, 79L, 84L, 48L, 399L, 126L, 364L, 306L, 94L, 315L, 217L, 14L, 176L, 351L, 348L, 14L, 67L, 335L, 144L, 140L, 313L), y = c(185L, 78L, 15L, 16L, 100L, 139L, 74L, 108L, 46L, 80L, 142L, 55L, 146L, 48L, 174L, 29L, 69L, 118L, 12L, 18L, 168L, 127L, 24L, 159L, 113L, 174L, 140L, 11L, 90L, 91L, 53L)), class = "data.frame", row.names = c(NA, -31L)); list.extract(df);  functions.stepInto(xls.TRENDLINE);
 
+# read.delim("clipboard");
+# read.clipboard = function() { read.delim("clipboard"); }
+# write.clipboard <- function(x,row.names=FALSE,col.names=TRUE,...) { write.table(x,"clipboard",sep="\t",row.names=row.names,col.names=col.names,...)}
+
 
 
 # df = structure(list(x = 0:10, y = c(3L, 4L, 11L, 24L, 43L, 68L, 100L, 136L, 179L, 228L, 283L)), class = "data.frame", row.names = c(NA, -11L)); list.extract(df);  functions.stepInto(xls.TRENDLINE);
@@ -406,11 +410,38 @@ xls.NORM.S.INV = function(prob)
 # =intercept(...)
 
 
-xls.TRENDLINE = function(x, y, method="Exp", set.intercept=FALSE, intercept.val=0, no = 2)
+xls.TRENDLINE = function(x, y, type="Exp", set.intercept=FALSE, intercept.val=0, order.num = 2)
 	{
+	
+	# https://www.statology.org/power-regression-in-r/
+	# https://www.statology.org/power-regression-in-excel/
+	x=1:20;
+	y=c(1, 8, 5, 7, 6, 20, 15, 19, 23, 37, 33, 38, 49, 50, 56, 52, 70, 89, 97, 115);
+	
 	df = data.frame(x, y);
-	METHOD = prep.arg(method, n=3, case="upper");
+	
+	
+	## TODO POLYNOMIAL AND MOVING AVERAGE 
+	## https://www.statology.org/polynomial-regression-excel/
+	## https://www.statology.org/polynomial-regression-r/
+	
+	set.seed(1);  df <- data.frame(x = runif(50, 5, 15), y=50);
+	df$y = df$y + df$x^3/150 + df$x*runif(50, 1, 2)
+
+	
+	
+	TYPE = prep.arg(type, n=3, case="upper");
+	if(TYPE == "MOV") { warning.cat("MOVING AVERAGE changes the dataframe, reducing it in size.  It is an important function and R has many ways to deal with lags() and rolling averages (or medians) in other functions.  Sorry, for now, it will not be implemented here.  As I believe it doesn't have an R^2 or FIT formula in EXCEL.  It can be developed, just not right now.  Don't see the benefit."); stop("Have a nice day!");}
 	if(!set.intercept) { INT = 1; } else { INT = 0; }
+	if(set.intercept && (TYPE=="POW" || TYPE == "EXP") )
+		{
+		INT = 1;
+		intercept.val = 0; # so it doesn't change the Y - values 
+		warning.cat("\n FOR the type: [",type,"] you can't set the intersept to a fixed value.  Resetting to default 'set.intercept=FALSE' and proceeding. \n");
+		}
+		
+	# if(any == 0 in certain TYPES ... warning (data for y has 0 ln ... x has ln ) ... POLITE directon on what is wrong 
+	
 	# https://stackoverflow.com/a/7333292/184614
 	
 	# ?lm lm.D90 <- lm(weight ~ group - 1) # omitting intercept ??? 0 ?
@@ -420,13 +451,27 @@ xls.TRENDLINE = function(x, y, method="Exp", set.intercept=FALSE, intercept.val=
 	# y = a*ln(x) + b 
 						# 
 						# "EXP" = "y ~ exp({c}x) + exp({INT})",
-	
-	model.str = switch(METHOD,
+						# "POW" = log10(y) = log10(3.6) + 1.86(x)
+						# POW = y = 3.6*x ^ 1.86
+# lm(score ~ poly(hours,2, raw=T), data=df)
+# no advantage of using poly as I have to rebuild the function anyway 
+# https://www.geeksforgeeks.org/polynomial-regression-in-r-programming/
+	if(TYPE == "POL")
+		{
+		pol = c("y ~ ");
+		for(i in order.num:2)
+			{
+			pol = c(pol, paste0("{c}I(x^", i, ") + ") );
+			}
+		pol = c(pol, "{c}x + {INT}");
+		}
+
+	model.str = switch(TYPE,
 						"EXP" = "log(y) ~ {c}x + {INT}",
 						"LIN" = "y ~ {c}x + {INT}",
 						"LOG" = "y ~ {c}log(x) + {INT}",
-						"POL" = paste0("y ~ ",INT," + x"),
-						"POW" = paste0("y ~ ",INT," + x"),
+						"POL" = paste0(pol, collapse=""),
+						"POW" = "log(y) ~ {c}log(x) + {INT}",
 						"MOV" = paste0("y ~ ",INT," + x"),
 					"y ~ {x} + {INT}"  # DEFAULT is linear
 					)
@@ -434,8 +479,8 @@ xls.TRENDLINE = function(x, y, method="Exp", set.intercept=FALSE, intercept.val=
 	model.f = str.replace(c("{INT}", "{c}"), c(INT, ""), model.str);
 		
 	model = eval(parse(text = model.f));  # now a language ...
+		# fix UNACCEPTABLE above, intercept.val = 0 and INT = 1 for POW/EXP
 		ndf = df; if(set.intercept) { ndf$y = df$y - intercept.val; }
-		# if (LN) ndf$y = log(y)
 	m.fit = lm(model, data=ndf);
 	m.fitsum = summary(m.fit);
 	
@@ -459,14 +504,36 @@ xls.TRENDLINE = function(x, y, method="Exp", set.intercept=FALSE, intercept.val=
 		
 	# this is default ... 
 	fn.str = str.replace(	c("{INT}", 	"{c}"), 
-							c( mINT, 	paste0(rcoef[1],"*")), 
+							c( round(mINT,3), 	paste0(round(rcoef[1],3),"*")), 
 						model.str
 						); 
-	if(METHOD == "EXP")
+	if(TYPE == "EXP")
 		{
 		# "EXP" = "log(y) ~ {c}x + {INT}",
 		# "EXP" = "y ~ exp({c}x) + exp({INT})",
 		fn.str = paste0( c("y ~ ", round(exp(mINT),3), "*exp(", rcoef[1], "*x)"), collapse="");
+		}
+		
+		
+	if(TYPE == "POW")
+		{
+		# "POW" = exp(y) = exp(3.6) + 1.86(x)
+		# POW = y = 3.6*x ^ 1.86
+		fn.str = paste0( c("y ~ ", round(exp(mINT),3), "*x^(", rcoef[1], ")"), collapse="");
+		}
+		
+	if(TYPE == "POL")
+		{
+		pcoef = c(rcoef, mINT); # descending order ... 
+		pol.len = length(pol);
+		polc = pol; # copy 
+		for(i in 2:pol.len)
+			{
+			polc[i] = str.replace("{c}", paste0(round(pcoef[i-1],3),"*"), polc[i]);
+			}
+		polc = str.replace(c("I(",")"), "", polc); 
+		polc = str.replace("{INT}", round(mINT,3), polc);  # THE PARSER THINKS this is on the SAME LINE AS BELOW (BASED ON ERROR) ...
+		fn.str = paste0( polc , collapse="");
 		}
 						
 	fn = function.fromString(str.replace("y ~", "", fn.str), x);  # need bogus data for x to be symbol

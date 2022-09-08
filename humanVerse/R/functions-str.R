@@ -291,6 +291,30 @@ str.toMD5 = function(str, times=1, method="digest", ...)
 	}
 
 
+str.toLanguage = function(str)
+	{
+	# univariate?
+	base::str2lang(str)
+	}
+str.fromLanguage = function(lang.obj)
+	{
+	# univariate?
+	lang2str(lang.obj);  # I wrote this inverse 
+	}
+
+
+
+str.toSymbol = function(str)
+	{
+	# univariate?
+	str2symb(str);  # I wrote this 
+	}
+str.fromSymbol = function(symb.obj)
+	{
+	# univariate?
+	symb2str(symb.obj);  # I wrote this 
+	}
+	
 str.HASH = function()
 	{
 	str = NULL;

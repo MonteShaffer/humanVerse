@@ -179,7 +179,7 @@ function.sourceInfo = function(src.obj, to.rm=c("parseData"))
 #base::str2lang; 
 	# str = "x + 2*y"; slang = str2lang(str); str2 = lang2str(slang); 
 	# str; str2; identical(str, str2);
-lang2str = function(lang.obj)
+lang2str = function(lang.obj) 
 	{
 	deparse(lang.obj); 		# eval(parse(text = lang.obj));
 	}
