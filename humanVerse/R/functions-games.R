@@ -5,10 +5,11 @@
 snails.pace = function() {} 
 
 # TODO ... color.setOpacity()
+#  snails.pace(snail.icon = u.getSymbol(c("U+1F925"), collapse=TRUE))
 snails.pace = function(snails = 6, finish.line = 8, moves = 200, 
 							auto.play = 1/32,  y.factor = 4/3, 
 							intro.pause = TRUE, snail.par = TRUE, 
-							snail.pch=16, snail.cex=6,
+							snail.pch=16, snail.cex=6, snail.icon = u.getSymbol(c("U+22EF","U+1F40C","U+22EF"), collapse=TRUE),
 							snail.col = c("orange", "blue", "pink", "green", "yellow", "red"), ...
 						)
 	{
@@ -66,13 +67,14 @@ snails.pace = function(snails = 6, finish.line = 8, moves = 200,
 			if(xmax < finish.line) { xmax = finish.line; }
 			}		
 		
+		# https://decodeunicode.org/en/u+1F463
 		# utf8ToInt("U+1F40C")
 		# utf8ToInt("\U1F40C"); # 128012; # intToUtf8(128012)
 		# U+1F40C [snail]
 		# plot(1, pch= intToUtf8(128024) )
 		# uu = u.getSymbol(c("U+22EF","U+1F40C","U+22EF"), collapse=TRUE);
 		plot(snail.x, snail.y, 
-				col=snail.col, pch=u.getSymbol(c("U+22EF","U+1F40C","U+22EF"), collapse=TRUE), 
+				col=snail.col, pch=snail.icon, 
 				cex= (1/2*snail.cex), 
 				xlim=c(-4, snails.round(xmax, 5) ), 
 				ylim=c(-1, ymax ), 

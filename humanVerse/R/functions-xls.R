@@ -1,4 +1,24 @@
 
+xls.pasteFrom = function()
+	{
+	df = read.delim("clipboard");
+	str(df);
+	minvisible(df);
+	}
+	
+xls.copyTo = function(df, row.names=FALSE, col.names=TRUE, ...)
+	{
+	write.table(df, "clipboard", sep="\t",
+					row.names=row.names,
+					col.names=col.names,
+					...
+				);
+	}
+
+
+
+
+
 # https://bert-toolkit.com/
 
 xls.AVERAGE = function(x, na.rm=TRUE, show.warning=TRUE)
@@ -378,7 +398,7 @@ xls.NORM.S.INV = function(prob)
 # xls.COMBINE = function(n, r) {}
 # xls.NORMDIST = xls.NORMINV = xls.POISSON = xls.BINOMIAL = xls.SUMPRODUCT
 # POISSON/BINOMAL ... E[X], var[X] ... n, p 
-# xls has "mean" not AVERAGE ... LOL
+# xls has "mean" not AVERAGE withing DIST functions ... LOL
 # P(A), P(A and B), P(A|B), P(A or B) ... parse/eval ... 
 # BAYES's THEOREM in simple FORM ...
 # P(X = x); 								=> 1
@@ -386,12 +406,31 @@ xls.NORM.S.INV = function(prob)
 # P(a </= x </= b); P(a >/= x >/= b);		=> 8?
 # p's and q's ... q = 1-p 		
 
-
+ 
 # df = structure(list(x = c(246L, 171L, 95L, 125L, 368L, 148L, 48L, 147L, 91L, 324L, 258L, 79L, 84L, 48L, 399L, 126L, 364L, 306L, 94L, 315L, 217L, 14L, 176L, 351L, 348L, 14L, 67L, 335L, 144L, 140L, 313L), y = c(185L, 78L, 15L, 16L, 100L, 139L, 74L, 108L, 46L, 80L, 142L, 55L, 146L, 48L, 174L, 29L, 69L, 118L, 12L, 18L, 168L, 127L, 24L, 159L, 113L, 174L, 140L, 11L, 90L, 91L, 53L)), class = "data.frame", row.names = c(NA, -31L)); list.extract(df);  functions.stepInto(xls.TRENDLINE);
 
-# read.delim("clipboard");
-# read.clipboard = function() { read.delim("clipboard"); }
-# write.clipboard <- function(x,row.names=FALSE,col.names=TRUE,...) { write.table(x,"clipboard",sep="\t",row.names=row.names,col.names=col.names,...)}
+# Lotus - V    	# http://www.mit.edu/~mbarker/formula1/f1help/01-intr8.htm
+# Cairn (WP)	# http://www.columbia.edu/~em36/wpdos/WP6XCHMN.pdf
+# jquery features, not one huge application like timycc or fckedit ... leaning toward commercial too much ...
+# could I do debian/windows looks like it ... install gitlabs(FREE) and have internal version control on the one computer/laptop ...
+# jquery build nice table ALOHA is deprecated ...
+# ability to copy/paste to a BLANK space of a webpage and it builds a mini-excel like TABLE ... it creates a TEXTAREA where your mouse is when you click paste ... how to know if ACTIVE window vs HOVER window?
+# send only small data to/from the WEB APP ... why waste life on 'pip' when it is so 1970's ... good for ZEN garden, but let's keep things modular 
+# I need a HIGHCHARTS.STATS.js library eventually.  If I build out the mockups, will they implement?
+# objects can move around the PAGE canvas, be "detached or undocked"
+# objects start simple but can become more advanced as needed ...
+# simple XLS look like datatables alternative .... headers go above the A, B, C at the top ... customize style with "under the hood reference" ... 
+# sort/filter, subset ... make simple and intuitive ... 
+# it only works with small portions, sends AJAX requests to perform OPERATION on the data, create the objects (e.g., subset), and return what is needed to display (partial rows and cols) ... 
+# salmon (steak or filet)
+# sphinxsearch REPLACE searcheverything to index things ...
+# build fuzzy search with TIES or whatever (tree)
+# build index of files, filesystem 
+# build index of R files and other elements 
+
+
+
+
 
 
 
@@ -410,7 +449,7 @@ xls.NORM.S.INV = function(prob)
 # =intercept(...)
 
 
-xls.TRENDLINE = function(x, y, type="Exp", set.intercept=FALSE, intercept.val=0, order.num = 2)
+xls.TRENDLINE = function(x, y, type="Linear", set.intercept=FALSE, intercept.val=0, order.num = 2, digits=5)
 	{
 	# https://www.statology.org/power-regression-in-r/
 	# https://www.statology.org/power-regression-in-excel/
@@ -419,7 +458,7 @@ xls.TRENDLINE = function(x, y, type="Exp", set.intercept=FALSE, intercept.val=0,
 	## # https://stackoverflow.com/a/7333292/184614
 		
 	TYPE = prep.arg(type, n=3, case="upper");
-	
+dput(TYPE);
 	if(TYPE == "MOV") { warning.cat("MOVING AVERAGE changes the dataframe, reducing it in size.  It is an important function and R has many ways to deal with lags() and rolling averages (or medians) in other functions.  Sorry, for now, it will not be implemented here.  As I believe it doesn't have an R^2 or FIT formula in EXCEL.  It can be developed, just not right now.  Don't see the benefit."); stop("Have a nice day!");}
 	
 	if(!set.intercept) { INT = 1; } else { INT = 0; }
@@ -433,7 +472,7 @@ xls.TRENDLINE = function(x, y, type="Exp", set.intercept=FALSE, intercept.val=0,
 	# if(any == 0 in certain TYPES ... warning (data for y has 0 ln ... x has ln ) ... POLITE directon on what is wrong 
 	
 	df = data.frame(x, y);
-	
+	n = nrow(df);
 	
 	if(TYPE == "POL")
 		{
@@ -454,7 +493,22 @@ xls.TRENDLINE = function(x, y, type="Exp", set.intercept=FALSE, intercept.val=0,
 						"MOV" = paste0("y ~ ",INT," + x"),
 					"y ~ {x} + {INT}"  # DEFAULT is linear
 					)
-	
+					
+	if( ( TYPE == "EXP" || TYPE == "POW") && any(df$y<=0) )
+		{
+		cat.warning("\n\n\t\t\t For TRENDLINE type [",type,"] you cannot have any data (currently [",n,"] rows) \n\t\t\t\t in [y] that is <= 0 (less than or equal to zero) ... \n\t\t\t\t REMOVING ROWS and trying to COMPUTE \n\n");
+		df = subset(df, y > 0);
+		n = nrow(df);
+		cat.warning("\n\n\t\t\t\t Proceeding with only [",n,"] rows! \n\n");
+		}
+	if( ( TYPE == "LOG" || TYPE == "POW") && any(df$x<=0) )
+		{
+		cat.warning("\n\n\t\t\t For TRENDLINE type [",type,"] you cannot have any data (currently [",n,"] rows) \n\t\t\t\t in [x] that is <= 0 (less than or equal to zero) ... \n\t\t\t\t REMOVING ROWS and trying to COMPUTE \n\n");
+		df = subset(df, x > 0);
+		n = nrow(df);
+		cat.warning("\n\n\t\t\t\t Proceeding with only [",n,"] rows! \n\n");
+		}
+dput(model.str);	
 	model.f = str.replace(c("{INT}", "{c}"), c(INT, ""), model.str);
 		
 	model = eval(parse(text = model.f));  # now a language ...
@@ -463,14 +517,17 @@ xls.TRENDLINE = function(x, y, type="Exp", set.intercept=FALSE, intercept.val=0,
 	m.fit = lm(model, data=ndf);
 	m.fitsum = summary(m.fit);
 	m.cor = cor(ndf$x,ndf$y);  # cor of input (x,y) is just linear ... ? alternative to R^2 is sample correlation, how to address in POLY or exp ... cor(ln(x),y) ... etc. ... TODO to think about this as 
-	
-	m.R2 = round( m.fitsum$r.squared, 5);
+dput(m.cor);	
+	m.R2 = round( m.fitsum$r.squared, digits);
+	m.aR2 = round( m.fitsum$adj.r.squared, digits);
 	m.F = as.numeric(m.fitsum$fstatistic);
 	m.pvalue = 1-pf(m.F[1], m.F[2], m.F[3]);
 	m.stars = stats.stars(m.pvalue);
+print(m.fitsum);
+# R2 is not the same on set.intercept OPTIONS in LINEAR ... coefficients are 
 
 	# getAnywhere("print.lm")
-	coef = round( as.numeric(m.fit$coefficients), 3);
+	coef = round( as.numeric(m.fit$coefficients), digits);
 	coef.pvalues = as.numeric(m.fitsum$coefficients[, 4]);
 	coef.stars = stats.stars(coef.pvalues);
 	
@@ -480,15 +537,15 @@ xls.TRENDLINE = function(x, y, type="Exp", set.intercept=FALSE, intercept.val=0,
 		if(!set.intercept) { mINT = coef[1]; rcoef = coef[-c(1)]; }
 		
 	# this is default ... 
-	fn.str = str.replace(	c("{INT}", 	"{c}"), 
-							c( round(mINT,3), 	paste0(round(rcoef[1],3),"*")), 
+	fn.str = str.replace(	c("{INT}", 				"{c}"), 
+							c( round(mINT,digits), 	paste0(round(rcoef[1],digits),"*")), 
 						model.str
 						); 
 	if(TYPE == "EXP")
 		{
 		# "EXP" = "log(y) ~ {c}x + {INT}",
 		# "EXP" = "y ~ exp({c}x) + exp({INT})",
-		fn.str = paste0( c("y ~ ", round(exp(mINT),3), "*exp(", rcoef[1], "*x)"), collapse="");
+		fn.str = paste0( c("y ~ ", round(exp(mINT),digits), "*exp(", round(rcoef[1],digits), "*x)"), collapse="");
 		}
 		
 		
@@ -496,7 +553,7 @@ xls.TRENDLINE = function(x, y, type="Exp", set.intercept=FALSE, intercept.val=0,
 		{
 		# "POW" = exp(y) = exp(3.6) + 1.86(x)
 		# POW = y = 3.6*x ^ 1.86
-		fn.str = paste0( c("y ~ ", round(exp(mINT),3), "*x^(", rcoef[1], ")"), collapse="");
+		fn.str = paste0( c("y ~ ", round(exp(mINT),digits), "*x^(", round(rcoef[1],digits), ")"), collapse="");
 		}
 		
 	if(TYPE == "POL")
@@ -506,12 +563,13 @@ xls.TRENDLINE = function(x, y, type="Exp", set.intercept=FALSE, intercept.val=0,
 		polc = pol; # copy 
 		for(i in 2:pol.len)
 			{
-			polc[i] = str.replace("{c}", paste0(round(pcoef[i-1],3),"*"), polc[i]);
+			polc[i] = str.replace("{c}", paste0(round(pcoef[i-1],digits),"*"), polc[i]);
 			}
 		polc = str.replace(c("I(",")"), "", polc); 
-		polc = str.replace("{INT}", round(mINT,3), polc);  # THE PARSER THINKS this is on the SAME LINE AS BELOW (BASED ON ERROR) ...
+		polc = str.replace("{INT}", round(mINT,digits), polc);  # THE PARSER THINKS this is on the SAME LINE AS BELOW (BASED ON ERROR) ...
 		fn.str = paste0( polc , collapse="");
 		}
+dput(fn.str);
 						
 	fn = function.fromString(str.replace("y ~", "", fn.str), x);  # need bogus data for x to be symbol
 	xlim = c(min(x), max(x));
@@ -555,7 +613,7 @@ par.saveState();
 	# align stars below "y" for MODEL.fit, INT and x for PARAM.fit 
 	# show R^2 ...  m.R2 
 	# https://lukemiller.org/index.php/2012/10/adding-p-values-and-r-squared-values-to-a-plot-using-expression/
-	mylabel = bquote(italic(R)^2 == .(format(m.R2, digits = 3)));
+	mylabel = bquote(italic(R)^2 == .(format(m.R2, digits = digits)));
 	text(x = xlim[1], y = ylim[2] + 3*yline, labels = mylabel, pos=4);
 	
 	# show fitted EQU ... fn.str 
@@ -580,3 +638,27 @@ par.restoreState();
 	}
 
 	
+	
+	# "There is a war a-brewing"... the civil war has been going on for a long time.  Time to kill the posers, but be wary of the curmundgeons.  Not an ally per se, have to proceed with the idea of a potential FORK from R to V.
+	# 3 in the CORE engine:  FORTRAN -> C -> R ... solid
+	# C++ for install/compile has led to strong ties to Debian/Rcpp ... solid
+	# what is missing is the API level (humanVerse) to allow for extensiblity ... mostly written in R, some HVcpp and maybe HVc if necessary.
+	# what is missing is an application level (kill the beast first).  Modern, extensible with design rules.  FEATURES should play where they belong:  js is client side, DAMP (debian, apache, mysql, php) is server side.  NO BLOAT.  Think elegeance and tick-tocks ... standalone libraries as classes, no autovendor bull shit ...
+	# RhV as notebooks. [SANDBOX] for development and [FORMAL] for writeup.
+	# allow inline WYSIWYG with shortcuts that generate what is needed as "SOURCE CODE a la WORDPERFECT" ... if the user types ```dfslkjkj``` under the hood it stores <code multiline>fadslkj</code> but the user sees what they type.
+	# the user wants 3 colums to display content, they have to type a shortcut or find a button to click on to start that mode (CNTR-T)
+	# smart help ... I want to ... and it shows only the things they need ...
+	# ONE FORMAT to rule them all <HTML> with custom codes?  <HV fg> or just <fg></fg>
+	# conversion ... everyting to/from HTML reduces dependencies ... allow for document type formatting in HTML interface (pagination, shrink to fit) ...
+	# allows component previews in other outputs ... this BLOCK I want to see as Latex ... not worry about full build, just quick and easy PREVIEW 
+	# markdown is inline text that gets translated to system codes.  Basic markdown with #HEADER *bold* or _whatever_ ... SYSTEM / BLOCK feature to enable or disable ... 
+	# ```{r params}``` This is reasonable for code, but, ...
+	# <code multiline>
+	#    lang = r 
+	#        would enable param, options drop downs 
+	# with possibility to APPLY this BLOCK parameter results to other BLOCKS in section or entire document be able to save the keys into memory ... use \section as HTML section <section>
+	# https://www.geeksforgeeks.org/naming-convention-in-c/ # C++
+	# https://www.php.net/manual/en/functions.user-defined.php
+	# Function names follow the same rules as other labels in PHP. A valid function name starts with a letter or underscore, followed by any number of letters, numbers, or underscores. As a regular expression, it would be expressed thus: ^[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*$.
+	
+	 

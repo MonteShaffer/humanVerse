@@ -18,7 +18,9 @@ warning.cat = function(..., sep=" ")
 	res = paste0(str, collapse=sep);
 	
 	parent.call = sys.call(sys.nframe() - 1L);
-	warning( paste("In", deparse(parent.call), ":", res) , call.=FALSE);	
+	res = paste("In", deparse(parent.call), ":", res);
+	# res = str.wrap(); 
+	warning( res , call.=FALSE);	
 	}
 
 cat.warning = warning.cat;
