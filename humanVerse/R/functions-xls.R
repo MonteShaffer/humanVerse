@@ -268,19 +268,38 @@ xls.CORREL = function(x, y, ...)
 	}
 
 
-xls.prepGroup = function(df, 
-								group="Sex", group.order=NULL, 
-								custom.cols=NULL
-							)
+
+xls.groupBy = function(df, 
+								group="Sex", group.order = NULL, 
+								custom.cols = NULL
+						)
 	{
+	# returns a list of sub.df's 
+	xls.prepGroup(df, group=group, group.order=group.order, custom.cols=custom.cols);
 	
-	
+	## subset by group.keys 
+	ngroups = length(group.keys);
+	## truncate cols by data.keys 
+	ncolumns = length(data.keys);
+	res = vector("list",ngroups);
+	for(i in 1:ngroups)
+		{
+		row = NULL;
+		df.sub = subset(df, df[[group]] == group.keys[i]);
+		df.col = df.sub[, data.keys];
+		res[[i]] = df.col;
+		}
+	names(res) = group.keys;
+	minvisible(res);
 	}
 
-xls.AVERAGEIF = function(df, 
-								group="Sex", group.order=NULL, 
-								custom.cols=NULL
-							)
+
+xls.prepGroup = function() {}
+xls.prepGroup = function(df, 
+								group="Sex", group.order = NULL, 
+								custom.cols = NULL,
+								envir = parent.env(environment())
+						)
 	{
 	# unnecessary on "==" comparison 
 	# df[[group]] = as.factor(df[[group]]); 
@@ -296,7 +315,9 @@ xls.AVERAGEIF = function(df,
 		if(is.null(idxs)) { stop("error with custom.cols"); }
 		data.keys = colnames(df)[idxs];
 		}
-		
+	assign("data.keys", data.keys, envir=envir);
+
+	
 	if(!is.null(group.order))
 		{
 		# this will TRUNCATE and put in desired order based on INPUT
@@ -304,7 +325,18 @@ xls.AVERAGEIF = function(df,
 		if(is.null(idxs)) { stop("error with group.order"); }
 		group.keys = group.keys[idxs];
 		}
-	
+	assign("group.keys", group.keys, envir=envir);
+	# could return list, etc, but I will assign back to the envir 
+	}
+
+
+xls.AVERAGEIF = function() {}
+xls.AVERAGEIF = function(df, 
+								group="Sex", group.order = NULL, 
+								custom.cols = NULL
+							)
+	{  
+	xls.prepGroup(df, group=group, group.order=group.order, custom.cols=custom.cols);
 	
 	ngroups = length(group.keys);
 	ncolumns = length(data.keys);
@@ -325,13 +357,17 @@ xls.AVERAGEIF = function(df,
 		result = rbind(result, row)
 		}
 		
-	result = as.df.frame(result);
+	result = as.data.frame(result);
 		# all.numerics, no problem ... 
 		rownames(result) = group.keys;
 		colnames(result) = data.keys;
-	result; 
+	# print(result); 
+	minvisible(result);
 	}
  
+ # res = xls.AVERAGEIF(data,"Sex"); res;
+ # res = xls.AVERAGEIF(data,"Sex",group.order=c(2,1)); res;
+ # res = xls.AVERAGEIF(data,"Sex",group.order=c("Male","Female")); res; 
  # pip( xls.AVERAGEIF(data,"Sex"), show.row.names=TRUE, number.format="Fixed: total.width=5");
  # fs # data = structure(list(Sex = structure(c(1L, 2L, 1L, 2L, 1L, 2L, 2L, 2L, 1L, 1L, 1L, 1L, 2L, 2L, 1L, 2L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 2L, 2L, 1L, 2L), levels = c("Female", "Male"), class = "factor"), Clothing = c(246, 171, 95, 125, 368, 148, 48, 147, 91, 324, 258, 79, 84, 48, 399, 126, 364, 306, 94, 315, 217, 14, 176, 351, 348, 14, 67, 335, 144), Health = c(185, 78, 15, 16, 100, 139, 74, 108, 46, 80, 142, 55, 146, 48, 174, 29, 69, 118, 12, 18, 168, 127, 24, 159, 113, 174, 140, 11, 90), Tech = c(64, 345, 47, 493, 82, 347, 108, 532, 86, 12, 92, 13, 522, 383, 94, 462, 40, 92, 12, 57, 91, 10, 81, 11, 26, 525, 579, 23, 560), Misc = c(75, 10, 90, 13, 109, 107, 176, 146, 182, 51, 119, 296, 184, 61, 25, 74, 208, 242, 54, 138, 67, 226, 123, 291, 204, 183, 72, 200, 149)), row.names = c(NA, -29L), class = "data.frame");
 
@@ -676,21 +712,60 @@ par.restoreState();
 	# Function names follow the same rules as other labels in PHP. A valid function name starts with a letter or underscore, followed by any number of letters, numbers, or underscores. As a regular expression, it would be expressed thus: ^[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*$.
 	
 	 
-xls.GROUPBY = function(df, )
-	{
+
 	
+# function(...)
+# # I could do group by eventually 
+	# dots			= match.call(expand.dots = FALSE)$... ;
+	# form_ls			= rep(list(bquote()), length(dots));
+	# names(form_ls)	= as.character(dots);
 	
-	}
-	 
-xls.ANOVA.ONE = function(...)
+# dput(form_ls);
+ 
+# df = pdf;
+# slist = xls.groupBy(df, "Personality", group.order=c("Analyst","Diplomat","Explorer","Sentinel"), custom.cols="Salary" );
+# sdf = df.fromList(slist);
+# sample from unique lists to build a ANOVA frame?
+# adf = sdf[1:1000, ];
+
+xls.ANOVA.ONE = function(df)
 	{
 	# data is already grouped ... AS-IS based on excel's current functions
-	# I could do group by eventually 
-	dots			= match.call(expand.dots = FALSE)$... ;
-	form_ls			= rep(list(bquote()), length(dots));
-	names(form_ls)	= as.character(dots);
+	# df or lists ... 
 	
-dput(form_ls);
-	
+	groups = names(df);
+	ngroups = length(groups);  # dim(df)[2];
+	ndata = dim(df)[1];
+	res = vector("list", ngroups);
+	for(i in 1:ngroups)
+		{
+		group = groups[i];
+		data = df[[group]];
+		
+		res[[group]] = list(	"count" = xls.COUNT(data),
+								"sum"   = xls.SUM(data),
+								"mean"	= xls.AVERAGE(data),
+								???
+								"SSD" 	= xls.DEVSQ(data)
+								);
+		
+		}
+	# SSD of entire data ...
+	all = as.numeric(as.matrix(df));
+	all.SSD = xls.DEVSQ(all);
+	 
 	}
 	 
+	 
+xls.SUMSQ = function(x)
+	{
+	xls.SUM(x^2);
+	}
+	
+xls.DEVSQ = function(x)
+	{
+	dev = (x - xls.AVERAGE(x));
+	xls.SUM(dev^2);
+	}
+	
+	

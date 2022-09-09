@@ -3,6 +3,7 @@
 
 v.match = function(a, B.len, B.nam)
 	{
+	# match on KEYS or IDXS 
 	# a is subset of B (hopefully)
 	# could be comparing on names or idxs ... I don't know 
 	# return idxs of set.match ...

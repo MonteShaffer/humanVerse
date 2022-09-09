@@ -298,6 +298,29 @@ df.printHead = function(df, n=5, row.idx=10, ...)
 
 
 
+df.fromList = function(myLists)
+	{
+	# parallel lists of equal length that need to be transposed to dataframe
+	# could myLists be nested (parallel, multivariate)?
+	n = length(myLists);
+	# ANOVA takes sample of equal length 
+	max.n = 0;
+	for(i in 1:n)
+		{
+		len.n = length(myLists[[i]]);
+		if(len.n > max.n) { max.n = len.n; }
+		}
+	df = NULL;
+	for(i in 1:n)
+		{
+		myList = myLists[[i]];
+		dif.n = max.n - length(myList);
+		myList = c(myList, rep(NA, dif.n));
+		df = cbind(df, myList);
+		}
+	df = as.data.frame(df); rownames(df) = NULL; colnames(df) = names(myLists);
+	df;
+	}
 
 
 
