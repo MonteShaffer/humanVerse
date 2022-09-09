@@ -82,16 +82,24 @@ v.naTo = function(vec, to="")
 	
 v.naTO = v.naTo;
 
- 
+# between(x, lower, upper, incbounds=TRUE, NAbounds=TRUE, check=FALSE)
+# x %between% y
+  
 v.between = function(vec, lower, upper, 
 							lower.equal = TRUE,
 							upper.equal = TRUE,
+							by = "value",
 							return = "vector",
-					sort = TRUE, ...)
+					sort = FALSE, ...)
 	{
+	# OPERATES on vec not IDX of vector ... 1:length(vec) to do index ... 
 	# return = [v]ector or [i]ndex
 	r = prep.arg(return, n = 1);
 	# should return idx or vec? ... THIS RETURNS vec, not idx ...
+	############## DO I compare the indexes with upper/lower or the values 
+	b = prep.arg(by, n = 1); # COMPARISON of "values" or "indexes"
+	vecIDX = 1:length(vec);
+	vecT = vec; if(b == "i") { vecT = vecIDX; }
 
 	# lower can be NULL ... skip 
 	# upper can be NULL ... skip 
@@ -102,8 +110,8 @@ v.between = function(vec, lower, upper,
 		{
 		idx1 = NULL;
 		# THIS is OR
-		if(lower.equal) { idx1 = (vec == lower); } 
-		idx2 = (vec > lower);
+		if(lower.equal) { idx1 = (vecT == lower); } 
+		idx2 = (vecT > lower);
 		idx.lower = idx2;
 		if(!is.null(idx1)) { idx.lower = idx1 | idx2; }
 		}
@@ -111,8 +119,8 @@ v.between = function(vec, lower, upper,
 		{
 		idx1 = NULL;
 		# THIS is OR
-		if(upper.equal) { idx1 = (vec == upper); } 
-		idx2 = (vec < upper);
+		if(upper.equal) { idx1 = (vecT == upper); } 
+		idx2 = (vecT < upper);
 		idx.upper = idx2;
 		if(!is.null(idx1)) { idx.upper = idx1 | idx2; }
 		}
@@ -130,7 +138,10 @@ v.between = function(vec, lower, upper,
 		idx = idx.upper; 
 		} 
 	if(is.null(idx)) { return(NULL); }
-	if(r == "i") { return(idx); }
+	if(r == "i") { return(idx); } 
+	
+	# indexes are based on lower/upper on VALUES/INDEXES
+	# independently, we return VECTOR, not elements below ...
 	vec = vec[idx];  # truncate 
 	if(sort) { vec = sort(vec, ...); }
 	vec;

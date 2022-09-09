@@ -399,6 +399,221 @@ xls.POISSON.INV = function(prob, mean)
 	qpois(prob, mean); 
 	}
 	
+# P(x ≤ 12)
+# P(x > 11)
+# P(x ≥ 10)
+# P(9 ≤ x ≤ 15)
+# P(x = 10)
+
+test = c("12 < x", "x <= 12", "x > 11", "x >= 10", "9 <= x <= 15", "x = 10")
+
+ggg.barplot = function(X)
+	{
+	# barplot of EVERYTHING with OPACITY 
+	# par(new = TRUE)
+	# barplot of test RANGE highlighted ...
+		bnames = property.get("x", X);
+		nb = length(bnames);
+	
+	# make 20% higher for PROBS to be printed ... 
+	# rotate at angle of 30/60/90 degrees, up to the right rotation 
+		xoffset = 2;
+		xlim = c(1-xoffset, nb+xoffset);  xdiff = diff(ylim);
+		
+
+		# we want y range expanded to allow 20% for LEGEND in TOP
+	ylim = c(min(X), max(X));
+	  ydiff = diff(ylim); yadd = 1.20 * ydiff;
+	ylim.new = c(ylim[1], ylim[1] + yadd);
+	
+	
+		pnames = num.toFixed(as.vector(X), total.width=6);
+	# https://stackoverflow.com/questions/10286473/rotating-x-axis-labels-in-r-for-barplot  # las=2, ROTATE labels 
+	# https://stackoverflow.com/questions/12481430/how-to-display-the-frequency-at-the-top-of-each-factor-in-a-barplot-in-r
+	
+	# make angle of function of xdiff/ydiff ?
+	angle = 90;
+	xx = barplot( as.vector(X), names.arg = bnames, xlim=xlim, ylim=ylim.new );
+	
+	text(x=xx,y=as.numeric(pnames)+0.10*ydiff, pnames, srt=angle)
+	
+	
+	}
+
+
+oper.which = function(str)
+	{
+	kname = NULL;
+	if(str.contains("<=", str)) 
+		{ 
+		key = "<=";
+		kname = "LEQ";		
+		}
+	if(is.null(kname) && str.contains("<", str)) 
+		{ 
+		key = "<";
+		kname = "L";		
+		}
+	if(is.null(kname) && str.contains(">=", str)) 
+		{ 
+		key = ">=";
+		kname = "GEQ";		
+		}
+	if(is.null(kname) && str.contains(">", str)) 
+		{ 
+		key = ">";
+		kname = "G";		
+		}
+	if(is.null(kname) && str.contains("=", str)) 
+		{ 
+		key = "=";
+		kname = "EQ";		
+		}
+		
+	r = as.numeric(str.trim(str.implode("", str.explode(key, str))));
+	if(is.null(kname)) { return(NULL); }
+	list("key" = key, "keyname" = kname, "remaining" = r);
+	}
+
+
+#
+
+ 
+
+# by.idx or by.value of the VEC 
+# return final.idx or vec[final.idx] 
+v.smart = function(vec, test = " x <= 12 ", varname="x", 
+							by="value", return = "vector"
+					)
+	{
+	b = prep.arg(by, n = 1); # COMPARISON of "values" or "indexes"
+	vecIDX = 1:length(vec);
+	vecT = vec; if(b == "i") { vecT = vecIDX; }
+	
+	## parse EQUALITY as generic function???
+	## searching for up to 3 things ... x can be in different places?
+	## x <= 12 ... 12 < x ... 12 < x < 22 [for 3, x has to be in middle]
+	# looks like READING, R-L parser ...
+		# force univariate 
+	one = str.trim(str.explode(varname, str.trim(test[1]) ));  
+	
+	lower = NULL; upper = NULL; lower.equal = FALSE; upper.equal = FALSE;
+	lower.is.equal = upper.is.equal = FALSE;
+	n.one = length(one); 
+	o.lower = o.upper = NULL;
+	if(n.one == 1) 
+		{ 
+		# OPER then variable 
+		f = c("OPER", "VAR");
+		o.lower = oper.which(one[1]);
+			lower = o.lower$remaining;
+			lower.equal = str.contains("=",o.lower$key);
+			lower.is.equal = (o.lower$key == "=");
+		}  
+	if(n.one == 2)
+		{
+		if(one[1] == "") 
+			{ 
+			o.upper = oper.which(one[2]);
+				upper = o.lower$remaining;
+				upper.equal = str.contains("=",o.upper$key);
+				upper.is.equal = (o.upper$key == "=");
+			f = c("VAR", "OPER"); 
+			} else {
+					o.lower = oper.which(one[1]);
+						lower = o.lower$remaining;
+						lower.equal = str.contains("=",o.lower$key);
+						lower.is.equal = (o.lower$key == "=");
+					f = c("OPER", "VAR", "OPER");
+					o.upper = oper.which(one[2]);
+						upper = o.upper$remaining;
+						upper.equal = str.contains("=",o.upper$key);
+						upper.is.equal = (o.upper$key == "=");
+					}
+		}
+	# parse to  lower LSIGN x USIGN upper ... possible NULL 
+	final.idx = NULL;
+	if(lower.is.equal && upper.is.equal) { stop("what ... two operators both can't be equal ... 3 = x = 5 ... nonsensical"); }
+	# v.which if EQUAL 
+	# v.between if LE, L, GE, GE 
+	if(lower.is.equal)
+		{
+		final.idx = v.which(vecT, what=lower);		
+		}		
+	if(!is.null(final.idx) && upper.is.equal)
+		{
+		final.idx = v.which(vecT, what=upper);		
+		}		
+	if(!is.null(final.idx))
+		{
+		final.idx = v.between(vec, lower=lower, upper=upper, lower.equal=lower.equal, upper.equal=upper.equal, by=by, return="indexes");		
+		}	
+	
+	
+	if(is.null(final.idx)) { return(NULL); }
+	if(r == "i") { return(final.idx); }
+	
+	# indexes are based on lower/upper on VALUES/INDEXES
+	# independently, we return VECTOR, not elements below ...
+	vec = vec[final.idx];  # truncate 
+	vec;
+	}
+
+
+xls.binom.test = function(trials, prob.success, test=" x <= 12")
+	{
+	X = xls.binom.build(trials, prob.success); 
+	ggg.barplot(X); 
+	
+	
+	
+
+
+v.between = function(vec, lower, upper, 
+							lower.equal = TRUE,
+							upper.equal = TRUE,
+							return = "vector",
+					sort = FALSE, ...)
+	{
+	
+	
+	
+	prob.range;	
+	}
+	
+	
+xls.binom.build = function(trials, prob.success)
+	{
+	n = trials;
+	p = prob.success;
+	q = (1-p);
+	
+	# https://en.wikipedia.org/wiki/Binomial_distribution
+	E.X = n*p;
+	var.X = n*p*q;
+	skew.X = (q-p) / (sqrt(n*p*q));
+	kurt.X = (1-6*p*q) / (n*p*q);
+	
+	# build all x probabilities ...
+	res = numeric(n);
+	for(x in 1:n)
+		{
+		res[x] = xls.BINOM.DIST(x, trials, prob.success, FALSE);
+		}
+		
+	names(res) = 1:n; # names can get removed easily 	
+	res = property.set("x", res, 1:n);
+	res = property.set("-info-", res, list(	"E[X]" = E.X,
+											"var[X]" = var.X,
+											"skew[X]" = skew.X,
+											"kurt[X]" = kurt.X
+											)
+						);
+	minvisible(res);	
+	}
+	
+	
+	
 
 xls.BINOM.DIST = function(successes, trials, prob.success, cdf=TRUE)
 	{
@@ -728,35 +943,113 @@ par.restoreState();
 # sample from unique lists to build a ANOVA frame?
 # adf = sdf[1:1000, ];
 
-xls.ANOVA.ONE = function(df)
+xls.ANOVA.SIMPLE = function(df, alpha=0.05, posthoc="THSD")
 	{
 	# data is already grouped ... AS-IS based on excel's current functions
-	# df or lists ... 
+	
+	# output TABLE in LINES ... 
+	TABLE = c("Anova: Single Factor", "", "SUMMARY");
+	TABLE = c(TABLE, paste0("   Groups   ","\t", " Count ", "\t", " Sum ", "\t", " Average ", "\t", " Variance ", "\t", " [SSD] ") );
 	
 	groups = names(df);
 	ngroups = length(groups);  # dim(df)[2];
 	ndata = dim(df)[1];
 	res = vector("list", ngroups);
+	within.SSD = 0;
 	for(i in 1:ngroups)
-		{
+		{ 
 		group = groups[i];
 		data = df[[group]];
+			Count 	 = xls.COUNT(data);
+			Sum 	 = xls.SUM(data);
+			Average  = xls.AVERAGE(data);
+			Variance = xls.VAR.S(data);
+			SSD 	 = xls.DEVSQ(data);
+			
+		TABLE = c(TABLE, paste0("   ",group,"   ","\t", Count, "\t", Sum, "\t", Average , "\t",  Variance , "\t", SSD ) );
 		
-		res[[group]] = list(	"count" = xls.COUNT(data),
-								"sum"   = xls.SUM(data),
-								"mean"	= xls.AVERAGE(data),
-								???
-								"SSD" 	= xls.DEVSQ(data)
-								);
-		
+		res[[group]] = list(	"Count" 	= Count,
+								"Sum"   	= Sum,
+								"Average"	= Average,
+								"Variance"	= Variance,
+								"SSD" 		= SSD
+								);	
+								
+		within.SSD = within.SSD + SSD;
 		}
-	# SSD of entire data ...
+		
+	TABLE = c(TABLE, "", "", "ANOVA");
+	TABLE = c(TABLE, paste0(" Source of Variation","\t", " SS[D] ", "\t", " df ", "\t", " MS ", "\t", " F.stat ", "\t", " P-value ", "\t", " F.crit ") );
+	
+	
+	# SSD of entire data ...	
 	all = as.numeric(as.matrix(df));
-	all.SSD = xls.DEVSQ(all);
+	
+	total.SSD 	= xls.DEVSQ(all);
+	total.N 	= xls.COUNT(all);
+	total.df 	= total.N - 1;
+	total.MS 	= total.SSD / total.df;
+	
+	# within 
+	# within.SSD we already have ... from loop above 
+	between.SSD = total.SSD - within.SSD;
+	between.N 	= ngroups;
+	between.df 	= between.N - 1;
+	between.MS 	= between.SSD / between.df;
+	
+	within.df 	= total.df - between.df;
+	within.MS 	= within.SSD / within.df;
+	
+	F.crit 		= xls.FINV.RT(alpha, between.df, within.df);
+	F.stat  	= between.MS / within.MS;
+	pval 		= xls.FDIST.RT(F.stat, between.df, within.df);
+	
+	TABLE = c(TABLE, paste0("Between Groups","\t", between.SSD, "\t", between.df, "\t", between.MS, "\t", F.stat, "\t", pval, "\t", F.crit) );
+	TABLE = c(TABLE, paste0("Within Groups","\t", within.SSD, "\t", within.df, "\t", within.MS) );
+	TABLE = c(TABLE, "");
+	
+	TABLE = c(TABLE, paste0("Total","\t", total.SSD, "\t", total.df, "\t", total.MS) );
+	
+	# HO: groups are the same ... mu_1 = mu_2 = ... mu_gn
+	reject = (p <= alpha);  # reject = (F.stat <= F.crit);
+	
+	# MAYBE DO a RA.FISCHER.plot ... farmland, means in the centers, with posthoc differences ... 
+	
+	msg = "[Fail to Reject H0]: There is not enough evidence to conclude that the group means are different from one another ... ";
+	if(reject) { msg = "[Reject H0]:  There is sufficient evidence at alpha=0.05 to reject the null hypothesis and conclude that *AT LEAST* one group mean is different from the others ... "; }
+	
+	# POSTHOC Bonferroni ... Tukey HSD ... 
 	 
 	}
 	 
-	 
+	
+xls.F.INV = function(prob=1-0.05, df1, df2)
+	{
+	
+	qf(prob, df1, df2);
+	}
+	
+xls.F.INV.RT = function(alpha=0.05, df1, df2)
+	{
+	# # alpha = 0.05; df1 = 2; df2 = 27;
+	xls.F.INV( 1-alpha, df1, df2);
+	}
+	
+	
+xls.F.DIST = function(x, df1, df2, cdf=TRUE)
+	{
+	if(cdf) 	{ return(pf(x, df1, df2)); }  # cdf 
+	if(!cdf) 	{ return(df(x, df1, df2)); }  # pdf 	
+	}
+	
+
+xls.F.DIST.RT = function(x, df1, df2)
+	{
+	# x = 2.5; df1 = 2; df2 = 27;
+	pf(x, df1, df2, lower.tail=FALSE);	
+	}
+	
+	
 xls.SUMSQ = function(x)
 	{
 	xls.SUM(x^2);
@@ -769,3 +1062,4 @@ xls.DEVSQ = function(x)
 	}
 	
 	
+### 1066 	
