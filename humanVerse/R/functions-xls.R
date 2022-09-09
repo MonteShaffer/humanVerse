@@ -440,47 +440,77 @@ ggg.barplot = function(X)
 	
 	}
 
+# oper.which("!= 3");   # NO x 
+# oper.which("3 != ")
 
 oper.which = function(str)
 	{
 	kname = NULL;
 	if(str.contains("<=", str)) 
 		{ 
-		key = "<=";
-		kname = "LEQ";		
+		o = key = "<=";
+		kname = "LEQ";
+		rkey = ">";
+		rname = "G";
+		}
+	if(is.null(kname) && str.contains("<>", str)) 
+		{ 
+		o = key = "<>";  # Lotus 1-2-3
+		kname = "NEQ";
+		rkey = "=";
+		rname = "EQ";
 		}
 	if(is.null(kname) && str.contains("<", str)) 
 		{ 
-		key = "<";
-		kname = "L";		
+		o = key = "<";
+		kname = "L";
+		rkey = ">=";
+		rname = "GEQ";
 		}
 	if(is.null(kname) && str.contains(">=", str)) 
 		{ 
-		key = ">=";
-		kname = "GEQ";		
+		o = key = ">=";
+		kname = "GEQ";
+		rkey = "<";
+		rname = "L";
 		}
 	if(is.null(kname) && str.contains(">", str)) 
 		{ 
-		key = ">";
-		kname = "G";		
+		o = key = ">";
+		kname = "G";
+		rkey = "<=";
+		rname = "LEQ";
+		}
+	if(is.null(kname) && str.contains("!=", str)) 
+		{ 
+		# != BECOMES <> so no collision with "=" in str.contains 
+		o = "!=";
+		key = "<>";  # Lotus 1-2-3
+		kname = "NEQ";
+		rkey = "=";
+		rname = "EQ";
 		}
 	if(is.null(kname) && str.contains("=", str)) 
 		{ 
-		key = "=";
-		kname = "EQ";		
+		o = key = "=";
+		kname = "EQ";	
+		rkey = "=";
+		rname = "EQ";
 		}
 		
-	r = as.numeric(str.trim(str.implode("", str.explode(key, str))));
+	otmp = str.trim(str.explode(o, str));	
+	r = as.numeric(str.trim(str.implode("", str.explode(o, str))));
+	nfirst = FALSE; if(otmp[1] != "") { nfirst = TRUE; }
+	
 	if(is.null(kname)) { return(NULL); }
-	list("key" = key, "keyname" = kname, "remaining" = r);
+	list("key" = key, "keyname" = kname, "remaining" = r, "original" = o, "reverse.key" = rkey, "reverse.keyname" = rname, "number.first" = nfirst);
 	}
 
 
-#
 
- 
 
-# by.idx or by.value of the VEC 
+
+## by.idx or by.value of the VEC 
 # return final.idx or vec[final.idx] 
 v.smart = function(vec, test = " x <= 12 ", varname="x", 
 							by="value", return = "vector"
@@ -490,48 +520,188 @@ v.smart = function(vec, test = " x <= 12 ", varname="x",
 	vecIDX = 1:length(vec);
 	vecT = vec; if(b == "i") { vecT = vecIDX; }
 	
+	## v.smart(1:30, " 3 >= x != 5   ")
+	
+	
 	## parse EQUALITY as generic function???
 	## searching for up to 3 things ... x can be in different places?
 	## x <= 12 ... 12 < x ... 12 < x < 22 [for 3, x has to be in middle]
 	# looks like READING, R-L parser ...
+	{
 		# force univariate 
 	one = str.trim(str.explode(varname, str.trim(test[1]) ));  
 	
 	lower = NULL; upper = NULL; lower.equal = FALSE; upper.equal = FALSE;
 	lower.is.equal = upper.is.equal = FALSE;
+	lower.is.NOTequal = upper.is.NOTequal = FALSE;
 	n.one = length(one); 
-	o.lower = o.upper = NULL;
-	if(n.one == 1) 
+	o.first = o.last = NULL;
+	# f = c("OPER", "VAR");  f = c("VAR", "OPER"); 
+	if(n.one == 1 || (n.one==2 && one[1] == "") ) 
 		{ 
-		# OPER then variable 
-		f = c("OPER", "VAR");
-		o.lower = oper.which(one[1]);
-			lower = o.lower$remaining;
-			lower.equal = str.contains("=",o.lower$key);
-			lower.is.equal = (o.lower$key == "=");
-		}  
-	if(n.one == 2)
+		newone = paste0(one, collapse="");
+		o.first = oper.which(newone);
+			# " x > 3 "
+			lower = o.first$remaining;
+			lower.equal = str.contains("=",o.first$key);
+			lower.is.NOTequal = (o.first$key == "<>");
+			lower.is.equal = (o.first$key == "=");
+			
+		if(str.contains("G", o.first$keyname) && o.first$number.first)
+			{
+			# " 3 > x " ===> " x < 3 "
+			# " 3 >= x " ===> " x <= 3 "
+			# let's recast into upper terms ... 
+			upper = lower;
+			upper.equal = lower.equal;
+			upper.is.equal = FALSE;
+			# RESET upper 
+			lower = NULL; lower.equal = FALSE; lower.is.equal = FALSE;
+			}			
+					
+		# v.smart(1:30, " 3 > x ")
+
+		}  else {
+				# we have a COMPOUND ... 
+		
+				}
+	if(n.one == 2) 
 		{
 		if(one[1] == "") 
 			{ 
-			o.upper = oper.which(one[2]);
-				upper = o.lower$remaining;
-				upper.equal = str.contains("=",o.upper$key);
-				upper.is.equal = (o.upper$key == "=");
+			o.last = oper.which(one[2]);
+				upper = o.upper$remaining;
+				upper.equal = str.contains("=",o.last$key);
+				upper.is.NOTequal = (o.last$key == "<>");				
+				upper.is.equal = (o.last$key == "=");
+				
+			if(!upper.is.NOTequal && str.contains(">", o.last$key))
+				{
+				# let's recast into lower terms ... 
+				lower = upper;
+				lower.equal = upper.equal;
+				lower.is.equal = FALSE;
+				# RESET upper 
+				upper = NULL; upper.equal = FALSE; upper.is.equal = FALSE;
+				}
+				
 			f = c("VAR", "OPER"); 
 			} else {
+					
 					o.lower = oper.which(one[1]);
 						lower = o.lower$remaining;
 						lower.equal = str.contains("=",o.lower$key);
+						
+						lower.is.NOTequal = (o.lower$key == "<>");
 						lower.is.equal = (o.lower$key == "=");
 					f = c("OPER", "VAR", "OPER");
 					o.upper = oper.which(one[2]);
 						upper = o.upper$remaining;
 						upper.equal = str.contains("=",o.upper$key);
+						upper.is.NOTequal = (o.upper$key == "<>");
 						upper.is.equal = (o.upper$key == "=");
+						
+
+
+					# want in form  SMALL < x < LARGE 
+					# may need to recast ... 
+					
+					to.recast = FALSE;
+					if(lower.is.NOTequal && upper.is.NOTequal)
+						{
+						# do nothing, taken care of later 
+						to.recast = TRUE;
+						} 
+					if(!to.recast && (!lower.is.NOTequal && !upper.is.NOTequal))
+						{
+						# do nothing, taken care of later 
+						to.recast = TRUE;
+						} 
+						
+						
+						else {
+								if(!lower.is.NOTequal && str.contains(">", o.lower$key))
+									{
+									# memory 
+									memory = upper;
+									memory.equal = upper.equal;
+									memory.is.equal = upper.is.equal;
+									memory.is.NOTequal = upper.is.NOTequal;
+									
+									# let's recast into upper terms ... 
+									upper = lower;
+									upper.equal = lower.equal;
+									upper.is.equal = lower.is.equal;
+									upper.is.NOTequal = lower.is.NOTequal;
+									
+									# RESET lower  
+									lower = memory;
+									lower.equal = memory.equal;
+									lower.is.equal = memory.is.equal;
+									lower.is.NOTequal = memory.is.NOTequal;
+									
+									}
+					
+								}
+					
+					if(!lower.is.NOTequal && str.contains(">", o.lower$key))
+						{
+						# memory 
+						memory = upper;
+						memory.equal = upper.equal;
+						memory.is.equal = upper.is.equal;
+						memory.is.NOTequal = upper.is.NOTequal;
+						
+						# let's recast into upper terms ... 
+						upper = lower;
+						upper.equal = lower.equal;
+						upper.is.equal = lower.is.equal;
+						upper.is.NOTequal = lower.is.NOTequal;
+						
+						# RESET lower  
+						lower = memory;
+						lower.equal = memory.equal;
+						lower.is.equal = memory.is.equal;
+						lower.is.NOTequal = memory.is.NOTequal;
+						
+						}
+						
+						
+					
+						
+					if(!upper.is.NOTequal && str.contains(">", o.upper$key))
+						{
+						# memory 
+						memory = lower;
+						memory.equal = lower.equal;
+						memory.is.equal = lower.is.equal;
+						memory.is.NOTequal = lower.is.NOTequal;
+						
+						# let's recast into upper terms ... 
+						lower = upper;
+						lower.equal = upper.equal;
+						lower.is.equal = upper.is.equal;
+						lower.is.NOTequal = upper.is.NOTequal;
+						
+						# RESET lower  
+						upper = memory;
+						upper.equal = memory.equal;
+						upper.is.equal = memory.is.equal;
+						upper.is.NOTequal = memory.is.NOTequal;
+						
+						}	
+						
+						
+						
+						
 					}
 		}
 	# parse to  lower LSIGN x USIGN upper ... possible NULL 
+	}
+	
+	
+	# compute final.idx 
+	{
 	final.idx = NULL;
 	if(lower.is.equal && upper.is.equal) { stop("what ... two operators both can't be equal ... 3 = x = 5 ... nonsensical"); }
 	# v.which if EQUAL 
@@ -540,15 +710,55 @@ v.smart = function(vec, test = " x <= 12 ", varname="x",
 		{
 		final.idx = v.which(vecT, what=lower);		
 		}		
-	if(!is.null(final.idx) && upper.is.equal)
+	if(is.null(final.idx) && upper.is.equal)
 		{
 		final.idx = v.which(vecT, what=upper);		
-		}		
-	if(!is.null(final.idx))
+		}	
+
+	if(is.null(final.idx) && lower.is.NOTequal && upper.is.NOTequal) 
+		{ 
+		# 3 != x != 5 
+		# ALL but two elements ...
+		f.lower = v.which(vecT, what=lower);
+		f.upper = v.which(vecT, what=upper);
+		f.join = set.union(f.lower,f.upper);
+		final.idx = vecT[-c(f.join)];
+		}
+		
+	if(is.null(final.idx) && lower.is.NOTequal) 
+		{ 
+		# 3 != x >= 2 
+		# ALL but one elements ...
+		f.lower = v.which(vecT, what=lower);
+		
+		if(is.null(upper))
+			{
+			final.idx = vecT[-c(f.lower)];
+			} else {
+					f.other = v.between(vec, lower=NULL, upper=upper, lower.equal=FALSE, upper.equal=upper.equal, by=by, return="indexes");	
+					final.idx = set.diff(f.other, f.lower);
+					}
+		}
+		
+	if(is.null(final.idx) && upper.is.NOTequal) 
+		{ 
+		# 3 >= x != 5 
+		# ALL but one elements ...
+		f.upper = v.which(vecT, what=upper);
+		if(is.null(lower))
+			{
+			final.idx = vecT[-c(f.upper)];
+			} else {
+					f.other = v.between(vec, lower=lower, upper=NULL, lower.equal=lower.equal, upper.equal=FALSE, by=by, return="indexes");		
+					final.idx = set.diff(f.other, f.upper);
+					}
+		}
+
+	if(is.null(final.idx))
 		{
 		final.idx = v.between(vec, lower=lower, upper=upper, lower.equal=lower.equal, upper.equal=upper.equal, by=by, return="indexes");		
 		}	
-	
+	}
 	
 	if(is.null(final.idx)) { return(NULL); }
 	if(r == "i") { return(final.idx); }
@@ -558,6 +768,9 @@ v.smart = function(vec, test = " x <= 12 ", varname="x",
 	vec = vec[final.idx];  # truncate 
 	vec;
 	}
+ 
+# GREATER than is not working ... # upper = null 
+
 
 
 xls.binom.test = function(trials, prob.success, test=" x <= 12")
@@ -1062,4 +1275,4 @@ xls.DEVSQ = function(x)
 	}
 	
 	
-### 1066 	
+### 1066  	

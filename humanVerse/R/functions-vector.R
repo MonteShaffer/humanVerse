@@ -81,7 +81,7 @@ v.naTo = function(vec, to="")
 	}
 	
 v.naTO = v.naTo;
-
+ 
 # between(x, lower, upper, incbounds=TRUE, NAbounds=TRUE, check=FALSE)
 # x %between% y
   
@@ -138,7 +138,7 @@ v.between = function(vec, lower, upper,
 		idx = idx.upper; 
 		} 
 	if(is.null(idx)) { return(NULL); }
-	if(r == "i") { return(idx); } 
+	if(r == "i") { return(which(idx==TRUE)); }   
 	
 	# indexes are based on lower/upper on VALUES/INDEXES
 	# independently, we return VECTOR, not elements below ...
@@ -155,7 +155,7 @@ v.return = function(idx)
 	}
 
 
-v.which = function(vec, what="")
+v.which = function(vec, what="", invert=FALSE)
 	{ 
 	idx = NULL;
 	# type = v.type(what);
@@ -174,20 +174,22 @@ v.which = function(vec, what="")
 						idx = which(what == TRUE);	
 						}
 					}
-		return(v.return(idx));
 		}
-	if(is.character(what))
+	if(is.null(idx) && is.character(what))
 		{
 		idx = which(vec == what);
-		return(v.return(idx));
 		}
-	if(is.na(what))
+	if(is.null(idx) && is.na(what))
 		{
 		idx = which(is.na(vec));
-		return(v.return(idx));
 		}
 	## DEFAULT
-	idx = which(vec == what);
+	if(is.null(idx))
+		{
+		idx = which(vec == what);
+		}
+		
+	if(invert) { IDX = 1:length(vec); idx = IDX[-c(idx)]; }
 	return(v.return(idx));
 	}
 

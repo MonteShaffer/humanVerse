@@ -50,6 +50,7 @@ set.diff = function() {}
 set.diff = setdiff;
 set.union = function() {}
 set.union = union;
+set.merge = union;
 set.intersect = function() {}
 set.intersect = intersect;
 set.equal = function() {}
