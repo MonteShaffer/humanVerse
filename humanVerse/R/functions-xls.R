@@ -267,20 +267,34 @@ xls.CORREL = function(x, y, ...)
 	cor(x,y);
 	}
 
-xls.AVERAGEIF = function(data, group="Sex", group.order=NULL, include.cols=NULL)
+
+xls.prepGroup = function(df, 
+								group="Sex", group.order=NULL, 
+								custom.cols=NULL
+							)
+	{
+	
+	
+	}
+
+xls.AVERAGEIF = function(df, 
+								group="Sex", group.order=NULL, 
+								custom.cols=NULL
+							)
 	{
 	# unnecessary on "==" comparison 
-	# data[[group]] = as.factor(data[[group]]); 
-	group.keys = unique(data[[group]]);		# Male, Female 
+	# df[[group]] = as.factor(df[[group]]); 
+	group.keys = unique(df[[group]]);		# Male, Female 
 	# 'by' ... I tried ...
 	
-	data.keys = set.diff( colnames(data), group ); # all keys BUT group 
+	# by default OTHER cols are everything but the group ...
+	data.keys = set.diff( colnames(df), group ); # all keys BUT group 
 													# must be numeric 
-	if(!is.null(include.cols))
+	if(!is.null(custom.cols))
 		{
-		idxs = v.match(include.cols, ncol(data), colnames(data));
-		if(is.null(idxs)) { stop("error with include.cols"); }
-		data.keys = colnames(data)[idxs];
+		idxs = v.match(custom.cols, ncol(df), colnames(df));
+		if(is.null(idxs)) { stop("error with custom.cols"); }
+		data.keys = colnames(df)[idxs];
 		}
 		
 	if(!is.null(group.order))
@@ -298,20 +312,20 @@ xls.AVERAGEIF = function(data, group="Sex", group.order=NULL, include.cols=NULL)
 	for(i in 1:ngroups)
 		{
 		row = NULL;
-		data.sub = subset(data, data[[group]] == group.keys[i]);
+		df.sub = subset(df, df[[group]] == group.keys[i]);
 		for(j in 1:ncolumns)
 			{
 			# this is in order of the INPUT 
 			data.key = data.keys[j];
-			cdata = data.sub[[data.key]];
-			cdata = as.numeric(cdata);
-			cmean = mean(cdata);
-			row = c(row, cmean);			
+			vec = df.sub[[data.key]]; 		# vec of data key (column)
+			vec = as.numeric(vec);
+			vec.mean = mean(vec);  
+			row = c(row, vec.mean);			# AVERAGEIF ... 
 			}
 		result = rbind(result, row)
 		}
 		
-	result = as.data.frame(result);
+	result = as.df.frame(result);
 		# all.numerics, no problem ... 
 		rownames(result) = group.keys;
 		colnames(result) = data.keys;
@@ -661,4 +675,22 @@ par.restoreState();
 	# https://www.php.net/manual/en/functions.user-defined.php
 	# Function names follow the same rules as other labels in PHP. A valid function name starts with a letter or underscore, followed by any number of letters, numbers, or underscores. As a regular expression, it would be expressed thus: ^[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*$.
 	
+	 
+xls.GROUPBY = function(df, )
+	{
+	
+	
+	}
+	 
+xls.ANOVA.ONE = function(...)
+	{
+	# data is already grouped ... AS-IS based on excel's current functions
+	# I could do group by eventually 
+	dots			= match.call(expand.dots = FALSE)$... ;
+	form_ls			= rep(list(bquote()), length(dots));
+	names(form_ls)	= as.character(dots);
+	
+dput(form_ls);
+	
+	}
 	 
