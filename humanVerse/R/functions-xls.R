@@ -547,6 +547,7 @@ v.smart = function(vec, test = " x <= 12 ", varname="x",
 			lower.is.NOTequal = (o.first$key == "<>");
 			lower.is.equal = (o.first$key == "=");
 			
+			# " 3 < x "
 		if(str.contains("G", o.first$keyname) && o.first$number.first)
 			{
 			# " 3 > x " ===> " x < 3 "
@@ -555,147 +556,103 @@ v.smart = function(vec, test = " x <= 12 ", varname="x",
 			upper = lower;
 			upper.equal = lower.equal;
 			upper.is.equal = FALSE;
-			# RESET upper 
-			lower = NULL; lower.equal = FALSE; lower.is.equal = FALSE;
-			}			
+			upper.is.NOTequal = FALSE;
+			# RESET lower 
+			lower = NULL; lower.equal = FALSE; lower.is.equal = FALSE; lower.is.NOTequal = FALSE;
+			}			 
 					
 		# v.smart(1:30, " 3 > x ")
 
 		}  else {
 				# we have a COMPOUND ... 
-		
-				}
-	if(n.one == 2) 
-		{
-		if(one[1] == "") 
-			{ 
-			o.last = oper.which(one[2]);
-				upper = o.upper$remaining;
-				upper.equal = str.contains("=",o.last$key);
-				upper.is.NOTequal = (o.last$key == "<>");				
-				upper.is.equal = (o.last$key == "=");
+				# P(9 ≤ x ≤ 15) 
+				# test = " 9 <= x <= 15 ";
+				o.first = oper.which(one[1]);
+				o.last = oper.which(one[2]);
 				
-			if(!upper.is.NOTequal && str.contains(">", o.last$key))
-				{
-				# let's recast into lower terms ... 
-				lower = upper;
-				lower.equal = upper.equal;
-				lower.is.equal = FALSE;
-				# RESET upper 
-				upper = NULL; upper.equal = FALSE; upper.is.equal = FALSE;
-				}
-				
-			f = c("VAR", "OPER"); 
-			} else {
+				# test = NUM1 SIGN1 x SIGN2 NUM2
+				# test = " 9 <= x <= 15 ";
+				#            LEQ  LEQ ... works as expected ...
+				if(str.contains("L", o.first$keyname) && str.contains("L", o.last$keyname))
+					{
+					lower = o.first$remaining;
+					lower.equal = str.contains("=",o.first$key);
+					lower.is.NOTequal = (o.first$key == "<>");
+					lower.is.equal = (o.first$key == "=");
 					
-					o.lower = oper.which(one[1]);
-						lower = o.lower$remaining;
-						lower.equal = str.contains("=",o.lower$key);
-						
-						lower.is.NOTequal = (o.lower$key == "<>");
-						lower.is.equal = (o.lower$key == "=");
-					f = c("OPER", "VAR", "OPER");
-					o.upper = oper.which(one[2]);
-						upper = o.upper$remaining;
-						upper.equal = str.contains("=",o.upper$key);
-						upper.is.NOTequal = (o.upper$key == "<>");
-						upper.is.equal = (o.upper$key == "=");
-						
-
-
-					# want in form  SMALL < x < LARGE 
-					# may need to recast ... 
-					
-					to.recast = FALSE;
-					if(lower.is.NOTequal && upper.is.NOTequal)
-						{
-						# do nothing, taken care of later 
-						to.recast = TRUE;
-						} 
-					if(!to.recast && (!lower.is.NOTequal && !upper.is.NOTequal))
-						{
-						# do nothing, taken care of later 
-						to.recast = TRUE;
-						} 
-						
-						
-						else {
-								if(!lower.is.NOTequal && str.contains(">", o.lower$key))
-									{
-									# memory 
-									memory = upper;
-									memory.equal = upper.equal;
-									memory.is.equal = upper.is.equal;
-									memory.is.NOTequal = upper.is.NOTequal;
-									
-									# let's recast into upper terms ... 
-									upper = lower;
-									upper.equal = lower.equal;
-									upper.is.equal = lower.is.equal;
-									upper.is.NOTequal = lower.is.NOTequal;
-									
-									# RESET lower  
-									lower = memory;
-									lower.equal = memory.equal;
-									lower.is.equal = memory.is.equal;
-									lower.is.NOTequal = memory.is.NOTequal;
-									
-									}
-					
-								}
-					
-					if(!lower.is.NOTequal && str.contains(">", o.lower$key))
-						{
-						# memory 
-						memory = upper;
-						memory.equal = upper.equal;
-						memory.is.equal = upper.is.equal;
-						memory.is.NOTequal = upper.is.NOTequal;
-						
-						# let's recast into upper terms ... 
-						upper = lower;
-						upper.equal = lower.equal;
-						upper.is.equal = lower.is.equal;
-						upper.is.NOTequal = lower.is.NOTequal;
-						
-						# RESET lower  
-						lower = memory;
-						lower.equal = memory.equal;
-						lower.is.equal = memory.is.equal;
-						lower.is.NOTequal = memory.is.NOTequal;
-						
-						}
-						
-						
-					
-						
-					if(!upper.is.NOTequal && str.contains(">", o.upper$key))
-						{
-						# memory 
-						memory = lower;
-						memory.equal = lower.equal;
-						memory.is.equal = lower.is.equal;
-						memory.is.NOTequal = lower.is.NOTequal;
-						
-						# let's recast into upper terms ... 
-						lower = upper;
-						lower.equal = upper.equal;
-						lower.is.equal = upper.is.equal;
-						lower.is.NOTequal = upper.is.NOTequal;
-						
-						# RESET lower  
-						upper = memory;
-						upper.equal = memory.equal;
-						upper.is.equal = memory.is.equal;
-						upper.is.NOTequal = memory.is.NOTequal;
-						
-						}	
-						
-						
-						
-						
+					upper = o.last$remaining;
+					upper.equal = str.contains("=",o.last$key);
+					upper.is.NOTequal = (o.last$key == "<>");
+					upper.is.equal = (o.last$key == "=");
 					}
-		}
+				
+				# test = " 9 >= x >= 15 ";
+				#            GEQ  GEQ ... x > 15 and x < 9 == NULL ...
+				#                         x > 9  and x < 15 should work 
+				# test = " 9 >= x >= 15 "; # works as expected 
+				# could I return the data in that sorted ORDER ?
+				# just SORT ...
+				if(str.contains("G", o.first$keyname) && str.contains("G", o.last$keyname))
+					{
+					upper = o.first$remaining;
+					upper.equal = str.contains("=",o.first$key);
+					upper.is.NOTequal = (o.first$key == "<>");
+					upper.is.equal = (o.first$key == "=");
+					 
+					lower = o.last$remaining;
+					lower.equal = str.contains("=",o.last$key);
+					lower.is.NOTequal = (o.last$key == "<>");
+					lower.is.equal = (o.last$key == "=");
+					}
+				
+				
+				
+				
+				# test = " 9 >= x <= 18 ";
+				#            GEQ  LEQ ... x <= 9 and x < 18 SO just x <= 9 ...
+				# test = " 18 >= x <= 9 ";  # x <= 9 and x < 18 so just x <= 9
+				# x < 9 as in x < min(9,18) 
+				# test = " 9 > x <= 18 "; x < 9
+				
+				if(str.contains("G", o.first$keyname) && str.contains("L", o.last$keyname))
+					{
+					lower = min(o.first$remaining, o.last$remaining);
+					o.which = which.min(); #### TODO 
+					lower.equal = str.contains("=",o.first$key);
+					lower.is.NOTequal = (o.first$key == "<>");
+					lower.is.equal = (o.first$key == "=");
+					
+					}
+				
+				
+				# test = " 9 <= x >= 15 ";
+				#            LEQ  GEQ ... x > 9 and x > 15 so just x > 15 
+				# test = " 15 <= x >= 9 ";
+				#            LEQ  GEQ ... x > 15 and x > 9 so just x > 15 
+				# x > 15 as in x > max(9,15)
+				if(str.contains("L", o.first$keyname) && str.contains("G", o.last$keyname))
+					{ 
+					lower = max(o.first$remaining, o.last$remaining);
+					# which max for below 
+					# o.which = which.min(); #### TODO 
+					lower.equal = str.contains("=",o.first$key);
+					lower.is.NOTequal = (o.first$key == "<>");
+					lower.is.equal = (o.first$key == "=");
+					
+					}
+				
+				# v.smart(1:30, test = " 9 >= x >= 18 ")
+				# v.smart(1:30, test = " 9 >= x <= 18 ")
+
+				# test = " 9 >= x >= 15 ";
+				## first is number ... ALWAYS ... 
+				
+				# nonsensical??
+				test = " 9 <= x == 15 ";
+				test = " 9 == x <= 15 ";
+				
+				
+				}
 	# parse to  lower LSIGN x USIGN upper ... possible NULL 
 	}
 	
@@ -722,7 +679,7 @@ v.smart = function(vec, test = " x <= 12 ", varname="x",
 		f.lower = v.which(vecT, what=lower);
 		f.upper = v.which(vecT, what=upper);
 		f.join = set.union(f.lower,f.upper);
-		final.idx = vecT[-c(f.join)];
+		final.idx = v.return(vecT[-c(f.join)]);
 		}
 		
 	if(is.null(final.idx) && lower.is.NOTequal) 
@@ -736,7 +693,8 @@ v.smart = function(vec, test = " x <= 12 ", varname="x",
 			final.idx = vecT[-c(f.lower)];
 			} else {
 					f.other = v.between(vec, lower=NULL, upper=upper, lower.equal=FALSE, upper.equal=upper.equal, by=by, return="indexes");	
-					final.idx = set.diff(f.other, f.lower);
+					final.idx = v.return(set.diff(f.other, f.lower));
+					
 					}
 		}
 		
@@ -750,7 +708,7 @@ v.smart = function(vec, test = " x <= 12 ", varname="x",
 			final.idx = vecT[-c(f.upper)];
 			} else {
 					f.other = v.between(vec, lower=lower, upper=NULL, lower.equal=lower.equal, upper.equal=FALSE, by=by, return="indexes");		
-					final.idx = set.diff(f.other, f.upper);
+					final.idx = v.return(set.diff(f.other, f.upper));
 					}
 		}
 
@@ -761,12 +719,12 @@ v.smart = function(vec, test = " x <= 12 ", varname="x",
 	}
 	
 	if(is.null(final.idx)) { return(NULL); }
-	if(r == "i") { return(final.idx); }
-	
+	if(r == "i") { return(v.return(final.idx)); }
+	 
 	# indexes are based on lower/upper on VALUES/INDEXES
 	# independently, we return VECTOR, not elements below ...
 	vec = vec[final.idx];  # truncate 
-	vec;
+	v.return(vec);
 	}
  
 # GREATER than is not working ... # upper = null 
@@ -778,18 +736,7 @@ xls.binom.test = function(trials, prob.success, test=" x <= 12")
 	X = xls.binom.build(trials, prob.success); 
 	ggg.barplot(X); 
 	
-	
-	
-
-
-v.between = function(vec, lower, upper, 
-							lower.equal = TRUE,
-							upper.equal = TRUE,
-							return = "vector",
-					sort = FALSE, ...)
-	{
-	
-	
+	# do v.smart here ... 
 	
 	prob.range;	
 	}

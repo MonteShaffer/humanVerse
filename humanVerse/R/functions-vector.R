@@ -138,13 +138,13 @@ v.between = function(vec, lower, upper,
 		idx = idx.upper; 
 		} 
 	if(is.null(idx)) { return(NULL); }
-	if(r == "i") { return(which(idx==TRUE)); }   
+	if(r == "i") { return(v.return(which(idx==TRUE))); }   
 	
 	# indexes are based on lower/upper on VALUES/INDEXES
 	# independently, we return VECTOR, not elements below ...
 	vec = vec[idx];  # truncate 
 	if(sort) { vec = sort(vec, ...); }
-	vec;
+	v.return(vec);
 	}
 
 v.return = function(idx)
@@ -186,7 +186,7 @@ v.which = function(vec, what="", invert=FALSE)
 	## DEFAULT
 	if(is.null(idx))
 		{
-		idx = which(vec == what);
+		idx = which(vec == what); 
 		}
 		
 	if(invert) { IDX = 1:length(vec); idx = IDX[-c(idx)]; }
