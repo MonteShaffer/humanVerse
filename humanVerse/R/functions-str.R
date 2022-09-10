@@ -200,6 +200,34 @@ str.fromBASE64 = function(bstr, ...)
 	res;
 	}
 
+
+
+
+str.toLanguage = function(str)
+	{
+	# univariate?
+	base::str2lang(str)
+	}
+str.fromLanguage = function(lang.obj)
+	{
+	# univariate?
+	lang2str(lang.obj);  # I wrote this inverse 
+	}
+
+
+
+str.toSymbol = function(str)
+	{
+	# univariate?
+	str2symb(str);  # I wrote this 
+	}
+str.fromSymbol = function(symb.obj)
+	{
+	# univariate?
+	symb2str(symb.obj);  # I wrote this 
+	}
+	
+	
 	
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
@@ -291,30 +319,6 @@ str.toMD5 = function(str, times=1, method="digest", ...)
 	}
 
 
-str.toLanguage = function(str)
-	{
-	# univariate?
-	base::str2lang(str)
-	}
-str.fromLanguage = function(lang.obj)
-	{
-	# univariate?
-	lang2str(lang.obj);  # I wrote this inverse 
-	}
-
-
-
-str.toSymbol = function(str)
-	{
-	# univariate?
-	str2symb(str);  # I wrote this 
-	}
-str.fromSymbol = function(symb.obj)
-	{
-	# univariate?
-	symb2str(symb.obj);  # I wrote this 
-	}
-	
 str.HASH = function()
 	{
 	str = NULL;
@@ -329,10 +333,9 @@ str.HASH = function()
 		colls = sample(colls);
 		}
 	coll = paste0(coll, collapse="");
-	res = str.toMD5( paste0(str, collapse=coll) );
-	print(res);
+	res = str.toMD5( paste0(str, collapse=coll), times=rand(1, rand(1,5)) );
 	minvisible(res, "LAST-HASH");
-	}
+	} 
  
  
  

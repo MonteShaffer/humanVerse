@@ -304,12 +304,13 @@ minvisible.get = function(key="LAST")
 	memory.get(key, "INVISIBLE");
 	}
 
-minvisible = function(x, key="LAST")
+minvisible = function(x, key="LAST", print=TRUE)
 	{
 	memory.set(key, "INVISIBLE", x);
 	# also store to ANS variable ... 
 	"ANS" %GLOBAL% x;
 	"Ans" %GLOBAL% x;
+	if(print) { print(x); }
 	invisible(x);	
 	}
 

@@ -8,6 +8,8 @@ init = function()
 	
 	
 	par.saveStateInitial();
+	options.saveStateInitial();
+	property.saveStateInitial(); 
 	
 	# maybe add wrapper for formals athat allows base::as.POSIXct for clarity
 	formals(as.POSIXct) = alist(x = , tz="UTC", ... = );

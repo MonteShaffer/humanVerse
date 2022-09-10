@@ -3,7 +3,7 @@ xls.pasteFrom = function()
 	{
 	df = read.delim("clipboard");
 	str(df);
-	minvisible(df);
+	minvisible(df, print=FALSE);
 	}
 	
 xls.copyTo = function(df, row.names=FALSE, col.names=TRUE, ...)
@@ -304,7 +304,7 @@ xls.groupBy = function(df,
 		res[[i]] = df.col;
 		}
 	names(res) = group.keys;
-	minvisible(res);
+	minvisible(res, print=FALSE);
 	}
 
 
@@ -375,7 +375,6 @@ xls.AVERAGEIF = function(df,
 		# all.numerics, no problem ... 
 		rownames(result) = group.keys;
 		colnames(result) = data.keys;
-	# print(result); 
 	minvisible(result);
 	}
  
@@ -429,6 +428,7 @@ ggg.barplot = function(X, overlay=NULL,
 							fg.opacity = 1,
 							xspace.per=1/3, # increase offset.right 
 							yspace.per=1/3, # increase ymax for pvalues 
+							y.min=0,		# force a min zero if greater 
 							yabove.per=1/10, # pvalue offset above bar 
 							angle=90,		# angle of pvalue 
 							fixed.width = 8 # total chars of pvalue (0. = 2)
@@ -454,8 +454,8 @@ ggg.barplot = function(X, overlay=NULL,
 		
 
 		# we want y range expanded to allow 20% for LEGEND in TOP
-	# ylim = c(min(X.vec), max(X.vec));
-	ylim = c(0, max(X.vec));
+	ylim = c(min(y.min,X.vec), max(X.vec));
+	# ylim = c(0, max(X.vec));
 #dput(ylim);
 	  ydiff = diff(ylim); yadd = (1+yspace.per) * ydiff;
 	ylim.new = c(ylim[1], ylim[1] + yadd);
@@ -605,8 +605,7 @@ xls.poisson.test = function(lambda, test=" x <= 5",
 	
 	
 	xx = ggg.barplot(X, overlay=overlay, ...); 
-	print(sum(p.range));
-	minvisible(sum(p.range));
+	minvisible(sum(p.range));  # doesn't return, but stores to MEMORY 
 	invisible(list("X" = X, "overlay" = overlay, "barplot.x" = xx));
 	}
 
@@ -641,7 +640,7 @@ xls.poisson.build = function(lambda, min.x=10, tol=0.000001)
 											"kurt[X]" = kurt.X
 											)
 						);
-	minvisible(res);	
+	minvisible(res, print=FALSE);	
 	}
 
 
@@ -681,7 +680,6 @@ xls.binomial.test = function(trials, prob.success, test=" x <= 5", ...)
 	
 	
 	xx = ggg.barplot(X, overlay=overlay, ...); 
-	print(sum(p.range));
 	minvisible(sum(p.range)); # STORES to ANS/Ans
 	invisible(list("X" = X, "overlay" = overlay, "barplot.x" = xx));
 	}
@@ -717,7 +715,7 @@ xls.binomial.build = function(trials, prob.success)
 											"kurt[X]" = kurt.X
 											)
 						);
-	minvisible(res);	
+	minvisible(res, print=FALSE);	
 	}
 	
 	

@@ -202,6 +202,18 @@ getALLAttributes = property.getALL;
 property.getAll = property.getALL;
 
 
+property.saveInitialState = function()
+	{
+	mhash = str.HASH();  # rainbow table?! nO 
+	memory.set("property.INITIAL", "SYSTEM", mhash);
+	property.saveState(mhash);
+	}
+
+property.restoreInitialState = function()
+	{
+	mhash = memory.get("property.INITIAL", "SYSTEM");
+	property.restoreState(mhash);
+	}
 
 
 
@@ -295,7 +307,7 @@ options.getALL = option.getALL;
 option.saveState = function(key="DEFAULT")
 	{
 	memory.set(key, "OPTIONS", options() );	
-	}
+	} 
 
 options.saveState = option.saveState;
 	
@@ -314,6 +326,21 @@ option.restoreState = function(key="DEFAULT")
 options.restoreState = option.restoreState;
 
 
+
+
+
+options.saveInitialState = function()
+	{
+	mhash = str.HASH();  # rainbow table?! nO 
+	memory.set("options.INITIAL", "SYSTEM", mhash);
+	options.saveState(mhash);
+	}
+
+options.restoreInitialState = function()
+	{
+	mhash = memory.get("options.INITIAL", "SYSTEM");
+	options.restoreState(mhash);
+	}
 
 
 
@@ -451,10 +478,12 @@ par.getALL = function(no.readonly = TRUE)
 
 par.getAll = par.getALL;
 
-par.saveState = function(key="DEFAULT", no.readonly = TRUE)
-	{
-	memory.set(key, "PAR", par(no.readonly = no.readonly) );	
-	}
+
+	
+
+
+
+
 	
 par.saveInitialState = function()
 	{
@@ -469,8 +498,14 @@ par.restoreInitialState = function()
 	par.restoreState(mhash);
 	}
 
+
+par.saveState = function(key="DEFAULT", no.readonly = TRUE)
+	{
+	memory.set(key, "PAR", par(no.readonly = no.readonly) );	
+	}
+
 	
-par.restoreState = function(key="DEFAULT")
+par.restoreState = function(key="DEFAULT") 
 	{
 	old.par = memory.get(key, "PAR");
 	if(!is.null(old.par))

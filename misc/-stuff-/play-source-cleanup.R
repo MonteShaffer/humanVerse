@@ -2379,7 +2379,7 @@ convertDateStringToFormat = function (strvec,to="%Y",to.name="years",from="%Y-%m
 
 # ASCII from readPNG / readJPG, ... not magick ...
 # https://github.com/ctaggart878/asciiart/blob/master/asciiArt.R
-
+ 
 # https://w7.pngwing.com/pngs/114/326/png-transparent-carmageddon-youtube-call-of-duty-modern-warfare-2-fortnite-game-others-game-heart-xbox-one.png
 	
 color.init = function()
