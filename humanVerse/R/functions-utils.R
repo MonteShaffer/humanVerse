@@ -307,6 +307,9 @@ minvisible.get = function(key="LAST")
 minvisible = function(x, key="LAST")
 	{
 	memory.set(key, "INVISIBLE", x);
+	# also store to ANS variable ... 
+	"ANS" %GLOBAL% x;
+	"Ans" %GLOBAL% x;
 	invisible(x);	
 	}
 

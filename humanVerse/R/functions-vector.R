@@ -179,18 +179,18 @@ v.smart = function(vec, test = " x <= 12 ", varname="x",
 							by="value", return = "vector"
 					)
 	{
-debug = TRUE;
+debug = FALSE;
 
-dput(vec);
+#dput(vec);
 	b = prep.arg(by, n = 1); # COMPARISON of "values" or "indexes"
 	vecIDX = 1:length(vec);
-dput(vecIDX);
-dput(b);
+#dput(vecIDX);
+#dput(b);
 	vecT = vec; if(b == "i") { vecT = vecIDX; }
 	r = prep.arg(return, n = 1); # RETURN of "values" or "indexes"
 	
 	## v.smart(1:30, " 3 >= x != 5   ")
-dput(vecT);
+#dput(vecT);
 	
 	
 	## parse EQUALITY as generic function???
@@ -535,35 +535,6 @@ cat("\n b: ", b, " \t r: ", r,
 	}
 	
 	return( v.return(res) );
-
-	
-	
-	
-	
-	
-
-	
-	# sm = set.match(final.idx, vecT);
-	# when we do != above, it calls v.between with return=return ... 
-	# maybe it should be return=by ???
-
-
-
-# cat("\n b: ", b, " \t r: ", r, 
-				# "\n\n\t\t\t final.idx: ", final.idx, 
-				# "\n\n\t\t\t vec: ", vec, 
-				# "\n\n\t\t\t vecIDX: ", vecIDX, 
-				# "\n\n\t\t\t sm: ", sm, 
-	# "\n\n");
-	 
-	# if(b == "i" && r == "i") { res = (v.return(final.idx)); }
-	# if(b == "i" && r == "v") { res = (v.return(vec[final.idx])); }
-	
-	# if(b == "v" && r == "i") { res = (v.return(sm)); }
-	# if(b == "v" && r == "v") { res = (v.return(final.idx)); }
-	
-
-	# res;
 	}
  
  

@@ -427,10 +427,9 @@ ggg.barplot = function(X, overlay=NULL,
 							bg.opacity = 1,
 							fg.col = "red", # this is overlay$x / overlay$y
 							fg.opacity = 1,
-							xoffset.left=2, 
-							xoffset.right=5, 
-							yspace.per=0.3, # increase ymax for pvalues 
-							yabove.per=0.1, # pvalue offset above bar 
+							xspace.per=1/3, # increase offset.right 
+							yspace.per=1/3, # increase ymax for pvalues 
+							yabove.per=1/10, # pvalue offset above bar 
 							angle=90,		# angle of pvalue 
 							fixed.width = 8 # total chars of pvalue (0. = 2)
 						)
@@ -442,14 +441,22 @@ ggg.barplot = function(X, overlay=NULL,
 	# barplot of test RANGE highlighted ...
 		bnames = property.get("x", X);
 		nb = length(bnames);
+# dput(nb);
 	
 	# make 20% higher for PROBS to be printed ... 
 	# rotate at angle of 30/60/90 degrees, up to the right rotation 
-		xlim = c(1-xoffset.left, nb+xoffset.right);  xdiff = diff(ylim);
+		# xmin = 0 - xoffset.left;
+		# xmax = abs(xmin) + nb + xoffset.right;
+		xmin = 0 - 1;
+		xmax = 1 + nb * (1+xspace.per);
+		xlim = c(xmin, xmax);  
+		xdiff = diff(xlim);
 		
 
 		# we want y range expanded to allow 20% for LEGEND in TOP
-	ylim = c(min(X.vec), max(X.vec));
+	# ylim = c(min(X.vec), max(X.vec));
+	ylim = c(0, max(X.vec));
+#dput(ylim);
 	  ydiff = diff(ylim); yadd = (1+yspace.per) * ydiff;
 	ylim.new = c(ylim[1], ylim[1] + yadd);
 	
@@ -462,11 +469,15 @@ ggg.barplot = function(X, overlay=NULL,
 
 	# bg.color = color.setOpacity(bg.col, bg.opacity);
 	bg.color = bg.col;
-							
+			
+par.saveState();
+# bottom, left, top, right 
+par.set("mar", c(2, 2, 4, 4));
 	xx = barplot( X.vec, 
 					names.arg = bnames, 
 					xlim=xlim, 
 					ylim=ylim.new,
+					border = "black",
 					col = bg.color				
 				);
 	
@@ -480,7 +491,7 @@ ggg.barplot = function(X, overlay=NULL,
 	# overlay = NULL;
 	if(!is.null(overlay))
 		{
-dput(overlay);
+#dput(overlay);
 		x = overlay$x;  bnames.o = x;
 		y = overlay$y;	pnames.o = num.toFixed(y, total.width=fixed.width);
 #dput(bnames.o);
@@ -498,6 +509,7 @@ dput(overlay);
 		# starts at [0] ... have to map to [1]
 		yNA[x] = y;		
 		bnames.o[x] = x;
+		bnames.o = NULL;
 #dput(bnames.o); # why is the number not highlighting??? SO 
 		# trying to match with xx ... 
 		xxx = barplot( yNA, 
@@ -506,9 +518,18 @@ dput(overlay);
 						names.arg = bnames.o, 
 						xlim=xlim, 
 						ylim=ylim.new,
-						col.axis = fg.color,
+						border = "black",
 						col = fg.color				
 					);
+		# xxx = barplot( yNA, 
+						# main = overlay$main,
+						# axes = FALSE,
+						# names.arg = bnames.o, 
+						# xlim=xlim, 
+						# ylim=ylim.new,
+						# col.axis = fg.color,
+						# col = fg.color				
+					# );
 		# barplot(VADeaths, border = "dark blue") 
 		# collapse color on SPACE ...
 
@@ -542,6 +563,7 @@ dput(overlay);
 	
 		}
 	
+	par.restoreState();			
 	invisible(xx);
 	}
 
@@ -584,7 +606,8 @@ xls.poisson.test = function(lambda, test=" x <= 5",
 	
 	xx = ggg.barplot(X, overlay=overlay, ...); 
 	print(sum(p.range));
-	minvisible(list("X" = X, "overlay" = overlay, "barplot.x" = xx));
+	minvisible(sum(p.range));
+	invisible(list("X" = X, "overlay" = overlay, "barplot.x" = xx));
 	}
 
 
@@ -628,7 +651,7 @@ xls.binomial.test = function(trials, prob.success, test=" x <= 5", ...)
 	# FOR SMALL values (trials), plot is very funny ... 
 	# this is zero indexed offest X[1] is 0th
 	X = xls.binomial.build(trials, prob.success); 
-dput(X);
+#dput(X);
 	X.vec = as.vector(X); # strip attributes
 	
 	xs = property.get("x", X);
@@ -659,7 +682,8 @@ dput(X);
 	
 	xx = ggg.barplot(X, overlay=overlay, ...); 
 	print(sum(p.range));
-	minvisible(list("X" = X, "overlay" = overlay, "barplot.x" = xx));
+	minvisible(sum(p.range)); # STORES to ANS/Ans
+	invisible(list("X" = X, "overlay" = overlay, "barplot.x" = xx));
 	}
 	
 	 
@@ -935,6 +959,7 @@ par.saveState();
 
 # http://rfunction.com/archives/1302	
 # mar – A numeric vector of length 4, which sets the margin sizes in the following order: bottom, left, top, and right. The default is c(5.1, 4.1, 4.1, 2.1).  y,x ... y, x .... not x,y ... x,y 
+
 
 	# keystrokes ... par("mar" = c(2, 2, 0, 0)); 
 	# getter/setter
