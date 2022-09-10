@@ -264,7 +264,21 @@ xls.COVARIANCES.P = function(x, y, ...)
 	
 xls.CORREL = function(x, y, ...)
 	{
-	cor(x,y);
+	res = cor(x,y, ...);
+	s = math.sign(res , return="character", 
+						pos="positive:", 
+						neg="negative:", 
+						zero="zero:"
+				);
+
+	abs.r = abs(res);
+						how = "very weak";
+	if(abs.r > 0.20) { 	how = "weak"; }
+	if(abs.r > 0.40) { 	how = "moderate"; }
+	if(abs.r > 0.60) { 	how = "strong"; }
+	if(abs.r > 0.80) { 	how = "very strong"; }
+	names(res) = paste0(s, " ", how);
+	res;
 	}
 
 
@@ -405,7 +419,7 @@ xls.POISSON.INV = function(prob, mean)
 # P(9 ≤ x ≤ 15)
 # P(x = 10)
 
-test = c("12 < x", "x <= 12", "x > 11", "x >= 10", "9 <= x <= 15", "x = 10")
+# test = c("12 < x", "x <= 12", "x > 11", "x >= 10", "9 <= x <= 15", "x = 10")
 
 ggg.barplot = function() {}
 ggg.barplot = function(X, overlay=NULL, 
@@ -463,12 +477,15 @@ ggg.barplot = function(X, overlay=NULL,
 			srt=angle
 		);
 	
+	# overlay = NULL;
 	if(!is.null(overlay))
 		{
+dput(overlay);
 		x = overlay$x;  bnames.o = x;
 		y = overlay$y;	pnames.o = num.toFixed(y, total.width=fixed.width);
-		
-						total.o = num.toFixed(sum(y), total.width=fixed.width);
+#dput(bnames.o);
+#dput(pnames.o);
+		total.o = num.toFixed(overlay$total, total.width=fixed.width);
 		
 		# fg.color = color.setOpacity(fg.col, fg.opacity);
 		fg.color = fg.col;
@@ -477,9 +494,11 @@ ggg.barplot = function(X, overlay=NULL,
 		# HOW to overlay the x-lab to a col ... ? col.xlab 
 		## https://stackoverflow.com/questions/49365948/changing-color-of-axis-labels-individually-in-base-r
 		yNA = as.numeric(xx * NA);
-		yNA[x] = y;
 		bnames.o = as.character(xx * NA);
+		# starts at [0] ... have to map to [1]
+		yNA[x] = y;		
 		bnames.o[x] = x;
+#dput(bnames.o); # why is the number not highlighting??? SO 
 		# trying to match with xx ... 
 		xxx = barplot( yNA, 
 						main = overlay$main,
@@ -529,23 +548,34 @@ ggg.barplot = function(X, overlay=NULL,
 
 
 
-xls.poisson.test = function(trials, prob.success, test=" x <= 5", ...)
+xls.poisson.test = function(lambda, test=" x <= 5", 
+								min.x=10, 
+								tol=0.000001,
+								...
+							)
 	{
-	X = xls.poisson.build(trials, prob.success); 
+	# this is zero indexed offest X[1] is 0th
+	X = xls.poisson.build(lambda, tol=tol); 
 	X.vec = as.vector(X); # strip attributes
+	
+	xs = property.get("x", X);
 	
 	overlay = NULL;
 	# do v.smart here ...
-	x.range = v.smart( X.vec, test=test, by = "index", return="index");
+	# x.range = v.smart( X.vec, test=test, by = "index", return="index");
+	# p.range = v.return(X.vec[x.range]);
+	#### if range is OUT OF BOUNDS, I can't alert, but works as EXPECTED ...
+	x.range = v.smart( xs, test=test, by = "value", return="index");
 	p.range = v.return(X.vec[x.range]);
 	
 	if(!is.null(p.range))
 		{
 		text = paste0("P( ", str.trim(test), " )");
-		main = paste0("BINOMIAL (n=",trials,", p=", prob.success,")");
+		main = paste0("POISSON (lambda=",lambda,")");
 		overlay = list(
 						"x" 	= x.range, 
-						"y" 	= p.range,
+						"y" 	= p.range,						
+						"total" = sum(p.range),
 						"text" 	= text,
 						"main" 	= main
 					);		
@@ -558,7 +588,7 @@ xls.poisson.test = function(trials, prob.success, test=" x <= 5", ...)
 	}
 
 
-xls.poisson.build = function(lambda, tol=0.000001)
+xls.poisson.build = function(lambda, min.x=10, tol=0.000001)
 	{
 	# average "waiting time"
 	
@@ -568,19 +598,20 @@ xls.poisson.build = function(lambda, tol=0.000001)
 	skew.X = lambda^(-1/2);
 	kurt.X = lambda^(-1);
 	
-	# build all x probabilities ...
+	# build all x probabilities ... until min/tol is exhausted ... 
 	res = NULL;
-	x = 0;
-	# for(TRUE)
+	x = 0; i = 1;
+	while(TRUE)
 		{
-		res[[x]] = xls.POISSON.DIST(x, lambda, FALSE);
-		if(res[[x]] <= tol) { break; }
+		res[i] = xls.POISSON.DIST(x, lambda, FALSE);
+		if((x > min.x) && (res[i] <= tol)) { break; }
 		x = 1 + x;
+		i = 1 + i;
 		}
 		
-	names(res) = 1:n; # names can get removed easily 	
-	res = property.set("x", res, 1:n);
-	res = property.set("-info-", res, list(	"n" = n, "p" = p, "q" = q,
+	names(res) = 0:x; # names can get removed easily 	
+	res = property.set("x", res, 0:x);
+	res = property.set("-info-", res, list(	"lambda" = lambda,
 											"E[X]" = E.X,
 											"var[X]" = var.X,
 											"skew[X]" = skew.X,
@@ -594,13 +625,22 @@ xls.poisson.build = function(lambda, tol=0.000001)
 
 xls.binomial.test = function(trials, prob.success, test=" x <= 5", ...)
 	{
+	# FOR SMALL values (trials), plot is very funny ... 
 	# this is zero indexed offest X[1] is 0th
 	X = xls.binomial.build(trials, prob.success); 
+dput(X);
 	X.vec = as.vector(X); # strip attributes
+	
+	xs = property.get("x", X);
 	
 	overlay = NULL;
 	# do v.smart here ...
-	x.range = v.smart( X.vec, test=test, by = "index", return="index");
+	# x.range = v.smart( X.vec, test=test, by = "index", return="index");
+	# p.range = v.return(X.vec[x.range]);
+	#### if range is OUT OF BOUNDS, I can't alert, but works as EXPECTED ...
+	# x.range = v.smart( xs, test=test, by = "value", return="vector");
+	# p.range = v.return(X.vec[1+x.range]);
+	x.range = v.smart( xs, test=test, by = "value", return="index");
 	p.range = v.return(X.vec[x.range]);
 	
 	if(!is.null(p.range))
@@ -610,6 +650,7 @@ xls.binomial.test = function(trials, prob.success, test=" x <= 5", ...)
 		overlay = list(
 						"x" 	= x.range, 
 						"y" 	= p.range,
+						"total" = sum(p.range),
 						"text" 	= text,
 						"main" 	= main
 					);		
@@ -621,10 +662,10 @@ xls.binomial.test = function(trials, prob.success, test=" x <= 5", ...)
 	minvisible(list("X" = X, "overlay" = overlay, "barplot.x" = xx));
 	}
 	
-	
+	 
 xls.binomial.build = function(trials, prob.success)
 	{
-	n = trials;
+	n = trials; if(n < 1) { cat.warning("trials >= 1, setting to 1"); n = 1; }
 	p = prob.success;
 	q = (1-p);
 	
@@ -635,7 +676,7 @@ xls.binomial.build = function(trials, prob.success)
 	kurt.X = (1-6*p*q) / (n*p*q);
 	
 	# build all x probabilities ...
-	res = numeric(n);
+	res = NULL;
 	i = 1;
 	for(x in 0:n)
 		{
@@ -1057,6 +1098,8 @@ xls.ANOVA.SIMPLE = function(df, alpha=0.05, posthoc="THSD")
 	reject = (p <= alpha);  # reject = (F.stat <= F.crit);
 	
 	# MAYBE DO a RA.FISCHER.plot ... farmland, means in the centers, with posthoc differences ... 
+	# LOWER TRI of DIFF, UPPER TRI of STARS and/or PVALUES ...
+	# Fischer, Bonferroni, Tukey ... 
 	
 	msg = "[Fail to Reject H0]: There is not enough evidence to conclude that the group means are different from one another ... ";
 	if(reject) { msg = "[Reject H0]:  There is sufficient evidence at alpha=0.05 to reject the null hypothesis and conclude that *AT LEAST* one group mean is different from the others ... "; }

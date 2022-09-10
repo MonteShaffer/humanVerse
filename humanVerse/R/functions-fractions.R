@@ -186,17 +186,20 @@ options(op);
 	
 	nmax.new = max(str.len(numb));
 	remaining = total.width - nmax.new - 1;  # -1 for DECIMAL_POINT 
-	if(remaining < 1 || is.null(frac))
+
+	
+	if(remaining < 1)
 		{
 		return(numb);
 		}
 	
 	## not null on frac 
+	if(is.null(frac)) { frac = "0"; }
 	frac = substring(str.pad(frac, remaining, "0", "RIGHT"), 1, remaining);
 	
 	## ALL BIG NUMBERS, FORCE to wider with WARNING ?
 	paste0(numb, ".", frac);
-	}
+	} 
 
 num.toFix = num.toFixed;
 num.toFIX = num.toFixed;

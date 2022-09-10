@@ -47,7 +47,7 @@ set.match = function(searching, set, ...)
 	
 # maybe just set.match = match 
 set.diff = function() {}
-set.diff = setdiff;
+set.diff = setdiff; 
 set.union = function() {}
 set.union = union;
 set.merge = union;
