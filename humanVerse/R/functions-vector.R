@@ -402,8 +402,8 @@ cat("\n TWO ----> CASE 3b \n");
 				# v.smart(1:30, test = " 9 >= x <= 18 ")
 
 				# nonsensical??
-				test = " 9 <= x == 15 ";
-				test = " 9 == x <= 15 ";
+				# test = " 9 <= x == 15 ";
+				# test = " 9 == x <= 15 ";
 	if(is.null(lower) && is.null(upper))
 		{
 if(debug)
@@ -460,19 +460,22 @@ cat("\n", " test : ", test, "\n\t\t\t lower : ", lower,
 		# 3 != x >= 2 
 		# ALL but one elements ...
 		f.lower = v.which(vecT, what=lower);
+		f.other = NULL;
 		
 		if(is.null(upper))
 			{
-			final.idx = vecT[-c(f.lower)];
+			final.idx = vecIDX[-c(f.lower)];
 			} else {
 					# f.other = v.between(vec, lower=NULL, upper=upper, lower.equal=FALSE, upper.equal=upper.equal, by=by, return="indexes");	
-					f.other = v.between(vecT, lower=NULL, upper=upper, lower.equal=FALSE, upper.equal=upper.equal, by=by, return=by);
+					f.other = v.between(vecT, lower=NULL, upper=upper, lower.equal=FALSE, upper.equal=upper.equal, by="value", return="index");
 					final.idx = v.return(set.diff(f.other, f.lower));
 					
 					}
 if(debug)
 	{
 	cat("\n OUT ----> f.other,f.lower : ", final.idx, " \n");
+	cat("\n\t\t\t f.other : ", f.other, " \n");
+	cat("\n\t\t\t f.lower : ", f.lower, " \n");
 	}
 		}
 		
@@ -481,24 +484,27 @@ if(debug)
 		# 3 >= x != 5 
 		# ALL but one elements ...
 		f.upper = v.which(vecT, what=upper);
+		f.other = NULL;
 		if(is.null(lower))
 			{
-			final.idx = vecT[-c(f.upper)];
+			final.idx = vecIDX[-c(f.upper)];
 			} else {
 					#f.other = v.between(vec, lower=lower, upper=NULL, lower.equal=lower.equal, upper.equal=FALSE, by=by, return="indexes");	
-					f.other = v.between(vecT, lower=lower, upper=NULL, lower.equal=lower.equal, upper.equal=FALSE, by=by, return=by);	
+					f.other = v.between(vecT, lower=lower, upper=NULL, lower.equal=lower.equal, upper.equal=FALSE, by="value", return="index");	
 					final.idx = v.return(set.diff(f.other, f.upper));
 					}
 if(debug)
 	{
 	cat("\n OUT ----> f.other,f.upper : ", final.idx, " \n");
+	cat("\n\t\t\t f.other : ", f.other, " \n");
+	cat("\n\t\t\t f.upper : ", f.upper, " \n");
 	}
 		}
 
 	if(is.null(final.idx))
 		{
 		# final.idx = v.between(vec, lower=lower, upper=upper, lower.equal=lower.equal, upper.equal=upper.equal, by=by, return="indexes");
-		final.idx = v.between(vecT, lower=lower, upper=upper, lower.equal=lower.equal, upper.equal=upper.equal, by=by, return=by);
+		final.idx = v.between(vecT, lower=lower, upper=upper, lower.equal=lower.equal, upper.equal=upper.equal, by="value", return="index");
 if(debug)
 	{
 	cat("\n OUT ----> v.between : ", final.idx, " \n");
@@ -508,27 +514,56 @@ if(debug)
 	
 	if(is.null(final.idx)) { return(NULL); }
 	
+	
+	
+	
+	if(b == "i" && r == "i") { res = (v.return(final.idx)); } 
+	if(b == "i" && r == "v") { res = (v.return(vec[final.idx])); }
+	
+	if(b == "v" && r == "i") { res = (v.return(final.idx)); }   
+	if(b == "v" && r == "v") { res = (v.return(vec[final.idx])); }
+	  
+if(debug)
+	{
+cat("\n b: ", b, " \t r: ", r, 
+				"\n\n\t\t\t vec[: ", vec, 
+				"\n\n\t\t\t vecIDX[: ", vecIDX,
+				"\n\n\t\t\t final.idx: ", v.return(final.idx), 
+				"\n\n\t\t\t vec[final.idx: ", vec[final.idx], 
+				"\n\n\t\t\t vecIDX[final.idx: ", vecIDX[final.idx],
+	"\n\n");
+	}
+	
+	return( v.return(res) );
 
 	
-	sm = set.match(final.idx, vecT);
+	
+	
+	
+	
+
+	
+	# sm = set.match(final.idx, vecT);
 	# when we do != above, it calls v.between with return=return ... 
 	# maybe it should be return=by ???
+
+
+
+# cat("\n b: ", b, " \t r: ", r, 
+				# "\n\n\t\t\t final.idx: ", final.idx, 
+				# "\n\n\t\t\t vec: ", vec, 
+				# "\n\n\t\t\t vecIDX: ", vecIDX, 
+				# "\n\n\t\t\t sm: ", sm, 
+	# "\n\n");
+	 
+	# if(b == "i" && r == "i") { res = (v.return(final.idx)); }
+	# if(b == "i" && r == "v") { res = (v.return(vec[final.idx])); }
 	
-	if(b == "i" && r == "i") { res = (v.return(final.idx)); }
-	#if(b == "i" && r == "v") { res = (v.return(vecT[final.idx])); }
-	if(b == "i" && r == "v") { res = (v.return(final.idx)); }
+	# if(b == "v" && r == "i") { res = (v.return(sm)); }
+	# if(b == "v" && r == "v") { res = (v.return(final.idx)); }
 	
-	#if(b == "v" && r == "i") { res = (v.return(vec[final.idx])); }
-	if(b == "v" && r == "i") { res = (v.return(sm)); }
-	if(b == "v" && r == "v") { res = (v.return(final.idx)); }
-	
-cat("\n b: ", b, " \t r: ", r, 
-				"\n\n\t\t\t final.idx: ", final.idx, 
-				"\n\n\t\t\t vec[final.idx: ", vec[final.idx], 
-				"\n\n\t\t\t vecT[final.idx: ", vecT[final.idx], 
-				"\n\n\t\t\t sm: ", sm, 
-	"\n\n");
-	res;
+
+	# res;
 	}
  
  
@@ -549,9 +584,9 @@ v.between = function(vec, lower, upper,
 							lower.equal = TRUE,
 							upper.equal = TRUE,
 							by = "value",
-							return = "vector",
-					sort = FALSE, ...)
+							return = "vector")
 	{
+debug = FALSE;
 	# OPERATES on vec not IDX of vector ... 1:length(vec) to do index ... 
 	# return = [v]ector or [i]ndex
 	r = prep.arg(return, n = 1);
@@ -598,7 +633,10 @@ v.between = function(vec, lower, upper,
 		idx = idx.upper; 
 		} 
 	if(is.null(idx)) { return(NULL); }
+if(debug)
+	{
 cat("\n v.between() \n");
+	}
 
 
 		
@@ -619,18 +657,10 @@ cat("\n b: ", b, " \t r: ", r,
 	"\n\n");
 	}
 	
-	return(res);
-	res;
-stop(paste0(res, collapse=" "));
-
-	if(r == "i") { return(v.return(which(idx==TRUE))); }   
-	
-	# indexes are based on lower/upper on VALUES/INDEXES
-	# independently, we return VECTOR, not elements below ...
-	vec = vec[idx];  # truncate 
-	if(sort) { vec = sort(vec, ...); }
-	v.return(vec);
+	v.return(res);
 	} 
+
+
 
 v.return = function(idx)
 	{
