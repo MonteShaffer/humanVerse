@@ -82,6 +82,429 @@ v.naTo = function(vec, to="")
 	
 v.naTO = v.naTo;
  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+# oper.which("!= 3");   # NO x 
+# oper.which("3 != ");
+# oper.which("== 3");
+# oper.which("= 3");
+
+oper.which = function(str)
+	{
+	kname = NULL;
+	if(str.contains("<=", str)) 
+		{ 
+		o = key = "<=";
+		kname = "LEQ";
+		rkey = ">";
+		rname = "G";
+		}
+	if(is.null(kname) && str.contains("<>", str)) 
+		{ 
+		o = key = "<>";  # Lotus 1-2-3
+		kname = "NEQ";
+		rkey = "=";
+		rname = "EQU";
+		}
+	if(is.null(kname) && str.contains("<", str)) 
+		{ 
+		o = key = "<";
+		kname = "L";
+		rkey = ">=";
+		rname = "GEQ";
+		}
+	if(is.null(kname) && str.contains(">=", str)) 
+		{ 
+		o = key = ">=";
+		kname = "GEQ";
+		rkey = "<";
+		rname = "L";
+		}
+	if(is.null(kname) && str.contains(">", str)) 
+		{ 
+		o = key = ">";
+		kname = "G";
+		rkey = "<=";
+		rname = "LEQ";
+		}
+	if(is.null(kname) && str.contains("!=", str)) 
+		{ 
+		# != BECOMES <> so no collision with "=" in str.contains 
+		o = "!=";
+		key = "<>";  # Lotus 1-2-3
+		kname = "NEQ";
+		rkey = "=";
+		rname = "EQU";
+		}
+	if(is.null(kname) && str.contains("==", str)) 
+		{ 
+		o = key = "==";
+		kname = "EQU";  # can't contain "L" 	
+		rkey = "<>";
+		rname = "NEQ";
+		}
+	if(is.null(kname) && str.contains("=", str)) 
+		{ 
+		o = "=";
+		key = "==";
+		kname = "EQU";	
+		rkey = "<>";
+		rname = "NEQ";
+		}
+		
+	otmp = str.trim(str.explode(o, str));	
+	r = as.numeric(str.trim(str.implode("", str.explode(o, str))));
+	nfirst = FALSE; if(otmp[1] != "") { nfirst = TRUE; }
+	
+	if(is.null(kname)) { return(NULL); }
+	list("key" = key, "keyname" = kname, "remaining" = r, "original" = o, "reverse.key" = rkey, "reverse.keyname" = rname, "number.first" = nfirst);
+	}
+
+
+
+
+## by.idx or by.value of the VEC 
+# return final.idx or vec[final.idx] 
+v.smart = function(vec, test = " x <= 12 ", varname="x", 
+							by="value", return = "vector"
+					)
+	{
+debug = FALSE;
+	b = prep.arg(by, n = 1); # COMPARISON of "values" or "indexes"
+	vecIDX = 1:length(vec);
+	vecT = vec; if(b == "i") { vecT = vecIDX; }
+	r = prep.arg(return, n = 1); # RETURN of "values" or "indexes"
+	
+	## v.smart(1:30, " 3 >= x != 5   ")
+	
+	
+	## parse EQUALITY as generic function???
+	## searching for up to 3 things ... x can be in different places?
+	## x <= 12 ... 12 < x ... 12 < x < 22 [for 3, x has to be in middle]
+	# looks like READING, R-L parser ...
+	{
+		# force univariate 
+	one = str.trim(str.explode(varname, str.trim(test[1]) ));  
+	
+	lower = NULL; upper = NULL; lower.equal = FALSE; upper.equal = FALSE;
+	lower.is.equal = upper.is.equal = FALSE;
+	lower.is.NOTequal = upper.is.NOTequal = FALSE;
+	n.one = length(one); 
+	o.first = o.last = NULL;
+	# f = c("OPER", "VAR");  f = c("VAR", "OPER"); 
+	if(n.one == 1 || (n.one==2 && one[1] == "") ) 
+		{ 
+		newone = paste0(one, collapse="");
+		o.first = oper.which(newone);
+if(debug)
+	{
+cat("\n newone : '",newone,"' \n");
+cat("\n\t\t str( oper.which('",newone,"') ); \n\n");
+	}
+			SIGN1_G = str.contains("G", o.first$keyname);
+			SIGN1_L = str.contains("L", o.first$keyname);
+			SIGN1_N = str.contains("NEQ", o.first$keyname);
+			SIGN1_E = str.contains("EQU", o.first$keyname);
+			# PART is EQUAL: ==, >=, <=
+			SIGN1_PE = str.contains("=",o.first$key);  
+			NUMSTART1 = o.first$number.first;
+		
+if(debug)
+	{
+cat("\n ONE ----> DEFAULT \n");	
+	}		
+			# DEFAULT ... 
+			lower 				= o.first$remaining;
+			lower.equal 		= SIGN1_PE;
+			lower.is.NOTequal 	= SIGN1_N;
+			lower.is.equal 		= SIGN1_E;
+			
+			# " 3 < x " ... " x < 3 "
+			# " 3 <= x " ... " x <= 3 "
+
+		if( (SIGN1_G && NUMSTART1) || 
+			(SIGN1_L && !NUMSTART1) 
+			)
+			{
+if(debug)
+	{
+cat("\n ONE ----> REVERSE \n");
+	}
+			# " 3 > x " ===> " x < 3 "
+			# " 3 >= x " ===> " x <= 3 "
+			# let's recast into upper terms ... 
+			upper 				= lower;
+			upper.equal 		= lower.equal;
+			upper.is.equal 		= FALSE;
+			upper.is.NOTequal 	= lower.is.NOTequal;
+			# RESET lower 
+			lower 				= NULL; 
+			lower.equal 		= FALSE; 
+			lower.is.equal 		= FALSE; 
+			lower.is.NOTequal 	= FALSE;
+			}			 
+
+		}  else {
+				# we have a COMPOUND ... 
+				
+				o.first = oper.which(one[1]);
+					SIGN1_G = str.contains("G", o.first$keyname);
+					SIGN1_L = str.contains("L", o.first$keyname);
+					SIGN1_N = str.contains("NEQ", o.first$keyname);
+					SIGN1_E = str.contains("EQU", o.first$keyname);
+					# PART is EQUAL: ==, >=, <=
+					SIGN1_PE = str.contains("=",o.first$key);  
+					NUMSTART1 = o.first$number.first;					
+				o.last = oper.which(one[2]);
+					SIGN2_G = str.contains("G", o.last$keyname);
+					SIGN2_L = str.contains("L", o.last$keyname);
+					SIGN2_N = str.contains("NEQ", o.last$keyname);
+					SIGN1_E = str.contains("EQU", o.last$keyname);
+					# PART is EQUAL: ==, >=, <=
+					SIGN1_PE = str.contains("=",o.last$key);  
+					NUMSTART2 = o.last$number.first;
+				
+				# test = NUM1 SIGN1 x SIGN2 NUM2
+				# test = " 9 <= x <= 15 ";
+				#            LEQ  LEQ ... works as expected ...
+				
+				# P(9 ≤ x ≤ 15) 
+				# test = " 9 <= x <= 15 ";
+				# test = " 9 <= x <> 15 ";
+				# test = " 9 <> x <= 15 ";
+				# # # test = " 9 <> x <> 15 "; 
+				if( (SIGN1_L && SIGN2_L) || 
+					(SIGN1_L && SIGN2_N) || 
+					(SIGN1_N && SIGN2_L) || 
+					(SIGN1_N && SIGN2_N)
+					)
+					{
+if(debug)
+	{
+cat("\n TWO ----> CASE 1 \n");
+	}
+					lower = o.first$remaining;
+					lower.equal = str.contains("=",o.first$key);
+					lower.is.NOTequal = (o.first$key == "<>");
+					lower.is.equal = (o.first$key == "==");
+					
+					upper = o.last$remaining;
+					upper.equal = str.contains("=",o.last$key);
+					upper.is.NOTequal = (o.last$key == "<>");
+					upper.is.equal = (o.last$key == "==");
+					}
+				
+				# test = " 9 >= x >= 15 ";
+				#            GEQ  GEQ ... x > 15 and x < 9 == NULL ...
+				# test = " 15 >= x >= 9 ";
+				#                         x > 9  and x < 15 should work 
+				# test = " 9 >= x <> 15 "; # 15 does nothing 
+				# test = " 9 <> x >= 15 "; # 9 does nothing 
+				# test = " 15 >= x <> 9 "; # removes 9
+				# test = " 15 <> x >= 9 "; # removes 15 
+				if( (SIGN1_G && SIGN2_G) || 
+					(SIGN1_G && SIGN2_N) || 
+					(SIGN1_N && SIGN2_G)
+					)
+					{
+if(debug)
+	{
+cat("\n TWO ----> CASE 2 \n");
+	}
+					upper = o.first$remaining;
+					upper.equal = str.contains("=",o.first$key);
+					upper.is.NOTequal = (o.first$key == "<>");
+					upper.is.equal = (o.first$key == "==");
+					 
+					lower = o.last$remaining;
+					lower.equal = str.contains("=",o.last$key);
+					lower.is.NOTequal = (o.last$key == "<>");
+					lower.is.equal = (o.last$key == "==");
+					}
+				
+				
+				
+				
+				# test = " 9 >= x <= 18 ";
+				#            GEQ  LEQ ... x <= 9 and x < 18 SO just x <= 9 ...
+				# test = " 18 >= x <= 9 ";  # x <= 9 and x < 18 so just x <= 9
+				# x < 9 as in x < min(9,18) 
+				# test = " 9 > x <= 18 "; x < 9
+				
+				# # test = " 18 >= x <= 9 ";
+				
+				
+				# test = " 9 <= x >= 15 ";
+				#            LEQ  GEQ ... x > 9 and x > 15 so just x > 15 
+				# test = " 15 <= x >= 9 ";
+				#            LEQ  GEQ ... x > 15 and x > 9 so just x > 15 
+				# x > 15 as in x > max(9,15)
+				
+				if( (SIGN1_G && SIGN2_L) || 
+					(SIGN1_L && SIGN2_G)
+					)
+					{
+					if( (SIGN1_L && SIGN2_G))
+						{ 
+if(debug)
+	{
+cat("\n TWO ----> CASE 3a \n");
+	}
+						marker = max(o.first$remaining, o.last$remaining);
+						} else {
+if(debug)
+	{
+cat("\n TWO ----> CASE 3b \n");
+	}
+								marker = min(o.first$remaining, o.last$remaining);
+								}
+					if(marker == o.first$remaining)
+						{						
+						SIGN_G 	= SIGN1_G;
+						SIGN_L 	= SIGN1_L;
+						SIGN_N 	= SIGN1_N;
+						SIGN_E 	= SIGN1_E;
+						SIGN_PE = SIGN1_PE;
+						} else {
+								SIGN_G 	= SIGN2_G;
+								SIGN_L 	= SIGN2_L;
+								SIGN_N 	= SIGN2_N;
+								SIGN_E 	= SIGN2_E;
+								SIGN_PE = SIGN2_PE;
+								}
+					
+					upper 				= marker;
+					upper.equal 		= SIGN_PE;
+					upper.is.NOTequal 	= SIGN_N;
+					upper.is.equal 		= SIGN_E;
+					
+					}
+				
+				
+								
+				
+				# v.smart(1:30, test = " 9 >= x >= 18 ")
+				# v.smart(1:30, test = " 9 >= x <= 18 ")
+
+				# nonsensical??
+				test = " 9 <= x == 15 ";
+				test = " 9 == x <= 15 ";
+	if(is.null(lower) && is.null(upper))
+		{
+if(debug)
+	{
+	cat("\n TWO ----> CASE ??UNKNOWN?? \n");
+	}
+		}
+				
+				}
+	# parse to  lower LSIGN x USIGN upper ... possible NULL 
+	}
+
+if(debug)
+	{
+cat("\n", " test : ", test, "\n\t\t\t lower : ", lower, 
+							"\n\t\t\t lower.equal : ", lower.equal, 
+							"\n\t\t\t lower.is.equal : ", lower.is.equal, 
+							"\n\t\t\t lower.is.NOTequal : ", lower.is.NOTequal,
+							"\n\t\t\t upper : ", upper, 
+							"\n\t\t\t upper.equal : ", upper.equal, 
+							"\n\t\t\t upper.is.equal : ", upper.is.equal, 
+							"\n\t\t\t upper.is.NOTequal : ", upper.is.NOTequal,
+	"\n\n");
+	}
+	
+	# compute final.idx 
+	{
+	final.idx = NULL;
+	if(lower.is.equal && upper.is.equal) { stop("what ... two operators both can't be equal ... 3 = x = 5 ... nonsensical"); }
+	# v.which if EQUAL 
+	# v.between if LE, L, GE, GE 
+	if(lower.is.equal)
+		{
+		final.idx = v.which(vecT, what=lower);		
+		}		
+	if(is.null(final.idx) && upper.is.equal)
+		{
+		final.idx = v.which(vecT, what=upper);		
+		}	
+
+	if(is.null(final.idx) && lower.is.NOTequal && upper.is.NOTequal) 
+		{ 
+		# 3 != x != 5 
+		# ALL but two elements ...
+		f.lower = v.which(vecT, what=lower);
+		f.upper = v.which(vecT, what=upper);
+		f.join = set.union(f.lower,f.upper);
+		final.idx = v.return(vecT[-c(f.join)]);
+		}
+		
+	if(is.null(final.idx) && lower.is.NOTequal) 
+		{ 
+		# 3 != x >= 2 
+		# ALL but one elements ...
+		f.lower = v.which(vecT, what=lower);
+		
+		if(is.null(upper))
+			{
+			final.idx = vecT[-c(f.lower)];
+			} else {
+					f.other = v.between(vec, lower=NULL, upper=upper, lower.equal=FALSE, upper.equal=upper.equal, by=by, return="indexes");	
+					final.idx = v.return(set.diff(f.other, f.lower));
+					
+					}
+		}
+		
+	if(is.null(final.idx) && upper.is.NOTequal) 
+		{ 
+		# 3 >= x != 5 
+		# ALL but one elements ...
+		f.upper = v.which(vecT, what=upper);
+		if(is.null(lower))
+			{
+			final.idx = vecT[-c(f.upper)];
+			} else {
+					f.other = v.between(vec, lower=lower, upper=NULL, lower.equal=lower.equal, upper.equal=FALSE, by=by, return="indexes");		
+					final.idx = v.return(set.diff(f.other, f.upper));
+					}
+		}
+
+	if(is.null(final.idx))
+		{
+		final.idx = v.between(vec, lower=lower, upper=upper, lower.equal=lower.equal, upper.equal=upper.equal, by=by, return="indexes");		
+		}	
+	}
+	
+	if(is.null(final.idx)) { return(NULL); }
+	if(r == "i") { return(v.return(final.idx)); }
+	 
+	# indexes are based on lower/upper on VALUES/INDEXES
+	# independently, we return VECTOR, not elements below ...
+	vec = vec[final.idx];  # truncate 
+	v.return(vec);
+	}
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 # between(x, lower, upper, incbounds=TRUE, NAbounds=TRUE, check=FALSE)
 # x %between% y
   
@@ -145,7 +568,7 @@ v.between = function(vec, lower, upper,
 	vec = vec[idx];  # truncate 
 	if(sort) { vec = sort(vec, ...); }
 	v.return(vec);
-	}
+	} 
 
 v.return = function(idx)
 	{

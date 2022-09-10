@@ -231,7 +231,7 @@ stats.mean = function(x, ..., na.rm=TRUE, is.member=TRUE, show.warning=na.rm, tr
 	warning = stats.warningNA(x, show.warning=show.warning);
 	
 	# this returns the first (smallest) if deviations tied
-	m.dev = abs(x.sort - m); 	m.mins = stats.whichMin(m.dev);
+	m.dev = abs(x - m);			m.mins = stats.whichMin(m.dev);
 								x.bar = x[ m.mins[1] ]; 
 	x.bar; 
 	}

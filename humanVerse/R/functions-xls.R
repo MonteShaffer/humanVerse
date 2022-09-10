@@ -407,8 +407,22 @@ xls.POISSON.INV = function(prob, mean)
 
 test = c("12 < x", "x <= 12", "x > 11", "x >= 10", "9 <= x <= 15", "x = 10")
 
-ggg.barplot = function(X)
+ggg.barplot = function() {}
+ggg.barplot = function(X, overlay=NULL, 
+							bg.col = "gray",
+							bg.opacity = 1,
+							fg.col = "red", # this is overlay$x / overlay$y
+							fg.opacity = 1,
+							xoffset.left=2, 
+							xoffset.right=5, 
+							yspace.per=0.3, # increase ymax for pvalues 
+							yabove.per=0.1, # pvalue offset above bar 
+							angle=90,		# angle of pvalue 
+							fixed.width = 8 # total chars of pvalue (0. = 2)
+						)
 	{
+	# X are the probabilities, the "x" (P (X = x) ) is attribute 
+	X.vec = as.vector(X); # strip attributes for barplot to work 
 	# barplot of EVERYTHING with OPACITY 
 	# par(new = TRUE)
 	# barplot of test RANGE highlighted ...
@@ -417,332 +431,198 @@ ggg.barplot = function(X)
 	
 	# make 20% higher for PROBS to be printed ... 
 	# rotate at angle of 30/60/90 degrees, up to the right rotation 
-		xoffset = 2;
-		xlim = c(1-xoffset, nb+xoffset);  xdiff = diff(ylim);
+		xlim = c(1-xoffset.left, nb+xoffset.right);  xdiff = diff(ylim);
 		
 
 		# we want y range expanded to allow 20% for LEGEND in TOP
-	ylim = c(min(X), max(X));
-	  ydiff = diff(ylim); yadd = 1.20 * ydiff;
+	ylim = c(min(X.vec), max(X.vec));
+	  ydiff = diff(ylim); yadd = (1+yspace.per) * ydiff;
 	ylim.new = c(ylim[1], ylim[1] + yadd);
 	
 	
-		pnames = num.toFixed(as.vector(X), total.width=6);
+		pnames = num.toFixed(X.vec, total.width=fixed.width);
 	# https://stackoverflow.com/questions/10286473/rotating-x-axis-labels-in-r-for-barplot  # las=2, ROTATE labels 
 	# https://stackoverflow.com/questions/12481430/how-to-display-the-frequency-at-the-top-of-each-factor-in-a-barplot-in-r
 	
 	# make angle of function of xdiff/ydiff ?
-	angle = 90;
-	xx = barplot( as.vector(X), names.arg = bnames, xlim=xlim, ylim=ylim.new );
-	
-	text(x=xx,y=as.numeric(pnames)+0.10*ydiff, pnames, srt=angle)
-	
-	
-	}
 
-# oper.which("!= 3");   # NO x 
-# oper.which("3 != ")
-
-oper.which = function(str)
-	{
-	kname = NULL;
-	if(str.contains("<=", str)) 
-		{ 
-		o = key = "<=";
-		kname = "LEQ";
-		rkey = ">";
-		rname = "G";
-		}
-	if(is.null(kname) && str.contains("<>", str)) 
-		{ 
-		o = key = "<>";  # Lotus 1-2-3
-		kname = "NEQ";
-		rkey = "=";
-		rname = "EQ";
-		}
-	if(is.null(kname) && str.contains("<", str)) 
-		{ 
-		o = key = "<";
-		kname = "L";
-		rkey = ">=";
-		rname = "GEQ";
-		}
-	if(is.null(kname) && str.contains(">=", str)) 
-		{ 
-		o = key = ">=";
-		kname = "GEQ";
-		rkey = "<";
-		rname = "L";
-		}
-	if(is.null(kname) && str.contains(">", str)) 
-		{ 
-		o = key = ">";
-		kname = "G";
-		rkey = "<=";
-		rname = "LEQ";
-		}
-	if(is.null(kname) && str.contains("!=", str)) 
-		{ 
-		# != BECOMES <> so no collision with "=" in str.contains 
-		o = "!=";
-		key = "<>";  # Lotus 1-2-3
-		kname = "NEQ";
-		rkey = "=";
-		rname = "EQ";
-		}
-	if(is.null(kname) && str.contains("=", str)) 
-		{ 
-		o = key = "=";
-		kname = "EQ";	
-		rkey = "=";
-		rname = "EQ";
-		}
+	# bg.color = color.setOpacity(bg.col, bg.opacity);
+	bg.color = bg.col;
+							
+	xx = barplot( X.vec, 
+					names.arg = bnames, 
+					xlim=xlim, 
+					ylim=ylim.new,
+					col = bg.color				
+				);
+	
+	# maybe do TRIG on angle ... 
+	text(	x=xx, 
+			y=as.numeric(pnames)+yabove.per*ydiff, 
+			pnames, 
+			srt=angle
+		);
+	
+	if(!is.null(overlay))
+		{
+		x = overlay$x;  bnames.o = x;
+		y = overlay$y;	pnames.o = num.toFixed(y, total.width=fixed.width);
 		
-	otmp = str.trim(str.explode(o, str));	
-	r = as.numeric(str.trim(str.implode("", str.explode(o, str))));
-	nfirst = FALSE; if(otmp[1] != "") { nfirst = TRUE; }
-	
-	if(is.null(kname)) { return(NULL); }
-	list("key" = key, "keyname" = kname, "remaining" = r, "original" = o, "reverse.key" = rkey, "reverse.keyname" = rname, "number.first" = nfirst);
-	}
+						total.o = num.toFixed(sum(y), total.width=fixed.width);
+		
+		# fg.color = color.setOpacity(fg.col, fg.opacity);
+		fg.color = fg.col;
+		
+		par(new=TRUE);	
+		# HOW to overlay the x-lab to a col ... ? col.xlab 
+		## https://stackoverflow.com/questions/49365948/changing-color-of-axis-labels-individually-in-base-r
+		yNA = as.numeric(xx * NA);
+		yNA[x] = y;
+		bnames.o = as.character(xx * NA);
+		bnames.o[x] = x;
+		# trying to match with xx ... 
+		xxx = barplot( yNA, 
+						main = overlay$main,
+						axes = FALSE,
+						names.arg = bnames.o, 
+						xlim=xlim, 
+						ylim=ylim.new,
+						col.axis = fg.color,
+						col = fg.color				
+					);
+		# barplot(VADeaths, border = "dark blue") 
+		# collapse color on SPACE ...
 
 
-
-
-
-## by.idx or by.value of the VEC 
-# return final.idx or vec[final.idx] 
-v.smart = function(vec, test = " x <= 12 ", varname="x", 
-							by="value", return = "vector"
-					)
-	{
-	b = prep.arg(by, n = 1); # COMPARISON of "values" or "indexes"
-	vecIDX = 1:length(vec);
-	vecT = vec; if(b == "i") { vecT = vecIDX; }
-	
-	## v.smart(1:30, " 3 >= x != 5   ")
-	
-	
-	## parse EQUALITY as generic function???
-	## searching for up to 3 things ... x can be in different places?
-	## x <= 12 ... 12 < x ... 12 < x < 22 [for 3, x has to be in middle]
-	# looks like READING, R-L parser ...
-	{
-		# force univariate 
-	one = str.trim(str.explode(varname, str.trim(test[1]) ));  
-	
-	lower = NULL; upper = NULL; lower.equal = FALSE; upper.equal = FALSE;
-	lower.is.equal = upper.is.equal = FALSE;
-	lower.is.NOTequal = upper.is.NOTequal = FALSE;
-	n.one = length(one); 
-	o.first = o.last = NULL;
-	# f = c("OPER", "VAR");  f = c("VAR", "OPER"); 
-	if(n.one == 1 || (n.one==2 && one[1] == "") ) 
-		{ 
-		newone = paste0(one, collapse="");
-		o.first = oper.which(newone);
-			# " x > 3 "
-			lower = o.first$remaining;
-			lower.equal = str.contains("=",o.first$key);
-			lower.is.NOTequal = (o.first$key == "<>");
-			lower.is.equal = (o.first$key == "=");
+		text(	x=xxx[x], 
+				y=as.numeric(pnames.o)+yabove.per*ydiff, 
+				pnames.o, 
+				col = fg.color,
+				srt=angle
+			);
 			
-			# " 3 < x "
-		if(str.contains("G", o.first$keyname) && o.first$number.first)
+		
+		#myPROB = bquote(italic(R)^2 == .(format(m.R2, digits = digits)));
+		# make BOLD ...
+		myPROB = overlay$text;
+
+		if(!is.null(myPROB))
 			{
-			# " 3 > x " ===> " x < 3 "
-			# " 3 >= x " ===> " x <= 3 "
-			# let's recast into upper terms ... 
-			upper = lower;
-			upper.equal = lower.equal;
-			upper.is.equal = FALSE;
-			upper.is.NOTequal = FALSE;
-			# RESET lower 
-			lower = NULL; lower.equal = FALSE; lower.is.equal = FALSE; lower.is.NOTequal = FALSE;
-			}			 
-					
-		# v.smart(1:30, " 3 > x ")
-
-		}  else {
-				# we have a COMPOUND ... 
-				# P(9 ≤ x ≤ 15) 
-				# test = " 9 <= x <= 15 ";
-				o.first = oper.which(one[1]);
-				o.last = oper.which(one[2]);
-				
-				# test = NUM1 SIGN1 x SIGN2 NUM2
-				# test = " 9 <= x <= 15 ";
-				#            LEQ  LEQ ... works as expected ...
-				if(str.contains("L", o.first$keyname) && str.contains("L", o.last$keyname))
-					{
-					lower = o.first$remaining;
-					lower.equal = str.contains("=",o.first$key);
-					lower.is.NOTequal = (o.first$key == "<>");
-					lower.is.equal = (o.first$key == "=");
-					
-					upper = o.last$remaining;
-					upper.equal = str.contains("=",o.last$key);
-					upper.is.NOTequal = (o.last$key == "<>");
-					upper.is.equal = (o.last$key == "=");
-					}
-				
-				# test = " 9 >= x >= 15 ";
-				#            GEQ  GEQ ... x > 15 and x < 9 == NULL ...
-				#                         x > 9  and x < 15 should work 
-				# test = " 9 >= x >= 15 "; # works as expected 
-				# could I return the data in that sorted ORDER ?
-				# just SORT ...
-				if(str.contains("G", o.first$keyname) && str.contains("G", o.last$keyname))
-					{
-					upper = o.first$remaining;
-					upper.equal = str.contains("=",o.first$key);
-					upper.is.NOTequal = (o.first$key == "<>");
-					upper.is.equal = (o.first$key == "=");
-					 
-					lower = o.last$remaining;
-					lower.equal = str.contains("=",o.last$key);
-					lower.is.NOTequal = (o.last$key == "<>");
-					lower.is.equal = (o.last$key == "=");
-					}
-				
-				
-				
-				
-				# test = " 9 >= x <= 18 ";
-				#            GEQ  LEQ ... x <= 9 and x < 18 SO just x <= 9 ...
-				# test = " 18 >= x <= 9 ";  # x <= 9 and x < 18 so just x <= 9
-				# x < 9 as in x < min(9,18) 
-				# test = " 9 > x <= 18 "; x < 9
-				
-				if(str.contains("G", o.first$keyname) && str.contains("L", o.last$keyname))
-					{
-					lower = min(o.first$remaining, o.last$remaining);
-					o.which = which.min(); #### TODO 
-					lower.equal = str.contains("=",o.first$key);
-					lower.is.NOTequal = (o.first$key == "<>");
-					lower.is.equal = (o.first$key == "=");
-					
-					}
-				
-				
-				# test = " 9 <= x >= 15 ";
-				#            LEQ  GEQ ... x > 9 and x > 15 so just x > 15 
-				# test = " 15 <= x >= 9 ";
-				#            LEQ  GEQ ... x > 15 and x > 9 so just x > 15 
-				# x > 15 as in x > max(9,15)
-				if(str.contains("L", o.first$keyname) && str.contains("G", o.last$keyname))
-					{ 
-					lower = max(o.first$remaining, o.last$remaining);
-					# which max for below 
-					# o.which = which.min(); #### TODO 
-					lower.equal = str.contains("=",o.first$key);
-					lower.is.NOTequal = (o.first$key == "<>");
-					lower.is.equal = (o.first$key == "=");
-					
-					}
-				
-				# v.smart(1:30, test = " 9 >= x >= 18 ")
-				# v.smart(1:30, test = " 9 >= x <= 18 ")
-
-				# test = " 9 >= x >= 15 ";
-				## first is number ... ALWAYS ... 
-				
-				# nonsensical??
-				test = " 9 <= x == 15 ";
-				test = " 9 == x <= 15 ";
-				
-				
-				}
-	# parse to  lower LSIGN x USIGN upper ... possible NULL 
+			myPROB1 = paste0(myPROB, " = ");
+			myPROB2 = paste0(myPROB, " = ", total.o);
+			y.val = mean(c(ylim[2],(1+yspace.per/2)*ylim.new[2]));
+			text( x = 0, y = y.val, 
+				myPROB2, cex=2, col=fg.color,
+				pos = 4
+				);
+			text( x = 0, y = y.val, 
+				myPROB1, cex=2,
+				pos = 4
+				);
+			}
+	
+		}
+	
+	invisible(xx);
 	}
-	
-	
-	# compute final.idx 
+
+
+
+
+xls.poisson.test = function(trials, prob.success, test=" x <= 5", ...)
 	{
-	final.idx = NULL;
-	if(lower.is.equal && upper.is.equal) { stop("what ... two operators both can't be equal ... 3 = x = 5 ... nonsensical"); }
-	# v.which if EQUAL 
-	# v.between if LE, L, GE, GE 
-	if(lower.is.equal)
-		{
-		final.idx = v.which(vecT, what=lower);		
-		}		
-	if(is.null(final.idx) && upper.is.equal)
-		{
-		final.idx = v.which(vecT, what=upper);		
-		}	
-
-	if(is.null(final.idx) && lower.is.NOTequal && upper.is.NOTequal) 
-		{ 
-		# 3 != x != 5 
-		# ALL but two elements ...
-		f.lower = v.which(vecT, what=lower);
-		f.upper = v.which(vecT, what=upper);
-		f.join = set.union(f.lower,f.upper);
-		final.idx = v.return(vecT[-c(f.join)]);
-		}
-		
-	if(is.null(final.idx) && lower.is.NOTequal) 
-		{ 
-		# 3 != x >= 2 
-		# ALL but one elements ...
-		f.lower = v.which(vecT, what=lower);
-		
-		if(is.null(upper))
-			{
-			final.idx = vecT[-c(f.lower)];
-			} else {
-					f.other = v.between(vec, lower=NULL, upper=upper, lower.equal=FALSE, upper.equal=upper.equal, by=by, return="indexes");	
-					final.idx = v.return(set.diff(f.other, f.lower));
-					
-					}
-		}
-		
-	if(is.null(final.idx) && upper.is.NOTequal) 
-		{ 
-		# 3 >= x != 5 
-		# ALL but one elements ...
-		f.upper = v.which(vecT, what=upper);
-		if(is.null(lower))
-			{
-			final.idx = vecT[-c(f.upper)];
-			} else {
-					f.other = v.between(vec, lower=lower, upper=NULL, lower.equal=lower.equal, upper.equal=FALSE, by=by, return="indexes");		
-					final.idx = v.return(set.diff(f.other, f.upper));
-					}
-		}
-
-	if(is.null(final.idx))
-		{
-		final.idx = v.between(vec, lower=lower, upper=upper, lower.equal=lower.equal, upper.equal=upper.equal, by=by, return="indexes");		
-		}	
-	}
+	X = xls.poisson.build(trials, prob.success); 
+	X.vec = as.vector(X); # strip attributes
 	
-	if(is.null(final.idx)) { return(NULL); }
-	if(r == "i") { return(v.return(final.idx)); }
-	 
-	# indexes are based on lower/upper on VALUES/INDEXES
-	# independently, we return VECTOR, not elements below ...
-	vec = vec[final.idx];  # truncate 
-	v.return(vec);
+	overlay = NULL;
+	# do v.smart here ...
+	x.range = v.smart( X.vec, test=test, by = "index", return="index");
+	p.range = v.return(X.vec[x.range]);
+	
+	if(!is.null(p.range))
+		{
+		text = paste0("P( ", str.trim(test), " )");
+		main = paste0("BINOMIAL (n=",trials,", p=", prob.success,")");
+		overlay = list(
+						"x" 	= x.range, 
+						"y" 	= p.range,
+						"text" 	= text,
+						"main" 	= main
+					);		
+		}
+	
+	
+	xx = ggg.barplot(X, overlay=overlay, ...); 
+	print(sum(p.range));
+	minvisible(list("X" = X, "overlay" = overlay, "barplot.x" = xx));
 	}
- 
-# GREATER than is not working ... # upper = null 
 
 
-
-xls.binom.test = function(trials, prob.success, test=" x <= 12")
+xls.poisson.build = function(lambda, tol=0.000001)
 	{
-	X = xls.binom.build(trials, prob.success); 
-	ggg.barplot(X); 
+	# average "waiting time"
 	
-	# do v.smart here ... 
+	# https://en.wikipedia.org/wiki/Poisson_distribution
+	E.X = lambda;
+	var.X = lambda;
+	skew.X = lambda^(-1/2);
+	kurt.X = lambda^(-1);
 	
-	prob.range;	
+	# build all x probabilities ...
+	res = NULL;
+	x = 0;
+	# for(TRUE)
+		{
+		res[[x]] = xls.POISSON.DIST(x, lambda, FALSE);
+		if(res[[x]] <= tol) { break; }
+		x = 1 + x;
+		}
+		
+	names(res) = 1:n; # names can get removed easily 	
+	res = property.set("x", res, 1:n);
+	res = property.set("-info-", res, list(	"n" = n, "p" = p, "q" = q,
+											"E[X]" = E.X,
+											"var[X]" = var.X,
+											"skew[X]" = skew.X,
+											"kurt[X]" = kurt.X
+											)
+						);
+	minvisible(res);	
+	}
+
+
+
+xls.binomial.test = function(trials, prob.success, test=" x <= 5", ...)
+	{
+	# this is zero indexed offest X[1] is 0th
+	X = xls.binomial.build(trials, prob.success); 
+	X.vec = as.vector(X); # strip attributes
+	
+	overlay = NULL;
+	# do v.smart here ...
+	x.range = v.smart( X.vec, test=test, by = "index", return="index");
+	p.range = v.return(X.vec[x.range]);
+	
+	if(!is.null(p.range))
+		{
+		text = paste0("P( ", str.trim(test), " )");
+		main = paste0("BINOMIAL (n=",trials,", p=", prob.success,")");
+		overlay = list(
+						"x" 	= x.range, 
+						"y" 	= p.range,
+						"text" 	= text,
+						"main" 	= main
+					);		
+		}
+	
+	
+	xx = ggg.barplot(X, overlay=overlay, ...); 
+	print(sum(p.range));
+	minvisible(list("X" = X, "overlay" = overlay, "barplot.x" = xx));
 	}
 	
 	
-xls.binom.build = function(trials, prob.success)
+xls.binomial.build = function(trials, prob.success)
 	{
 	n = trials;
 	p = prob.success;
@@ -756,14 +636,17 @@ xls.binom.build = function(trials, prob.success)
 	
 	# build all x probabilities ...
 	res = numeric(n);
-	for(x in 1:n)
+	i = 1;
+	for(x in 0:n)
 		{
-		res[x] = xls.BINOM.DIST(x, trials, prob.success, FALSE);
+		res[i] = xls.BINOM.DIST(x, trials, prob.success, FALSE);
+		i = 1 + i;
 		}
 		
-	names(res) = 1:n; # names can get removed easily 	
-	res = property.set("x", res, 1:n);
-	res = property.set("-info-", res, list(	"E[X]" = E.X,
+	names(res) = 0:n; # names can get removed easily 	
+	res = property.set("x", res, 0:n);
+	res = property.set("-info-", res, list(	"n" = n, "p" = p, "q" = q,
+											"E[X]" = E.X,
 											"var[X]" = var.X,
 											"skew[X]" = skew.X,
 											"kurt[X]" = kurt.X
