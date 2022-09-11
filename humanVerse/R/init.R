@@ -10,6 +10,7 @@ init = function()
 	par.saveStateInitial();
 	options.saveStateInitial();
 	system.saveStateInitial(); 
+	timer.init(show.message=FALSE);  # this captures the local tz 
 	
 	# maybe add wrapper for formals athat allows base::as.POSIXct for clarity
 	# doesn't seem to work ... 

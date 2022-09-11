@@ -69,7 +69,11 @@ memory.restoreState = function() {}
 
 # params are properties
 memory.start = function() {}
-memory.start = function(key="timer", MEMORY="TIMER", params = list("tz" = timer.tz()), force.purge=FALSE )
+memory.start = function(	key="timer", 
+							MEMORY="TIMER", 
+							params = list("tz" = timer.tz()), 
+							force.purge=FALSE 
+						)
 	{
 	what = .GlobalEnv$.humanVerse[["."]][[MEMORY]][[key]];
 	if(is.null(what) || force.purge )
@@ -99,6 +103,22 @@ memory.set = function(key, MEMORY="BASE", value)
 	.GlobalEnv$.humanVerse[["."]][[MEMORY]][[key]] = value;	
 	}
 	
+# USEFUL to keep a HISTORY of RANDOM SEEDS ... 
+# needle in haystack, but better than nothing 
+memory.append = function(key, MEMORY="BASE", value) 
+	{
+	what = .GlobalEnv$.humanVerse[["."]][[MEMORY]][[key]];
+	n = length(what);
+	if(n == 0)
+		{
+		what = list(value);
+		} else {
+				what[[n+1]] = value;
+				}
+	.GlobalEnv$.humanVerse[["."]][[MEMORY]][[key]] = what;
+	}
+
+
 
 # memory.set TO DISK, not to .humanVerse as OPTION
 

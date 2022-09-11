@@ -65,12 +65,16 @@ rgb2col = color.rgb2col; 	# also works as an inverse for the base
 
 
 color.hex = function() {}
-color.hex = function(hexstr, ..., prepend="#", case="upper", three.to.six=TRUE)
+color.hex = function(hexstr, ..., 
+						alpha=FALSE,
+						three.to.six=TRUE,
+						prepend="#", 
+						case="upper"						
+					)
 	{
 	hexstr = dots.addTo(hexstr, ...)
 	hexstr = cleanup.base(hexstr);
-	hexstr = prep.case(hexstr,case=case);
-	if(three.to.six)
+	if(three.to.six)  #   #F0C ==> FF00CC [old school]
 		{
 		hlen = str.len(hexstr);
 		idx = v.which(hlen, 3);
@@ -88,7 +92,15 @@ color.hex = function(hexstr, ..., prepend="#", case="upper", three.to.six=TRUE)
 			hexstr[idx] = nsub;			
 			}
 		}
-	hexstr = paste0("#", str.pad(hexstr, 6, "0", "LEFT"));
+	
+	hexstr = str.pad(hexstr, 6, "0", "LEFT");
+	
+	if(alpha)         #  #FF00CC00 is same, ##FF00CC becomes #FF00CCFF
+		{
+		hexstr = str.pad(hexstr, 8, "F", "RIGHT");
+		}	
+	hexstr = prep.case(hexstr,case=case);
+	hexstr = paste0(prepend, hexstr);
 	hexstr;	
 	}
 
@@ -520,6 +532,7 @@ color.convert = function(x, ..., from="hex", to="cmyk")
 	}	
 
 
+
 # choices = c("rgb", "hsl", "hsv", "hex", "cmyk");
 ####if they don't exist ... COMBOS ... PRIVATE/PUBLIC [.]
 # n = length(choices);
@@ -639,3 +652,65 @@ cmyk2hex = function(x, ...) { color.convert(x, ..., from="CMYK", to="HEX"); }
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+v.cmyk = function(c,m,y,k)
+	{
+	matrixCMYK = as.matrix( rbind(c,m,y,k) );
+	if(max(matrixCMYK) > 1) { matrixCMYK = matrixCMYK/255; }	
+	rownames(matrixCMYK) = c("[c]yan", "[m]agenta", "[y]ellow", "blac[k]");
+	colnames(matrixCMYK) = names(c);
+	cmyk2hex(matrixCMYK);	
+	}
+	
+v.hsv = function(h,s,v)
+	{
+	# length checking, parallel arrays ...
+	matrixHSV = as.matrix( rbind(h,s,l) );	
+		# The hue of the color specified as an angle in the range [0,360]. 0 yields red, 120 yields green 240 yields blue, etc.
+		rownames(matrixHSV) = c("hue", "saturation", "value");
+		colnames(matrixHSV) = names(h);
+	hsv2hex(matrixHSV);
+	}
+v.hsl = function(h,s,l)
+	{
+	# length checking, parallel arrays ...
+	# these are MY FORMATS of color, not *hsv* or *hcl*
+	matrixHSL = as.matrix( rbind(h,s,l) );
+		# The hue of the color specified as an angle in the range [0,360]. 0 yields red, 120 yields green 240 yields blue, etc.
+		rownames(matrixHSL) = c("hue", "saturation", "luminance");
+		colnames(matrixHSL) = names(h);
+	hsl2hex(matrixHSL);
+	}
+	
+# base::rgb requires (0,1) but col2rgb requires (0,255) ???
+v.rgb = function(r,g,b)
+	{
+	# length checking, parallel arrays ...
+	matrixRGB = as.matrix( rbind(r,g,b) );
+	if(max(matrixRGB) <= 1) { matrixRGB = matrixRGB*255; }	
+		rownames(matrixRGB) = c("red", "green", "blue");
+		colnames(matrixRGB) = names(r);
+	rgb2hex(matrixRGB);
+	}

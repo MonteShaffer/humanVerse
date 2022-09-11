@@ -966,6 +966,7 @@ str.rep = str.repeat;
 #' search = c("a", "b", "c"); replace = str.toupper(search);
 #------------------------------------------------#
 	# maybe attribute force.simple = TRUE ... 1-1 over subjects if 1-n
+	# maybe just make replace a list(replace) if not, then loop over it's length ... this is for EVAL to work ... 
 str.replace = function(search, replace, subject, method="base", force.case=0)
 	{
 	# TODO ... add to CPP logic force.case = 0

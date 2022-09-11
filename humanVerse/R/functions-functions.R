@@ -17,6 +17,18 @@
 # extra = "! #"
 
 
+prep.args = function(DEFAULT, NEW)
+	{
+	keys = names(DEFAULT);
+	n = length(keys);
+	for(i in 1:n)
+		{
+		key = keys[i];
+		if( exists(key, NEW) ) { DEFAULT[[key]] = NEW[[key]]; }
+		}
+	DEFAULT;  # updated 
+	}
+
 prep.case = function(key, case="lower")
 	{
 	CASE = substring(tolower(case), 1, 3);

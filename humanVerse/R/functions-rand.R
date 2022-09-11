@@ -70,6 +70,6 @@ rand = function(min = -1*as.integer(Sys.time()), max = as.integer(Sys.time()), n
 		{
 		vals = list('min' = min, 'max' = max, 'seed' = seed, 'method' = method);
 		res = property.set(res, vals);
-		}	
+		}	 
 	res;
 	}

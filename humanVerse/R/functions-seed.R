@@ -1,4 +1,7 @@
 
+
+
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' seed.init
@@ -17,18 +20,6 @@ seed.init = function(...)
 	}
 
 
-#' @rdname initSeed
-#' @export
-initSeed = seed.init;
-
-
-
-
-
-
-
-
-
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' seed.get
@@ -41,33 +32,13 @@ initSeed = seed.init;
 #' @export
 #'
 #' @examples
-seed.get = function(key, keep.attributes = FALSE, verbose = FALSE)
+seed.get = function(key = "LAST-SEED", unused=NULL, details=FALSE)
 	{
-	memory.init();
-	# I could create a "keyed" list of memory, not just last ...
-	if( missing(key) ) { key = "last"; }
-	if(verbose) { cat("getSeed :: looking up key ... ", "\t", key); }
-	if(exists(key, .GlobalEnv$.humanVerse[["seed"]]))
-		{
-		if(verbose) { cat("\n\t ... found with value: ", "\t", .GlobalEnv$.humanVerse[["seed"]][[key]], "\n"); }
-		my.seed = .GlobalEnv$.humanVerse[["seed"]][[key]];
-	if(!keep.attributes) { my.seed = as.integer(my.seed); }
-	my.seed;
-		} else { FALSE; }
+	memory.init();	
+	seed.value = memory.get(key, "-SEED-");
+	if(!details) { seed.value = as.integer(seed.value); }
+	v.return(seed.value);
 	}
-
-
-#' @rdname getSeed
-#' @export
-getSeed = seed.get;
-
-
-
-
-
-
-
-
 
 
 
@@ -81,58 +52,55 @@ getSeed = seed.get;
 #' @param verbose
 #'
 #' @return
-#' @export
+#' @export 
 seed.set = function() {}
-seed.set = function(seed, key, ..., 
-							args.set = list(), 
-							print.seed = TRUE, 
-							verbose = FALSE 
+seed.set = function(key = "LAST-SEED", 
+							seed.value=NULL,
+							from.memory=TRUE, # if key, but no value
+							... , 				# rand() parameters
+							seed.args = list() 	# seed() parameters
 					)
 	{
+	# accounting for standard set.seed(NULL) logic ...
+	if(is.null(key)) 	{ key = "LAST-SEED"; }
+	if(is.numeric(key)) { seed.value = key; key = "LAST-SEED"; }
+	if(is.numeric(seed.value)) { seed.value = as.integer(seed.value); }	
+	
+	
+	
+cat("\n key: ", key, " \t\t seed.value : ", seed.value, " \n");
+	
+	
 	memory.init();
-	if( missing(key) ) { key = "last"; }
-	if(is.null(seed))
+	if(is.null(seed.value) && from.memory)
 		{
-		seed = initSeed(...);
-		if(verbose)
-			{
-			cat("setSeed :: generating new integer seed ... ", "\t", seed, "\n");
-			}
+		seed.value = seed.get(key, details=TRUE);
 		}
-	
-	### ... can't be used twice ... throws and error if extra elements
-	if( !exists("kind", args.set) )			{ kind = NULL; }
-	if( !exists("normal.kind", args.set) )	{ normal.kind = NULL; }
-	if( !exists("sample.kind", args.set) )	{ sample.kind = NULL; }
-	
-	my.seed = seed;
-	
-	# is.set ISSUE about NULL
-	vals = list("kind" = kind, "normal.kind" = normal.kind, "sample.kind" = sample.kind);	
-	my.seed = property.set( my.seed, vals );
-	
-	.GlobalEnv$.humanVerse[["seed"]][[key]] = my.seed;
-	if(verbose)
-			{
-			cat("setSeed :: global value stored [key] = ",key," ... [seed] = ",seed, "\n");
-			}
+	if(is.null(seed.value)) 
+		{	
+		seed.value = seed.init(...);
 		
-	if(verbose)
-			{
-			cat("setSeed :: calling base::set.seed with seed ... ", seed, "\n");
-			}
-
-	if(print.seed)
-	{
-	cat("\n setSeed: ", seed, "\n");
-	}
+		seed.value = property.set("seed.args", seed.value, seed.args_);
+		# timezone?
+		seed.value = property.set("when", seed.value, Sys.time());
+		memory.set(key, "-SEED-", seed.value);
+		}
+cat("\n key: ", key, " \t\t seed.value : ", seed.value, " \n");
 	
-	set.seed(seed, kind=kind, normal.kind=normal.kind, sample.kind=sample.kind);
+	memory.append("-SEED-HISTORY-", "-SYSTEM-", seed.value);	
+	
+	# TRAPS "NULL" in a list ... 
+	seed.args_ = list(	"kind" = NULL, 
+						"normal.kind" = NULL, 
+						"sample.kind" = NULL
+					);
+	## THIS SEEMS LIKE A SEPARATE 'VARIADIC' FUNCTION
+	seed.args_ = prep.args(seed.args_, seed.args);
+
+	## VERY END, so STACK doesn't change things 	
+	set.seed(seed.value, 
+				kind		= seed.args_$kind, 
+				normal.kind	= seed.args_$normal.kind, 
+				sample.kind	= seed.args_$sample.kind
+			);
 	}
-
-#' @rdname setSeed
-#' @export
-setSeed = seed.set;
-
-
-

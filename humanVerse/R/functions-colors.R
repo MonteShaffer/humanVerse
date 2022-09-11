@@ -77,8 +77,9 @@ v.color = function(colvec, ..., names.search="base", alpha=TRUE)
 	
 	}
 	
+
 	
-color.gradient = function(colvec, ..., n=5, force.length=TRUE)
+hexcolor.gradient = function(colvec, ..., n=5, force.length=FALSE)
 	{
 	colvec = dots.addTo(colvec, ...);
 	nc = length(colvec);
@@ -87,12 +88,6 @@ color.gradient = function(colvec, ..., n=5, force.length=TRUE)
 	grDevices::colorRampPalette(vecHEX, alpha=TRUE)(n);
 	}
 	
-	
-	
-# https://brand.wsu.edu/visual/colors/
-wsu.crimson = "#981e32";
-wsu.gray    = "#717171";
-
 
 hexcolor.table = function() {}
 
@@ -102,7 +97,22 @@ hexcolor.wheel = function() {}
 
 hexcolor.plotWheel = function() {}
 
-hexcolor.chromatics = function() {}
+hexcolor.chromatics = function(vecHEX, ...) 
+	{
+	vecHEX = dots.addTo(vecHEX, ...);
+	vecHEX = v.color(vecHEX); # should be HEX, but now it is with ALPHA
+	# this will return a list... intended to be univariate 
+	
+	
+	color.setOpacity = function(hexvec, opacity=100)
+	{
+	hexvec = checkHEX(hexvec);  # this allows "color.names"
+	alpha = ( dechex(255 * opacity/100, n=2) );
+	#unname( paste0(hexvec,alpha) );
+	( paste0(hexvec,alpha) );
+  }
+	
+	}
 
 # vecHEX = c("#FAFBFC", "#F3D1A8","#A0A3A9"); vecHEX; hexcolor.round(vecHEX);	
 hexcolor.round = function(vecHEX, ..., n=9, full=FALSE)
@@ -138,8 +148,6 @@ hexcolor.round = function(vecHEX, ..., n=9, full=FALSE)
 	}
 
 
-
-	
 # vecHEX = c("#F3D1A8","A0A3A9"); vecHEX; hexcolor.websafe(vecHEX);	
 hexcolor.websafe = function(vecHEX, ...)
 	{
