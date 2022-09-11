@@ -49,10 +49,10 @@ angle.convert = function(A, ..., from="degrees", to="radians")
 	{
 	A = dots.addTo(A, ...);
 	# convert everthing to "degrees" on first pass
-	F = prep.arg(from, n=1, case="upper");
-	T = prep.arg(to, n=1, case="upper");
+	FROM = prep.arg(from, n=1, case="upper");
+	TO = prep.arg(to, n=1, case="upper");
 # dput(A); dput(F); dput(T); 
-	deg = switch(F,					  			
+	deg = switch(FROM,					  			
 					  "D" 	= A,
 					  "R"	= (180/pi) * A,	
 					  "G"  	= A * 9/10,			
@@ -61,7 +61,7 @@ angle.convert = function(A, ..., from="degrees", to="radians")
 	
 	# convert everything from "degrees" on second pass 
 	
-	res = switch(T,					  			
+	res = switch(TO,					  			
 					  "D" 	= deg,
 					  "R"	= (pi/180) * deg,	
 					  "G"  	= deg * 10/9,					

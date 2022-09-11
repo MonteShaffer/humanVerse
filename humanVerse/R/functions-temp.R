@@ -33,11 +33,11 @@ temp.convert = function(degX, ..., from="fahrenheit", to="celsius")
 	degX = dots.addTo(degX, ...);
 	temp.constants();
 	# convert everthing to "celsius" on first pass
-	F = prep.arg(from, n=1, case="upper");  # good thing F doesn't mean FALSE anymore!?!
-	T = prep.arg(to, n=1, case="upper");
+	FROM = prep.arg(from, n=1, case="upper");  # good thing F doesn't mean FALSE anymore!?!
+	TO = prep.arg(to, n=1, case="upper");
 # dput(degX); dput(F); dput(T); dput(ABS_ZERO_R);
 cat("\n START degX ... ", degX, "\n");
-	degC = switch(F,					  			
+	degC = switch(FROM,					  			
 					  "F" 	= 5/9 * (degX - 32),
 					  "C"	= degX,	
 					  "K"  	= degX + ABS_ZERO_C,				
@@ -46,7 +46,7 @@ cat("\n START degX ... ", degX, "\n");
 				);
 cat("\n in degC ... ", degC, "\n");			
 	# convert everything from "celsius" on second pass 	
-	degN = switch(T,					  			
+	degN = switch(TO,					  			
 					  "F" 	= 9/5 * degC + 32,
 					  "C"	= degC,	
 					  "K"  	= degC - ABS_ZERO_C,				

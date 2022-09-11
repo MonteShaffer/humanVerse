@@ -68,11 +68,15 @@ toBase = function(x, ..., base=10, to.length=NULL)
 			vec = c(vec, rem);
 			n   = n - 1;
 			}
-		# truncate leading zeros ...
-		while(vec[1] == 0 & length(vec) > 1)
+		
+		if(!is.null(vec))
 			{
-			vec = vec[-1];
-			}
+			# truncate leading zeros ...
+			while(vec[1] == 0 & length(vec) > 1)
+				{
+				vec = vec[-1];
+				}
+			} else { vec = 0; }
 		# zero offset
 		res[i] = paste0(base.chars[vec+1], collapse="");		
 		}
@@ -87,16 +91,16 @@ convertBase = function(x, ..., from="binary", to="octal", to.length=NULL)
 	{
 	x = dots.addTo(x, ...);
 	# first to decimal (integer) 
-	F = prep.arg(from, n=1, case="upper");
-	T = prep.arg(to, n=1, case="upper");
+	FROM = prep.arg(from, n=1, case="upper");
+	TO = prep.arg(to, n=1, case="upper");
 	 
-	xINT = switch(F,					  			
+	xINT = switch(FROM,					  			
 					  "B" 	= fromBase(x, base=2), 	# BINARY
 					  "O"  	= fromBase(x, base=8),	# OCT
 					  "H"	= fromBase(x, base=16),	# HEX					  
 				as.integer(x)	# DEFAULT # DECIMAL (INT, BASE 10)
 				);
-	xOUT = switch(T,					  			
+	xOUT = switch(TO,					  			
 					  "B" 	= toBase(x, base=2, to.length=to.length), 	# BINARY
 					  "O"  	= toBase(x, base=8, to.length=to.length),		# OCT
 					  "H"	= toBase(x, base=16, to.length=to.length),	# HEX					  

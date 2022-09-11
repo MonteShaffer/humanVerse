@@ -1,4 +1,30 @@
 
+color.random = function(n=1, to="HEX", memory.key="-LAST-RANDOM-", seed=NULL)
+	{
+	TO = prep.arg(to, n=3, case="upper");
+	min = 0; max = (2^8)^3 - 1;
+		# seed, seed.set/get ... 
+	HEX = color.hex( dec2hex( rand(min, max, n=n) ) );
+	if(TO == "HEX")
+		{
+		res = HEX;
+		} else {
+				res = color.convert(HEX, from="hex", to=to);
+				}
+		
+	memory.set(memory.key, "RANDOM-COLORS", res);
+	minvisible(res, print=FALSE);
+	return(res);
+	
+	return(minvisible(HEX, print=FALSE));
+	}
+	
+
+color.rand = color.random;
+
+
+
+
 # color.col2rgb("red","#FF9944",2,"#336699AA", alpha=TRUE);
 color.col2rgb = function(colors, ..., alpha=FALSE)
 	{
@@ -473,17 +499,17 @@ color.convert = function(x, ..., from="hex", to="cmyk")
 	{
 	x = dots.addTo(x, ...);
 	# first to RGB everything ... 
-	F = prep.arg(from, n=3, case="upper");
-	T = prep.arg(to, n=3, case="upper");
+	FROM = prep.arg(from, n=3, case="upper");
+	TO = prep.arg(to, n=3, case="upper");
 	 
-	RGB = switch(F,					  			
+	RGB = switch(FROM,					  			
 					  "CMY" = .cmyk2rgb(x), 	# CMY
 					  "HSL" = .hsl2rgb(x), 		# HSL
 					  "HSV" = .hsv2rgb(x),		# HSV
 					  "HEX"	= .hex2rgb(x),		# HEX					  
 				x	# DEFAULT # RGB
 				);
-	OUT = switch(T,					  			
+	OUT = switch(TO,					  			
 					  "CMY" = .rgb2cmyk(RGB), 	# CMY
 					  "HSL" = .rgb2hsl(RGB), 	# HSL
 					  "HSV" = .rgb2hsv(RGB),	# HSV

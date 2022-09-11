@@ -3326,7 +3326,7 @@ color.randomHEX = function(n=1, my.seed=NULL, key=NULL)
 	setSeed(my.seed,"color"); my.numbers = rand(2^1 - 1, (2^8)^3 - 1, n);
 
 	my.hexs = paste0("#",dechex(my.numbers, n=6));
-	my.hexs;
+	my.hexs; 
 	}
 
 
