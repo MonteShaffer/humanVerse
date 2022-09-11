@@ -29,7 +29,7 @@ dput(xstr);
 	for(i in 1:N)
 		{
 		xstri = toupper(xstr[i]);
-		n = str.len(xstr);
+		n = str.len(xstri);
 		re = 0; power = 0;
 		for(j in n:1)
 			{
@@ -87,7 +87,7 @@ toBase = function(x, ..., base=10, to.length=NULL)
 
 base.to = toBase;
 
-convertBase = function(x, ..., from="binary", to="octal", to.length=NULL)
+base.convert = function(x, ..., from="binary", to="octal", to.length=NULL)
 	{
 	x = dots.addTo(x, ...);
 	# first to decimal (integer) 
@@ -109,8 +109,7 @@ convertBase = function(x, ..., from="binary", to="octal", to.length=NULL)
 	xOUT;
 	}	
 
-base.convert = convertBase;
-	 
+convertBase = base.convert;
 
 
 

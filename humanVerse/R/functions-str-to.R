@@ -32,13 +32,18 @@ str.fromInteger = function(intvec)
 	}
 
 
-str.toUTF = function(str)
+str.toUTF = function(str = c("U+22EF"), ..., collapse=FALSE)
 	{
+	str = dots.addTo(str, ...);
 	# maybe jsut stringi 
+	# str = c("U+22EF","0x03B2L", "\x22EF", "\u22ef")
 	# intToUtf8(0x03B2L)
 	# text(1, 1.2, intToUtf8(c(21315, 31179, 19975, 36733)), cex = 5)
+	u.toSymbol(str, collapse=collapse);
 	}
-str.fromUTF = function(utf)
+	
+	
+str.fromUTF = function(utf, format="U+")
 	{
 	
 	}

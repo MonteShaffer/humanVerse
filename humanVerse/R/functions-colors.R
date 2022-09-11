@@ -56,10 +56,20 @@ color.nameFromHEX = function(vecHEX, ..., name.search="base", force.match=FALSE)
 	
 	}
 
+#  "wsu:crimson"
+#  "eku:colors" ... "ua:colors" (arizona) 
+#  "byu:oldcolors, newcolors"
+#  "utah:oldcolors, newcolors"
+#  "steelers:oldcolors, newcolors"
+#  "cincireds: oldcolors, newcolors"
+#  "cfalls:oldcolors", "newcolors"
+#  "arg:entina flag colors" 
 v.color = function(colvec, ..., names.search="base", alpha=TRUE)
-	{
+	{  
 	colvec = dots.addTo(colvec, ...);
-	return(colvec);
+	hexVEC = colvec;
+	res = color.hex(hexVEC, alpha=alpha);
+	return(res);
 	
 	clvec = str.replace(" ", "", colvec); # collapse names with spaces
 											# when we search, also collapse keys with spaces in names 
@@ -80,13 +90,20 @@ v.color = function(colvec, ..., names.search="base", alpha=TRUE)
 	
 
 	
-hexcolor.gradient = function(colvec, ..., n=5, force.length=FALSE)
-	{
-	colvec = dots.addTo(colvec, ...);
-	nc = length(colvec);
+hexcolor.gradient = function(vecHEX, ..., n=5, force.length=FALSE, alpha=FALSE, skip.checks=FALSE)
+	{	
+	if(!skip.checks)
+		{
+		# nested function can call a parent and have skip.checks=TRUE 
+		# if the check was already performed in the child 
+		vecHEX = dots.addTo(vecHEX, ...);	
+		vecHEX = v.color(vecHEX, alpha=alpha); # should be HEX, but now it is with ALPHA
+		}
+	
+	# the OUTPUT is univariate ... if colvec where a LIST .... then I could make it multivariate ... 
+	nc = length(vecHEX);
 	if(force.length && nc > n) { n = nc; }	
-	vecHEX = v.color(colvec); # red==>FF0000FF 
-	grDevices::colorRampPalette(vecHEX, alpha=TRUE)(n);
+	hexcolor.return(grDevices::colorRampPalette(vecHEX, alpha=alpha)(n));
 	}
 	
 
@@ -94,44 +111,142 @@ hexcolor.table = function() {}
 
 hexcolor.display = function() {} # HTML or graphics 
 
-hexcolor.wheel = function() {}
+hexcolor.wheel = function() 
+	{
+	
+	}
 
 hexcolor.plotWheel = function() {}
 
-hexcolor.opacity = function(vecHEX, ..., opacity=0.5) 
+# get values ... NULL as FF (100) ... 
+hexcolor.getOpacity = function(vecHEX, ..., return="100", skip.checks=FALSE) 
 	{
-	vecHEX = dots.addTo(vecHEX, ...);
-	vecHEX = v.color(vecHEX); # should be HEX, but now it is with ALPHA
+	if(!skip.checks)
+		{
+		# nested function can call a parent and have skip.checks=TRUE 
+		# if the check was already performed in the child 
+		vecHEX = dots.addTo(vecHEX, ...);	
+		vecHEX = v.color(vecHEX); # should be HEX, but now it is with ALPHA
+		}
+	RETURN = prep.arg(return, n=3, case="upper");
+	
+	alphas = substring(vecHEX, 8,8+1);
+	if(RETURN == "HEX") { return(alphas); }
+	
+	n255 =  hex2dec(alphas);
+	if(RETURN == "255") { return(n255); }
+	n100 = n255/255*100;
+	if(RETURN == "100") { return(n100); }
+	nprop = n100/100;
+	# RETURN == "PROPORTION"
+	return(nprop);
+	}
+
+
+# reset doesn't take old value ... if(!reset) ... compounding opacity
+hexcolor.setOpacity = function(vecHEX, ..., opacity=50, reset=TRUE, skip.checks=FALSE) 
+	{
+	if(!skip.checks)
+		{
+		# nested function can call a parent and have skip.checks=TRUE 
+		# if the check was already performed in the child 
+		vecHEX = dots.addTo(vecHEX, ...);	
+		vecHEX = v.color(vecHEX); # should be HEX, but now it is with ALPHA
+		}
+	
+	# could make opacity VECTORIZED on some matching, but WHY?
 	# this will return a list... intended to be univariate 
 	# this will adjust the CURRENT opacity ... so if already 0.5, now 0.25
 	
+	alphas = substring(vecHEX, 8,8+1);	
+	
+	n255 = hex2dec(alphas);
+	n100 = n255/255*100;
+	if(reset) { n100 = 0*n100 + 100; }
+	
+	if(opacity > 100) 	{ opacity = opacity / 255 * 100; }
+	if(opacity <= 1) 	{ opacity = opacity * 100; }
+	# opacity 1 will become 100%
+	# opacity 1.0001 will stay 1.0001%
+	# if you want smaller than this, have to ENTER PROPORTION 
+	
+	new.opacity = n100/100 * opacity/100;
+	minvisible(new.opacity);
+	newalphas = ( dec2hex(255 * new.opacity, to.length=2) );
+	
+	hexstr = substring(vecHEX, 1, 6+1);
+	
+	hexcolor.return(paste0(hexstr,newalphas));	
 	}
 	
-hexcolor.chromatics = function(vecHEX, ...) 
+	
+hexcolor.chromatics = function() {}
+hexcolor.chromatics = function(vecHEX, ..., n=12, light="#FFFFFF", dark="#000000", alpha=FALSE, natural.alpha=TRUE, skip.checks=FALSE) 
 	{
-	vecHEX = dots.addTo(vecHEX, ...);
-	vecHEX = v.color(vecHEX); # should be HEX, but now it is with ALPHA
+	if(!skip.checks)
+		{
+		# nested function can call a parent and have skip.checks=TRUE 
+		# if the check was already performed in the child 
+		vecHEX = dots.addTo(vecHEX, ...);	
+		vecHEX = v.color(vecHEX, alpha=alpha); # should be HEX, but now it is with ALPHA
+		}
 	# this will return a list... intended to be univariate 
+	  
+	vlight = v.color(light, alpha=alpha);		
+	vdark = v.color(dark, alpha=alpha);
+	if(alpha && natural.alpha)
+		{
+		# we could let them override with their own opacities
+		# but by default, they won't ... 
+		# maybe have a force.alpha ... 
+		# if natural.alpha is FALSE, they had to input the ALPHAS
+		# on light, dark, and 
+		vlight = hexcolor.setOpacity(vlight, opacity=100);
+		vecHEX = hexcolor.setOpacity(vecHEX, opacity=50);
+		vdark = hexcolor.setOpacity(vdark, opacity=0);
+		}
+		 
+	vlight = hexcolor.return(vlight);
+	vecHEX = hexcolor.return(vecHEX);
+	vdark = hexcolor.return(vdark);
 	
-	
-	color.setOpacity = function(hexvec, opacity=100)
-	{
-	hexvec = checkHEX(hexvec);  # this allows "color.names"
-	alpha = ( dechex(255 * opacity/100, n=2) );
-	#unname( paste0(hexvec,alpha) );
-	( paste0(hexvec,alpha) );
-  }
-	
+	n2 = ceiling(n/2);  # 11 will do 13 ... original doesn't count ...
+	vlen = length(vecHEX);
+	res = vector("list", vlen);
+	for(i in 1:vlen)
+		{
+		tmplight = hexcolor.gradient( c(vlight,vecHEX[i]), 
+										n=n2+1, 
+										alpha=alpha, 
+										skip.checks=TRUE
+									);
+		tmpdark = hexcolor.gradient(  c(vecHEX[i],vdark), 
+										n=n2+1, 
+										alpha=alpha, 
+										skip.checks=TRUE
+									);		
+		res[[i]] = unique( c(tmplight, vecHEX[i], tmpdark) );
+cat("\n length of chromatic: ", length(res[[i]]), " \n"); 
+		}
+	list.return(res);
 	}
 
+
 # vecHEX = c("#FAFBFC", "#F3D1A8","#A0A3A9"); vecHEX; hexcolor.round(vecHEX);	
-hexcolor.round = function(vecHEX, ..., n=9, full=FALSE)
+hexcolor.round = function(vecHEX, ..., n=9, alpha=FALSE, skip.checks=FALSE)
 	{
+	if(!skip.checks)
+		{
+		# nested function can call a parent and have skip.checks=TRUE 
+		# if the check was already performed in the child 
+		vecHEX = dots.addTo(vecHEX, ...);	
+		vecHEX = v.color(vecHEX, alpha=alpha); # should be HEX, but now it is with ALPHA
+		}
 	n = as.integer(n); if(n == 0) { n = 1; }
 	# F3D1A8 ==> 
 	# vecHEX = c("#F3D1A8","A0A3A9");
-	vecHEX = dots.addTo(vecHEX, ...);
-	vecHEX = v.color(vecHEX); # should be HEX, but now it is with ALPHA
+	
+	
 	# convert to RGB 
 	RGB = hex2rgb(vecHEX);
 	
@@ -153,18 +268,28 @@ hexcolor.round = function(vecHEX, ..., n=9, full=FALSE)
 	RGB[1,] = mod.round(RGB[1,]);
 	RGB[2,] = mod.round(RGB[2,]);
 	RGB[3,] = mod.round(RGB[3,]);
+	if(alpha)
+		{
+		RGB[4,] = mod.round(RGB[4,]);
+		}
 	
-	as.character(rgb2hex(RGB));	
+	hexcolor.return(as.character(rgb2hex(RGB)));	
 	}
 
 
 # vecHEX = c("#F3D1A8","A0A3A9"); vecHEX; hexcolor.websafe(vecHEX);	
-hexcolor.websafe = function(vecHEX, ...)
+hexcolor.websafe = function(vecHEX, ..., skip.checks=FALSE)
 	{
+	if(!skip.checks)
+		{
+		# nested function can call a parent and have skip.checks=TRUE 
+		# if the check was already performed in the child 
+		vecHEX = dots.addTo(vecHEX, ...);	
+		vecHEX = v.color(vecHEX); # should be HEX, but now it is with ALPHA
+		}
 	# F3D1A8 ==> 
 	# vecHEX = c("#F3D1A8","A0A3A9");
-	vecHEX = dots.addTo(vecHEX, ...);
-	vecHEX = v.color(vecHEX); # should be HEX, but now it is with ALPHA
+	
 	# convert to RGB 
 	RGB = hex2rgb(vecHEX);
 	
@@ -185,7 +310,7 @@ hexcolor.websafe = function(vecHEX, ...)
 	RGB[2,] = mod.websafe(RGB[2,]);
 	RGB[3,] = mod.websafe(RGB[3,]);
 	
-	as.character(rgb2hex(RGB));	
+	hexcolor.return(as.character(rgb2hex(RGB)));	
 	}
 
 

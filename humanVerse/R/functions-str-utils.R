@@ -353,8 +353,9 @@ ucwords = str.capitalizeWords;
 #'
 #'
 #------------------------------------------------#
-str.stripTags = function(str)
+str.stripTags = function(str, ...)
 	{
+	str = dots.addTo(str, ...);
 	return(gsub("<.*?>", "", str));
 	}
 	

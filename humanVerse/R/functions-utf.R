@@ -23,7 +23,7 @@ u.fromNum = function(num = 	128012, ..., collapse=FALSE)
 
 
 u.toSymbol = function(str = "U+22EF", ..., collapse=FALSE)
-	{
+	{ 
 	str = dots.addTo(str, ...);
 	num = u.toNum(str);
 	u.fromNum(num, collapse=collapse);

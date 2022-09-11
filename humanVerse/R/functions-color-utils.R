@@ -64,16 +64,31 @@ color.rgb2col = function(matrixRGB)
 rgb2col = color.rgb2col; 	# also works as an inverse for the base
 
 
+
+hexcolor.return = function(hexstr, case="upper", alpha.case="lower")
+	{
+	# make it more palpable to read ... FFFFFFaa
+	hlen = str.len(hexstr);
+	pre = substr(hexstr, 1, 6+1); # we have it in regular format #ABCDEF
+	# can I do str.subtraction? ... left side / right side ...
+	alpha = substr(hexstr, 6+2, 6+3);
+	
+	pre = prep.case(pre, case=case);
+	alpha = prep.case(alpha, case=alpha.case);
+	paste0(pre,alpha);	
+	}
+  
 color.hex = function() {}
 color.hex = function(hexstr, ..., 
 						alpha=FALSE,
 						three.to.six=TRUE,
 						prepend="#", 
-						case="upper"						
+						case="upper"
 					)
 	{
 	hexstr = dots.addTo(hexstr, ...)
-	hexstr = cleanup.base(hexstr);
+	hexstr = cleanup.base(hexstr); 
+	hexstr = str.replace(c("O","o"),"0", hexstr); # oh's not zeroes'
 	if(three.to.six)  #   #F0C ==> FF00CC [old school]
 		{
 		hlen = str.len(hexstr);
@@ -100,9 +115,9 @@ color.hex = function(hexstr, ...,
 		hexstr = str.pad(hexstr, "F", "RIGHT", 8);
 		} else {
 				# we will truncate alpha if they exist ...
-				str.
-				}
-	hexstr = prep.case(hexstr,case=case);
+				hexstr = str.truncate(hexstr, to.length=6, keep="left")
+				} 
+	hexstr = prep.case(hexstr,case=case);	
 	hexstr = paste0(prepend, hexstr);
 	hexstr;	
 	}
@@ -250,7 +265,7 @@ color.hex = function(hexstr, ...,
 	
 	
 
-	
+	  
 .rgb2hex = function(matrixRGB)
 	{
 	color.rgb2col(matrixRGB);
