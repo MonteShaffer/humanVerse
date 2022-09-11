@@ -459,7 +459,7 @@ file.readTailPipe = function( filename,
 	info = readChar(fp, nchars = buffer);
 	lines = str.explode("\r\n", info);
 		n.lines = length(lines);
-		n.pipes = str.count("|", lines);
+		n.pipes = str.count(lines, what="|");
 		n.mode = stats.mode(n.pipes);
 		n.bad = which(n.pipes != n.mode);
 	if (length(n.bad) > 0) 
@@ -482,7 +482,7 @@ file.readTailPipe = function( filename,
 	info2 = readChar(fp, nchars = buffer)
 	lines2 = str.explode("\r\n", info2)
 	n.lines2 = length(lines2)
-	n.pipes = str.count("|", lines2)
+	n.pipes = str.count(lines2, what="|")
 	n.bad = which(n.pipes != n.mode)
 	
 	}	

@@ -40,8 +40,9 @@ suppressWarning = suppressWarnings;
 
 # source( res$
 ## assuming res is alive from include.dir
-quick.source = function(key="pipple", res, verbose=FALSE)
+quick.source = function(key="pipple", res=NULL, verbose=FALSE)
 	{
+	if(is.null(res)) { memory.init(); res = memory.get("alex", "SYSTEM"); }
 	sfile = paste0("functions-",key,".R");
 	idx = v.which(res$myfiles, sfile);
 cat("\n QUICK: ", sfile, " with idx: ", idx, "\n");
@@ -72,7 +73,8 @@ quick.dir = function()
 	print( alex$myerrors[ alex$myerrors != ""]);
 	fn = ls(all.names = TRUE, pos=1); str(fn); View(fn);
 	alex = property.set("fn", alex, fn);
-	minvisible(alex);
+	memory.init(); memory.set("alex", "SYSTEM", alex);
+	minvisible(alex); 
 	}
 
  
