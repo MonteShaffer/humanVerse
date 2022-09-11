@@ -16,7 +16,7 @@ temp.constants = function(envir=parent.env(environment()))
 	
 temp.isNA = function(degX, Xunits="celsius")
 	{
-	X = prep.arg(Xunits, 1, case="upper");
+	X = prep.arg(Xunits, n=1, case="upper");
 	temp.constants();
 		Xconstant.str = paste0("ABS_ZERO_",X);
 		Xconstant = eval(parse(text = Xconstant.str));
@@ -33,8 +33,8 @@ temp.convert = function(degX, ..., from="fahrenheit", to="celsius")
 	degX = dots.addTo(degX, ...);
 	temp.constants();
 	# convert everthing to "celsius" on first pass
-	F = prep.arg(from, 1, case="upper");  # good thing F doesn't mean FALSE anymore!?!
-	T = prep.arg(to, 1, case="upper");
+	F = prep.arg(from, n=1, case="upper");  # good thing F doesn't mean FALSE anymore!?!
+	T = prep.arg(to, n=1, case="upper");
 # dput(degX); dput(F); dput(T); dput(ABS_ZERO_R);
 cat("\n START degX ... ", degX, "\n");
 	degC = switch(F,					  			
@@ -80,7 +80,7 @@ cat("\n in degN ... ", degN, "\n");
 	# }
 
 
-temp.f2c = function(degF, ...) { temp.convert(degF, ...,  from="F", to="C"); }  
+temp.f2c = function(degF, ...) { temp.convert(degF, ...,  from="F", to="C"); }   
 
 temp.f2k = function(degF, ...) { temp.convert(degF, ...,  from="F", to="K"); }  
 

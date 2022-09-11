@@ -2396,7 +2396,7 @@ color.init = function()
 # Conversion algorithms from http://www.brucelindbloom.com.
 # ?col2rgb
 
-
+# hue, hsl, cmyk ... hsv 
 	
 	}
 
@@ -2512,6 +2512,8 @@ hexdec = function(hexstr, ..., use.names.if.available=TRUE)
 	names(res) = o.hexstr;
 	res;
 	}
+	
+	str.toInteger( paste0("0x",str.trim(toupper(str.replace(c("#","0x"), "", hexstr)))), TRUE);
 
 
 
@@ -2841,6 +2843,9 @@ if(exists("monte", .GlobalEnv$.humanVerse[["colors"]][["lists"]]))
 #' color.setOpacity("#abcdef", 0);
 #' color.setOpacity("#abcdef", 50);
 #' color.setOpacity("#abcdef", 100);
+
+##  strPadLeft = function(str, len, pad) { str.pad(str,len,pad,"LEFT"); }
+
 color.setOpacity = function(hexvec, opacity=100)
 	{
 	hexvec = checkHEX(hexvec);  # this allows "color.names"

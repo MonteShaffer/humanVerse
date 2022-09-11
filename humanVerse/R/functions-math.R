@@ -87,8 +87,8 @@ convertBase = function(x, ..., from="binary", to="octal", to.length=NULL)
 	{
 	x = dots.addTo(x, ...);
 	# first to decimal (integer) 
-	F = prep.arg(from, 1, case="upper");
-	T = prep.arg(to, 1, case="upper");
+	F = prep.arg(from, n=1, case="upper");
+	T = prep.arg(to, n=1, case="upper");
 	 
 	xINT = switch(F,					  			
 					  "B" 	= fromBase(x, base=2), 	# BINARY

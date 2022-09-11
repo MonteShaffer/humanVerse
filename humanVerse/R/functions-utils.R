@@ -414,22 +414,22 @@ bindec = function(binstr)
 	N = length(binstr);
 	res = integer(n);
 	for(i in 1:N)
+	{
+	ibinstr = binstr[i];
+	n = strlen(ibinstr);
+	re = 0; power = 0;
+	for(i in n:1)
 		{
-		ibinstr = binstr[i];
-		n = strlen(ibinstr);
-		re = 0; power = 0;
-		for(i in n:1)
-			{
-			bit = as.integer(charAt(ibinstr,i));
-			add = 0;
-			if(bit == 1) { add = 2^power; }
-			
-			re = re + add;
-			power = 1 + power;
-			}
-		res[i] = re;
+		bit = as.integer(charAt(ibinstr,i));
+		add = 0;
+		if(bit == 1) { add = 2^power; }
+		
+		re = re + add;
+		power = 1 + power;
 		}
-	
+	res[i] = re;
+	}
+
 	}
 
 #' @rdname bin2dec

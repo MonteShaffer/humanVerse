@@ -49,8 +49,8 @@ angle.convert = function(A, ..., from="degrees", to="radians")
 	{
 	A = dots.addTo(A, ...);
 	# convert everthing to "degrees" on first pass
-	F = prep.arg(from, 1, case="upper");
-	T = prep.arg(to, 1, case="upper");
+	F = prep.arg(from, n=1, case="upper");
+	T = prep.arg(to, n=1, case="upper");
 # dput(A); dput(F); dput(T); 
 	deg = switch(F,					  			
 					  "D" 	= A,
