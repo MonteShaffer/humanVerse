@@ -23,14 +23,62 @@ chr = intToUtf8;
 as.dataframe = as.data.frame;
  
  
-dots.addTo = function(key, ...)
+dots.addTo = function(key, ..., by="column")
 	{
+	BY = prep.arg(by, n=3);
+	
 	a = is.atomic(key);  	# what type is the key ...
 	v = is.vector(key);		# maybe list append
 	l = is.list(key); 		# maybe cbind or rbind
-							
-	more = unlist(list(...));
-	c(key, more);
+	m = is.matrix(key);
+	d = is.data.frame(key);
+	
+	if((a || v) && !m) 
+		{
+		more = unlist(list(...));
+		res = c(key, more);
+		return(res);
+		}
+	if(m || d)
+		{
+		dm = dim(key);  # 3 x 1 ... match or transpose more 
+		mores = list(...);
+		n = length(mores);
+		if(n > 0)
+			{
+			for(i in 1:n)
+				{
+				more = mores[[i]];
+				di = dim(more);
+				if(all.equal(di,dm))
+					{
+					# 3x1 and 3x1 ... 3x2 or 6x1
+					if(BY == "col") { key = cbind(key, more); }
+					if(BY == "row") { key = rbind(key, more); }
+					} else {
+							if(di[1] == dm[1])
+								{
+								# 3x2 and 3x1 ... rbind 
+								key = rbind(key, more);
+								}
+							if(di[2] == dm[2])
+								{
+								# 3x2 and 1x2 ... cbind  
+								key = cbind(key, more);
+								}							
+							}
+				}
+			}
+		return(key);
+		}
+	
+cat("\n key \n");
+dput(key);
+cat("\n list(...) \n");
+dput(list(...));
+cat("\n unlist(list(...)) \n");
+dput(unlist(list(...)));
+stop("monte");		
 	}
 
 #' @rdname dots.addToKey
@@ -306,7 +354,7 @@ eval.fromTemplate = function(TEMPLATE, key, value)
 	{
 	TEMPLATE = str.replace("{key}", key, TEMPLATE);
 	nv = length(value);
-	if(is.character(value)) 
+	if(is.character(value) && nv==1) 
 		{ 
 		value = paste0('"',value,'"'); 
 		} else { 

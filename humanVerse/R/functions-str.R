@@ -966,8 +966,14 @@ str.rep = str.repeat;
 #' search = c("a", "b", "c"); replace = str.toupper(search);
 #------------------------------------------------#
 	# maybe attribute force.simple = TRUE ... 1-1 over subjects if 1-n
-str.replace = function(search, replace, subject, method="base")
+str.replace = function(search, replace, subject, method="base", force.case=0)
 	{
+	# TODO ... add to CPP logic force.case = 0
+	# zero is auto, case 1, 2, 3, 4 are the choices below ...
+	# 1 is pairwise 	n-n over all N
+	# 2 is 				n-1 over all N
+	# 3 is 				1-n paired over each N 
+	# 4 is 				m=n over each N ... recycling (nonsensical)
 debug = FALSE;
 	m = prep.arg(method, 1);
 

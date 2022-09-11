@@ -79,13 +79,17 @@ color.hex = function(hexstr, ..., prepend="#", case="upper", three.to.six=TRUE)
 # assume I have a good RGBMatirx ... could do cleanup/check ... 
 # matrixRGB = color.col2rgb("red","#FF9944",2,"#336699AA");
 
-rgb2hsl = function(matrixRGB)
+.rgb2hsl = function(matrixRGB)
 	{
 	# we want it on the [0,1] scale
 	if(max(matrixRGB) > 1) { matrixRGB = matrixRGB/255; }
-	n = ncol(matrixRGB);
-	matrixHSL = 0*matrixRGB[-c(4),]; # delete alpha if exists 
-	rownames(matrixHSL) = c("h","s","l");
+	
+	# delete alpha if exists 
+	# force input to [3 x n] matrix
+	matrixHSL = keep.matrix( 0*matrixRGB[-c(4),] );	
+		colnames(matrixHSL) = colnames(matrixRGB);
+		rownames(matrixHSL) = c("h","s","l");
+	n = ncol(matrixHSL);
 	for(i in 1:n)
 		{
 		one = matrixRGB[,i];
@@ -131,10 +135,10 @@ rgb2hsl = function(matrixRGB)
 
 	
 
-color.hue = function(X)
+.color.hue = function(X)
 	{
-	matrixHUE = as.numeric( unlist( X ) );
-	matrixHUE = matrix(matrixHUE, nrow=3); # force input to [3 x n] matrix
+	# force input to [3 x n] matrix
+	matrixHUE = keep.matrix(X);
 	n = ncol(matrixHUE);
 	res = numeric(n);  # one number per column 
 	for(i in 1:n)
@@ -162,11 +166,13 @@ color.hue = function(X)
 	
 
 
-hsl2rgb = function(matrixHSL)
+.hsl2rgb = function(matrixHSL)
 	{
-	n = ncol(matrixHSL);
-	matrixRGB = 0*matrixHSL; 
-	rownames(matrixRGB) = c("r","g","b");
+	matrixRGB = keep.matrix( 0*matrixHSL ); 
+		colnames(matrixRGB) = colnames(matrixHSL);
+		rownames(matrixRGB) = c("r","g","b");
+	n = ncol(matrixRGB);
+	
 	for(i in 1:n)
 		{
 		hsl = matrixHSL[,i];
@@ -182,9 +188,9 @@ hsl2rgb = function(matrixHSL)
 					v2	=	if(l < 0.5) {l * (1+s); } else {(l + s) - (s*l); }
 					v1	=	2*l-v2;
 
-					r	= as.integer(color.hue(c(v1,v2,h+1/3)));
-					g	= as.integer(color.hue(c(v1,v2,h)));
-					b	= as.integer(color.hue(c(v1,v2,h-1/3)));
+					r	= as.integer(.color.hue(c(v1,v2,h+1/3)));
+					g	= as.integer(.color.hue(c(v1,v2,h)));
+					b	= as.integer(.color.hue(c(v1,v2,h-1/3)));
 					}
 
 		matrixRGB[,i] = c(r,g,b);
@@ -195,13 +201,16 @@ hsl2rgb = function(matrixHSL)
 
 # redundant a bit, but just do conversions, nothing ELSE
 # no color name matching 
-hex2rgb = function(hexvec)
+.hex2rgb = function(vecHEX)
 	{
-	hexvec = color.hex(hexvec);
-	color.col2rgb(hexvec);
+	vecHEX = color.hex(vecHEX);
+	color.col2rgb(vecHEX);
 	}
 	
-rgb2hex = function(matrixRGB)
+	
+
+	
+.rgb2hex = function(matrixRGB)
 	{
 	color.rgb2col(matrixRGB);
 	}
@@ -218,16 +227,31 @@ rgb2hex = function(matrixRGB)
 
 
 
-
-
-
-rgb2hsv = function(matrixRGB)
+# if a matrix gets to length one in rows (or cols)???
+# for some reason R truncates it to a vector ... 
+keep.matrix = function(X, nrow=3, ...)
 	{
+		# unlist of matrix is by.col 
+	X.matrix = as.numeric( unlist( X ) );
+		# force input to [3 x n] matrix
+		# default is by.col 
+	X.matrix = matrix(X.matrix, nrow=nrow, ...); 
+	X.matrix;
+	}
+	
+
+.rgb2hsv = function(matrixRGB)
+	{	
 	# we want it on the [0,1] scale
 	if(max(matrixRGB) > 1) { matrixRGB = matrixRGB/255; }
-	n = ncol(matrixRGB);
-	matrixHSV = 0*matrixRGB[-c(4),]; # delete alpha if exists 
-	rownames(matrixHSV) = c("h","s","v");
+	
+	# delete alpha if exists 
+	# force input to [3 x n] matrix
+	matrixHSV = keep.matrix( 0*matrixRGB[-c(4),] );
+		colnames(matrixHSV) = colnames(matrixRGB);
+		rownames(matrixHSV) = c("h","s","v");
+	n = ncol(matrixHSV);
+	
 	for(i in 1:n)
 		{
 		one = matrixRGB[,i];
@@ -266,17 +290,25 @@ rgb2hsv = function(matrixRGB)
 
 		matrixHSV[,i] = c(h,s,v);
 		}
-	matrixHSL;	
+	matrixHSV;	
 	}
+
+  
 
 
 	
-hsv2rgb = function(matrixHSV)
+	
+.hsv2rgb = function(matrixHSV)
 	{
 	# ### SEEMS TO BE A BUG on "blue"
-	n = ncol(matrixHSV);
-	matrixRGB = 0*matrixHSV; 
-	rownames(matrixRGB) = c("r","g","b");
+		
+	# force input to [3 x n] matrix
+	matrixRGB = keep.matrix( 0*matrixHSV );
+		colnames(matrixRGB) = colnames(matrixHSV);
+		rownames(matrixRGB) = c("r","g","b");
+	
+	n = ncol(matrixRGB); 
+	
 	for(i in 1:n)
 		{
 		hsv = matrixHSV[,i];
@@ -347,17 +379,18 @@ hsv2rgb = function(matrixHSV)
 
 
 
-
-
-
-rgb2cmyk = function(matrixRGB)
+.rgb2cmyk = function(matrixRGB)
 	{
 	# we want it on the [0,255] scale
 	if(max(matrixRGB) <= 1) { matrixRGB = matrixRGB*255; }
-	n = ncol(matrixRGB);
-	matrixCMYK = 0*matrixRGB[-c(4),]; # delete alpha if exists 
+		
+	# delete alpha if exists 
+	# force input to [3 x n] matrix
+	matrixCMYK = keep.matrix( 0*matrixRGB[-c(4),] );
 	matrixCMYK = rbind(matrixCMYK, matrixCMYK[3,]);
-	rownames(matrixCMYK) = c("c","m","y","k");
+		colnames(matrixCMYK) = colnames(matrixRGB);
+		rownames(matrixCMYK) = c("c","m","y","k");
+	n = ncol(matrixCMYK);
 	for(i in 1:n)
 		{
 		one = matrixRGB[,i];
@@ -396,11 +429,12 @@ rgb2cmyk = function(matrixRGB)
 
 
 
-cmyk2rgb = function(matrixCMYK)
+.cmyk2rgb = function(matrixCMYK)
 	{
-	n = ncol(matrixCMYK);
-	matrixRGB = 0*matrixCMYK[-c(4),]; 
-	rownames(matrixRGB) = c("r","g","b");
+	matrixRGB = keep.matrix( 0*matrixCMYK[-c(4),] ); 
+		colnames(matrixRGB) = colnames(matrixCMYK);
+		rownames(matrixRGB) = c("r","g","b");
+	n = ncol(matrixRGB);
 	for(i in 1:n)
 		{
 		cmyk = matrixCMYK[,i];
@@ -430,9 +464,9 @@ cmyk2rgb = function(matrixCMYK)
 	}
 
 
+ 
 
-
-
+ 
 
 
 color.convert = function(x, ..., from="hex", to="cmyk")
@@ -443,31 +477,99 @@ color.convert = function(x, ..., from="hex", to="cmyk")
 	T = prep.arg(to, n=3, case="upper");
 	 
 	RGB = switch(F,					  			
-					  "CMY" = cmyk2rgb(x), 	# CMY
-					  "HSL" = hsl2rgb(x), 	# HSL
-					  "HSV" = hsv2rgb(x),	# HSV
-					  "HEX"	= hex2rgb(x),	# HEX					  
+					  "CMY" = .cmyk2rgb(x), 	# CMY
+					  "HSL" = .hsl2rgb(x), 		# HSL
+					  "HSV" = .hsv2rgb(x),		# HSV
+					  "HEX"	= .hex2rgb(x),		# HEX					  
 				x	# DEFAULT # RGB
 				);
 	OUT = switch(T,					  			
-					  "CMY" = rgb2cmyk(RGB), 	# CMY
-					  "HSL" = rgb2hsl(RGB), 	# HSL
-					  "HSV" = rgb2hsv(RGB),		# HSV
-					  "HEX"	= rgb2hex(RGB),		# HEX					  
+					  "CMY" = .rgb2cmyk(RGB), 	# CMY
+					  "HSL" = .rgb2hsl(RGB), 	# HSL
+					  "HSV" = .rgb2hsv(RGB),	# HSV
+					  "HEX"	= .rgb2hex(RGB),	# HEX					  
 				RGB	# DEFAULT # RGB
 				);
-	xOUT;
+	OUT;
 	}	
 
 
-choices = c("rgb", "hsl", "hsv", "hex", "cmyk");
-# if they don't exist ... COMBOS ... 
+# choices = c("rgb", "hsl", "hsv", "hex", "cmyk");
+####if they don't exist ... COMBOS ... PRIVATE/PUBLIC [.]
+# n = length(choices);
+# for(i in 1:n)
+	# {
+	# for(j in 1:n)
+		# {
+		# f = tolower(choices[i]); F = toupper(f);
+		# s = tolower(choices[j]); S = toupper(s);
+		# if(f != s)
+			# {
+			# row = '{f}2{s} = function(x, ...) { color.convert(x, ..., from="{F}", to="{S}"); }';
+			
+			# row = str.replace(c("{f}", "{s}", "{F}", "{S}"), c(f,s,F,S), row);	
 
+			# cat(row, "\n\n");	
+			# }
+		
+		# }
+	# }
+
+
+
+
+
+# hsl2rgb = function(matrixHSL)
+# rgb2hsl = function(matrixRGB)
+# hex2rgb = function(vecHEX)
+## ... really only works on hex unless my dots add to [updates] and can merge MATRICES
 
 
 
 # color.convert = function(x, ..., from="hex", to="cmyk")
 
+
+
+
+rgb2hsl = function(x, ...) { color.convert(x, ..., from="RGB", to="HSL"); } 
+
+rgb2hsv = function(x, ...) { color.convert(x, ..., from="RGB", to="HSV"); } 
+
+rgb2hex = function(x, ...) { color.convert(x, ..., from="RGB", to="HEX"); } 
+
+rgb2cmyk = function(x, ...) { color.convert(x, ..., from="RGB", to="CMYK"); } 
+
+hsl2rgb = function(x, ...) { color.convert(x, ..., from="HSL", to="RGB"); } 
+
+hsl2hsv = function(x, ...) { color.convert(x, ..., from="HSL", to="HSV"); } 
+
+hsl2hex = function(x, ...) { color.convert(x, ..., from="HSL", to="HEX"); } 
+
+hsl2cmyk = function(x, ...) { color.convert(x, ..., from="HSL", to="CMYK"); } 
+
+hsv2rgb = function(x, ...) { color.convert(x, ..., from="HSV", to="RGB"); } 
+
+hsv2hsl = function(x, ...) { color.convert(x, ..., from="HSV", to="HSL"); } 
+
+hsv2hex = function(x, ...) { color.convert(x, ..., from="HSV", to="HEX"); } 
+
+hsv2cmyk = function(x, ...) { color.convert(x, ..., from="HSV", to="CMYK"); } 
+
+hex2rgb = function(x, ...) { color.convert(x, ..., from="HEX", to="RGB"); } 
+
+hex2hsl = function(x, ...) { color.convert(x, ..., from="HEX", to="HSL"); } 
+
+hex2hsv = function(x, ...) { color.convert(x, ..., from="HEX", to="HSV"); } 
+
+hex2cmyk = function(x, ...) { color.convert(x, ..., from="HEX", to="CMYK"); } 
+
+cmyk2rgb = function(x, ...) { color.convert(x, ..., from="CMYK", to="RGB"); } 
+
+cmyk2hsl = function(x, ...) { color.convert(x, ..., from="CMYK", to="HSL"); } 
+
+cmyk2hsv = function(x, ...) { color.convert(x, ..., from="CMYK", to="HSV"); } 
+
+cmyk2hex = function(x, ...) { color.convert(x, ..., from="CMYK", to="HEX"); } 
 
 
 

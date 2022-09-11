@@ -1,4 +1,6 @@
 
+is.dataframe = is.data.frame;
+
 
 # https://www.rdocumentation.org/packages/Zelig/versions/4.2-1
 is.formula = function() {}
