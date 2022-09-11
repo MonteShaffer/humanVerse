@@ -86,50 +86,49 @@ base.to = toBase;
 convertBase = function(x, ..., from="binary", to="octal", to.length=NULL)
 	{
 	x = dots.addTo(x, ...);
-	# first to decimal (integer) ... maybe lists ...
+	# first to decimal (integer) 
 	F = prep.arg(from, 1, case="upper");
 	T = prep.arg(to, 1, case="upper");
-	
+	 
 	xINT = switch(F,					  			
 					  "B" 	= fromBase(x, base=2), 	# BINARY
 					  "O"  	= fromBase(x, base=8),	# OCT
 					  "H"	= fromBase(x, base=16),	# HEX					  
-				fromBase(as.character(x), base=10)	# DEFAULT # DECIMAL (INT, BASE 10)
+				as.integer(x)	# DEFAULT # DECIMAL (INT, BASE 10)
 				);
-
 	xOUT = switch(T,					  			
 					  "B" 	= toBase(x, base=2, to.length=to.length), 	# BINARY
 					  "O"  	= toBase(x, base=8, to.length=to.length),		# OCT
 					  "H"	= toBase(x, base=16, to.length=to.length),	# HEX					  
-				as.integer(toBase(x, base=10, to.length=to.length))		# DEFAULT DECIMAL (INT, BASE 10)
+				xINT		# DEFAULT DECIMAL (INT, BASE 10)
 				);
 	xOUT;
 	}	
 
 base.convert = convertBase;
-	
+	 
 
 
 
 
-choices = c("bin", "dec", "hex", "oct");
-n = length(choices);
-for(i in 1:n)
-	{
-	for(j in 1:n)
-		{
-		f = tolower(choices[i]); F = toupper(f);
-		s = tolower(choices[j]); S = toupper(s);
-		if(f != s)
-			{
-			row = '{f}2{s} = function(x, ..., to.length=to.length) { base.convert(x, ..., from="{F}", to="{S}", to.length=to.length); }';
+# choices = c("dec", "hex", "bin", "oct");
+# n = length(choices);
+# for(i in 1:n)
+	# {
+	# for(j in 1:n)
+		# {
+		# f = tolower(choices[i]); F = toupper(f);
+		# s = tolower(choices[j]); S = toupper(s);
+		# if(f != s)
+			# {
+			# row = '{f}2{s} = function(x, ..., to.length=NULL) { base.convert(x, ..., from="{F}", to="{S}", to.length=to.length); }';
 			
-			row = str.replace(c("{f}", "{s}", "{F}", "{S}"), c(f,s,F,S), row);
-			cat(row, "\n\n");	
-			}
+			# row = str.replace(c("{f}", "{s}", "{F}", "{S}"), c(f,s,F,S), row);
+			# cat(row, "\n\n");	
+			# }
 		
-		}
-	}
+		# }
+	# }
 
 
 
@@ -137,50 +136,43 @@ for(i in 1:n)
 
 
 
-bin2dec = function(x, ..., to.length=to.length) { base.convert(x, ..., from="BIN", to="DEC", to.length=to.length); } 
-
-bin2hex = function(x, ..., to.length=to.length) { base.convert(x, ..., from="BIN", to="HEX", to.length=to.length); } 
-
-bin2oct = function(x, ..., to.length=to.length) { base.convert(x, ..., from="BIN", to="OCT", to.length=to.length); } 
-
-dec2bin = function(x, ..., to.length=to.length) { base.convert(x, ..., from="DEC", to="BIN", to.length=to.length); } 
-
-dec2hex = function(x, ..., to.length=to.length) { base.convert(x, ..., from="DEC", to="HEX", to.length=to.length); } 
-
-dec2oct = function(x, ..., to.length=to.length) { base.convert(x, ..., from="DEC", to="OCT", to.length=to.length); } 
-
-hex2bin = function(x, ..., to.length=to.length) { base.convert(x, ..., from="HEX", to="BIN", to.length=to.length); } 
-
-hex2dec = function(x, ..., to.length=to.length) { base.convert(x, ..., from="HEX", to="DEC", to.length=to.length); } 
-
-hex2oct = function(x, ..., to.length=to.length) { base.convert(x, ..., from="HEX", to="OCT", to.length=to.length); } 
-
-oct2bin = function(x, ..., to.length=to.length) { base.convert(x, ..., from="OCT", to="BIN", to.length=to.length); } 
-
-oct2dec = function(x, ..., to.length=to.length) { base.convert(x, ..., from="OCT", to="DEC", to.length=to.length); } 
-
-oct2hex = function(x, ..., to.length=to.length) { base.convert(x, ..., from="OCT", to="HEX", to.length=to.length); } 
 
 
 
 
 
-hex2dec
-dec2oct
-oct2dec
-dec2bin
-bin2dec
-
-bin2hex ... do all COMBOS ...
-	
-	
-
-# maybe go back and README on colors and do color.convert ... to/fro on RGB
-
-# library BMS? 
-
-	
-# bin2hex, hex2bin, and so on ...
 
 
- 
+
+
+
+
+
+
+
+
+
+dec2hex = function(x, ..., to.length=NULL) { base.convert(x, ..., from="DEC", to="HEX", to.length=to.length); } 
+
+dec2bin = function(x, ..., to.length=NULL) { base.convert(x, ..., from="DEC", to="BIN", to.length=to.length); } 
+
+dec2oct = function(x, ..., to.length=NULL) { base.convert(x, ..., from="DEC", to="OCT", to.length=to.length); } 
+
+hex2dec = function(x, ..., to.length=NULL) { base.convert(x, ..., from="HEX", to="DEC", to.length=to.length); } 
+
+hex2bin = function(x, ..., to.length=NULL) { base.convert(x, ..., from="HEX", to="BIN", to.length=to.length); } 
+
+hex2oct = function(x, ..., to.length=NULL) { base.convert(x, ..., from="HEX", to="OCT", to.length=to.length); } 
+
+bin2dec = function(x, ..., to.length=NULL) { base.convert(x, ..., from="BIN", to="DEC", to.length=to.length); } 
+
+bin2hex = function(x, ..., to.length=NULL) { base.convert(x, ..., from="BIN", to="HEX", to.length=to.length); } 
+
+bin2oct = function(x, ..., to.length=NULL) { base.convert(x, ..., from="BIN", to="OCT", to.length=to.length); } 
+
+oct2dec = function(x, ..., to.length=NULL) { base.convert(x, ..., from="OCT", to="DEC", to.length=to.length); } 
+
+oct2hex = function(x, ..., to.length=NULL) { base.convert(x, ..., from="OCT", to="HEX", to.length=to.length); } 
+
+oct2bin = function(x, ..., to.length=NULL) { base.convert(x, ..., from="OCT", to="BIN", to.length=to.length); } 
+
