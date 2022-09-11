@@ -149,15 +149,23 @@ hexcolor.wheel = function(vecHEX, ..., steps=12, base.names=FALSE, alpha=FALSE, 
 				b = as.numeric(b);
 				na = length(a);
 				nb = length(b);
-				out = matrix(as.integer(0), nrow=na, ncol=nb);
-				for(r in 1:na)
+				out = matrix(0, nrow=na, ncol=nb);
+				
+				if(na >= nb)
 					{
-					for(c in 1:nb)
+					# vector by column
+					for(i in 1:nb)
 						{
-						out[r,c] = as.integer(a[r] + b[c]);
+						out[,i] = a + b[i];
 						}
-					}
-				out;
+					} else {
+							# vector by row
+							for(i in 1:na)
+								{
+								out[i,] = a[i] + b;
+								}
+							}
+				math.cleanup(out);
 				}
 	
 	
