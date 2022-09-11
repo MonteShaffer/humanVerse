@@ -1143,13 +1143,15 @@ str.replaceFromList = function(mylist, mysubject, ...)
 #'
 #' str = c("1", "12", "123"); padding = "0";
 #------------------------------------------------#
-str.pad = function(str, 
+str.pad = function() {}
+str.pad = function(str,
 					padding		= "0", 
-					side		= "RIGHT", 
+					side		= "RIGHT",  # default is for NNN.dd00 decimal
 					out.length	= max(str.len(str)),  
 					method		= "stringi"
 					)
 	{
+	# str = dots.addTo(str, ...);
 	str = as.character(str);
 	# necessary overhead
 	SIDE = prep.arg(side, n=1);
@@ -1199,10 +1201,51 @@ str.pad = function(str,
 
 
 # paste0( substring(x[!idx], 1, (cwidth-1) ), trunc.sym);
-str.truncate = function(str, ..., width=5, from="left")
+str.truncate = function(str, ..., to.length=5, keep="right")
 	{
-	
+	str = dots.addTo(str, ...);
+	KEEP = prep.arg(keep, n=1);
+	if(KEEP == "l")
+		{
+		res = substring(str, 1, to.length);
+		}
+	if(KEEP == "r")
+		{
+		slen = str.len(str);
+		from = slen-to.length+1; 
+		ifelse( {from < 1} , { from = 1; }, { from = from; });
+		res = substring(str, from, slen);
+		}
+	if(KEEP == "o")  # outer ... opposite of inner 
+		{
+		slen = str.len(str);
+		w1 = as.integer(to.length/2);
+		w2 = to.length-w1; # one off on either side ... 
+		# str.pad in stringi FAVORS the right ... 
+		#   "1"   "12"  "123" ==> "010" "120" "123"
+		res = substring(str, slen-w1-1, slen);
+		res = substring(res, 1, w2);
+		}
+	if(KEEP == "i")  # "i"nner 
+		{
+		# str=c("000123000", "00123000", "00012300");
+
+		slen = str.len(str);
+		info = (slen - to.length)/2;
+		wleft = ceiling(info);
+		
+		wright = ceiling(info); # one off on either side ...
+		
+		from = slen-wleft+1; 
+		ifelse( {from < 1} , { from = 1; }, { from = from; });
+		resleft = substring(str, from, slen);
+		resright = substring(str, 1, wright);
+		res = substring(str, wleft+1, wleft+to.length);
+		}
+	res;
 	}
+
+
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
