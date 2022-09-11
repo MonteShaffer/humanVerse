@@ -93,12 +93,15 @@ color.hex = function(hexstr, ...,
 			}
 		}
 	
-	hexstr = str.pad(hexstr, 6, "0", "LEFT");
+	hexstr = str.pad(hexstr, "0", "LEFT", 6);
 	
 	if(alpha)         #  #FF00CC00 is same, ##FF00CC becomes #FF00CCFF
 		{
-		hexstr = str.pad(hexstr, 8, "F", "RIGHT");
-		}	
+		hexstr = str.pad(hexstr, "F", "RIGHT", 8);
+		} else {
+				# we will truncate alpha if they exist ...
+				str.
+				}
 	hexstr = prep.case(hexstr,case=case);
 	hexstr = paste0(prepend, hexstr);
 	hexstr;	

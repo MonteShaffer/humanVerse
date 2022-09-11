@@ -65,7 +65,8 @@ v.color = function(colvec, ..., names.search="base", alpha=TRUE)
 											# when we search, also collapse keys with spaces in names 
 	
 	
-											
+	# once we have hex values ... this will format and append ALPHA at end 
+	res = color.hex(hexVEC);
 	
 	# we will allow any vector input ... names/hex ...
 	# names.search = base:colors() ... could create a vector of search lists ... ORDER of vector is priority of search ...
@@ -97,6 +98,15 @@ hexcolor.wheel = function() {}
 
 hexcolor.plotWheel = function() {}
 
+hexcolor.opacity = function(vecHEX, ..., opacity=0.5) 
+	{
+	vecHEX = dots.addTo(vecHEX, ...);
+	vecHEX = v.color(vecHEX); # should be HEX, but now it is with ALPHA
+	# this will return a list... intended to be univariate 
+	# this will adjust the CURRENT opacity ... so if already 0.5, now 0.25
+	
+	}
+	
 hexcolor.chromatics = function(vecHEX, ...) 
 	{
 	vecHEX = dots.addTo(vecHEX, ...);

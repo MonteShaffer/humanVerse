@@ -4,6 +4,8 @@
 str.width = function() {}
 str.height = function() {}
 
+
+
 str.compare = function(a, b=NULL, methods="all")
 	{
 	# similar to cosine similarity, do matrix(a) ... or vec to matr 
@@ -1141,34 +1143,40 @@ str.replaceFromList = function(mylist, mysubject, ...)
 #'
 #' str = c("1", "12", "123"); padding = "0";
 #------------------------------------------------#
-str.pad = function(str, final.length, padding="0", side="RIGHT", method="stringi")
+str.pad = function(str, 
+					padding		= "0", 
+					side		= "RIGHT", 
+					out.length	= max(str.len(str)),  
+					method		= "stringi"
+					)
 	{
 	str = as.character(str);
 	# necessary overhead
-	s = prep.arg(side, 1);
-	m = prep.arg(method, 1);
+	SIDE = prep.arg(side, n=1);
+	METHOD = prep.arg(method, n=1);
 
-	if(m == "s" && is.library("stringi") )
+	if(METHOD == "s" && is.library("stringi") )
 		{
-		res = switch(s,
-						  "l"	= stringi::stri_pad_left (str, width=final.length, pad=padding),
-						  "r" 	= stringi::stri_pad_right (str, width=final.length, pad=padding),
-						  "b"  	= stringi::stri_pad_both (str, width=final.length, pad=padding),
-					stringi::stri_pad_both (str, width=final.length, pad=padding)
+		res = switch(SIDE,
+						  "l"	= stringi::stri_pad_left (str, width=out.length, pad=padding),
+						  "r" 	= stringi::stri_pad_right (str, width=out.length, pad=padding),
+						  "b"  	= stringi::stri_pad_both (str, width=out.length, pad=padding),
+					stringi::stri_pad_both (str, width=out.length, pad=padding)
 					);
 		return (res);
 		}
 
+	# METHOD == "base";  	# FALLBACK DEFAULT 
 	ns = str.len(str);
-	rs = final.length - n;
-	n = length(str); # how many strings
+	rs = out.length - ns;  	# how many pads per element 
+	n = length(str); 		# how many strings
 	res = character(n);
 	
 	for(i in 1:n)
 		{
 		myr = rs[i];
 		pads = str.repeat(padding, myr); 
-		if(s == "b")
+		if(SIDE == "b")
 			{
 			myr_right	= ceiling(myr / 2);
 			pad_right	= str.repeat(padding, ( myr_right )	);
@@ -1176,7 +1184,7 @@ str.pad = function(str, final.length, padding="0", side="RIGHT", method="stringi
 			}
 		
 		# if padding is multiple length, may be too long
-		res[i] = switch(s,
+		res[i] = switch(SIDE,
 						  "l"	= paste0(paste( pads , collapse=""), str[i]),
 						  "r" 	= paste0(str[i], paste( pads , collapse="")),
 						  "b"  	= paste0(paste( pad_left , collapse=""), str[i], 
@@ -1189,6 +1197,12 @@ str.pad = function(str, final.length, padding="0", side="RIGHT", method="stringi
 	res;
 	}
 
+
+# paste0( substring(x[!idx], 1, (cwidth-1) ), trunc.sym);
+str.truncate = function(str, ..., width=5, from="left")
+	{
+	
+	}
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'

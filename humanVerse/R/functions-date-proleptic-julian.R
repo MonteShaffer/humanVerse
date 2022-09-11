@@ -223,7 +223,7 @@ date.generateProlepticJulian = function(n, dir="FORWARD",
 			cdoy = 1 + cdoy;
 			if(i %% 365 == 0) 
 				{ 
-				percent = str.pad( round( 100* abs(i/n), 4 ), 5);
+				percent = str.pad( round( 100* abs(i/n), 4 ), out.length	=5);
 				cat("\n =====   ", cyear, "   ::   ", percent, "% ===== \n"); 
 				flush.console(); 
 				}
@@ -267,7 +267,7 @@ date.generateProlepticJulian = function(n, dir="FORWARD",
 			cdoy = cdoy-1;
 			if(i %% 365 == 0) 
 				{ 
-				percent = str.pad( round( 100* abs(i/n), 4 ), 5);
+				percent = str.pad( round( 100* abs(i/n), 4 ), out.length	=5);
 				cat("\n =====   ", cyear, "   ::   ", percent, "% ===== \n"); 
 				flush.console(); 
 				}
