@@ -965,6 +965,7 @@ str.rep = str.repeat;
 #' subject = c("Four score and seven years ago", "Abraham Lincoln buoying vessel"); 
 #' search = c("a", "b", "c"); replace = str.toupper(search);
 #------------------------------------------------#
+	# maybe attribute force.simple = TRUE ... 1-1 over subjects if 1-n
 str.replace = function(search, replace, subject, method="base")
 	{
 debug = FALSE;

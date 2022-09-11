@@ -299,6 +299,28 @@ charCode = function(svec)
 as.ascii = function(str) {}
 is.ascii = function(str) {} 
 
+
+
+
+eval.fromTemplate = function(TEMPLATE, key, value)
+	{
+	TEMPLATE = str.replace("{key}", key, TEMPLATE);
+	nv = length(value);
+	if(is.character(value)) 
+		{ 
+		value = paste0('"',value,'"'); 
+		} else { 
+				value = deparse(value);
+				}
+		# str.replace failed here trying to be smart ... force=1
+	TEMPLATE = gsub("{value}", value, TEMPLATE, fixed=TRUE);
+	
+	eval(parse(text=TEMPLATE));
+	}
+
+	
+
+
 minvisible.get = function(key="LAST")
 	{
 	memory.get(key, "INVISIBLE");

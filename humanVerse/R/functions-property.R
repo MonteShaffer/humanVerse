@@ -1,4 +1,129 @@
 
+
+system.set = function(key, value=NULL, as.null = FALSE) 
+	{
+	# you may actually want to pass the value NULL in the "setter" ???
+	# key is a list with names/values, so NULL get's passed 
+	if(is.null(value) && as.null)  
+		{
+		if(is.list(key))
+			{
+			k = names(key);
+				names(key) = NULL;
+			value = unlist(key);
+			key = k;
+			} else { stop("ERROR with key/val"); }
+		}
+		
+		
+	# allows multivariate ... keys determine the replacements
+	# if value gets to end, it will recycle to beginning
+	n.key = length(key);
+	n.val = length(value);
+	idx.v = 1;
+	
+	res = list();
+	for(i in 1:n.key)
+		{
+		str = paste0('Sys.setenv("',key[i],'" = "',value[idx.v],'")');
+				eval(parse(text=str));
+		res[i] = (Sys.getenv(key[i]));
+		idx.v = 1 + idx.v; if(idx.v > n.val) { idx.v = 1; }  # allows for looping gracefully if UNEVEN
+		}
+	minvisible(res);	
+	}
+	
+
+system.get = function(key, obj, wildcard = "keys-values" )
+	{
+	w  = prep.arg(wildcard, n=1, keep = "-");
+	# System Environment
+
+	res = Sys.getenv(key);
+	# w == "k-v" means we look normally, than cascade our search from keys to values ... 
+	if(res == "")
+		{
+		# let's try wildcard on Sys.getenv(keys) ... vals?
+		vals = Sys.getenv();
+		keys = names(vals);
+			idxs.keys = regex.wildcardSearch(keys, key);			
+		is.k = ( length(idxs.keys) > 0 );
+			idxs.vals = regex.wildcardSearch(vals, key);
+		is.v = ( length(idxs.vals) > 0 );
+		
+		if(!is.k && !is.v) { return(""); } # LIKE NORMAL
+			res.keys = vals[idxs.keys];
+			res.vals = vals[idxs.vals];			
+		
+		if(w == "k" && is.k) { return( res.keys ); }
+		if(w == "v" && is.v) { return( res.vals ); }
+		
+		# search keys, than vals
+		if(w == "k-v" && is.k) { return( res.keys ); }
+		if(w == "k-v" && is.v) { return( res.vals ); }
+		
+		# search vals, then keys
+		if(w == "v-k" && is.v) { return( res.vals ); }
+		if(w == "v-k" && is.k) { return( res.keys ); }
+		
+		return(""); # we tried.
+		}
+		
+	# names(s <- Sys.getenv());
+	# if key had * and res is empty, # do wildcard search on names 
+	# Sys.getenv("RSTUDIO*");
+	# s[grep("^L(C|ANG)", names(s))]
+	# property.get("RSTUDIO*", NULL, "system");
+	# res = (s = Sys.getenv() );
+	return (res);
+	}
+	
+
+system.getALL = function() 
+	{
+	res = Sys.getenv();
+	return(res);
+	}
+	
+system.run = function() {} # maybe a wrapper for system() and system()
+
+system.saveState = function(key="DEFAULT")
+	{
+	memory.set(key, "-SYSTEM-", Sys.getenv() );	
+	}
+
+	
+system.restoreState = function(key="DEFAULT") 
+	{
+	sys = memory.get(key, "-SYSTEM-");
+	if(!is.null(sys))
+		{
+		Sys.setenv(sys); # will this work, or LOOP ?
+		return(invisible(TRUE));
+		}
+	warning("There is no memory for key=XXX, nothing updated");
+	return(invisible(TRUE));
+	}
+
+
+
+	
+system.saveInitialState = function()
+	{
+	mhash = str.HASH();  # rainbow table?! nO 
+	memory.set("system.INITIAL", "-SYSTEM-", mhash);
+	system.saveState(mhash);
+	}
+
+system.restoreInitialState = function()
+	{
+	mhash = memory.get("system.INITIAL", "-SYSTEM-");
+	system.restoreState(mhash);
+	}
+
+
+
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' property.set 
@@ -15,17 +140,13 @@
 #' @examples
 # .get has to be key first ... SYSTEM 
 # set key on obj with value 
-property.set = function(key, obj, value=NULL, 
-									property.type="attributes",
+property.set = function(key, obj, value=NULL,
 									as.null = FALSE,
 									recycle = FALSE
 									)
 	{
-	pt = prep.arg(property.type, 1);
-
-
-
-	if(is.null(value) && !as.null)  # you may actually want to pass the value NULL in the "setter"
+	# !as.null vs as.null?
+	if(is.null(value) && as.null)  # you may actually want to pass the value NULL in the "setter"
 		{
 		if(is.list(key))
 			{
@@ -42,33 +163,17 @@ property.set = function(key, obj, value=NULL,
 	n.val = length(value);
 	idx.v = 1;
 		
-	if(pt == "a")
+	if(recycle)
 		{
-		if(recycle)
-			{
-			for(i in 1:n.key)
-				{
-				attributes(obj)[[ key[i] ]] = value[idx.v];
-				idx.v = 1 + idx.v; if(idx.v > n.val) { idx.v = 1; }  # allows for looping gracefully if UNEVEN
-				}
-			} else { attributes(obj)[[ key[1] ]] = value; }
-		return (obj);
-		}
-	if(pt == "s" || pt == "e")  # System Environment
-		{
-		res = list();
 		for(i in 1:n.key)
 			{
-			str = paste0('Sys.setenv("',key[i],'" = "',value[idx.v],'")');
-					eval(parse(text=str));
-			res[i] = (Sys.getenv(key[i]));
+			attributes(obj)[[ key[i] ]] = value[idx.v];
 			idx.v = 1 + idx.v; if(idx.v > n.val) { idx.v = 1; }  # allows for looping gracefully if UNEVEN
 			}
-		return(res);
-		}
-
+		} else { attributes(obj)[[ key[1] ]] = value; }
+	return (obj);
 	}
-
+	
  
 
 #' @rdname setAttribute
@@ -92,67 +197,11 @@ setAttribute = property.set;
 #'
 #' @examples
 # has to be "key" first, or "system" has to pass in a NULL
-property.get = function(key, obj, 
-								property.type="attributes",
-								wildcard = "keys-values"	
-								)
+property.get = function(key, obj, val=NULL)
 	{
-# dput(property.type);  
-	pt = prep.arg(property.type, n=1);
-#dput(wildcard);
-	w  = prep.arg(wildcard, n=1, keep = "-");
-#dput(pt);
-	if(pt == "a")  # attributes
-		{
-		res = attributes(obj)[[key]];
-#dput(obj); 
-#dput(res); 
-		return (res);
-		}
-
-
-	if(pt == "s" || pt == "e")  # System Environment
-		{
-		res = Sys.getenv(key);
-		# w == "k-v" means we look normally, than cascade our search from keys to values ... 
-		if(res == "")
-			{
-			# let's try wildcard on Sys.getenv(keys) ... vals?
-			vals = Sys.getenv();
-			keys = names(vals);
-				idxs.keys = regex.wildcardSearch(keys, key);			
-			is.k = ( length(idxs.keys) > 0 );
-				idxs.vals = regex.wildcardSearch(vals, key);
-			is.v = ( length(idxs.vals) > 0 );
-			
-			if(!is.k && !is.v) { return(""); } # LIKE NORMAL
-				res.keys = vals[idxs.keys];
-				res.vals = vals[idxs.vals];			
-			
-			if(w == "k" && is.k) { return( res.keys ); }
-			if(w == "v" && is.v) { return( res.vals ); }
-			
-			# search keys, than vals
-			if(w == "k-v" && is.k) { return( res.keys ); }
-			if(w == "k-v" && is.v) { return( res.vals ); }
-			
-			# search vals, then keys
-			if(w == "v-k" && is.v) { return( res.vals ); }
-			if(w == "v-k" && is.k) { return( res.keys ); }
-			
-			return(""); # we tried.
-			}
-			
-		# names(s <- Sys.getenv());
-		# if key had * and res is empty, # do wildcard search on names 
-		# Sys.getenv("RSTUDIO*");
-		# s[grep("^L(C|ANG)", names(s))]
-		# property.get("RSTUDIO*", NULL, "system");
-		# res = (s = Sys.getenv() );
-		return (res);
-		}
+	res = attributes(obj)[[key]];
+	return (res);
 	}
-
 
 
 
@@ -163,22 +212,11 @@ getAttribute = property.get;
 
 
 # as dataframe?
-property.getALL = function(obj=NULL, property.type="attributes")
+property.getALL = function(obj=NULL)
 	{
-	pt = prep.arg(property.type, 1);
-	if(pt == "a")  # attributes
-		{
-		res = attributes(obj);
-		return (res);
-		}
-
-	if(pt == "s" || pt == "e")  # System Environment
-		{
-		res = Sys.getenv();
-		return (res);
-		}
+	res = attributes(obj);
+	return (res);
 	}
-
 
 
 #' @rdname property.getAll
@@ -205,13 +243,13 @@ property.getAll = property.getALL;
 property.saveInitialState = function()
 	{
 	mhash = str.HASH();  # rainbow table?! nO 
-	memory.set("property.INITIAL", "SYSTEM", mhash);
+	memory.set("property.INITIAL", "-SYSTEM-", mhash);
 	property.saveState(mhash);
 	}
 
 property.restoreInitialState = function()
 	{
-	mhash = memory.get("property.INITIAL", "SYSTEM");
+	mhash = memory.get("property.INITIAL", "-SYSTEM-");
 	property.restoreState(mhash);
 	}
 
@@ -219,25 +257,11 @@ property.restoreInitialState = function()
 
 
 
-property.remove = function()
-	{
-# Sys.unsetenv(x)
-# attributes(x) <- NULL ... removes all 
-
-	# stop.cat("monte", "say", "hi");
-	}
 
 
 
 
 
-
-
-
-# options(warn=2);
-# options("warn");
-options.get = function() {}
-options.set = function() {}
 
 
 
@@ -250,23 +274,29 @@ options.set = function() {}
 #' @export
 #'
 #' @examples
-option.set = function(keys, values)
+options.set = function(keys, values)
 	{
 	n = length(keys);
 	for(i in 1:n)
 		{
 		key = keys[i];
 		value = values[i];
-		options(stats::setNames(list(key), value));
+		TEMPLATE = "options({key} = {value});";  
+			# options(str$digits.d = 3)
+			# help.search.types
+		eval.fromTemplate(TEMPLATE, key, value);
+		# options(stats::setNames(list(key), value));
 		}
 	}
-	
+
+# options(warn=2);
+# options("warn");	
 
 
 	
-setOption = option.set;
-setOptions = option.set;
-options.set = option.set;
+setOption = options.set;
+setOptions = options.set;
+option.set = options.set;
 
 
 
@@ -278,7 +308,7 @@ options.set = option.set;
 #' @export
 #'
 #' @examples
-option.get = function(keys)
+options.get = function(keys)
 	{
 	#  R::base has "getOption" but not "getOptions"	(multivariate)
 	n = length(keys);
@@ -291,27 +321,27 @@ option.get = function(keys)
 	list.return(res);
 	}
 
-getOptions = option.get;
-options.get = option.get;
+getOptions = options.get;
+option.get = options.get;
 
 
-option.getALL = function()
+options.getALL = function()
 	{
 	options();
 	}
 
-option.getAll = option.getALL;
-options.getAll = option.getALL;
-options.getALL = option.getALL;
+option.getAll = options.getALL;
+options.getAll = options.getALL;
+option.getALL = options.getALL;
 
-option.saveState = function(key="DEFAULT")
+options.saveState = function(key="DEFAULT")
 	{
 	memory.set(key, "OPTIONS", options() );	
-	} 
+	}  
 
-options.saveState = option.saveState;
+option.saveState = options.saveState;
 	
-option.restoreState = function(key="DEFAULT")
+options.restoreState = function(key="DEFAULT")
 	{
 	op = memory.get(key, "OPTIONS");
 	if(!is.null(op))
@@ -323,7 +353,7 @@ option.restoreState = function(key="DEFAULT")
 	return(invisible(TRUE));
 	}
 
-options.restoreState = option.restoreState;
+option.restoreState = options.restoreState;
 
 
 
@@ -332,13 +362,13 @@ options.restoreState = option.restoreState;
 options.saveInitialState = function()
 	{
 	mhash = str.HASH();  # rainbow table?! nO 
-	memory.set("options.INITIAL", "SYSTEM", mhash);
+	memory.set("options.INITIAL", "-SYSTEM-", mhash);
 	options.saveState(mhash);
 	}
 
 options.restoreInitialState = function()
 	{
-	mhash = memory.get("options.INITIAL", "SYSTEM");
+	mhash = memory.get("options.INITIAL", "-SYSTEM-");
 	options.restoreState(mhash);
 	}
 
@@ -416,17 +446,11 @@ par.set = function(keys, values)
 			if(is.list(values)) { value = values[[i]]; }  # don't know if this arises with 'par'
 		if( key %in% pnames)
 			{
+			TEMPLATE = "graphics::par({key} = {value});"; 
+			eval.fromTemplate(TEMPLATE, key, value);
+			
 			### str.replace("{value}", value) ... value is longer 1->m ... EDGE CASE ... I want it to be 1->1 
-			TMP = "graphics::par({key} = {value});"; 
-			TMP = str.replace("{key}", key, TMP);
-			if(is.character(value)) 
-				{ 
-				value = paste0('"',value,'"'); 
-				} else { 
-						value = deparse(value);
-						}
-			TMP = gsub("{value}", value, TMP, fixed=TRUE);				
-			eval(parse(text=TMP));			
+			
 			# graphics::par(stats::setNames(list(key), value));
 			} else { 
 					warning.cat("key", key, " is either *NOT* a par key on this DEVICE or is READONLY"); 
@@ -435,6 +459,22 @@ par.set = function(keys, values)
 	}
 	
 
+
+eval.fromTemplate = function(TEMPLATE, key, value)
+	{
+	TEMPLATE = str.replace("{key}", key, TEMPLATE);
+	nv = length(value);
+	if(is.character(value)) 
+		{ 
+		value = paste0('"',value,'"'); 
+		} else { 
+				value = deparse(value);
+				}
+		# str.replace failed here trying to be smart ... force=1
+	TEMPLATE = gsub("{value}", value, TEMPLATE, fixed=TRUE);
+	
+	eval(parse(text=TEMPLATE));
+	}
 
 	
 setPar = par.set;
@@ -488,13 +528,13 @@ par.getAll = par.getALL;
 par.saveInitialState = function()
 	{
 	mhash = str.HASH();  # rainbow table?! nO 
-	memory.set("par.INITIAL", "SYSTEM", mhash);
+	memory.set("par.INITIAL", "-SYSTEM-", mhash);
 	par.saveState(mhash);
 	}
 
 par.restoreInitialState = function()
 	{
-	mhash = memory.get("par.INITIAL", "SYSTEM");
+	mhash = memory.get("par.INITIAL", "-SYSTEM-");
 	par.restoreState(mhash);
 	}
 

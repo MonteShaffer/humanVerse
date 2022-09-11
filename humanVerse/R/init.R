@@ -9,9 +9,10 @@ init = function()
 	
 	par.saveStateInitial();
 	options.saveStateInitial();
-	property.saveStateInitial(); 
+	system.saveStateInitial(); 
 	
 	# maybe add wrapper for formals athat allows base::as.POSIXct for clarity
+	# doesn't seem to work ... 
 	formals(as.POSIXct) = alist(x = , tz="UTC", ... = );
 	formals(as.POSIXlt) = alist(x = , tz="UTC", ... = );
 	# formalArgs(as.Date)
