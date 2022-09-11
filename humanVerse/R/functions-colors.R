@@ -111,8 +111,69 @@ hexcolor.table = function() {}
 
 hexcolor.display = function() {} # HTML or graphics 
 
-hexcolor.wheel = function() 
+hexcolor.wheel = function(vecHEX, ..., steps=12, base.names=FALSE, alpha=FALSE, skip.checks=FALSE) 
 	{
+	if(!skip.checks)
+		{
+		# nested function can call a parent and have skip.checks=TRUE 
+		# if the check was already performed in the child 
+		vecHEX = dots.addTo(vecHEX, ...);	
+		vecHEX = v.color(vecHEX, alpha=alpha); # should be HEX, but now it is with ALPHA
+		}
+	# wheel steps must be MOD of 360 
+	if(steps < 2) { steps = 2; }
+	if((360 %% steps) != 0) 
+		{
+		# up to, but not 7, will work ...
+		cat.warning("wheel steps must be evenly divisible into 360, ... updating with a nearby value that meets that criteria.");
+		steps = num.round(steps, by=6, how="integer");
+		}
+		
+	one.step = 360 / steps;	
+	degrees = seq(0, 360-one.step, by=one.step);
+	
+	hsl = hex2hsl(vecHEX);
+	
+	h2 = as.integer( round( one.step + hsl[1,] ) ) %% 360;
+	
+	h2 = as.integer( round( degrees + hsl[1,] ) ) %% 360;
+	
+	degrees + hsl[1,] ... two vectors ... looped addition
+	%+% operator ...
+	
+	h2 = (degrees %+% hsl[1,]) %% 360;
+	# modulus operator turns values from INT to NUM ... WOW 
+	"%+%" = function(a,b)
+				{
+				a = as.numeric(a); 
+				b = as.numeric(b);
+				na = length(a);
+				nb = length(b);
+				out = matrix(as.integer(0), nrow=na, ncol=nb);
+				for(r in 1:na)
+					{
+					for(c in 1:nb)
+						{
+						out[r,c] = as.integer(a[r] + b[c]);
+						}
+					}
+				out;
+				}
+	
+	
+	h2 = as.integer( round( one.step + h ) );
+			h2 = h2 %% 360;
+			# update hsl
+			hsl[1] = h2;
+
+	
+	# can I vectorize this?
+	
+	
+	
+	
+	
+	
 	
 	}
 
