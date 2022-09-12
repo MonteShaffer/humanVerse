@@ -1,4 +1,6 @@
 
+# wrap.lang could READ (PARSE) itself, find the needed key and display the updated TEXT ... easier to parse because EVAL'D inline ... loop over elements and MATCH ... 
+
 
 wrap.parse = function(file, 
 							base.locale = "en-us", 
@@ -111,6 +113,7 @@ for(i in 1:n)
 								# otherwise store to the language list ... at the line number ... in res...
 								}
 							}
+				}
 							
 			if(is.null(cval)) && char == SQ)
 				{
@@ -143,7 +146,7 @@ for(i in 1:n)
 				if(p.count == 0)
 					{
 					# finished at FUNCTION LEVEL ... wrap it up ...
-dput(cres); stop("finished function"); 
+dput(cres); stop("finished function");  
 					}
 				}
 			if(is.null(cval))

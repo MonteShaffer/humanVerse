@@ -39,7 +39,7 @@ date.constants = function(envir=parent.env(environment()))
 	
 	assign("SECS_PER_MIN", 	SECS_PER_MIN, 	envir=envir);
 	assign("SECS_PER_HOUR", SECS_PER_HOUR,	envir=envir);
-	assign("SECS_PER_DAY",	SECS_PER_DAY,	envir=envir);
+	assign("SECS_PER_DAY",	SECS_PER_DAY,	envir=envir); 
 	
 	# SIDEREAL
 	SECS_PER_SSEC	= 0.9972696;
