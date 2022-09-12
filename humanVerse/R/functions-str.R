@@ -34,9 +34,8 @@ str.compare = function(a, b=NULL, methods="all")
 #'
 #'
 #------------------------------------------------#
-str.count = function(str, ..., what="|")
+str.count = function(str, what="|")
 	{
-	str = dots.addTo(str, ...);
 	# count occurrence of "what" in a string 
 	# n.pipes = str.count(lines, what="|");
 	info = str.explode(what, str);
@@ -56,9 +55,8 @@ str.count = function(str, ..., what="|")
 #'
 #------------------------------------------------#
 str.between = function() {}
-str.between = function(str, ..., keys=c("__B64_", "_B64__"))
+str.between = function(str, keys=c("__B64_", "_B64__"))
 	{
-	str = dots.addTo(str, ...);
 	info = str.explode(keys[1], str);
 	if(keys[2] == "") 
 		{
@@ -76,9 +74,8 @@ str.between = function(str, ..., keys=c("__B64_", "_B64__"))
 #'
 #'
 #------------------------------------------------#
-str.len = function(str, ..., method="stringi", locale="")
+str.len = function(str, method="stringi", locale="")
   {
-  str = dots.addTo(str, ...);
 	# if list 
 	if(is.list(str)) 
 		{ 
@@ -129,10 +126,9 @@ str.length = str.len;
 
 
  
-str.case = function(str, ..., case="lower")
+str.case = function(str, case="lower")
 	{
 #cat("\n str.toCase: ", str, "\n");  # was there a weird str() collision?
-	str = dots.addTo(str, ...);
 	cas = substring(tolower(case), 1, 3);
 #dput(cas);
 			# has to be base-R (not str.tolower, recursion)
@@ -178,7 +174,7 @@ str.toCase = str.case;
 #' str.trim("\r\n    four   scores    and  seven      years   \t\t  ");
 #'
 #------------------------------------------------#
-str.trim = function(str, ...,  side="both", method="stringi", pattern="", ...)
+str.trim = function(str, side="both", method="stringi", pattern="", ...)
   {
   # do something smart with dots.addTo ... 
   # based on CALLER formals ...
@@ -261,9 +257,8 @@ str_trim = str.trim;
 #'
 #' @examples
 #------------------------------------------------#
-str.explode = function(sep = " ", str = "hello friend", ...,  method="base")
+str.explode = function(sep = " ", str = "hello friend", method="base")
 	{
-	str = dots.addTo(str, ...);
 	# necessary overhead
 	m = prep.arg(method, 1);
 
@@ -315,9 +310,8 @@ str.split = str.explode;
 #'
 #'
 #------------------------------------------------#
-str.implode = function(sep=" ", str, ...,  method="base")
+str.implode = function(sep=" ", str, method="base")
 	{
-	str = dots.addTo(str, ...);
 	# necessary overhead
 	m = prep.arg(method, 1);
 	# if(!is.list(str)) { tmp = str; str = list(); str[[1]] = tmp; }
@@ -364,9 +358,8 @@ str.unsplit = str.implode;
 #'
 #' @examples
 #------------------------------------------------#
-str.repeat = function(str, ..., times=1, method="base")
+str.repeat = function(str, times=1, method="base")
 	{
-	str = dots.addTo(str, ...);
 	m = prep.arg(method, 1);
 
 	if(m == "c" && exists("cpp_trim"))
@@ -616,9 +609,8 @@ str.pad = function(str,
 
 
 # paste0( substring(x[!idx], 1, (cwidth-1) ), trunc.sym);
-str.truncate = function(str, ..., to.length=5, keep="right")
+str.truncate = function(str, to.length=5, keep="right")
 	{
-	str = dots.addTo(str, ...);
 	# str.pad in stringi FAVORS the right ... 
 	#   "1"   "12"  "123" ==> "010" "120" "123"
 	str = dots.addTo(str, ...);
@@ -722,9 +714,8 @@ removeWhiteSpace = str.removeWhiteSpace;
 # stringi::stri_trans_general(c("groß© żółć La Niña köszönöm", "Ábcdêãçoàúü", "Record high °C"), "latin-ascii")
 # get rid of temperature ??? caused a BUG before?
 #------------------------------------------------#
-str.translate = function(str, ..., to="latin-ascii")
-	{
-	str = dots.addTo(str, ...);
+str.translate = function(str, to="latin-ascii")
+	{  
 	# to = "upper; latin-ascii"; # ALSO works, in the DOCS
 	"upper; latin-ascii"
 	stringi::stri_trans_general(str, to=to);
