@@ -447,30 +447,21 @@ g.circle = function(cx = 0, cy = 0, rx = 1, ry=rx, # radius can be multivariate
 	angle.steps = seq(0, 2*pi - dxi, by=dxi);
 	
 	n = length(rx); # how many circles 
-	nbc = length(border.color);
 		# TRAP NULL in list, if the case 
 		if(is.null(border.color)) { border.color = list(NULL); }
-	if(nbc < n) { border.color = rep(border.color, length.out = n); }
-	nbt = length(border.thick);
-							# recycling repeat to r regardless of nbt
-	if(nbt < n) {border.thick = rep(border.thick, length.out = n); }
-	nbs = length(border.style);
-							# recycling repeat to r regardless of nbs
-	if(nbs < n) {border.style = rep(border.style, length.out = n); }
-	
-	nfc = length(fill.color);
-							# recycling repeat to r regardless of nfc
-	if(nfc < n) { fill.color = rep(fill.color, length.out = n); }
-	nfa = length(fill.angle);
-							# recycling repeat to r regardless of nfa
-	if(nfa < n) { fill.angle = rep(fill.angle, length.out = n); }
-	nfl = length(fill.lines);
+	border.color = rep(border.color, length.out = n);
+	border.thick = rep(border.thick, length.out = n);
+####################################################
+# recycling repeat to n=length(rx) regardless 
+#						will truncate as well
+####################################################				
+	border.style = rep(border.style, length.out = n);
+	fill.color = rep(fill.color, length.out = n);
+	fill.angle = rep(fill.angle, length.out = n);
 		# TRAP NULL in list, if the case 
-		if(is.null(fill.lines)) { fill.lines = list(NULL); }
-	if(nfl < n) { fill.lines = rep(fill.lines, length.out = n); }
-	
-	nry = length(ry);
-	if(nry != n) { ry = rep(ry, length.out = n); }
+		if(is.null(fill.lines)) { fill.lines = list(NULL); }	
+	fill.lines = rep(fill.lines, length.out = n);	
+	ry = rep(ry, length.out = n);
 	
 	
 	for(i in 1:n)
