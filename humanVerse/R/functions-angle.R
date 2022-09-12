@@ -9,8 +9,15 @@ math.cleanup = function(x, tol = sqrt(.Machine$double.eps), ...)
 	{
 	# maybe sqrt(3)/2 ... or FRAC/PI ... append as attribute?, go.deep=TRUE
 	# zeros 
-	z = is.zero(x, tol=tol, ...); # Re / Im also possible.
-	x[z] = 0;
+	# z = is.zero(x, tol=tol, ...); # Re / Im also possible.
+	# x[z] = 0;
+	
+	# difference is about zero ... 
+	xi = as.integer(x);
+	d = x - xi;
+	dz = is.zero(d, tol=tol, ...);
+	x[dz] = xi;
+		
 	x;
 	}
 

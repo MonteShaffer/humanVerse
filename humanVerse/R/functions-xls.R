@@ -420,6 +420,85 @@ xls.POISSON.INV = function(prob, mean)
 
 # test = c("12 < x", "x <= 12", "x > 11", "x >= 10", "9 <= x <= 15", "x = 10")
 
+
+#  "blank", "solid", "dashed", "dotted", "dotdash", "longdash", or "twodash",
+### ggg is a full plot, "g" is like mtext/rect/text/points ... add-on 
+g.circle = function(cx = 0, cy = 0, rx = 1, ry=rx, # radius can be multivariate
+										# border/fill elements can similarily be multivariate to match ...
+					dxi = 100, # RESOLUTION (smoothness of poly-circle)
+					border.color = "black", # NA is no border, NULL is par("fg")
+					border.thick = 2, # lwd 
+					border.style = "solid", # lty
+					fill.color = "red",
+					fill.angle = -45,	# angle of fill lines, fill.lines=NULL means nothing happens 
+					fill.lines = 5,    # density = NULL to excule
+					... #other params to pass directly to polygon
+
+					)
+	{
+	# YOUR plot needs correct ASPECT ratio for this to appear correct 
+	# this is how you draw an ellipse ... 
+	# dxi is resolution
+	# dxi is "eps" like ... resolution per unit of x
+	# if dxi = 100, that means 100 eps per unit of x
+	# if dxi = .01, that means eps is about 0.01 in x units, and we compute eps from that ...
+	# enter dxi as 100 or 0.01 SAME THING 
+	if(dxi > 1) { dxi = 1/dxi; }
+	angle.steps = seq(0, 2*pi - dxi, by=dxi);
+	
+	n = length(rx); # how many circles 
+	nbc = length(border.color);
+		# TRAP NULL in list, if the case 
+		if(is.null(border.color)) { border.color = list(NULL); }
+	if(nbc < n) { border.color = rep(border.color, length.out = n); }
+	nbt = length(border.thick);
+							# recycling repeat to r regardless of nbt
+	if(nbt < n) {border.thick = rep(border.thick, length.out = n); }
+	nbs = length(border.style);
+							# recycling repeat to r regardless of nbs
+	if(nbs < n) {border.style = rep(border.style, length.out = n); }
+	
+	nfc = length(fill.color);
+							# recycling repeat to r regardless of nfc
+	if(nfc < n) { fill.color = rep(fill.color, length.out = n); }
+	nfa = length(fill.angle);
+							# recycling repeat to r regardless of nfa
+	if(nfa < n) { fill.angle = rep(fill.angle, length.out = n); }
+	nfl = length(fill.lines);
+		# TRAP NULL in list, if the case 
+		if(is.null(fill.lines)) { fill.lines = list(NULL); }
+	if(nfl < n) { fill.lines = rep(fill.lines, length.out = n); }
+	
+	nry = length(ry);
+	if(nry != n) { ry = rep(ry, length.out = n); }
+	
+	
+	for(i in 1:n)
+		{
+		radius.x = rx[i];
+		radius.y = ry[i];
+		xi = cos(angle.steps) * radius.x + cx;
+		yi = sin(angle.steps) * radius.y + cy;
+		polygon(xi, yi, 
+				border = border.color[[i]],
+					lwd = border.thick[i],
+					lty = border.style[i],
+					col = fill.color[i], 
+					angle = fill.angle[i],
+					density = fill.lines[[i]],
+					...
+					);		
+		}
+	}
+
+
+
+
+	
+
+	
+
+
 ggg.barplot = function() {}
 ggg.barplot = function(X, overlay=NULL, 
 							bg.col = "gray",

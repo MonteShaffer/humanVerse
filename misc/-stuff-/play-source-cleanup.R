@@ -3141,6 +3141,7 @@ color.findNearestName = function(hex, how.many = 1, scale.me = TRUE, how="cosine
 #' @export
 #'
 #' @examples
+color.chromatics = function() {}
 color.chromatics = function(rgb, n = 12, save.key = NULL) # mono steps of monochronic ... half on "white" / half on "black"
 	{
 	args = getFunctionParameters(TRUE);
@@ -3197,7 +3198,7 @@ color.chromatics = function(rgb, n = 12, save.key = NULL) # mono steps of monoch
 #' @return
 #' @export
 #'
-#' @examples
+#' @examples 
 color.buildWheel = function(rgb, wheel.steps = 12, find.names=FALSE)  # wheel steps needs to be divisible by 360?
 	{
 	## http://c.mshaffer.com/js/colorpicker/functions.colors.js
@@ -3437,6 +3438,7 @@ color.roundHEX = function(rgb, n=3, full=FALSE)
 #' @export
 #'
 #' @examples
+color.plotWheel = function() {} 
 color.plotWheel = function(df = color.buildWheel("red"), harmony="all")
   {
 
