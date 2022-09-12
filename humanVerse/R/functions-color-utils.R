@@ -705,7 +705,7 @@ v.cmyk = function(c,m,y,k)
 v.hsv = function(h,s,v)
 	{
 	# length checking, parallel arrays ...
-	matrixHSV = as.matrix( rbind(h,s,l) );	
+	matrixHSV = as.matrix( rbind(h,s,v) );	
 		# The hue of the color specified as an angle in the range [0,360]. 0 yields red, 120 yields green 240 yields blue, etc.
 		rownames(matrixHSV) = c("hue", "saturation", "value");
 		colnames(matrixHSV) = names(h);

@@ -119,7 +119,7 @@ hexcolor.wheelPlot = function()
 	}
 
 
-hexcolor.wheel = function(vecHEX, ..., steps=12, method="hsl", base.names=FALSE, alpha=FALSE, skip.checks=FALSE) 
+hexcolor.wheel = function(vecHEX, ..., steps=12, base.names=FALSE, alpha=FALSE, skip.checks=FALSE) 
 	{
 	if(!skip.checks)
 		{
@@ -128,7 +128,6 @@ hexcolor.wheel = function(vecHEX, ..., steps=12, method="hsl", base.names=FALSE,
 		vecHEX = dots.addTo(vecHEX, ...);	
 		vecHEX = v.color(vecHEX, alpha=alpha); # should be HEX, but now it is with ALPHA
 		}
-	METHOD = prep.arg(method, n=3);
 	# wheel steps must be MOD of 360 
 	if(steps < 2) { steps = 2; }
 	if((360 %% steps) != 0) 
@@ -142,32 +141,24 @@ hexcolor.wheel = function(vecHEX, ..., steps=12, method="hsl", base.names=FALSE,
 	degrees = seq(0, 360-one.step, by=one.step);
 	nd = length(degrees);
 	
-	if(METHOD == "hsv")
-		{
-		hsX = hex2hsv(vecHEX);
-		} else {
-				hsX = hex2hsl(vecHEX);
-				}
+	
+	hsl = hex2hsl(vecHEX);
 
 	n = length(vecHEX);
 	res = vector("list",n);
 	for(i in 1:n)
 		{		
-		one.hsX = hsX[,i, drop=FALSE];
-		# h2 = as.integer( round( degrees + one.hsX[1] ) ) %% 360;
-		h2 = math.cleanup ( ( degrees + one.hsX[1] ) %% 360);
+		one.hsl = hsl[,i, drop=FALSE];
+		# h2 = as.integer( round( degrees + one.hsl[1] ) ) %% 360;
+		h2 = math.cleanup ( ( degrees + one.hsl[1] ) %% 360);
 		
 		
-		my.hsX = matrix.rep(one.hsX, times=(nd), by="col");
-		my.hsX[1,] = h2;
-			colnames(my.hsX) = NULL;
+		my.hsl = matrix.rep(one.hsl, times=(nd), by="col");
+		my.hsl[1,] = h2;
+			colnames(my.hsl) = NULL;
 			
-		if(METHOD == "hsv")
-			{
-			hex = hsv2hex(my.hsX);
-			} else {
-					hex = hsl2hex(my.hsX);
-					}
+
+		hex = hsl2hex(my.hsl);
 					
 		names(hex) = h2;
 		
@@ -178,7 +169,7 @@ hexcolor.wheel = function(vecHEX, ..., steps=12, method="hsl", base.names=FALSE,
 	minvisible(res, print=FALSE);
 	list.return(res);
 	}
- 
+  
 
 
 
