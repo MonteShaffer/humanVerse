@@ -1,5 +1,33 @@
 
 
+
+matrix.repeat = function(m, times=12, by="row")
+	{
+	o = m; 
+	n = times-1;
+	BY = prep.arg(by, n=3);
+	if(BY == "row")
+		{
+		for(i in 1:n)
+			{
+			m = rbind(m, o);
+			}
+		}
+	if(BY == "col")
+		{
+		for(i in 1:n)
+			{
+			m = cbind(m, o);
+			}
+		}
+	m;
+	}
+	
+	
+
+matrix.rep = matrix.repeat; 
+
+
 matrix.ginv = function() {}  # C++ and MASS 
 matrix.inv = function() {}   # C++ and solve?
 

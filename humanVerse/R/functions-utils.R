@@ -1,7 +1,38 @@
 
+
+add = function(a,b)
+	{ 
+	a = as.numeric(a); 
+	b = as.numeric(b);
+	na = length(a);
+	nb = length(b);
+	out = matrix(0, nrow=na, ncol=nb);
+	
+	if(na >= nb)
+		{
+		# vector by column
+		for(i in 1:nb)
+			{
+			out[,i] = a + b[i];
+			}
+		} else {
+				# vector by row
+				for(i in 1:na)
+					{
+					out[i,] = a[i] + b;
+					}
+				}
+	math.cleanup(out);
+	}
+	
+"%+%" = add;
+
+
 # dataframe(x, y) : could not find function "dataframe"
  
 dataframe = data.frame;
+
+as.dataframe = as.data.frame;
 
 #' @rdname ceil
 #' @export
@@ -19,9 +50,6 @@ nchars = nchar;
 ord = utf8ToInt;  # mb_ord ?
 chr = intToUtf8;
 
-
-as.dataframe = as.data.frame;
- 
  
 dots.addTo = function(key, ..., by="column")
 	{
@@ -344,8 +372,7 @@ charCode = function(svec)
 
 
 
-as.ascii = function(str) {}
-is.ascii = function(str) {} 
+
 
 
 
@@ -444,145 +471,3 @@ readChars = readChar;
 # The @export docstring informs Roxygen to to put the function name in the package NAMESPACE file
 
 
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-#'
-#' bindec
-#'
-#'
-#' Converts a binary (string) to decimal (number)
-#'
-#' @param binstr (vector)
-#'
-#' @return vector 
-#' @export
-#' @alias bin2dec
-bindec = function(binstr)
-	{
-	N = length(binstr);
-	res = integer(n);
-	for(i in 1:N)
-	{
-	ibinstr = binstr[i];
-	n = strlen(ibinstr);
-	re = 0; power = 0;
-	for(i in n:1)
-		{
-		bit = as.integer(charAt(ibinstr,i));
-		add = 0;
-		if(bit == 1) { add = 2^power; }
-		
-		re = re + add;
-		power = 1 + power;
-		}
-	res[i] = re;
-	}
-
-	}
-
-#' @rdname bin2dec
-#' @export
-bin2dec = bindec;
-
-
-
-
-decbin = function(decnum) 
-	{
-	bvect = rep(0, 1 + floor(log(decnum, 2))); # pre-populate with zeroes
-	while (decnum >= 2) 
-		{
-		power = floor(log(decnum, 2));
-		bin_vect[1 + power] = 1;
-		decnum = decnum - 2^power;
-		} 
-	bvect[1] = decnum %% 2;
-	paste(rev(bvect), collapse = ""); # convert to a string
-	} 
-
-
-
-# DDEECC -> rounds to dcedcb
-# hexadecimal to decimal
-# hexdec("FF");
-# alias hex2dec
-
-
-#' hexdec
-#'
-#' Converts a hexadecimal to decimal
-#'
-#' @param hexstr vector of one or more hex values as a string
-#' @param ... vector of one or more hex values as a string
-#'
-#' @return vector of one or more integer values
-#' @export
-#' @alias hex2dec
-#'
-#' @examples
-#' hexdec("FF");
-#' hexdec("0xFFFF");
-#' hexdec("0xFFFF", "#FF");
-hexdec = function(hexstr, ...)
-	{
-  # http://php.net/manual/en/function.hexdec.php
-  # http://php.net/manual/en/function.dechex.php
-  # java conversions:: http://www.cs.rit.edu/~ncs/color/t_convert.html
-  #	http://www.easyrgb.com/math.php?MATH=M19#text19
-
-	more = unlist(list(...));
-	hexstr = c(hexstr, more);
-
-	# if it has "color" pre-pend, remove it ...
-	hexstr = str_replace("#", "", hexstr);
-	# rather than checking, let's remove and add leading "0x"
-	hexstr = paste0("0x", str_replace("0x", "", trimMe(tolower(hexstr))) );
-	stringToInteger(hexstr, TRUE);
-	}
-
-
-
-
-#' dechex
-#'
-#' Converts a decimal to hexadecimal
-#'
-#' @param intdec vector of one or more integer values
-#' @param ... vector of one or more integer values
-#' @param n Should we prepend some zeroes, if so how many?
-#' @param hash Should we pre..pre-pend the "#" for colors?
-#'
-#' @return vector of one or more hex values as a string
-#' @export
-#' @alias dec2hex
-#'
-#' @examples
-#' dechex(123,255,50, n=2, hash=FALSE);
-#' dechex(16581375,12581375,50, n=6, hash=TRUE);
-#' dechex(16581375,12581375,50, hash=FALSE);
-#' dechex(255,133,50, hash=FALSE);
-dechex = function(intdec, ..., n=NULL, hash=FALSE)
-	{
-	more = unlist(list(...));
-	intdec = c(intdec, more);
-
-	res = toupper( as.character( as.hexmode( as.integer( round(intdec) ) ) ) );
-	# if the vector already has two-character mode ... dechex( 0:255);  ... n is not necessary
-	if(!is.null(n)) { res = strPadLeft( res, n, "0"); 	}
-	if(hash) { res = paste0("#",res); }
-	res;
-	}
-
-
-
-	
-	
-	
-	
-
-	
-
-
-
-
-	

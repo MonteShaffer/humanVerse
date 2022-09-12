@@ -111,7 +111,15 @@ hexcolor.table = function() {}
 
 hexcolor.display = function() {} # HTML or graphics 
 
-hexcolor.wheel = function(vecHEX, ..., steps=12, base.names=FALSE, alpha=FALSE, skip.checks=FALSE) 
+
+
+hexcolor.wheelPlot = function() 
+	{
+	
+	}
+
+
+hexcolor.wheel = function(vecHEX, ..., steps=12, method="hsl", base.names=FALSE, alpha=FALSE, skip.checks=FALSE) 
 	{
 	if(!skip.checks)
 		{
@@ -120,6 +128,7 @@ hexcolor.wheel = function(vecHEX, ..., steps=12, base.names=FALSE, alpha=FALSE, 
 		vecHEX = dots.addTo(vecHEX, ...);	
 		vecHEX = v.color(vecHEX, alpha=alpha); # should be HEX, but now it is with ALPHA
 		}
+	METHOD = prep.arg(method, n=3);
 	# wheel steps must be MOD of 360 
 	if(steps < 2) { steps = 2; }
 	if((360 %% steps) != 0) 
@@ -131,61 +140,47 @@ hexcolor.wheel = function(vecHEX, ..., steps=12, base.names=FALSE, alpha=FALSE, 
 		
 	one.step = 360 / steps;	
 	degrees = seq(0, 360-one.step, by=one.step);
+	nd = length(degrees);
 	
-	hsl = hex2hsl(vecHEX);
-	
-	h2 = as.integer( round( one.step + hsl[1,] ) ) %% 360;
-	
-	h2 = as.integer( round( degrees + hsl[1,] ) ) %% 360;
-	
-	degrees + hsl[1,] ... two vectors ... looped addition
-	%+% operator ...
-	
-	h2 = (degrees %+% hsl[1,]) %% 360;
-	# modulus operator turns values from INT to NUM ... WOW 
-	"%+%" = function(a,b)
-				{
-				a = as.numeric(a); 
-				b = as.numeric(b);
-				na = length(a);
-				nb = length(b);
-				out = matrix(0, nrow=na, ncol=nb);
-				
-				if(na >= nb)
-					{
-					# vector by column
-					for(i in 1:nb)
-						{
-						out[,i] = a + b[i];
-						}
-					} else {
-							# vector by row
-							for(i in 1:na)
-								{
-								out[i,] = a[i] + b;
-								}
-							}
-				math.cleanup(out);
+	if(METHOD == "hsv")
+		{
+		hsX = hex2hsv(vecHEX);
+		} else {
+				hsX = hex2hsl(vecHEX);
 				}
-	
-	
-	h2 = as.integer( round( one.step + h ) );
-			h2 = h2 %% 360;
-			# update hsl
-			hsl[1] = h2;
 
-	
-	# can I vectorize this?
-	
-	
-	
-	
-	
-	
-	
+	n = length(vecHEX);
+	res = vector("list",n);
+	for(i in 1:n)
+		{		
+		one.hsX = hsX[,i, drop=FALSE];
+		# h2 = as.integer( round( degrees + one.hsX[1] ) ) %% 360;
+		h2 = math.cleanup ( ( degrees + one.hsX[1] ) %% 360);
+		
+		
+		my.hsX = matrix.rep(one.hsX, times=(nd), by="col");
+		my.hsX[1,] = h2;
+			colnames(my.hsX) = NULL;
+			
+		if(METHOD == "hsv")
+			{
+			hex = hsv2hex(my.hsX);
+			} else {
+					hex = hsl2hex(my.hsX);
+					}
+					
+		names(hex) = h2;
+		
+		res[[i]] = hex;	
+		res[[i]] = property.set("angles", res[[i]], h2);
+		}
+	# modulus operator turns values from INT to NUM ... WOW 
+	minvisible(res, print=FALSE);
+	list.return(res);
 	}
+ 
 
-hexcolor.plotWheel = function() {}
+
 
 # get values ... NULL as FF (100) ... 
 hexcolor.getOpacity = function(vecHEX, ..., return="100", skip.checks=FALSE) 
