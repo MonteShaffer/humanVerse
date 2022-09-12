@@ -70,10 +70,12 @@ quick.dir = function()
 	{ 
 	setwd("C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R");
 	alex = include.dir(getwd()); View(alex); 
-	print( alex$myerrors[ alex$myerrors != ""]);
 	fn = ls(all.names = TRUE, pos=1); str(fn); View(fn);
 	alex = property.set("fn", alex, fn);
 	memory.init(); memory.set("alex", "SYSTEM", alex);
+		"alex" %GLOBAL% alex;
+	
+	print( alex$myerrors[ alex$myerrors != ""]);
 	minvisible(alex); 
 	}
 

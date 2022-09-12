@@ -422,12 +422,15 @@ xls.POISSON.INV = function(prob, mean)
 
 
 #  "blank", "solid", "dashed", "dotted", "dotdash", "longdash", or "twodash",
-### ggg is a full plot, "g" is like mtext/rect/text/points ... add-on 
-g.circle = function(cx = 0, cy = 0, rx = 1, ry=rx, # radius can be multivariate
-										# border/fill elements can similarily be multivariate to match ...
-					dxi = 100, # RESOLUTION (smoothness of poly-circle)
+### this is like mtext/rect/text/points ... add-on to existing plot 
+ggg.circle = function() {}
+ggg.circle = function(cx = 0, cy = 0, rx = 1, ry=rx, # radius can be multivariate
+					ds = 0, de = 360, # DEGREES to start/end
+					close.arc = TRUE,
+					dxi = 55, # RESOLUTION (smoothness of poly-circle)
+					# border/fill elements can similarily be multivariate to match ...
 					border.color = "black", # NA is no border, NULL is par("fg")
-					border.thick = 2, # lwd 
+					border.thick = 4, # lwd 
 					border.style = "solid", # lty
 					fill.color = "red",
 					fill.angle = -45,	# angle of fill lines, fill.lines=NULL means nothing happens 
@@ -436,6 +439,8 @@ g.circle = function(cx = 0, cy = 0, rx = 1, ry=rx, # radius can be multivariate
 
 					)
 	{
+	# write a function called "daisy design" ... compass (star of david)
+	# I can now use opacity and show P(B) and P(A) ... 
 	# YOUR plot needs correct ASPECT ratio for this to appear correct 
 	# this is how you draw an ellipse ... 
 	# dxi is resolution
@@ -444,7 +449,20 @@ g.circle = function(cx = 0, cy = 0, rx = 1, ry=rx, # radius can be multivariate
 	# if dxi = .01, that means eps is about 0.01 in x units, and we compute eps from that ...
 	# enter dxi as 100 or 0.01 SAME THING 
 	if(dxi > 1) { dxi = 1/dxi; }
-	angle.steps = seq(0, 2*pi - dxi, by=dxi);
+	
+	mod = 360;
+	if(is.negative(ds)) { mod = -360; }
+	ds = ds %% mod;
+	ad = abs(de) - abs(ds); 
+	if(ad > 360) 
+		{ 
+		ad = 360; 
+		de = ds + 360;
+		if(is.positive(ds)) { de = 360 - ds; }
+		}
+dput(ad);
+	angle.steps = seq(deg2rad(ds), deg2rad(de) - dxi, by=dxi);
+	 
 	
 	n = length(rx); # how many circles 
 		# TRAP NULL in list, if the case 
@@ -470,7 +488,14 @@ g.circle = function(cx = 0, cy = 0, rx = 1, ry=rx, # radius can be multivariate
 		radius.y = ry[i];
 		xi = cos(angle.steps) * radius.x + cx;
 		yi = sin(angle.steps) * radius.y + cy;
-		polygon(xi, yi, 
+		if(close.arc)
+			{
+			if(ad != 360 && close.arc)
+				{
+				xi = c(cx, xi, cx);
+				yi = c(cy, yi, cy);
+				}	
+			polygon(xi, yi, 
 				border = border.color[[i]],
 					lwd = border.thick[i],
 					lty = border.style[i],
@@ -478,7 +503,20 @@ g.circle = function(cx = 0, cy = 0, rx = 1, ry=rx, # radius can be multivariate
 					angle = fill.angle[i],
 					density = fill.lines[[i]],
 					...
-					);		
+					);
+			} else {
+					points(xi, yi, 
+						pch = ".",
+						col = border.color[[i]],
+						lwd = border.thick[i],
+						cex = border.thick[i],
+						lty = border.style[i],
+						fg = fill.color[i], 
+						...
+					);
+					}
+		
+				
 		}
 	}
 

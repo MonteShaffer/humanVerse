@@ -116,6 +116,51 @@ hexcolor.display = function() {} # HTML or graphics
 hexcolor.wheelPlot = function() 
 	{
 	
+	# - complement ... 180 degrees from original
+    # - split-complement ... 150/210 degrees from original
+    # - analagous  ... +30/-30 degrees from original
+    #               (split ... inverse of split-complement)
+    # - triad ... +120/-120 degrees from original
+    # - square ... +90/-90/+180
+    # - rectangle ... complement, +30 and it's complement
+
+  # blank canvas
+  graphics::plot.new( );
+  graphics::plot.window(
+              xlim=c(-1.5,1.5), # unit circle is 1
+              ylim=c(-1.5,1.5),
+              log="",
+              graphics::par(mar=c(0.25, 0.25, 0.25, 0.25)) # outer margins
+            );
+
+  # maybe put a marker like a clock on 12 ("up")
+  # figure out the aspect ratio
+  radius = 1;
+      x0 = 0;
+      y0 = 0; # center of circle
+
+  plotrix::draw.circle(x0,y0, radius, col="gray");
+
+    original = df[1,];
+      x = x0 + radius * sin( deg2rad( original$wheel ) );
+      y = y0 + radius * cos( deg2rad( original$wheel ) );
+        plotrix::draw.circle(x,y, radius/3, col=original$hex.color);
+        graphics::text(x,y, adj=c(0.5,0.5), cex=1, labels=original$hex.color);
+            # maybe add names to wheel.table
+            # maybe write function "best contrast" to determine
+            # foreground color
+
+    remaining = df[-c(1),];
+    nr = dim(remaining)[1];
+    for(i in 1:nr)
+      {
+      x = x0 + radius * sin( deg2rad( remaining$wheel[i] ) );
+      y = y0 + radius * cos( deg2rad( remaining$wheel[i] ) );
+        plotrix::draw.circle(x,y, radius/6, col=remaining$hex.color[i]);
+        graphics::text(x,y, adj=c(0.5,0.5), cex=1/2, labels=remaining$hex.color[i]);
+      }
+
+	
 	}
 
 

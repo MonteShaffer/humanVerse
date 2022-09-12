@@ -3438,7 +3438,7 @@ color.roundHEX = function(rgb, n=3, full=FALSE)
 #' @export
 #'
 #' @examples
-color.plotWheel = function() {} 
+color.plotWheel = function() {}  
 color.plotWheel = function(df = color.buildWheel("red"), harmony="all")
   {
 

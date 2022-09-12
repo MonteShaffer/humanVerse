@@ -61,18 +61,18 @@ regex.match = function(pattern="(^[^:]+):(.+)",
 # once in a NEST, remove outer parentheses, call REGEX again 
 # substring(s, matched[[1]], matched[[1]] + attr(matched[[1]], "match.length") - 1)
 
-pattern = "\\((?>[^()]|(?R))*\\)";
-subject = c( "(a(a(a)(aa(a)a)a)a)((b(b)b)b)(((cc)c)c)", "(a(a(a)(aa(a)a)a)a) OR ((b(b)b)b) AND (((cc)c)c)" );
+### pattern = "\\((?>[^()]|(?R))*\\)";
+##subject = c( "(a(a(a)(aa(a)a)a)a)((b(b)b)b)(((cc)c)c)", "(a(a(a)(aa(a)a)a)a) OR ((b(b)b)b) AND (((cc)c)c)" );
 
-subject = "(a(a(a)(aa(a)a)a)a) OR ((b(b)b)b) AND (((cc)c)c)";
+##subject = "(a(a(a)(aa(a)a)a)a) OR ((b(b)b)b) AND (((cc)c)c)";
 
-match = gregexpr( pattern, subject, perl = T);
-	start = as.numeric(match[[1]]); length = attr(match[[1]], "match.length");
-	substring(subject, start, (start + length) - 1);
+# match = gregexpr( pattern, subject, perl = T);
+	# start = as.numeric(match[[1]]); length = attr(match[[1]], "match.length");
+	# substring(subject, start, (start + length) - 1);
 	
-	# we can just count from 1:strlen and rebuild "MISSING" elements
+	# # we can just count from 1:strlen and rebuild "MISSING" elements
 	
-subject = "a(a(a)(aa(a)a)a)a"; # remove outer parentheses, do again 
+# subject = "a(a(a)(aa(a)a)a)a"; # remove outer parentheses, do again 
 
 
  

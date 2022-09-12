@@ -3,7 +3,7 @@
 
 matrix.repeat = function(m, times=12, by="row")
 	{
-	o = m; 
+	o = m;  
 	n = times-1;
 	BY = prep.arg(by, n=3);
 	if(BY == "row")
