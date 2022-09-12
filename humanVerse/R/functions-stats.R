@@ -222,7 +222,7 @@ getQuantiles = stats.quantile;
 #' @examples
 #' x = c(1, NA, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, NA);
 #' 
-stats.mean = function(x, ..., na.rm=TRUE, is.member=TRUE, show.warning=na.rm, trim=0)
+stats.mean = function(x, ..., na.rm=TRUE, is.member=FALSE, show.warning=na.rm, trim=0)
 	{
 	x = dots.addTo(x, ...);
 	m = mean(x, na.rm=na.rm, trim=trim);	

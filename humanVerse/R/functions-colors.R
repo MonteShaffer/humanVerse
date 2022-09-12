@@ -1,4 +1,113 @@
 
+
+
+color.import = function(listname="wsu", 
+						keys = c("crimson", "gray"),
+						vals = c("#981e32", "#717171"), 
+						append=TRUE
+					)
+	{
+	if(is.null(listname))
+		{
+		# import baseR colors 
+		listname = "baseR";
+		NAMES = colors();
+		RGB = color.col2rgb(NAMES);
+		HEX = as.character(rgb2hex(RGB));	
+		MAT = t(RGB);
+		
+		mylist = list(
+					"byname" = list.create(NAMES, HEX), 
+					"byhex" = list.create(HEX, NAMES)
+					);
+		
+		df = dataframe( MAT[,1], MAT[,2], MAT[,3]);
+			df$color.library = listname;
+			df$color.hex = HEX;
+			df$color.name = NAMES;
+			df$index = 1:length(HEX);
+		rownames(df) = NULL;
+		colnames(df) = c("r", "g", "b", "color.library", "color.hex", "color.name", "index"); 
+		
+		 df = df.moveColumns(df, "index", "after", "color.library")
+		  df = df.moveColumns(df, c("r","g","b"), "after", "color.name")
+		df = df.sortBy(df, "color.name", "ASC");
+
+		if(!append || !exists("color.dictionary"))
+			{
+			color.dictionary = df;
+			color.list = list();
+			color.list[[listname]] = mylist;
+			"color.dictionary" %GLOBAL% color.dictionary;
+			"color.list" %GLOBAL% color.list;
+			} else {
+					color.dictionary = ggget("color.dictionary", pos=1);
+					color.list = ggget("color.list", pos=1);
+					
+					color.dictionary = rbind(color.dictionary,df);
+					color.list[[listname]] = mylist;
+					"color.dictionary" %GLOBAL% color.dictionary;
+					"color.list" %GLOBAL% color.list;
+					}
+			
+		} else {
+				# import a list ...
+				# seems like list.build / dataframe.build are FN
+				# nearest, property.set ... top 10 on 3 techniques, return top 1 on given technique ... LIMIT to color.dictionary ... priority to baseR library (reimport X11, HTML8, WEBSAFE, and so on...)
+		
+				}
+	
+	}
+
+
+# hexstr = c("#333333", "#999999"); RGB = hex2rgb(hexstr); num = hex2dec(hexstr);  dec2hex(mean(num)); RGB.m = (RGB[,1, drop=FALSE] + RGB[,2])/2; rgb2hex(RGB.m);
+# maths work ... could I build a structure like `base` that allows me to actually add/substract, or maybe just a macro 
+# v.hexmath = vecHEX, fun=mean ... 
+## Since this argument follows ... its name cannot be abbreviated.
+## ?*apply ... show all "apply" functions ...
+ 
+## vapply(vecHEX, mean)
+
+color.init = function()
+	{
+	
+	
+	
+	NAMES = colors();
+	RGB = color.col2rgb(NAMES);
+	HEX = rgb2hex(RGB);
+	
+	MAT = t(RGB);
+	
+	
+	color.list = list( "base" = list(
+				"byname" = list.create(names(HEX), as.character(HEX)), 
+				"byhex" = list.create(as.character(HEX), names(HEX))
+									)
+					);
+	
+	# df = color.dictionary;
+	# color.dictionary = df;
+	
+	df = dataframe( MAT[,1], MAT[,2], MAT[,3]);
+		df$color.library = "R";
+		df$color.hex = as.character(HEX);
+		df$color.name = names(HEX);
+		df$index = 1:length(HEX);
+	rownames(df) = NULL;
+	colnames(df) = c("r", "g", "b", "color.library", "color.hex", "color.name", "index"); 
+	
+	 df = df.moveColumns(df, "index", "after", "color.library")
+	  df = df.moveColumns(df, c("r","g","b"), "after", "color.name")
+	df = df.sortBy(df, "color.name", "ASC");
+
+	
+	
+	
+	}
+
+
+
 # color-utils contain the lower-level functions 
 # this contains "names", "lists", setOpacity, findNearest, palettes
 # we use HEX/RGBa as our two primary color choices 
@@ -89,9 +198,44 @@ v.color = function(colvec, ..., names.search="base", alpha=TRUE)
 	}
 	
 
+
+
+# FUN="stats.mean"
+hexcolor.math = function(vecHEX, ..., FUN=NULL, alpha=TRUE, skip.checks=FALSE)
+	{
+	if(!skip.checks)
+		{
+		# nested function can call a parent and have skip.checks=TRUE 
+		# if the check was already performed in the child 
+		vecHEX = dots.addTo(vecHEX, ...);	
+		vecHEX = v.color(vecHEX, alpha=alpha); # should be HEX, but now it is with ALPHA
+		}
+		
+	num = hex2dec(vecHEX);
+	TEMPLATE = paste0("res = ",FUN,"(num);"); 
+	info = eval(parse(text = TEMPLATE));
+	
+	TEMPLATE = paste0(FUN,"(num);");
+	res = eval(parse(text = TEMPLATE));
+	
+dput(FUN);
+	fn = as.character(substitute(FUN));
+dput(fn);
+	# eval.fromTemplate(TEMPLATE, key, value);
+	
+	dec2hex(sapply(hex2dec(c("#333333","#454545")), mean))
+
+	
+	}
+
+
 	
 hexcolor.gradient = function(vecHEX, ..., n=5, force.length=FALSE, alpha=FALSE, skip.checks=FALSE)
-	{	
+	{
+	# with skip.checks, a parent/child may have not included alpha ...
+	# internally, v.color should include alpha=TRUE ...
+	# function needs to deal with that and strip if exists/necessary
+	# for given logic ...
 	if(!skip.checks)
 		{
 		# nested function can call a parent and have skip.checks=TRUE 

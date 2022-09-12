@@ -108,11 +108,11 @@ color.hex = function(hexstr, ...,
 			}
 		}
 	
-	hexstr = str.pad(hexstr, "0", "LEFT", 6);
+	hexstr = str.pad(hexstr, 6, "0", "LEFT");
 	
 	if(alpha)         #  #FF00CC00 is same, ##FF00CC becomes #FF00CCFF
 		{
-		hexstr = str.pad(hexstr, "F", "RIGHT", 8);
+		hexstr = str.pad(hexstr, 8, "F", "RIGHT");
 		} else {
 				# we will truncate alpha if they exist ...
 				hexstr = str.truncate(hexstr, to.length=6, keep="left")

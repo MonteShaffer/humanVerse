@@ -397,7 +397,7 @@ str_repeat = str.repeat;
 #' @export
 str.rep = str.repeat;
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~# 
 #'
 #' str.replace
 #'
@@ -559,9 +559,10 @@ str_replace = str.replace;
 #------------------------------------------------#
 str.pad = function() {}
 str.pad = function(str,
+					to.length	= max(str.len(str)),
 					padding		= "0", 
 					side		= "RIGHT",  # default is for NNN.dd00 decimal
-					out.length	= max(str.len(str)),  
+					  
 					method		= "stringi"
 					)
 	{

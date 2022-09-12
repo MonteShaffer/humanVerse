@@ -296,7 +296,7 @@ df.printHead = function(df, n=5, row.idx=10, ...)
 
 
 
-
+ 
 
 df.fromList = function(myLists)
 	{
@@ -1537,3 +1537,34 @@ updateDataFrameWithUniqueNewElementsIndicated = function(df.existing, mycolumn, 
 
 
 
+
+
+
+df.printHead = function(df, n=6, row.idx=1, ...)
+	{
+	idx = row.idx;  		## offset, e.g, SKIP
+	nrow = nrow(df);
+	# tails 			
+		lower = (idx - n); 	if(lower < 1) 	 { lower = 1; }
+		upper = lower + n; 	if(upper > nrow) { upper = nrow; }
+							if(upper >= idx) { upper = idx - 1; }
+	tails = df[ lower:upper, ];  
+	# rownames(tails) = lower:upper;
+	print(tails, col.names=TRUE, col.at="top", ...);
+	cat("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", "\n");
+	# one
+		one = df[idx, ]; rownames(one) = idx;
+	print(one, col.names=FALSE, ...);
+	cat("\n");
+	cat("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", "\n");	
+	# heads 	
+		upper = (idx + n); 	if(upper > nrow) { upper = nrow; }
+		lower = upper - n; 	if(lower < 1) { lower = 1; }
+							if(lower <= idx) { lower = idx + 1; }
+	heads = df[ lower:upper , ];	
+	# rownames(heads) = lower:upper;
+	print(heads, col.names=TRUE, col.at="bottom", ...);
+	invisible(list("tails"=tails, "one"=one, "heads"=heads));
+	}
+	
+	

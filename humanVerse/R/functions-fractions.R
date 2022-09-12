@@ -181,7 +181,7 @@ options(op);
 		}		
 	nmax = max(str.len(numb));
 	
-	numb = str.pad(numb, " ", "LEFT", nmax);
+	numb = str.pad(numb, nmax, " ", "LEFT");
 	numb = paste0(numb);
 	
 	nmax.new = max(str.len(numb));
@@ -195,7 +195,7 @@ options(op);
 	
 	## not null on frac 
 	if(is.null(frac)) { frac = "0"; }
-	frac = substring(str.pad(frac, "0", "RIGHT", remaining), 1, remaining);
+	frac = substring(str.pad(frac, remaining, "0", "RIGHT"), 1, remaining);
 	
 	## ALL BIG NUMBERS, FORCE to wider with WARNING ?
 	paste0(numb, ".", frac);
@@ -328,11 +328,11 @@ options(op);
 
 	e.sign = math.sign(nex, return="character", 
 							zero=e.zero, pos=e.pos, neg=e.neg);
-	e.pre  = str.pad(e.sign, " ", "LEFT", 1);
+	e.pre  = str.pad(e.sign, 1, " ", "LEFT");
 	es = as.character(abs(nex));
 	e.max = max(str.len( es ) );
 	e.pad = max(e.max, min.e);
-	.ex = str.pad(es, "0", "LEFT", e.pad);
+	.ex = str.pad(es, e.pad, "0", "LEFT");
 	.exp = paste0(e, e.pre, .ex);
 	
 	
@@ -346,12 +346,12 @@ options(op);
 	add.name = SI_PREFIX$SI.name[idx]; 
 	add.name = v.naTo(add.name, " ");
 		add.len = max(str.len(add.name), na.rm=TRUE);	
-	add.name = str.pad(add.name, " ", "LEFT", add.len);
+	add.name = str.pad(add.name, add.len, " ", "LEFT");
 	
 	add.symbol = SI_PREFIX$SI.symbol[idx];
 	add.symbol = v.naTo(add.symbol, " ");
 		add.len = max(str.len(add.symbol), na.rm=TRUE);	
-	add.symbol = str.pad(add.symbol, " ", "LEFT", add.len);
+	add.symbol = str.pad(add.symbol, add.len, " ", "LEFT");
 	
 	x.char = as.character(nwh);
 	if(any(str.contains(".", x.char)))
@@ -371,13 +371,13 @@ options(op);
 	whol.max = max( abs( as.numeric(whol) ) );
 	wmax = str.len(whol.max);  # -sign isn't SIGNIF DIGITS
 	wneg = any(is.negative(as.numeric(whol))); 
-	whole = str.pad(whol, " ", "LEFT", (wmax+wneg));
+	whole = str.pad(whol, (wmax+wneg), " ", "LEFT");
 	digits.remaining = signif.digits - wmax - e.pad; # COUNTING EXP as SIGNIF DIGITS
 	
 	fmax = 0;
 	if(!is.null(frac))
 		{
-		fract = str.pad(frac, "0", "RIGHT", digits.remaining);
+		fract = str.pad(frac, digits.remaining, "0", "RIGHT");
 		# need to truncate if too long 
 		fract = substring(fract, 1, digits.remaining); # strwidth in R (strtrim?)
 		fmax = max(str.len(fract));

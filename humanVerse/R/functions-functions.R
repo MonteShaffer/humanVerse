@@ -169,9 +169,18 @@ function.find = function(..., character.only=FALSE)
 	# currently can't specify base::is.function vs GLOBAL::is.function 
 	# whichever is top of stack, unmasked 
 debug = FALSE;
+
+as_fun = function(x) {
+  if(is.character(x) && grepl("::", x)) return(eval(parse(text = x)))
+  # match.fun(x)
+  x;
+}
+		# https://stackoverflow.com/a/73690894/184614
+		fn.str.obj = as_fun(fn.str);
 	## this can't get multiple objects (stats::mean vs pkg::mean)
 	## it returns the one on the stack to be executed from GLOBAL 
-	fn.obj = suppressError( match.fun(fn.str), show.notice=debug, msg="debug function.find match.fun(fn.str)");
+	## fn.obj = suppressError( match.fun(fn.str), show.notice=debug, msg="debug function.find match.fun(fn.str)");
+	fn.obj = suppressError( match.fun(fn.str.obj), show.notice=debug, msg="debug function.find match.fun(fn.str.obj)");
 	if(is.error(fn.obj)) { return(NULL); }
 	
 	fn.obj;
@@ -221,7 +230,7 @@ str2symb = function(str="alex")
 	as.symbol(str);
 	}
 
-
+ 
 # function.info("+")
 # THIS IS UNIVARIATE 
 # https://realpython.com/python-refactoring/
@@ -718,7 +727,8 @@ function.findPackages = function(fns, ... )
 
 # cat(res$body, sep="\n");
 
- 
+
+functions.withParameter = function() {}
 functions.withParameter = function(param="na.rm", 
 									packages=(.packages()), 
 									include.ls = TRUE,

@@ -285,7 +285,7 @@ gggassign = function(key, val)
 #' charAt("Alex", 8);
 #' charAt("Alexander", 8);
 #'
-charAt = function(str,idx)
+charAt = function(str="Welcome to the humanVerse",idx=21)
   {
   substr(str,idx,idx);  # or substring?
   }

@@ -81,7 +81,7 @@ toBase = function(x, ..., base=10, to.length=NULL)
 		res[i] = paste0(base.chars[vec+1], collapse="");		
 		}
 	# str.pad("LEFT");
-	if(!is.null(to.length)) { res = str.pad(res, "0", "LEFT", to.length); }
+	if(!is.null(to.length)) { res = str.pad(res, to.length, "0", "LEFT"); }
 	res;
 	}
 

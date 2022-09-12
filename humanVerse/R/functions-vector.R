@@ -1,4 +1,31 @@
+magicFunction = function(FUN.OBJ.OR.STR)
+	{
+	# do something here ...
+	FUN.AS.STR;
+	}
 
+v.math = function(data=c("#abcdef","#123456"), FUN, param="hi", FUN.pre="hex2dec", FUN.post=dec2hex)
+	{
+	# takes input [whether a str/obj] and returns a string.
+	fn.str = magicFunction(FUN);
+	fn.pre = magicFunction(FUN.pre);
+	fn.post = magicFunction(FUN.post);
+
+	# get to the main event 
+	}
+
+
+v.math = function(..., data=NULL, params=NULL, fn.pre="hex2dec", fn.post="dec2hex", character.only=FALSE)
+	{
+	# pre/post have to be strings ... ARGH! 
+	# character.only=FALSE
+	if(character.only) 
+		{ 
+		fn.str = unlist(list(...)); 
+		} else {
+				fn.str = str.fromObjectName(...);
+				}	
+	}
 
 
 v.match = function(a, B.len, B.nam)
@@ -699,13 +726,14 @@ v.truncate = function(vec, parent)
 
 
 
-v.shortTypes = function(types)
+v.shortTypes = function(types, force.odd=TRUE)
 	{
 	n = length(types);
 	res = character(n);
 	for(i in 1:n)
 		{
 		type = types[i];
+		# SWITCH is ***NOT*** multivariate 
 		res[i] = switch(type,					  			
 							"character" = "<char>",
 							"factor"	= "<factor>",
@@ -715,7 +743,13 @@ v.shortTypes = function(types)
 							"Date"		= "<Date>",
 							"function"	= "<function>",							
 				paste0("<",type,">")		# DEFAULT
-				);		
+				);
+
+		if(force.odd)
+			{
+			rn = str.len(res[i]);
+			if(rn %% 2 == 0) { res[i] = str.replace("<"," <",res[i]); }
+			}
 		}
 	res;
 	}
@@ -730,7 +764,7 @@ v.shortTypes = function(types)
 .end = function(vec)
 	{
 	length(vec);
-	}
+	} 
 
 v.begin = function(vec, n=1)
 	{

@@ -244,6 +244,12 @@ pip = function(df,
 	cremaining = df.width - cwidth;
 	sep.extra.len = 0;	
 	sep.extra = "";
+	# keep each column as narrow as it should be 
+	# rgb ... r, g, b ... very narrow 
+	# take extra info and add to space between each COLUMN ... 
+	# the index of numbers for cols [1] seems to be off by one space
+	# from correctly aligning with r, <int> on CENTER ... 
+	# pip(color.dictionary);
 	if(use.max.width)
 		{
 		while(cremaining > ((sep.slen * left.pad) + 3*cols$length ) )
@@ -302,30 +308,16 @@ pip = function(df,
 #dput(rwidth);
 		cstr = str.rep( row.sep, as.integer((cwidth-rwidth)/row.sep.slen) );
 		# one more ... sep.extra.len on RIGHT side
-		cstr = str.pad( cstr, row.sep, "BOTH", (cwidth-rwidth)+(slen.mark + 1)+(2*sep.extra.len));
+		cstr = str.pad( cstr, (cwidth-rwidth)+(slen.mark + 1)+(2*sep.extra.len), row.sep, "BOTH");  
 	cline = paste0(space, rspace, cstr, "\n");
 	
 		cstr = paste0("A pipple of [", df.name, "]: ", 
 						dim(o.df)[1],
 						"",u.toSymbol("U+00D7"),"", 
 						dim(o.df)[2]);
-		cstr = str.pad( cstr, " ", "BOTH", (cwidth-rwidth));
+		cstr = str.pad( cstr, (cwidth-rwidth), " ", "BOTH");
 	cat("\n", space, rspace, cstr, "\n");
 	cat(cline);
-##				[col.num]		
-	if(show.col.numbers)
-		{
-		# sep.extra = str.rep(" ",sep.extra.len);
-		cat(space, rspace, sep.extra);
-		# cn are actual indexes of entire df ... 
-		for(cn in cs)
-			{
-			cstr = paste0(" [", cn ,"]");
-			cstr = str.pad( cstr, " ", "BOTH", cols$cmax[cn]); 
-			cat(cstr, sep, sep.extra);			
-			}
-		cat("\n");
-		}
 
 ## 			<b>col.name</b> (centered)	
 	if(show.col.names)
@@ -349,7 +341,7 @@ pip = function(df,
 		for(cn in cs)
 			{
 			cstr = cols$types.short[cn];
-			cstr = str.pad( cstr, " ", "BOTH", cols$cmax[cn]); 
+			cstr = str.pad( cstr, cols$cmax[cn], " ", "BOTH"); 
 			cat(cstr, sep, sep.extra);			
 			}
 		cat("\n");
@@ -365,7 +357,7 @@ pip = function(df,
 			ci = 1 + ci;
 			cstr = "";
 			if(cidx == cs[ci]) { cstr = col.mark[1]; }
-			cstr = str.pad( cstr, " ", "BOTH", cols$cmax[cn]); 
+			cstr = str.pad( cstr, cols$cmax[cn], " ", "BOTH"); 
 			cat(cstr, sep, sep.extra);			
 			}
 		cat("\n");
@@ -381,11 +373,34 @@ pip = function(df,
 		{
 		cat(space, rspace);
 			cstr = paste0("... ",rows.above," records above ...");
-			cstr = str.pad( cstr, " ", "BOTH", (cwidth-rwidth));
+			cstr = str.pad( cstr, (cwidth-rwidth), " ", "BOTH");
 		cat(cstr);
 		cat("\n");
 		cat(cline);
 		}
+
+
+##				[col.num]		
+	if(show.col.numbers)
+		{
+		cat("\n");
+			# sep.extra = str.rep(" ",sep.extra.len);
+			cat(space, rspace, sep.extra);
+			# cn are actual indexes of entire df ... 
+			for(cn in cs)
+				{
+				#cstr = paste0(" [", cn ,"]");
+				cstr = paste0("(", cn ,")");
+				cstr = str.pad( cstr, cols$cmax[cn], " ", "BOTH"); 
+				cat(cstr, sep, sep.extra);			
+				}
+			cat("\n");
+		cat("\n");
+		}
+
+
+
+
 
 
 ################ MAIN EVENT #####
@@ -401,13 +416,13 @@ pip = function(df,
 		{
 		extra = ""; if(ridx == rs[ri]) { extra = paste0(row.mark[1], " "); }
 		cstr = paste0(extra, "[", rn, "]");
-		cstr = str.pad( cstr, " ", "LEFT", (1+slen.mark) + 2+max(rows$numbers.slen));
+		cstr = str.pad( cstr, (1+slen.mark) + 2+max(rows$numbers.slen), " ", "LEFT");
 		cat(cstr, sep);	
 		}
 
 	if(show.row.names && !rows$namesEQUALnumbers)
 		{
-		cstr = str.pad( rows$names[ri], " ", "BOTH", max(rows$names.slen)); 
+		cstr = str.pad( rows$names[ri], max(rows$names.slen), " ", "BOTH"); 
 		cat(cstr, sep);				
 		}			
 		
@@ -437,6 +452,36 @@ pip = function(df,
 
 
 
+
+
+
+
+
+
+##				[col.num]		
+	if(show.col.numbers)
+		{
+		cat("\n");
+			# sep.extra = str.rep(" ",sep.extra.len);
+			cat(space, rspace, sep.extra);
+			# cn are actual indexes of entire df ... 
+			for(cn in cs)
+				{
+				#cstr = paste0(" [", cn ,"]");
+				cstr = paste0("(", cn ,")");
+				cstr = str.pad( cstr, cols$cmax[cn], " ", "BOTH"); 
+				cat(cstr, sep, sep.extra);			
+				}
+			cat("\n");
+		cat("\n");
+		}
+
+
+
+
+
+
+
 ## CENTER (x more rows BELOW )
 	rows.below =  dim(o.df)[1] - rs[length(rs)];
 	if(rows.below > 0)
@@ -444,7 +489,7 @@ pip = function(df,
 		cat(cline);
 		cat(space, rspace);
 			cstr = paste0("... ",rows.below," records below ...");
-			cstr = str.pad( cstr, " ", "BOTH", (cwidth-rwidth));
+			cstr = str.pad( cstr, (cwidth-rwidth), " ", "BOTH");
 		cat(cstr);
 		cat("\n");
 		}
@@ -469,8 +514,8 @@ pip = function(df,
 					# cn are actual indexes of entire df ... 
 					for(cn in cs)
 						{
-						cstr = paste0("[", str.pad(cn, " ", "BOTH", cols$length.slen) ,"]");
-						cstr = str.pad( cstr, " ", "BOTH", cols$cmax[cn]); 
+						cstr = paste0("[", str.pad(cn, cols$length.slen, " ", "BOTH") ,"]");
+						cstr = str.pad( cstr, cols$cmax[cn], " ", "BOTH"); 
 						cat(cstr, sep, sep.extra);			
 						}
 					cat("\n");
@@ -491,7 +536,7 @@ pip = function(df,
 			ci = 1 + ci;
 			cstr = "";
 			if(cidx == cs[ci]) { cstr = cm2[cm2i]; }
-			cstr = str.pad( cstr, " ", "BOTH", cols$cmax[cn]); 
+			cstr = str.pad( cstr, cols$cmax[cn], " ", "BOTH"); 
 			cat(cstr, sep, sep.extra);			
 			}
 		cat("\n");
@@ -537,7 +582,7 @@ pip.truncator = function(x, cwidth=22, sep=" ", side="BOTH", trunc.sym = ">")
 	x = as.character(x); # assuming string, but may be FACTOR
 	x.slen = str.len(x);
 	idx = (x.slen <= cwidth);
-	x[idx] = str.pad(x[idx], sep, side, cwidth);
+	x[idx] = str.pad(x[idx], cwidth, sep, side);
 	x[!idx] = paste0( substring(x[!idx], 1, (cwidth-1) ), trunc.sym);
 	x;
 	}
