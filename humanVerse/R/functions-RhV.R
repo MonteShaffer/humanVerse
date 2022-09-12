@@ -144,3 +144,74 @@ case 'a':
 Error: '\c' is an unrecognized escape in character string starting ""monte \c"
 > x = "monte \b"
 > x = "monte \v"
+
+
+
+# use like \input{} in latex 
+# inline doc is BAD ... no separation 
+# https://blog.millermedeiros.com/inline-docs/
+# comments Inline about why, not so much what 
+
+# https://www.freecodecamp.org/news/code-comments-the-good-the-bad-and-the-ugly-be9cc65fbf83/
+
+
+# folder called docs ... by function-name or file-name ..
+
+# doc/en-us/ ... allows for language work ...
+
+# /inst/Rhv/functions-R.rhv
+# /inst/Rhv/docs/en-us/functions-R/function-names.rh (R help)
+
+# mass has /po/ files ...
+# \MASS_7.3-58.1\MASS\inst\po\it\LC_MESSAGES\R-mass.mo
+# https://www.online-tech-tips.com/computer-tips/how-to-read-and-open-pot-po-mo-extension-files/
+## # http://www.poedit.net/download.php
+
+
+# PARSER to extract
+# warning/stop/cat messages and AUTO label with values ... 
+# maybe store globally as LOCALE ... load(en) ... LOCALE[en] will be used for messaging ... LOCAL[en][filename][functionname][uniquekey in function]
+# THIS approach is JSON-ifyable ... will also work on WEB API ...
+
+# LOCALE = list("en" = list("HELLO" = "hello") );
+#  x = function() { print(LOCALE[["en"]][["HELLO"]]); }
+# x(); # [1] "hello"
+
+
+graphics.pot ... 
+ 
+ #: plot3d.c:1953
+#, c-format
+msgid "non-finite level values: levels[%d] = %g"
+msgstr ""
+
+#: plot3d.c:1966
+msgid "all z values are equal"
+msgstr ""
+
+
+
+msgid "no documentation for %s found in package %s"
+msgstr "pas de documentation pour %s dans le package %s"
+
+
+msgstr "Avis : option inconnue %s"
+
+
+msgid "It is recommended to use %s instead of %s."
+msgstr "Il est recommandé d'utiliser %s à la place de %s."
+
+
+
+#: io.c:416 io.c:434
+#, c-format
+msgid "quoted string on line %d terminated by EOF"
+msgstr ""
+
+
+
+#: io.c:327 io.c:331 io.c:341 io.c:571 io.c:771 io.c:824 io.c:838 io.c:842
+
+	error(_("invalid '%s' argument"), "comment.char");
+	
+R-fr.po  library/utils/po/ 

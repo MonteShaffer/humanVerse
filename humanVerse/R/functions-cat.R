@@ -27,7 +27,7 @@ cat.warning = warning.cat;
 
 stop.cat = function(..., sep=" ")
 	{
-	str = dots.addTo(NULL, ...);
+	str = dots.addTo(NULL, ...); 
 	res = paste0(str, collapse=sep);
 	
 	parent.call = sys.call(sys.nframe() - 1L);

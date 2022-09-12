@@ -975,7 +975,9 @@ dput(TYPE);
 					
 	if( ( TYPE == "EXP" || TYPE == "POW") && any(df$y<=0) )
 		{
-		cat.warning("\n\n\t\t\t For TRENDLINE type [",type,"] you cannot have any data (currently [",n,"] rows) \n\t\t\t\t in [y] that is <= 0 (less than or equal to zero) ... \n\t\t\t\t REMOVING ROWS and trying to COMPUTE \n\n");
+		msg = wrap.lang("\n\n\t\t\t", "For TRENDLINE type [",type,"] you cannot have any data", "\n\t\t\t\t",  "(currently [",n,"] rows) in [y] that is <= 0 (less than or equal to zero) ...", "\n\t\t\t\t", "*SYSTEM* is REMOVING ROWS and trying to COMPUTE", "\n\n");
+		cat.warning(msg);
+		# cat.warning("\n\n\t\t\t For TRENDLINE type [",type,"] you cannot have any data (currently [",n,"] rows) \n\t\t\t\t in [y] that is <= 0 (less than or equal to zero) ... \n\t\t\t\t REMOVING ROWS and trying to COMPUTE \n\n");
 		df = subset(df, y > 0);
 		n = nrow(df);
 		cat.warning("\n\n\t\t\t\t Proceeding with only [",n,"] rows! \n\n");
