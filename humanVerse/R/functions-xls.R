@@ -1171,6 +1171,7 @@ xls.ANOVA.SIMPLE = function(df, alpha=0.05, posthoc="THSD")
 	groups = names(df);
 	ngroups = length(groups);  # dim(df)[2];
 	ndata = dim(df)[1];
+	
 	res = vector("list", ngroups);
 	within.SSD = 0;
 	for(i in 1:ngroups)
@@ -1202,8 +1203,17 @@ xls.ANOVA.SIMPLE = function(df, alpha=0.05, posthoc="THSD")
 	# SSD of entire data ...	
 	all = as.numeric(as.matrix(df));
 	
-	total.SSD 	= xls.DEVSQ(all);
-	total.N 	= xls.COUNT(all);
+	# EXCEL is not showing the GRAND MEAN 
+	# EXCEL is not showing the SSD either 
+	# null hypothesis (RA):  mu = mu_1 ... mu_n
+			TOTAL.Count 	= xls.COUNT(all);
+			TOTAL.Sum 	 	= xls.SUM(all);
+			TOTAL.Average  	= xls.AVERAGE(all);
+			TOTAL.Variance 	= xls.VAR.S(all);
+			TOTAL.SSD 	 	= xls.DEVSQ(all);
+			
+	total.SSD 	= TOTAL.SSD
+	total.N 	= TOTAL.Count;
 	total.df 	= total.N - 1;
 	total.MS 	= total.SSD / total.df;
 	
@@ -1237,9 +1247,28 @@ xls.ANOVA.SIMPLE = function(df, alpha=0.05, posthoc="THSD")
 	msg = "[Fail to Reject H0]: There is not enough evidence to conclude that the group means are different from one another ... ";
 	if(reject) { msg = "[Reject H0]:  There is sufficient evidence at alpha=0.05 to reject the null hypothesis and conclude that *AT LEAST* one group mean is different from the others ... "; }
 	
-	# POSTHOC Bonferroni ... Tukey HSD ... 
+	# POSTHOC Bonferroni ... Tukey HSD ... Fischer 
+	# F-stat graph ... with alpha (F.crit) and p-value (F.stat)
+	# 
 	 
 	}
+	 
+	 
+xls.REGRESSION = function() {}
+	# similar to TRENDLINES, do it variadically 
+	
+# knn ... holdout ... training/test with AIC / COnfusion Matix... whatever 
+# allow for nls and glm ... 
+# create dummy from factor ... set factor X as referent 
+# with copy/paste, can I get the CELLS ... read.delim('clipboard') ...
+# can I get any formulas when copy ... they have to be THERE in the clipboard as XLS uses them to update REFERENCES ...
+# could I paste back into XLS with formulas that would allow the auto-updates on referencing ... I pretend everything was from A1 on my build 
+# interesting ...
+# PEOPLE don't want to name data, name rows and cols, often they just want the answers... HASH name for df, cols(A, B, C) by default ... and so on 
+# Replace OpenOffice ... provide a FREE alternative that is all
+# web-based, in the cloud (even localhost form)
+# ... spell-checker, grammarizer
+	
 	 
 	
 xls.F.INV = function(prob=1-0.05, df1, df2)
