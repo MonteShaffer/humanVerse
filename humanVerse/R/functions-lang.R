@@ -178,9 +178,34 @@ language.set = function(locale="en-us")
 	
 	}
 	
-wrap.lang = function(...,  out="paste0", sep=" ")
+	
+check.ansi = function(str)
+	{
+	# TODO 
+	# does the system support ansi?
+	# does the user have it in PREFERENCES as YES
+	has.ansi = FALSE;
+	if(!has.ansi)
+		{
+		str = strip.tags(str);
+		}
+	str;	
+	}
+	
+check.lang = function(str)
+	{
+	# we can override the LANG LOCALE here in real time if the translation.json object exists 
+	
+	str;
+	}
+	
+	
+# was wrap.lang 
+prep.msg = function(...,  out="paste0", sep=" ")
 	{
 	str = dots.addTo(NULL, ...); 
+	str = check.ansi(str);
+	str = check.lang(str);
 	if(is.null(out)) { return(str); } # do nothing ...
 	# out is a string ... one level deep
 	fn.str = as.character(substitute(out));
@@ -193,7 +218,21 @@ wrap.lang = function(...,  out="paste0", sep=" ")
 	# other functions may have different parameters ... 
 	do.call(fn.str, list(str, collapse=sep));
 	}
-	
+
+#           italics  underline bold   bright (not <BR /> already taken)	
+# ansi tags:  <i></i>  <u></u> <b></b> <bb></bb> 
+#             <fg #abcdef></fg>  <bg "red"></bg>
+#             <color fg="F33" bg="wsu:crimson"></color>
+# good practice, separate "\n\t" as BLANK
+# also good practice, separate "<i>", "CONTENT", "</i>"
+# parser will recognize as TAGS and *NOT* show them to translator
+# %s (variable) %w (whitespace) %t (tags) ... 
+# if an element is TAGGED, I don't send to translator 
+# "Welcome to the ", "<i>human<fg green>V</fg>erse!"
+# DESIGN RULES ... translator and color console in one swoop.
+# also allows for color once we move up to the WEB API ...
+# can also allow HELP to use color ...
+
 	
 # msg = wrap.lang("\n\n", "tldr;", "\n\n\n\t", "R-DEV believes this is poor programming practice to allow you to", "\n\t\t", "`suppressError()` so they have not included it in base R.", "\n\t\t", "It is probably true, but 'git-r-done' first, and then", "\n\t\t", "figure out the minutia such as why this function is", "\n\t\t", "throwing an error.  That is why I have past such a ", "\n\t\t",  "VERBOSE message to you, dear reader.", "\n\n\t", "By altering this function [set msg to something else, not empty ''],", "\n\t\t",  "you can reduce the length of this message.", "\n\n\t", "Or you can set the flag show.notice=FALSE to prevent it from printing.", "\n\t\t", "THIS my friends is how choice architecture works!  Cheers and Aloha!", "\n\n\n");
 	
