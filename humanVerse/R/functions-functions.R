@@ -1,5 +1,21 @@
 
 
+
+# if NEW exists, it overrides the DEFAULT (cascade)
+map.args = function(DEFAULT, NEW)
+	{
+	keys = names(DEFAULT);
+	n = length(keys);
+	for(i in 1:n)
+		{
+		key = keys[i];
+		if( exists(key, NEW) ) { DEFAULT[[key]] = NEW[[key]]; }
+		}
+	DEFAULT;  # updated 
+	}
+
+
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' prep.arg
@@ -17,17 +33,6 @@
 # extra = "! #"
 
 
-prep.args = function(DEFAULT, NEW)
-	{
-	keys = names(DEFAULT);
-	n = length(keys);
-	for(i in 1:n)
-		{
-		key = keys[i];
-		if( exists(key, NEW) ) { DEFAULT[[key]] = NEW[[key]]; }
-		}
-	DEFAULT;  # updated 
-	}
 
 prep.case = function(key, case="lower")
 	{
@@ -328,17 +333,25 @@ dput(fn.str);
 # [is] ... [JSON] (write my own prettify function)
 # [help] and [h]elp ... [cat] ... [CRAN]
 # [math] ... [fr]actions ?? or just [num] !?!
-# [ni]nes ... [data] ... 
+# [nin]es ... nine inch nails ... put astro/numero ... biorhythms, esoteric
+# [1828] or [dict] ... 
+# [map] ???
+# [db] ... berkely DB, tokyo/kyoto ... TIES for fuzzy matching ... portable to JSON ... 
+# [data] ... loading data from PIPE/RDS files mostly ... 
 # [check] ... [prep] 
-# [d]ata[f]rame ===> df 
+# [d]ata[f]rame ===> df {no long version here, just short}, like {str}
 # [op]tion(s) ... [sys]tem ... [nlp] ... 
 # [log] (writing to file, not natural)
-# [doc]umentation ... [d]ate[time] ===> maybe DT (not DJT) ... just [date]
+# [doc]umentation ... 
+# [d]ate[time] ===> maybe DT (not DJT) ... just [date]
+# [cal]endar ... rules based on ctype changes at time ... JULIAN, GREG, BRITISH, GALICIA (FRANCE) ... this is a nice EDGE case ...
+# 
 # [par] ... [url] ... [h]igh[c]harts ==> hc (maybe HC)
 # [seed] ... [ping] ... [RhV] and [rhv] 
 # [list] ... [in]tegrate ... maybe [fl]uxions ... 
 # [regex] ==> [r]ege[x] ==> [rx] ... isn't it [rgx] ??? 
 # [sql] ... [curl] ... 
+# [obj]ect ... general functions for lists/dataframes/vectors ... not functions
 
 #' @alias/aliases/ALASES  comma-separated ... 
 #' OR do I write a script that takes care of them

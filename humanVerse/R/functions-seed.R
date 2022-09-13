@@ -95,7 +95,7 @@ cat("\n key: ", key, " \t\t seed.value : ", seed.value, " \n");
 						"sample.kind" = NULL
 					);
 	## THIS SEEMS LIKE A SEPARATE 'VARIADIC' FUNCTION
-	seed.args_ = prep.args(seed.args_, seed.args);
+	seed.args_ = map.args(seed.args_, seed.args);
 
 	## VERY END, so STACK doesn't change things 	
 	set.seed(seed.value, 
