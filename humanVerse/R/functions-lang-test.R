@@ -26,8 +26,8 @@ parse.lang = function(lines, debug=FALSE)
 				# across the system, we can find unique WHAT 
 				# so the translator has less work to do ...
 	
-	in.string = FALSE;
-	in.string.type = NULL;
+	IN_STRING = FALSE;
+	IN_STRING.type = NULL;
 	p.count = 0; # number of paranthesis
 
 	i = j = 1;  # i is line number ... 
@@ -37,7 +37,7 @@ parse.lang = function(lines, debug=FALSE)
 	
 	count.finds = 0;
 
-					"Fake for substitution"
+				###	"Fake for substitution"
 	PIPE = "|";		FPIPE = "[p]";  # we could make unique "`[.p.]`"
 	TAB = "\t";   	FTAB = "[t]";
 	NEWLINE = "\n";	FNEWLINE = "[n]";
@@ -49,8 +49,11 @@ parse.lang = function(lines, debug=FALSE)
 	WHAT_LANG = "-.TRANSLATE.-";
 	
 	COMMENT = "#";
+	BACKSLASH = "\\";
 	DQ = '"';		FDQ = "[dq]";
+	EDQ = "\"";  # escaped dq ... 
 	SQ = "'";		FSQ = "[sq]";
+	ESQ = '\'';  # escaped sq ...
 	OP = "(";
 	CP = ")";
 	COMMA = ",";
@@ -62,7 +65,10 @@ parse.lang = function(lines, debug=FALSE)
 					# STR ... which is what **lang** will STORE
 					# EMPTY ... `,"\n\t   \n",` white space, ignored 
 								# maybe map to %w as in white space ...
-	cc = "";	  # current char ... single value 
+	cc = "";	  	# current char ... single value 
+	pc = ""; 		# previous character (for escape codes, 
+										# like \" inside DQ
+	
 	
 	line.eval = NULL;		# line has been evaluated? TRUE or FALSE 
 	line = NULL;	# just putting all GLOBAL VARS at top ...
@@ -85,13 +91,14 @@ cat("\n", "[",i,"]" , lines[i], "\n");
 	whitespace = function(ws)
 		{
 		paste0(
-						str.replace( 	c(NEWLINE, TAB),
-										c(FNEWLINE,FTAB),
-									ws), 
-						collapse="");
+			str.replace( 	
+				c(NEWLINE, TAB, PIPE, DQ, SQ, COMMA, BACKSLASH),
+				c(FNEWLINE,FTAB,FPIPE,FDQ,FSQ, "[COMMA]", "[BACKSLASH]"),
+						ws), 
+			collapse="");
 		}
 		
-	show.status = function(level)
+	show.status = function(level, nnn=1)
 		{
 if(debug)
 	{
@@ -104,19 +111,34 @@ if(debug)
 		if(level == "char")
 			{
 
-cat("\n\t [",idx,"] => line [",i,":",j,"] ... ", whitespace(cc), 
+if(nnn == 1)
+	{
+cat("\n\t [",idx,"] => line [",i,":",j,"] ... ", 
+				whitespace(pc), " => ",  whitespace(cc),
 				"\t p: ", p.count, 
 				"\t io: ", OBJ, 
-				"\t is: ", in.string, 
-				"\t ist: ", in.string.type, 
+				"\t is: ", IN_STRING, 
+				"\t ist: ", IN_STRING.type, 
 				"\t cv: ", cval, 
 				"\t cres: ", whitespace(cres), 
 	"\n");
+	} else {
+	
+cat("\n\t\t\t\t",						" ... ", 
+				whitespace(pc), " => ", whitespace(cc),
+				"\t p: ", p.count, 
+				"\t io: ", OBJ, 
+				"\t is: ", IN_STRING, 
+				"\t ist: ", IN_STRING.type, 
+				"\t cv: ", cval, 
+				"\t cres: ", whitespace(cres), 
+	"\n");
+	}
 			}
 		# where are we ... i, j loop 
 		# current char 
 		# state of variables OBJ etc 
-		# state of in.string ... 
+		# state of IN_STRING ... 
 		# level == "line" ... searching mode 
 		# level == "char" ... scanning mode (in the weeds)
 		flush.console();
@@ -126,7 +148,7 @@ cat("\n\t [",idx,"] => line [",i,":",j,"] ... ", whitespace(cc),
 	add.to = function() {}
 	add.to = function(envir=parent.env(environment()))
 		{
-		if(in.string)
+		if(IN_STRING)
 			{
 			cres = c(cres, cc);	
 			assign("cres", cres, envir=envir );
@@ -142,19 +164,35 @@ cat("\n do.DQ \n");
 	}
 		# all the way up or just the CALLER?		
 		assign("cval", TRUE, envir=envir );
-		if(!in.string)
+		if(!IN_STRING)
 			{
-			in.string = TRUE;
-			assign("in.string", TRUE, envir=envir );
+			IN_STRING = TRUE;
+			assign("IN_STRING", TRUE, envir=envir );
 			assign("OBJ", FALSE, envir=envir );
-			assign("in.string.type", "DQ", envir=envir );
+			assign("IN_STRING.type", "DQ", envir=envir );
 			} else {
-					if(in.string.type == "DQ")
+					if(IN_STRING.type == "DQ")
 						{
-						# we are at the end of in.string ... TIE it OFF 
-						assign("in.string.type", NULL, envir=envir );
-						assign("in.string", FALSE, envir=envir );
+						# we have a escaped DQ 
+						# what if ppc is also a backslash and I am in a string ... I think we are fine ...
+						if(pc != BACKSLASH)
+							{
+							# we are at the end of IN_STRING ... TIE it OFF 
+							assign("IN_STRING.type", NULL, envir=envir );
+							assign("IN_STRING", FALSE, envir=envir );
+							} else {
+if(debug)
+	{
+cat("\n DQ inside DQ \n");
+	}
+									# we encountered a DQ inside the DQ envir 
+									add.to();
+									}
 						} else {
+if(debug)
+	{
+cat("\n DQ inside SQ \n");
+	}
 								# we encountered a DQ inside the SQ envir 
 								add.to();
 								}
@@ -170,19 +208,36 @@ cat("\n do.SQ \n");
 	}
 		# all the way up or just the CALLER?		
 		assign("cval", TRUE, envir=envir );
-		if(!in.string)
+		if(!IN_STRING)
 			{
-			in.string = TRUE;
-			assign("in.string", TRUE, envir=envir );
+			IN_STRING = TRUE;
+			assign("IN_STRING", TRUE, envir=envir );
 			assign("OBJ", FALSE, envir=envir );
-			assign("in.string.type", "SQ", envir=envir );
+			assign("IN_STRING.type", "SQ", envir=envir );
 			} else {
-					if(in.string.type == "SQ")
+					if(IN_STRING.type == "SQ")
 						{
-						# we are at the end of in.string ... TIE it OFF 
-						assign("in.string.type", NULL, envir=envir );
-						assign("in.string", FALSE, envir=envir );
+						# we have a escaped SQ 
+						# what if ppc is also a backslash and I am in a string ... I think we are fine ...
+						if(pc != BACKSLASH)
+							{
+							# we are at the end of IN_STRING ... TIE it OFF 
+							assign("IN_STRING.type", NULL, envir=envir );
+							assign("IN_STRING", FALSE, envir=envir );
+							} else {
+									# we encountered a SQ inside the SQ envir 
+if(debug)
+	{
+cat("\n SQ inside SQ \n");
+	}
+									add.to();
+									}								
+						
 						} else {
+if(debug)
+	{
+cat("\n SQ inside DQ \n");
+	}
 								# we encountered a SQ inside the DQ envir 
 								add.to();
 								}
@@ -206,7 +261,7 @@ cat("\n do.OP \n");
 	do.CP = function(envir=parent.env(environment()))
 		{
 if(debug)
-	{
+	{ 
 cat("\n do.CP \n");
 	}
 		assign("cval", TRUE, envir=envir );
@@ -235,7 +290,7 @@ cat("\n do.COMMA \n");
 	}
 		# what if comma is just in the text ... 
 		assign("cval", TRUE, envir=envir );
-		if(in.string)
+		if(IN_STRING)
 			{
 			add.to();
 			} else {		
@@ -250,7 +305,7 @@ cat("\n do.COMMA \n");
 		# I think this is LOCAL to this function only 
 		ctype = NULL;
 		cres = paste0(cres, collapse="");
-		what = cres; 
+		what = ""; 
 		more = NULL;
 		
 if(debug)
@@ -258,7 +313,7 @@ if(debug)
 cat("\n process.one \n");		
 dput(cres);
 	}
-# BECAUSE we added in.string to "add.to" ... we lose the OBJECT NAME, 
+# BECAUSE we added IN_STRING to "add.to" ... we lose the OBJECT NAME, 
 		
 		
 		# OBJ becomes %s 
@@ -275,6 +330,7 @@ dput(cres);
 			EMPTY = (str.trim(cres) == "");
 			if(EMPTY) 
 				{ 
+				what 	= cres;
 				more 	= WHAT_EMPTY; 	
 				ctype	= TRUE; 
 				}
@@ -292,6 +348,7 @@ cat("\n ANSI: ", ca, "\n");
 			HAS_TAGS = (ca > 0);
 			if(HAS_TAGS) 
 				{ 
+				what 	= cres;
 				more 	= WHAT_TAG;	
 				ctype	= TRUE; 
 				}
@@ -300,6 +357,7 @@ cat("\n ANSI: ", ca, "\n");
 		# # this is going to be language-ified
 		if(is.null(ctype)) 			
 			{ 
+			what 	= cres;
 			more 	= WHAT_LANG; 		
 			ctype	= TRUE; 
 			}
@@ -322,7 +380,7 @@ cat("\n ANSI: ", ca, "\n");
 		idx = 1 + idx; 
 		assign("idx", idx, envir=envir );
 		# resetting ... if we got this far, we shouldn't have PARSE errors
-		# that is, we don't need to reset p.count or in.stringX
+		# that is, we don't need to reset p.count or IN_STRINGX
 		OBJ = TRUE; 
 		assign("OBJ", OBJ, envir=envir );
 		cres = NULL;
@@ -342,15 +400,16 @@ cat("\n ANSI: ", ca, "\n");
 		assign("line", line, envir=envir );
 if(debug)
 	{	
+cat("\n more: ", whitespace(more), "\n");
 cat("\n what: ", whitespace(what), "\n");
 pause();
-show.status("char");
+show.status("char", 2);
 	}
-		# if(cc == COMMA) { scanning(); return(TRUE); }
-		if(cc == COMMA) { return(TRUE); } # back to for(j in scanning
+		
+		if(cc == COMMA) { return(TRUE); }
 		if(cc == CP) 	{ finish(); return(TRUE); }
 
-show.status("char");
+show.status("char", 3);
 pause();
 traceback();
 		stop("how did you get here");
@@ -368,6 +427,10 @@ traceback();
 		# STATUS = searching ... have line updated 
 		# searching();
 		colnames(df) = c("idx", "line.no", "char.no", "what", "content");		
+		# we don't need nested SQ ESCAPED in this ... 
+		### this then gets rid of actual backslashes as well ... 
+		df$content = str.replace('\\"','"',df$content); 
+		df$content = str.replace("\\'","'",df$content); 
 		out[[count.finds]] = df;
 # df will *also* nullify on init()?
 		df = NULL;
@@ -386,7 +449,7 @@ pause();
 	scan.char = function() {}
 	scan.char = function(envir=parent.env(environment()))
 		{				
-		show.status("char");
+		show.status("char", 1);
 		# cc as "current char"
 		assign("cval", NULL, envir=envir );
 		if(is.null(cval) && cc == DQ) { do.DQ(); }
@@ -395,9 +458,12 @@ pause();
 		if(is.null(cval) && cc == CP) { do.CP(); }
 		if(is.null(cval) && cc == COMMA) { do.COMMA(); }
 		
-		# we don't add.to unless it is in.string 
+		# we don't add.to unless it is IN_STRING 
 		if(is.null(cval)) { add.to(); }
-		show.status("char");
+		show.status("char", 2);
+		
+		pc = cc;
+		assign("pc", pc, envir=envir );
 		}
 		
 	scan.init = function() {}
@@ -510,7 +576,7 @@ cat("\n ################# BACK to MAIN ############# \n");
 
 
 
-lines = readLines("parse-lang.txt");
+lines = readLines("parse/parse-lang.txt");
 print(lines);
 	
 	

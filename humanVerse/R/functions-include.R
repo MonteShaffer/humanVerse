@@ -50,7 +50,7 @@ cat("\n QUICK: ", sfile, " with idx: ", idx, "\n");
 	if(!is.null(idx))
 		{
 		source(res$myfullpaths[idx], verbose=verbose);
-		}
+		} else { stop("bad idx"); }
 	}
 
 # setwd("C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R")
