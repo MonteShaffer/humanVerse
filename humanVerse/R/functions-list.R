@@ -249,7 +249,7 @@ list.getProperty = function(key, info)
 	
 list.getLengths = function(info) 
 	{
-	dput(info);
+# dput(info);  
 	n.info = length(info);
 	if (!is.list(info)) { return(n.info); }
 	# is.list with length of zero

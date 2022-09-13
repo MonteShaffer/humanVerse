@@ -1,10 +1,10 @@
 Package: humanVerse
 Type: Package
-Title: Saving Human-Life Hours with "human-verse" forms of R functions
-Version: 3.1415
+Title: Saving Human-Life Hours with "humanVerse" forms of R functions
+Version: 3.1415v001
 Authors@R: person( "Monte J. Shaffer", email = "monte.shaffer@gmail.com",
-  role = c("aut", "cre")  )
-Description: Manipulating dataframes, "git r done" ...
+	role = c("aut", "cre")	)
+Description: Making R more palatable and extensible.  With a "git r done" mentality, the objective is to maximize productivity while minimizing interruptivity through the extensibility of the *AMAZING WARP CORE* that is R.  Let's do more than "git back to base", let's evolve.  Remember how modern R 'felt' in 2004:  the ability to automate statistical analyses using custom functions, the ability to download packages automatically within RGUI, extensible base plotting features with color support, cutting-edge use of localhost CGI serving help pages, ... and so on ...  This library (optionally paired with its cousins: HVcpp and [TBD: HVc]) aims to create an API layer of BASE-R to allow for a 'modern' web-based application to be developed:  Sophia.  Sophia will have several important modules named in homage to 'oldschool' *AMAZING WARP CORE* technologies that were great: Cairn [a la WordPerfect 5.1/5.2], Lotus-V [Lotus 1-2-3], Chatty [chat rooms], Nappy [Napster], Carmen [whereis 'Carmen SanDiego'], Floppy [content sharing], Spacy [hosting MySpace], Reddy [Reddit], Sparrow [Pirate themed], and Iris [Photoshop 6.0].  Built on DAMP:  Debian, Apache, MariaDB [mysql], and PHP (localhost or deployed) and powered by R.  All for the low cost of FREE-99-FOREVER.  No ads, no interruptions, ever.  It is time!
 License: MIT + file LICENSE
 URL: https://github.com/MonteShaffer/humanVerse/humanVerse
 BugReports: https://github.com/MonteShaffer/humanVerse/issues
@@ -13,37 +13,37 @@ Encoding: UTF-8
 Language: en-US
 LazyData: true
 Suggests:
-  plotrix,
-  Matrix,
-  matrixStats,
-  matrixcalc,
-  Rcpp,  
-  RMariaDB,
+	plotrix,
+	Matrix,
+	matrixStats,
+	matrixcalc,
+	Rcpp,	
+	RMariaDB,
 	rjson,
 xml2,
 curl,
-  openssl,	
-  
-  digest,
-   bits,
-  expm, Rmpfr, Matrix, MASS,
-  # https://cran.r-project.org/web/packages/sfsmisc/index.html
-  # integers, special plots, 
-  # adebo, floating point gnu-something 
-  microbenchmark
-  
+	openssl,	
+	
+	digest,
+	 bits,
+	expm, Rmpfr, Matrix, MASS,
+	# https://cran.r-project.org/web/packages/sfsmisc/index.html
+	# integers, special plots, 
+	# adebo, floating point gnu-something 
+	microbenchmark
+	
 Imports:
  # libcurl capability, what version of R 
- curl,
-  graphics,  
-  grDevices,
-  jsonlite,
-  
-  
-  stats,
-  stringi,
-  utils,
-  
+	curl,
+	graphics,	
+	grDevices,
+	jsonlite,
+	
+	
+	stats,
+	stringi,
+	utils,
+	
 	
 
-RoxygenNote: 7.1.1
+RhV: v001

@@ -35,13 +35,20 @@ str.compare = function(a, b=NULL, methods="all")
 #'
 #------------------------------------------------#
 str.count = function(str, what="|")
-	{
+	{ 
 	# count occurrence of "what" in a string 
 	# n.pipes = str.count(lines, what="|");
+	# filler = " "; if(what == " ") { filler = "|"; }
+	# if WHAT is at the end of string, not picking it up
+	# base strsplit BUG 
+	# str = paste0(str, filler); 
 	info = str.explode(what, str);
+# dput(info);
 	res = list.getLengths(info);
-	if(is.null(res)) { return(0*length(str)); }
-	res-1; # if the explode is length(2), that means (1) what was there 
+	if(is.null(res)) { return(0*length(str)); }	
+	# if the explode is length(2), that means (1) what was there 
+	# unless the element was at the end ... BASE BUG ?
+	res-1;  
 	}
 	
 
@@ -257,33 +264,37 @@ str_trim = str.trim;
 #'
 #' @examples
 #------------------------------------------------#
-str.explode = function(sep = " ", str = "hello friend", method="base")
+str.explode = function(sep = " ", str = "hello friend", method="stringi")
 	{
 	# necessary overhead
-	m = prep.arg(method, 1);
+	METHOD = prep.arg(method, 1);
 
 	hasResult = FALSE;
 
-	if(m == "b")
+	if(METHOD == "b")
 		{
 		res = strsplit(str, sep, fixed=TRUE);
 		hasResult = TRUE;
 		}
 
-	if(!hasResult && m == "s" && is.library("stringi") )
+	if(!hasResult && METHOD == "s" && is.library("stringi") )
 		{
 		res = (stringi::stri_split_fixed(str, sep));
 		hasResult = TRUE;
 		}
 
-	if(!hasResult && m == "c" && exists("cpp_explode"))
+	if(!hasResult && METHOD == "c" && exists("cpp_explode"))
 		{
 		res = ( cpp_explode(sep, str) );
 		hasResult = TRUE;
 		}
 	
-	if(!hasResult)
+	if(!hasResult)  
 		{
+		# stringi works as expected, what about cpp?
+		# if "<i>humanVerse</i>" ... 
+			# "<i>" returns "" "humanVerse</i>"
+			# "</i>" returns "<i>humanVerse" without trailing "" 
 		res = strsplit(str, sep, fixed=TRUE);
 		}
 

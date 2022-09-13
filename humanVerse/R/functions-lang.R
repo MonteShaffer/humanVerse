@@ -29,12 +29,17 @@ wrap.parse = function(file,
 str = '
 if( ( TYPE == "EXP" || TYPE == "POW") && any(df$y<=0) )
 		{
-		msg = wrap.lang("\n\n\t\t\t", "For TRENDLINE type [",type,"] you cannot have any data", "\n\t\t\t\t",  "(currently [",n,"] rows) in [y] that is <= 0 (less than or equal to zero) ...", "\n\t\t\t\t", "*SYSTEM* is REMOVING ROWS and trying to COMPUTE", "\n\n");
+		msg = prep.msg("\n\n\t\t\t", "Welcome to the", "<i>humanVerse</i>", "\n\n\t\t\t", "For TRENDLINE type [",type,"] you cannot have any data", "\n\t\t\t\t",  "(currently [",n,"] rows) in [y] that is <= 0 (less than or equal to zero) ...", "\n\t\t\t\t", "*SYSTEM* is REMOVING ROWS and trying to COMPUTE", "\n\n");
 		cat.warning(msg);
 		# cat.warning("\n\n\t\t\t For TRENDLINE type [",type,"] you cannot have any data (currently [",n,"] rows) \n\t\t\t\t in [y] that is <= 0 (less than or equal to zero) ... \n\t\t\t\t REMOVING ROWS and trying to COMPUTE \n\n");
 		df = subset(df, y > 0);
 		n = nrow(df);
 	';
+	
+	
+	
+	
+	# envir=parent.env(environment())
 
 # not true explosion as \n is INFLATED, maybe readLines or fopen/fread will do better at this ...
 
@@ -221,6 +226,26 @@ prep.msg = function(...,  type="msg", out="paste0", sep=" ")
 	# other functions may have different parameters ... 
 	do.call(fn.str, list(str, collapse=sep));
 	}
+	
+count.ansi = function(str)
+	{
+	i  = str.count(str, "<i>");
+	ic = str.count(str, "</i>");
+	u  = str.count(str, "<u>");
+	uc = str.count(str, "</u>");
+	b  = str.count(str, "<b>");
+	bc = str.count(str, "</b>");
+	l  = str.count(str, "<bb>");
+	lc = str.count(str, "</bb>");
+	f  = str.count(str, "<fg");
+	fc = str.count(str, "</fg>");
+	g  = str.count(str, "<bg");
+	gc = str.count(str, "</bg>");
+	c  = str.count(str, "<color");
+	cc = str.count(str, "</color>");
+	sum(i, ic, u, uc, b, bc, l, lc, f, fc, g, gc, c, cc);
+	}
+	
 
 #           italics  underline bold   bright (not <BR /> already taken)	
 # ansi tags:  <i></i>  <u></u> <b></b> <bb></bb> 

@@ -398,12 +398,12 @@ eval.fromTemplate = function(TEMPLATE, key, value)
 
 minvisible.get = function(key="LAST")
 	{
-	memory.get(key, "INVISIBLE");
+	memory.get(key, "-MINVISIBLE-");
 	}
 
 minvisible = function(x, key="LAST", print=TRUE)
 	{
-	memory.set(key, "INVISIBLE", x);
+	memory.set(key, "-MINVISIBLE-", x);
 	# also store to ANS variable ... 
 	"ANS" %GLOBAL% x;
 	"Ans" %GLOBAL% x;

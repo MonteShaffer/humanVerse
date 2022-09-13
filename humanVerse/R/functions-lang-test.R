@@ -22,6 +22,7 @@ cat(str);
 	i = j = 1;  # i is line number ... 
 				# j is char in line ...
 	slen = 0;
+	scan = NULL;
 
 	DQ = '"';
 	SQ = "'";
@@ -188,28 +189,53 @@ cat("\n do.COMMA \n");
 	process.one = function(envir=parent.env(environment())) 
 		{
 cat("\n process.one \n");
-show.status("char");
-pause();
 		cres = paste0(cres, collapse="");
 		# OBJ becomes %s 
-		if(is.null(ctype) && OBJ) 	{ what = "OBJECT"; 	ctype=TRUE; }
+		if(is.null(ctype) && OBJ) 	
+			{ 
+			what = "OBJECT"; 	
+			ctype=TRUE; 
+			}
 		# EMPTY becomes %w (or skipped)
-							 EMPTY = (str.trim(cres) == "");
-		if(is.null(ctype) && EMPTY) { what = "EMPTY"; 	ctype=TRUE; }
+							
+		if(is.null(ctype))
+			{ 
+			EMPTY = (str.trim(cres) == "");
+			if(EMPTY) 
+				{ 
+				what = "EMPTY"; 	
+				ctype=TRUE; 
+				}
+			}
 						# str.count(ex, "<") == str.count(ex, ">")
-						HAS_TAGs = (!is.na(str.between(cres, c("<","/>"))));
-		if(is.null(ctype) && HAS_TAGs) { what = "TAG"; 	ctype=TRUE; }
+						# HAS_TAGs = (!is.na(str.between(cres, c("<","/>"))));
+						# HAS_TAGS = (count.ansi(cres) > 1);
+		if(is.null(ctype))
+			{
+			ca = count.ansi(cres);
+cat("\n ANSI: ", ca, "\n");
+			HAS_TAGS = (ca > 0);
+			if(HAS_TAGS) 
+				{ 
+				what = "TAG"; 	
+				ctype=TRUE; 
+				}
+			}
 		
 		# # this is going to be language-ified
-		if(is.null(ctype)) 			{ what = cres; 		ctype=TRUE; }
+		if(is.null(ctype)) 			
+			{ 
+			what = cres; 		
+			ctype=TRUE; 
+			}
+			
 		assign("ctype", ctype, envir=envir );
 		
 		what = property.set("line.no", what, i);
 		what = property.set("char.no", what, j);  # of the COMMA or CP
 		# eventually set other properties (file, fn)
 		
-cat("\n what: ", what, "\n");
-pause();
+
 		
 		# idx is the element of the "", "", "", n, "", 
 		res[[idx]] = what;  # cres = strvec or OBJ or EMPTY
@@ -229,7 +255,11 @@ pause();
 		line = substring(line, j+1, slen);
 # print(line); print(j); print(slen); stop("monte");
 		assign("line", line, envir=envir );
-		if(cc == COMMA) { scanning(); return(TRUE); }
+cat("\n what: ", what, "\n");
+pause();
+show.status("char");
+		# if(cc == COMMA) { scanning(); return(TRUE); }
+		if(cc == COMMA) { return(TRUE); } # back to for(j in scanning
 		if(cc == CP) { finish(); return(TRUE); }
 show.status("char");
 pause();
@@ -266,12 +296,21 @@ traceback();
 		show.status("char");
 		}
 		
-	scanning = function() {}
-	scanning = function(envir=parent.env(environment()))
+	scan.init = function() {}
+	scan.init = function(envir=parent.env(environment())) 
 		{
 		scan = str.explode("", line); # truncated by r ... 
+		assign("scan", scan, envir=envir );
+cat("\n SCAN: ", scan, "\n");
 		slen = length(scan);
 		assign("slen", slen, envir=envir );
+		scanning();
+		}
+	
+	
+	scanning = function() {}
+	scanning = function(envir=parent.env(environment()))
+		{		
 		if(slen > 0)
 			{
 			for(j in 1:slen)
@@ -311,7 +350,7 @@ traceback();
 						# can we assume it is parsed CORRECTLY, let's say yes
 			
 			assign("line", r, envir=envir );
-			scanning();			
+			scan.init();			
 			}
 		}
 	
@@ -323,11 +362,12 @@ print(lines);
 	for(i in 1:n)
 		{
 		line = lines[i];
+cat("\n ################# BACK to MAIN ############# \n");
 		show.status("line");
 		line.eval = FALSE;		
 		if(!line.eval && status == "searching") { searching(); }
 		# don't call scanning TWICE 
-		if(!line.eval && status == "scanning" ) { scanning();  }		
+		if(!line.eval && status == "scanning" ) { scan.init();  }		
 		}	
 		
 	out;
