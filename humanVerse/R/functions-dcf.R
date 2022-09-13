@@ -68,7 +68,7 @@ print(keys);
 		if(.key == "") { next; }
 		
 		
-		if(.key == "built" || .key == "date" || .key == "date/publication" || .key == "repository/r-forge/datetimestamp" || .key == "packaged")
+		if(.key == "built" || .key == "date" || .key == "date/publication" || .key == "repository/r-forge/datetimestamp" || .key == "packaged" || .key == "license")
 			{
 			v = dcf.parseBuild(val);				
 			out[[key]] = v; 
