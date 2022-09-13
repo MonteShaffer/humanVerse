@@ -201,11 +201,14 @@ check.lang = function(str)
 	
 	
 # was wrap.lang 
-prep.msg = function(...,  out="paste0", sep=" ")
+prep.msg = function(...,  type="msg", out="paste0", sep=" ")
 	{
+	
 	str = dots.addTo(NULL, ...); 
 	str = check.ansi(str);
 	str = check.lang(str);
+		# append res = property.set("msg.type", res, "message or notice or warning 3 or error");
+
 	if(is.null(out)) { return(str); } # do nothing ...
 	# out is a string ... one level deep
 	fn.str = as.character(substitute(out));
