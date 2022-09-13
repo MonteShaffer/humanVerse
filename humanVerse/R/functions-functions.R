@@ -313,6 +313,43 @@ dput(fn.str);
 
 
 
+# not f. but fn.info = function.info;
+
+# [dir]ectory ... [path] ... 
+# [f]ile ... [f]unctio[n] ===> fn ... [str]ing ... [u]tf
+# [i]nclude .. [pr]operty ... [m]atrix ... [v]ector 
+# [pip] ... [dcf] ... [html] ... [xls] ... [temp]
+# [color] ... no confusion with built in col or column ... 
+# [primes] ... [ggg] ... [m]emor[y]
+# [timer] ... [num] ... [stats] ... 
+# [set] (not getter/setter but set theory)
+# [urban] ... [wiki] ... [g]ithu[b] ===> gb ... [g]ames
+# [p]ackage ... [p]ac[k]a[g]e ===> pkg 
+# [is] ... [JSON] (write my own prettify function)
+# [help] and [h]elp ... [cat] ... [CRAN]
+# [math] ... [fr]actions ?? or just [num] !?!
+# [ni]nes ... [data] ... 
+# [check] ... [prep] 
+# [d]ata[f]rame ===> df 
+# [op]tion(s) ... [sys]tem ... [nlp] ... 
+# [log] (writing to file, not natural)
+# [doc]umentation ... [d]ate[time] ===> maybe DT (not DJT) ... just [date]
+# [par] ... [url] ... [h]igh[c]harts ==> hc (maybe HC)
+# [seed] ... [ping] ... [RhV] and [rhv] 
+# [list] ... [in]tegrate ... maybe [fl]uxions ... 
+# [regex] ==> [r]ege[x] ==> [rx] ... isn't it [rgx] ??? 
+# [sql] ... [curl] ... 
+
+#' @alias/aliases/ALASES  comma-separated ... 
+#' OR do I write a script that takes care of them
+#' if I have a function that is (seed.)
+#' That way, I write the longnames (function.) ... singular only 
+#' I could put ALIAS_STEMS:  keep (seed.)
+#' or also ALIAS_FULL:  is.what.it.is 
+#' where do I put the GLOBAL list of aliases ... e.g., ceiling ... ceil 
+#' 
+xample = function () {}
+
 
 
 

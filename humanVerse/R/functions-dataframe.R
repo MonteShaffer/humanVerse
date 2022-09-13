@@ -196,6 +196,32 @@ df.setColumnType = function(df, cols=NULL, type="numeric", ...)
 			# );
 	}
 
+
+
+dots.magic = function(dots)
+	{
+	# lifted from `rm` function 
+	if (length(dots) && !all(vapply(dots, function(x) is.symbol(x) || 
+        is.character(x), NA, USE.NAMES = FALSE))) 
+        stop("... must contain names or character strings")
+    names <- vapply(dots, as.character, "")
+	
+	}
+
+df.row = function(...)
+	{
+	dots = match.call(expand.dots = FALSE)$...
+	names = as.character(dots);
+	values = dots.addTo(NULL, ...);
+# dput(dots);
+# dput(names);
+# dput(values);
+	dfr = data.frame(t(values));
+	colnames(dfr) = names;
+	dfr;
+	}
+
+	
 # [e]nd or [l]ast 
 # [s]tart or [b]eginning or [f]irst
 df.addRow = function(df, row, where = "end")
@@ -1534,6 +1560,8 @@ updateDataFrameWithUniqueNewElementsIndicated = function(df.existing, mycolumn, 
   ndf;
 
   }
+
+
 
 
 

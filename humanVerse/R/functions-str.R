@@ -34,14 +34,14 @@ str.compare = function(a, b=NULL, methods="all")
 #'
 #'
 #------------------------------------------------#
-str.count = function(str, what="|")
+str.count = function(str, what="|") 
 	{ 
 	# count occurrence of "what" in a string 
 	# n.pipes = str.count(lines, what="|");
-	# filler = " "; if(what == " ") { filler = "|"; }
+	filler = " "; if(what == " ") { filler = "|"; }
 	# if WHAT is at the end of string, not picking it up
 	# base strsplit BUG 
-	# str = paste0(str, filler); 
+	str = paste0(filler, str, filler);  # hack, but I am not counting filler
 	info = str.explode(what, str);
 # dput(info);
 	res = list.getLengths(info);
@@ -263,8 +263,8 @@ str_trim = str.trim;
 #' @export
 #'
 #' @examples
-#------------------------------------------------#
-str.explode = function(sep = " ", str = "hello friend", method="stringi")
+#------------------------------------------------# 
+str.explode = function(sep = " ", str = "hello friend", method="base")
 	{
 	# necessary overhead
 	METHOD = prep.arg(method, 1);
@@ -579,17 +579,17 @@ str.pad = function(str,
 	if(METHOD == "s" && is.library("stringi") )
 		{
 		res = switch(SIDE,
-						  "l"	= stringi::stri_pad_left (str, width=out.length, pad=padding),
-						  "r" 	= stringi::stri_pad_right (str, width=out.length, pad=padding),
-						  "b"  	= stringi::stri_pad_both (str, width=out.length, pad=padding),
-					stringi::stri_pad_both (str, width=out.length, pad=padding)
+						  "l"	= stringi::stri_pad_left (str, width=to.length, pad=padding),
+						  "r" 	= stringi::stri_pad_right (str, width=to.length, pad=padding),
+						  "b"  	= stringi::stri_pad_both (str, width=to.length, pad=padding),
+					stringi::stri_pad_both (str, width=to.length, pad=padding)
 					);
 		return (res);
 		}
 
 	# METHOD == "base";  	# FALLBACK DEFAULT 
 	ns = str.len(str);
-	rs = out.length - ns;  	# how many pads per element 
+	rs = to.length - ns;  	# how many pads per element 
 	n = length(str); 		# how many strings
 	res = character(n);
 	
@@ -674,47 +674,6 @@ str.truncate = function(str, to.length=5, keep="right")
 	res;
 	}
 
-
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-#'
-#' str.removeWhiteSpace
-#'
-#'
-#------------------------------------------------#
-str.removeWhiteSpace = function( str, replace=" ", n = 2,
-								method = "base", 
-								pattern = paste0("[[:space:]]{",n,",}"),
-								pre.trim = TRUE, post.trim = TRUE, 
-								...
-								)
-  {
-  m = functions.cleanupKey(method, 1);
-	if(pre.trim) { str = str.trim(str, ...); }
-	# REQUIRES string?
-	if(m == "s" && is.library("stringi"))
-		{
-		# p = "\\P{Wspace}";
-		# p <- c("\\w", "\\d", "\\s")
-		# structure(stri_extract_all_regex(x, p), names = p)
-		regex.s = paste0("\\s{",n,",}");
-		stringi::stri_replace_all_regex(str, regex.s, replace); 
-		} else {
-				# regex.s = paste0("[[:space:]]{",n,",}");
-				regex.s = pattern;
-				str = gsub( regex.s, replace, str );  # multivariate works
-				}
-	# likely not necessary, but may be an edge case out there
-	if(post.trim) { str = str.trim(str, ...); }
-  str;
-  }
-
-
-#++++++++++++++++++++++++#
-#'
-#' @rdname removeWhiteSpace
-#' @export
-removeWhiteSpace = str.removeWhiteSpace;
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#

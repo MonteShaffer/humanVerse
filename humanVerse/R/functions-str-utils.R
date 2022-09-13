@@ -413,6 +413,52 @@ str.replaceFromList = function(mylist, mysubject, ...)
 
 
 
+
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#'
+#' str.removeWhiteSpace
+#'
+#'
+#------------------------------------------------#
+str.removeWhiteSpace = function() {}
+str.removeWhiteSpace = function( str, replace=" ", n = 2,
+								method = "base", 
+								pattern = paste0("[[:space:]]{",n,",}"),
+								pre.trim = TRUE, post.trim = TRUE, 
+								...
+								)  
+  {
+  METHOD = functions.cleanupKey(method, 1);
+	if(pre.trim) { str = str.trim(str, ...); }
+	# REQUIRES string?
+	if(METHOD == "s" && is.library("stringi"))
+		{
+		# p = "\\P{Wspace}";
+		# p <- c("\\w", "\\d", "\\s")
+		# structure(stri_extract_all_regex(x, p), names = p)
+		regex.s = paste0("\\s{",n,",}");
+		stringi::stri_replace_all_regex(str, regex.s, replace); 
+		} else {
+				# regex.s = paste0("[[:space:]]{",n,",}");
+				regex.s = pattern;
+				str = gsub( regex.s, replace, str );  # multivariate works
+				}
+	# likely not necessary, but may be an edge case out there
+	if(post.trim) { str = str.trim(str, ...); }
+  str;
+  }
+
+
+#++++++++++++++++++++++++#
+#'
+#' @rdname removeWhiteSpace
+#' @export
+removeWhiteSpace = str.removeWhiteSpace;
+
+
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' str.trimFromAny

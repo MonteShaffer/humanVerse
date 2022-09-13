@@ -20,6 +20,16 @@ identical(jsonlite::unserializeJSON(jsonlite::serializeJSON(myobject)), myobject
 	}
 
 
+
+JSON.pretty = function(jsonstr, indent=4)
+	{
+	# maybe requires two passes ...
+	
+	
+	
+	}
+
+
 JSON.parse = function(jsonstr)
 	{
 	jsonlite::unserializeJSON(jsonstr);

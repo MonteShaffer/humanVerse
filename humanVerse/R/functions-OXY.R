@@ -52,3 +52,39 @@
 # AUTO-populate A-Z or FAMILY GROUPS [A-Z]
 # utils in UTILS family
 # family by default is the filename ... functions-url is URL family
+
+ 
+# get over it ... THINK about FUTURE, not PAST ... web-content delivery
+# if(hadley) { DO OPPOSITE; }
+# e.g., [ggg] ... colors ... i_love_me_some_snake_case 
+#       OPPOSITE of inline documentation is offline ... 
+#				allows multi-language
+#				allows for code/separate from DOCS (software engineering)
+# 		OPPOSITE of hack the matrix ... build a NEW MATRIX using OLD ENGINE
+#		OPPOSITE of new language of orcs/mordor/goblins (ggplot and dplyr)
+#				build on the language of our WIZARD ancestors
+#				just make it easier for HOBBIT folk to understand and used
+#		OPPOSITE of closed shell is AN OPEN CANVASE
+# 		OPPOSITE of cryptic use cases is REAL-WORLD uses (show the code)
+#		OPPOSITE of tibble/nibble is a pip
+#		OPPOSITE of RStudio is RhVStudio (van down by the river, RV)
+#				... hag sophia
+# I lay out design rules, let others contribute
+#		my-code-my-style ...
+#		your-code in your file or use my style 
+#		is your code "easy to read"?
+#		NAME your own code in ONE FILE 
+#		... functions-GITHUB_USER_NAME.RhV
+#
+#		R code lives in the humanVerse
+#		
+#
+#		C code lives in the HVc
+#		C++ code lives in the HVcpp
+#
+
+
+
+
+
+

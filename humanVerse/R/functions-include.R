@@ -55,33 +55,6 @@ cat("\n QUICK: ", sfile, " with idx: ", idx, "\n");
 
 # setwd("C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R")
 
-
-# include.dir = source.dir ... if is local ? otherwise, I need a parser ... github
-# USE dir.exists ........... is.dir ... ?local in help on SOURCE is different thing
-# include.url = source.url
-# include = source.local ... this indexes 
-
-# # ?source ... sourceDir
-## cat("\n", res$myerrors[ res$myerrors != ""], sep="\n" );
- 
-## setwd("C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R")
-## alex = include.dir(getwd()); View(alex); alex$myerrors[ alex$myerrors != ""]; fn = ls(); str(fn); View(fn);
-
-quick.dir = function() 
-	{ 
-	setwd("C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R");
-	alex = include.dir(getwd()); View(alex); 
-	fn = ls(all.names = TRUE, pos=1); str(fn); View(fn);
-	alex = property.set("fn", alex, fn);
-	memory.init(); memory.set("alex", "SYSTEM", alex);
-		"alex" %GLOBAL% alex;
-	
-	print( alex$myerrors[ alex$myerrors != ""]);
-	minvisible(alex); 
-	}
-
- 
-
 include.dir = function() {}
 include.dir = function(path = getwd(), verbose = TRUE, pattern = "[.][RrSsQq]$")
 	{
@@ -141,6 +114,33 @@ debug = FALSE;
 
 
 
+# include.dir = source.dir ... if is local ? otherwise, I need a parser ... github
+# USE dir.exists ........... is.dir ... ?local in help on SOURCE is different thing
+# include.url = source.url
+# include = source.local ... this indexes 
+
+# # ?source ... sourceDir
+## cat("\n", res$myerrors[ res$myerrors != ""], sep="\n" );
+ 
+## setwd("C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R")
+## alex = include.dir(getwd()); View(alex); alex$myerrors[ alex$myerrors != ""]; fn = ls(); str(fn); View(fn);
+
+quick.dir = function() 
+	{ 
+	setwd("C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R");
+	alex = include.dir(getwd()); View(alex); 
+	fn = ls(all.names = TRUE, pos=1); str(fn); View(fn);
+	alex = property.set("fn", alex, fn);
+	memory.init(); memory.set("alex", "SYSTEM", alex);
+		"alex" %GLOBAL% alex;
+	
+	print( alex$myerrors[ alex$myerrors != ""]);
+	minvisible(alex); 
+	}
+
+ 
+
+
 
 
 
@@ -167,6 +167,14 @@ ifsdfsnclude.dir = function()
 	
 	}
 	
+	 
+include.package = include.pkg = i.pkg = i.p = function() {}
+# include ccp via Rcpp
+include.cpp = include.Rcpp = i.Rcpp = i.ccp = function() {}
+# include.file
+include.file = i.file = i.f = function() {}	
+
+f.download = filedlkfj.download() {}
 	
 include = function(..., character.only=FALSE)
 	{
