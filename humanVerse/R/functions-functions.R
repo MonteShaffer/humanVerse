@@ -9,7 +9,9 @@ map.args = function(DEFAULT, NEW)
 	for(i in 1:n)
 		{
 		key = keys[i];
-		if( exists(key, NEW) ) { DEFAULT[[key]] = NEW[[key]]; }
+		# exists or is.null(NEW[[key]]) ???
+		# if( exists(key, NEW) ) { DEFAULT[[key]] = NEW[[key]]; }
+		if( !is.null(NEW[[key]]) ) { DEFAULT[[key]] = NEW[[key]]; }
 		}
 	DEFAULT;  # updated 
 	}
