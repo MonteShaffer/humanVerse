@@ -217,7 +217,33 @@ gggassign = function(key, val)
 	return(invisible(NULL));
 	}
 	
-"%GLOBAL%" = gggassign;
+"%GLOBAL%" = function(KEY, VALUE)
+	{
+	if(!check.type(KEY)) 	{ key=NULL; } 	else { key=KEY;}
+	if(!check.type(VALUE))	{ val=NULL; } 	else { val=VALUE;} 
+	# key %GLOBAL% .
+	# grab name/val from it 
+	if(!is.null(key) && is.null(val))
+		{
+		val = key;
+		key = deparse(substitute(KEY));
+		return(gggassign(key,val));
+		}
+	# . %GLOBAL% val
+	# grab name/val from it 
+	if(!is.null(val) && is.null(key))
+		{
+		val = val;
+		key = deparse(substitute(VALUE));
+		return(gggassign(key,val));
+		}
+		
+	# "key" %GLOBAL% val 
+	# what if "key" is not a string yet?
+	if(!is.character(key)) { key = deparse(substitute(KEY)); }
+	gggassign(key,val);	
+	}
+
 
 
 

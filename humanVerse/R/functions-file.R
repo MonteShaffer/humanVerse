@@ -208,6 +208,86 @@ file.close = fclose;
 
 
 
+fread = function(fp)
+	{
+	## read in bytes by default, get to read lines ...
+	## bypass whatever readLines is doing ... 
+	
+	}
+	
+# SEEK_END = "end";
+# One of "start", "current", "end": see ‘Details’.
+# Use of seek on Windows is discouraged. We have found so many errors in the Windows implementation of file positioning that users are advised to use it only at their own risk, and asked not to waste the R developers' time with bug reports on Windows' deficiencies.
+# keep it binary 
+fseek = function(fp, pos, origin="current")
+	{	
+	seek(fp, -1 * pos * buffer, origin = SEEK_END);
+	}
+	
+	
+# skip.lines has to be >= 0 as integer 
+freadlines = function(filename, howmany=Inf, direction="FORWARD", skip.lines=0)
+	{
+	# could do some voodoo on howmany +/- and skip.lines +/- to remove direction ... voodoo is not generally human readable
+	if(skip.lines < 0) { skip.lines = 0; }
+	skip.lines = as.integer(skip.lines);
+	
+	DIR = prep.arg(direction, n=1);
+	SEEK = "end";
+	if(DIR == "f") { SEEK = "start"; }
+	
+	buffer = 1024;
+	file.size = file.info(filename)$size;
+	if (file.size < buffer) 
+		{
+		buffer = file.size;
+		}
+	fp = file(filename, "rb");  # we have to read in binary 
+		on.exit(close(fp));
+		
+	pos = 1;  # count of buffers ... 
+	n 	= 1;  # count of lines ... 
+	
+	EOL = "\r\n";
+	
+	
+	
+	
+	SEEK_END = "end";
+	pos = 1;
+	fragment = "";
+	out = NULL;
+
+# can I while loop this like fseek on PHP	
+	fs = seek(fp, -1 * pos * buffer, origin = SEEK_END);
+	info = readChar(fp, nchars = buffer);
+	}
+	
+buffer = 1024;
+	file.size = file.info(filename)$size;
+	if (file.size < buffer) 
+		{
+		buffer = file.size;
+		}
+	fp = file(filename, "rb");  # we have to read in binary 
+		on.exit(close(fp));
+		
+	SEEK_END = "end";
+	pos = 1;
+	fragment = "";
+	out = NULL;
+
+# can I while loop this like fseek on PHP	
+	fs = seek(fp, -1 * pos * buffer, origin = SEEK_END);
+	info = readChar(fp, nchars = buffer);
+	lines = str.explode("\r\n", info);
+		n.lines = length(lines);
+		n.pipes = str.count(lines, what="|");
+		n.mode = stats.mode(n.pipes);
+		n.bad = which(n.pipes != n.mode);
+	
+
+
 
 #' writeRDS
 #'
