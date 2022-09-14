@@ -219,36 +219,43 @@ gggassign = function(key, val)
 	
 "%GLOBAL%" = function(KEY, VALUE)
 	{
-	if(!check.type(KEY)) 	{ key=NULL; } 	else { key=KEY;}
-	if(!check.type(VALUE))	{ val=NULL; } 	else { val=VALUE;} 
+	ct.KEY = check.type(KEY);
+	ct.VAL = check.type(VALUE);
+	
 	# key %GLOBAL% .
 	# grab name/val from it 
-	if(!is.null(key) && is.null(val))
+	if(ct.KEY && !ct.VAL)
 		{
-		val = key;
+		val = KEY;
 		key = deparse(substitute(KEY));
 		return(gggassign(key,val));
 		}
+		
 	# . %GLOBAL% val
 	# grab name/val from it 
-	if(!is.null(val) && is.null(key))
+	if(!ct.KEY && ct.VAL)
 		{
-		val = val;
+		val = VALUE;
 		key = deparse(substitute(VALUE));
 		return(gggassign(key,val));
 		}
 		
 	# "key" %GLOBAL% val 
 	# what if "key" is not a string yet?
-	if(!is.character(key)) { key = deparse(substitute(KEY)); }
-	gggassign(key,val);	
+	if(!is.character(KEY)) { key = deparse(substitute(KEY)); }
+	gggassign(key,VALUE);	
 	}
 
 
 
-
-
-
+"%to%" = function(WHAT, WHERE)
+	{
+	val = WHAT;
+	key = deparse(substitute(WHAT));
+	assign(key, val, envir=WHERE );
+	}
+	
+	
 
 
 

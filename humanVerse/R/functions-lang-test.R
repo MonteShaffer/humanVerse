@@ -185,14 +185,9 @@ if(debug)
 	{
 cat("\n do.OBJ \n");
 	}
-	
-		cval %to% envir;
-		IN_OBJECT %to% envir;
-		assign("IN_OBJECT", TRUE, envir=envir );
-		## IN_OBJECT %as% TRUE 
-		## IN_OBJECT %in% envir;   ## TAKEN ... # we have name/value ... 
-		## IN_OBJECT %to% envir;
-
+		cval 		= TRUE; 	cval 		%to% envir;
+		IN_OBJECT 	= TRUE; 	IN_OBJECT 	%to% envir;
+		
 		add.to();
 		return(TRUE);		
 		}
@@ -204,8 +199,8 @@ if(debug)
 	{
 cat("\n do.DQ \n");
 	}
-		# all the way up or just the CALLER?		
-		assign("cval", TRUE, envir=envir );
+
+		cval 		= TRUE; 	cval 		%to% envir;
 		if(IN_OBJECT)
 			{
 			# we encountered a DQ inside the OBJ envir 
@@ -214,11 +209,10 @@ cat("\n do.DQ \n");
 			}
 		if(!IN_STRING)
 			{
-			IN_STRING = TRUE;
-			assign("IN_STRING", TRUE, envir=envir );
-			assign("OBJ", FALSE, envir=envir );
-			assign("IN_STRING.type", "DQ", envir=envir );
-			assign("j.start", j+1, envir=envir );
+			IN_STRING = TRUE;		IN_STRING 		%to% envir;
+			IN_OBJECT = FALSE;		IN_OBJECT 		%to% envir;
+			IN_STRING.type = "DQ";	IN_STRING.type 	%to% envir;
+			j.start = j+1;			j.start 		%to% envir;			
 			return(TRUE);
 			} 
 			
@@ -229,9 +223,9 @@ cat("\n do.DQ \n");
 			if(pc != BACKSLASH)
 				{
 				# we are at the end of IN_STRING ... TIE it OFF 
-				assign("quote", IN_STRING.type, envir=envir);
-				assign("IN_STRING.type", "", envir=envir );
-				assign("IN_STRING", FALSE, envir=envir );
+				IN_STRING 		= FALSE;			IN_STRING 		%to% envir;
+				quote 			= IN_STRING.type;		quote 		%to% envir;
+				IN_STRING.type 	= "";				IN_STRING.type 	%to% envir;			
 				} else {
 if(debug)
 	{
@@ -264,7 +258,7 @@ if(debug)
 cat("\n do.SQ \n");
 	}
 		# all the way up or just the CALLER?		
-		assign("cval", TRUE, envir=envir );
+		cval 		= TRUE; 	cval 		%to% envir;
 		if(IN_OBJECT)
 			{
 			# we encountered a SQ inside the OBJ envir 
@@ -273,11 +267,10 @@ cat("\n do.SQ \n");
 			}
 		if(!IN_STRING)
 			{
-			IN_STRING = TRUE;
-			assign("IN_STRING", TRUE, envir=envir );
-			assign("OBJ", FALSE, envir=envir );
-			assign("IN_STRING.type", "SQ", envir=envir );
-			assign("j.start", j+1, envir=envir );
+			IN_STRING = TRUE;		IN_STRING 		%to% envir;
+			IN_OBJECT = FALSE;		IN_OBJECT 		%to% envir;
+			IN_STRING.type = "SQ";	IN_STRING.type 	%to% envir;
+			j.start = j+1;			j.start 		%to% envir;	
 			return(TRUE);
 			} 
 			
@@ -288,9 +281,9 @@ cat("\n do.SQ \n");
 			if(pc != BACKSLASH)
 				{
 				# we are at the end of IN_STRING ... TIE it OFF 
-				assign("quote", IN_STRING.type, envir=envir);
-				assign("IN_STRING.type", "", envir=envir );
-				assign("IN_STRING", FALSE, envir=envir );
+				IN_STRING 		= FALSE;			IN_STRING 		%to% envir;
+				quote 			= IN_STRING.type;		quote 		%to% envir;
+				IN_STRING.type 	= "";				IN_STRING.type 	%to% envir;	
 				} else {
 if(debug)
 	{
@@ -321,9 +314,8 @@ if(debug)
 	{
 cat("\n do.OP \n");
 	}
-		assign("cval", TRUE, envir=envir );
-		p.count = p.count + 1;
-		assign("p.count", p.count, envir=envir );
+		cval 		= TRUE; 	cval 		%to% envir;
+		p.count = p.count + 1;	p.count 	%to% envir;
 		if(p.count > 1) { add.to(); }
 		}
 		
@@ -334,9 +326,8 @@ if(debug)
 	{ 
 cat("\n do.CP \n");
 	}
-		assign("cval", TRUE, envir=envir );
-		p.count = p.count - 1; 
-		assign("p.count", p.count, envir=envir );
+		cval 		= TRUE; 	cval 		%to% envir;
+		p.count = p.count - 1; 	p.count 	%to% envir;
 		if(p.count >= 1) { add.to(); }
 		if(p.count == 0)
 			{
@@ -359,7 +350,7 @@ if(debug)
 cat("\n do.COMMA \n");
 	}
 		# what if comma is just in the text ... 
-		assign("cval", TRUE, envir=envir );
+		cval 		= TRUE; 	cval 		%to% envir;
 		if(IN_STRING)
 			{
 			add.to();
@@ -386,9 +377,10 @@ dput(cres);
 # BECAUSE we added IN_STRING to "add.to" ... we lose the OBJECT NAME, 
 		
 		
-		# OBJ becomes %s 
-		if(is.null(ctype) && OBJ) 	
+		# IN_OBJECT becomes %s 
+		if(is.null(ctype) && IN_OBJECT) 	
 			{ 
+			# what should NOW be populated
 			if(what == "") { what = "%s"; }
 			more 	= WHAT_OBJECT;	
 			ctype	= TRUE; 
@@ -444,7 +436,7 @@ cat("\n ANSI: ", ca, "\n");
 # saveState			
 		j.start_ = j.start;
 		j_ = j;
-		if(OBJ)
+		if(IN_OBJECT)
 			{
 			# don't have to deal with SQ/DQ surrounding it 
 			j.start = j.start + 1;
@@ -460,31 +452,16 @@ cat("\n ANSI: ", ca, "\n");
 # restoreState	
 		j = j_;
 		j.start = j.start_;
-	
-	
-		df = rbind(df, row);
-		assign("df", df, envir=envir );
 		
-		# idx is the element of the "", "", "", n, "", 
-		# res[[idx]] = what;  # cres = strvec or OBJ or EMPTY
-		# assign("res", res, envir=envir );
+		df = rbind(df, row);	df 			%to% envir;
 							
-		idx = 1 + idx; 
-		assign("idx", idx, envir=envir );
-		j.start = j;
-		assign("j.start", j.start, envir=envir );
-		# resetting ... if we got this far, we shouldn't have PARSE errors
-		# that is, we don't need to reset p.count or IN_STRINGX
-		OBJ = TRUE; 
-		assign("OBJ", OBJ, envir=envir );
-		IN_OBJECT = TRUE; 
-		assign("IN_OBJECT", IN_OBJECT, envir=envir );
-		cres = NULL;
-		assign("cres", cres, envir=envir );
+		idx = 1 + idx; 			idx 		%to% envir;
+		j.start = j; 			j.start 	%to% envir;
 		
-		# update GLOBAL so not redundant 
-		# ...    cres %GLOBAL%.
-		# ...    .%GLOBAL% cres 
+		# resetting ... if we got this far, we shouldn't have PARSE errors
+		IN_OBJECT = FALSE; 		IN_OBJECT 	%to% envir;
+		cres = NULL;			cres 		%to% envir;
+
 		
 if(debug)
 	{
@@ -495,12 +472,9 @@ if(debug)
 		.%GLOBAL% idx;
 	}
 		
-		## TODO 
-		# compute end from slen and j + 1 
-		### WHY TRUNCATE THE LINE, we have 'j' ... just keep going ...
-		line = substring(line, j+1, slen);
-# print(line); print(j); print(slen); stop("monte");
-		assign("line", line, envir=envir );
+		## TRUNCATE line for DEBUGGING PURPOSES ... scan already has REAL LINE 
+		line = substring(line, j+1, slen);	line %to% envir;
+		
 if(debug)
 	{	
 cat("\n more: ", whitespace(more), "\n");
@@ -536,10 +510,10 @@ traceback();
 		df$content = str.replace("\\'","'",df$content); 
 		out[[count.finds]] = df;
 # df will *also* nullify on init()?
-		df = NULL;
-		assign("out", out, envir=envir );
-		assign("df", df, envir=envir );
-		assign("status", "searching", envir=envir );
+		status = "searching";
+		df = NULL;					df 		%to% envir;
+									out 	%to% envir;
+									status 	%to% envir;
 		
 if(debug)
 	{			
@@ -554,8 +528,8 @@ pause();
 		{				
 		show.status("char", 1);
 		# cc as "current char"
+		cval = NULL; 		cval %to% envir;
 		
-		assign("cval", NULL, envir=envir );
 		if(is.null(cval) && is.null(cres) && cc != DQ && cc != SQ) { do.OBJ(); }
 		if(is.null(cval) && cc == DQ) { do.DQ(); }
 		if(is.null(cval) && cc == SQ) { do.SQ(); }
@@ -563,26 +537,22 @@ pause();
 		if(is.null(cval) && cc == CP) { do.CP(); }
 		if(is.null(cval) && cc == COMMA) { do.COMMA(); }
 		
-		# we don't add.to unless it is IN_STRING 
 		if(is.null(cval)) { add.to(); }
 		show.status("char", 2);
 		
-		pc = cc;
-		assign("pc", pc, envir=envir );
-		
+		pc = cc;		pc %to% envir;		
 		}
 		
 	scan.init = function() {}
 	scan.init = function(envir=parent.env(environment())) 
 		{
-		scan = str.explode("", line); # truncated by r ... 
-		assign("scan", scan, envir=envir );
+		scan = str.explode("", line); 	scan %to% envir; 
+		
 if(debug)
 	{	
 cat("\n SCAN: ", scan, "\n");
 	}
-		slen = length(scan);
-		assign("slen", slen, envir=envir );
+		slen = length(scan);			slen %to% envir;
 		scanning();
 		}
 	
@@ -595,8 +565,8 @@ cat("\n SCAN: ", scan, "\n");
 			for(j in 1:slen)
 				{
 				cc = scan[j]; 
-				assign("j", j, envir=envir );
-				assign("cc", cc, envir=envir );
+									j %to% envir;
+									cc %to% envir;
 				scan.char();
 				}
 			}		
@@ -608,18 +578,20 @@ cat("\n SCAN: ", scan, "\n");
 	searching = function() {}
 	searching = function(envir=parent.env(environment()))
 		{
-		assign("line.eval", TRUE, envir=envir );
+		line.eval = TRUE;		line.eval %to% envir;
+		
 			# make certain "FN.NAME(" are attached in search
 		tline = str.removeWhiteSpace(line, replace="", n=1);
 		if(str.contains( paste0(fn.search,"("), tline))
 			{
-			assign("df", NULL, envir=envir );
-			assign("cres", NULL, envir=envir );
-			assign("idx", 1, envir=envir );
-			assign("status", "scanning", envir=envir );
+			df 	= NULL; 			df 		%to% envir;
+			cres 	= NULL; 		cres 	%to% envir;
+			idx 	= 1;			idx 	%to% envir;
+			status 	= "scanning"; 	status 	%to% envir;
 			
 			count.finds = 1 + count.finds;
-			assign("count.finds", count.finds, envir=envir );
+							count.finds 	%to% envir;
+							
 			
 			tmp = str.explode(fn.search, line);
 			# simple line, so we are vectors not lists of vectors 
@@ -638,7 +610,7 @@ cat("\n SCAN: ", scan, "\n");
 				# from a previous line ... EDGE CASE
 				# hard to imagine since I am reading the file from 
 				# beginning search for first element ...
-				assign("line", r, envir=envir );
+				line = r;		line %to% envir;
 				scan.init();
 				}				
 			}
@@ -681,8 +653,8 @@ cat("\n ################# BACK to MAIN ############# \n");
 
 
 
-ex = parse("parse/parse-lang-simple.txt");
-print(ex);
+# ex = parse("parse/parse-lang-simple.txt");
+# print(ex);
 
 lines = readLines("parse/parse-lang-simple.txt");
 		lines = str_replace("\\n", "\n", lines);  
