@@ -75,6 +75,7 @@ memory.start = function(	key="timer",
 							force.purge=FALSE 
 						)
 	{
+	memory.log(key, MEMORY, "start");
 	what = .GlobalEnv$.humanVerse[["."]][[MEMORY]][[key]];
 	if(is.null(what) || force.purge )
 		{
@@ -89,11 +90,15 @@ memory.start = function(	key="timer",
 
  
 
-memory.log = function(key, memory, what="get")
+memory.log = function(key, MEMORY, action="get")
 	{
 	# manual set the value so no recursion 
 	# we are logging timestamps, not values ... 
-	
+		now = as.POSIXct(Sys.time());
+		info = df.row(now, action, MEMORY, key); # works nicely 
+	what = .GlobalEnv$.humanVerse[["."]][["-SYSTEM_LOG-"]];
+	if(is.null(what)) { what = info; } else { what = rbind(what,info); }
+	.GlobalEnv$.humanVerse[["."]][["-SYSTEM_LOG-"]] = what;
 	}
 
 memory.get = function(key, MEMORY="BASE", unused=NULL) 
@@ -106,6 +111,7 @@ memory.get = function(key, MEMORY="BASE", unused=NULL)
 # now the same ... KEY on OBJ to VAL
 memory.set = function(key, MEMORY="BASE", value) 
 	{
+	memory.log(key, MEMORY, "set");
 	.GlobalEnv$.humanVerse[["."]][[MEMORY]][[key]] = value;	
 	}
 	
@@ -113,6 +119,7 @@ memory.set = function(key, MEMORY="BASE", value)
 # needle in haystack, but better than nothing 
 memory.append = function(key, MEMORY="BASE", value) 
 	{
+	memory.log(key, MEMORY, "append");
 	what = .GlobalEnv$.humanVerse[["."]][[MEMORY]][[key]];
 	n = length(what);
 	if(n == 0)

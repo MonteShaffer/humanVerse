@@ -212,21 +212,12 @@ df.row = function(...)
 	{
 # dput( (list(...)) );   # list(structure(1663114668.6615, class = c("POSIXct", "POSIXt")), "set", "STACK", "alex")
 	xlist = list(...);
-# dput(xlist);
 	dots = match.call(expand.dots = FALSE)$...
 	names = as.character(dots);
 	# values = dots.addTo(NULL, ...);
 	
 	names(xlist) = names;
-	dfr = dataframe(xlist);
-
-# dput(dots);
-# dput(unlist(dots));
-# dput(names);
-
-stop("monte");
-	dfr = data.frame(t(values)); # we loose the info 
-	colnames(dfr) = names;
+	dfr = dataframe(xlist); 
 	dfr;
 	}
 

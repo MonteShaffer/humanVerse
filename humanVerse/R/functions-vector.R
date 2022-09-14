@@ -840,18 +840,39 @@ v.getLastN = function (vec, n.out = 1)
 
 
 
-## do push/pop with FIFO
-v.push = function(element, vector)
+# use memory ... e.g., this is stack.init ... 
+
+v.stack = function(size=5, type="character" method="FIFO", key="-CURRENT_STACK-")
 	{
+	vec = numeric(size); vec = as.type(vec, type);
+	mem = list("vec" = vec, "size" = size, "method" = method);
+		mem$history = list();
+	memory.set(key, "STACK", mem);	
+	}
+
+## do push/pop with FIFO
+v.push = function(key="-CURRENT-STACK-")
+	{
+	mem = memory.get(key, "STACK");
+	if(is.null(mem)) { stop("You need to configure stack with v.stack() first!"); }
 	
+	
+	minvisible(vec);  #update the memory/history 
 	}
 	
-v.pop = function(element, vector)
+v.pop = function(key="-CURRENT-STACK-")
 	{
 	## TODO
+	mem = memory.get(key, "STACK");
+	if(is.null(mem)) { stop("You need to configure stack with v.stack() first!"); }
 	
+	minvisible(vec);  #update the memory/history 
 	}
 	
+
+
+
+
 
 
 #' popVector
