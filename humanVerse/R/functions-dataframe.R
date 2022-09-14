@@ -210,18 +210,27 @@ dots.magic = function(dots)
 
 df.row = function(...)
 	{
+# dput( (list(...)) );   # list(structure(1663114668.6615, class = c("POSIXct", "POSIXt")), "set", "STACK", "alex")
+	xlist = list(...);
+# dput(xlist);
 	dots = match.call(expand.dots = FALSE)$...
 	names = as.character(dots);
-	values = dots.addTo(NULL, ...);
+	# values = dots.addTo(NULL, ...);
+	
+	names(xlist) = names;
+	dfr = dataframe(xlist);
+
 # dput(dots);
+# dput(unlist(dots));
 # dput(names);
-# dput(values);
-	dfr = data.frame(t(values));
+
+stop("monte");
+	dfr = data.frame(t(values)); # we loose the info 
 	colnames(dfr) = names;
 	dfr;
 	}
 
-	
+ 	
 # [e]nd or [l]ast 
 # [s]tart or [b]eginning or [f]irst
 df.addRow = function(df, row, where = "end")

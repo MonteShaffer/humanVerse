@@ -89,10 +89,16 @@ memory.start = function(	key="timer",
 
  
 
-  
+memory.log = function(key, memory, what="get")
+	{
+	# manual set the value so no recursion 
+	# we are logging timestamps, not values ... 
+	
+	}
 
 memory.get = function(key, MEMORY="BASE", unused=NULL) 
 	{	
+	memory.log(key, MEMORY, "get");
 	.GlobalEnv$.humanVerse[["."]][[MEMORY]][[key]];
 	}
 
