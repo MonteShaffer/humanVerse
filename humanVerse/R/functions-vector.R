@@ -869,23 +869,38 @@ v.push = function(val, ..., key="-CURRENT_STACK-")
 	val = dots.addTo(val, ...);
 	mem = memory.get(key, "STACK");
 	if(is.null(mem)) { stop("You need to configure stack with v.stack() first!"); }
-dput(mem);	
+# dput(mem);	
 	# push onto end ... LIFO (javascript)
 	# push on first ... FIFO (queueing) ... end may truncate ... 
+	dropvec = NULL;
 	
 	if(method == "LIFO")
 		{
 		# if val is VECTOR, this order is correct, rev(val) for FIFO?
 		mem$vec = c(mem$vec, val);
 		nv = length(mem$vec);  
-		if(nv > mem$size) { mem$vec = mem$vec[(nv+1-mem$size):nv]; }		
+		if(nv > mem$size) 
+			{ 
+			sv = (nv+1-mem$size);  
+			newvec = mem$vec[sv:nv];
+			dropvec = mem$vec[1:(sv-1)];
+			mem$vec = newvec;  
+			}		
 		} else {
-				mem$vec = c(rev(val), mem$vec);
+				# mem$vec = c(rev(val), mem$vec);
+				mem$vec = c(val, mem$vec);
 				nv = length(mem$vec);  
-				if(nv > mem$size) { mem$vec = mem$vec[1:mem$size]; }
+				if(nv > mem$size) 
+					{ 
+					newvec = mem$vec[1:mem$size];
+					sv = (nv+1-mem$size);
+					dropvec = mem$vec[sv:nv];
+					mem$vec = newvec; 					
+					}
 				}	
 	memory.set(key, "STACK", mem);	
-	minvisible(mem, print="str");  #update the memory/history 
+	minvisible(mem, print="str");  #update the memory/history
+	minvisible(dropvec, print=TRUE);
 	}
 	
 	

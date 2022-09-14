@@ -77,6 +77,10 @@ parse.lang = function(lines, method="purge", debug=TRUE)
 	
 	cval = NULL;  # cc has been evaluated? TRUE or FALSE
 	# maybe create a STACK and push/pop ... 
+	# I have created a v.stack ... MEMORY is global outside this lexicologyicakljd scope ... 
+	# v.push ... ALL day, with length of 5
+	# get (dropped values)?  DONISH ... I don't know if PERFECT, TIRED!
+	# v.purge ... truncate at END of something ... 
 	cc = ">";	  # current char ... single value 
 	pc = "-";		# previous character  cc-1
 	ppc = "-";		# previous character  cc-2
