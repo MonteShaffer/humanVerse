@@ -405,9 +405,11 @@ minvisible = function(x, key="LAST", print=TRUE)
 	{
 	memory.set(key, "-MINVISIBLE-", x);
 	# also store to ANS variable ... 
-	"ANS" %GLOBAL% x;
+	"ANS" %GLOBAL% x; 
 	"Ans" %GLOBAL% x;
-	if(print) { print(x); }
+dput(print);
+	if(print == "str") { print(str(x)); }
+	if(print == TRUE) { print(x); }	
 	invisible(x);	
 	}
 

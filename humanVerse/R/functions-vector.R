@@ -838,37 +838,89 @@ v.getLastN = function (vec, n.out = 1)
 	}
 
 
-
+# v.queufus # can't spell it ...
 
 # use memory ... e.g., this is stack.init ... 
+# "LIFO" = FILO is javascript; "FIFO" = LILO is queueing		
 
-v.stack = function(size=5, type="character" method="FIFO", key="-CURRENT_STACK-")
+v.stack = function(max.size=5,  
+							default = NULL,
+							type="character", 
+							method="LIFO",	 				
+							key="-CURRENT_STACK-"
+					)
 	{
-	vec = numeric(size); vec = as.type(vec, type);
-	mem = list("vec" = vec, "size" = size, "method" = method);
-		mem$history = list();
+	# max.size can be Inf ...   max.size=Inf
+	vec = default;
+	vec = as.type(vec, type);
+	
+	mem = list("vec" = vec, 
+						"size" = max.size, "method" = method,
+						"type" = type, "default" = default
+				);
 	memory.set(key, "STACK", mem);	
-	}
+	minvisible(mem, print="str");
+	}  
+
+
 
 ## do push/pop with FIFO
-v.push = function(key="-CURRENT-STACK-")
+v.push = function(val, key="-CURRENT-STACK-")
 	{
 	mem = memory.get(key, "STACK");
 	if(is.null(mem)) { stop("You need to configure stack with v.stack() first!"); }
 	
+	# push onto end ... LIFO (javascript)
+	# push on first ... FIFO (queueing) ... end may truncate ... 
 	
-	minvisible(vec);  #update the memory/history 
+	if(method == "LIFO")
+		{
+		# if val is VECTOR, this order is correct, rev(val) for FIFO?
+		mem$vec = c(mem$vec, val);
+		nv = length(mem$vec);  
+		if(nv > mem$size) { mem$vec = mem$vec[(nv+1-mem$size):nv]; }		
+		} else {
+				mem$vec = c(rev(val), mem$vec);
+				nv = length(mem$vec);  
+				if(nv > mem$size) { mem$vec = mem$vec[1:mem$size]; }
+				}	
+	memory.set(key, "STACK", mem);	
+	minvisible(mem, print="str");  #update the memory/history 
 	}
 	
-v.pop = function(key="-CURRENT-STACK-")
+	
+	# just like stack history, R needs a symbol history ...
+	
+v.pop = function(n=1, key="-CURRENT-STACK-")
 	{
 	## TODO
 	mem = memory.get(key, "STACK");
 	if(is.null(mem)) { stop("You need to configure stack with v.stack() first!"); }
 	
-	minvisible(vec);  #update the memory/history 
+	# pop from end ... LIFO (javascript)
+	# pop on first ... FIFO (queueing) ... NO truncate ... 
+	if(method == "LIFO")
+		{
+		nv = length(mem$vec); 
+			s = (nv-1+n);  if(s < 1) { s = 1; }
+			idx = s:nv;
+		val = mem$vec[idx];	
+		mem$vec = mem$vec[-c(idx)];
+		} else {
+				nv = length(mem$vec);  
+					s = n; if(s > nv) { s = nv; }
+					idx = 1:s;
+				val = mem$vec[idx];	
+				mem$vec = mem$vec[-c(idx)];
+				}	
+	memory.set(key, "STACK", mem);	#update the memory/history 
+	minvisible(mem, print="str");
+	minvisible(val, print=TRUE);
 	}
 	
+
+
+
 
 
 
@@ -960,7 +1012,13 @@ pushVector = function(val, vec, n.max=1+length(vec), method="FIFO")
   }
 
 
-
+v.pop_back = function(vector)
+	{ 
+	nv = length(vector); element = vector[nv];
+	vector = vector[-c(nv)];
+	# return what ... this needs to be part of the v.stack/push/pop ...
+	}
+	
 ## vector.push_back(element) is C++
 v.push_back = function(element, vector)
 	{
