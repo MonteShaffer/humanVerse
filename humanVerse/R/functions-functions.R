@@ -1790,10 +1790,18 @@ grabFunctionParameters <- function() {
 # add library and base functions (loaded) 
 # ls ?
 # function.traceforward
-traceforward = function(f.str = "shell", max.depth=10)
-  {
+# I could TRAP this so it is an object with character.only
+traceforward =  function(..., max.depth=3, character.only=FALSE)
+	{
+	if(character.only) 
+		{ 
+		fn.str = unlist(list(...)); 
+		} else {
+				fn.str = str.fromObjectName(...);
+				}
+	if(fn.str == "") { fn.str = "traceforward"; }
   f.res = list();
-  f.res[[1]] = f.todo = f.list = registered.functions.in.function(f.str);
+  f.res[[1]] = f.todo = f.list = registered.functions.in.function(fn.str);
   depth = 1;
   while(length(f.todo) > 0) # this is "recursive" ?
     {
@@ -1817,7 +1825,7 @@ traceforward = function(f.str = "shell", max.depth=10)
       }
     }
 
-  f.list;
+  minvisible(f.list, print="str");
   }
 
 

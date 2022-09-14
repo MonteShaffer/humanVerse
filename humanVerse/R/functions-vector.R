@@ -15,18 +15,26 @@ v.math = function(data=c("#abcdef","#123456"), FUN, param="hi", FUN.pre="hex2dec
 	}
 
 
-v.math = function(..., data=NULL, params=NULL, fn.pre="hex2dec", fn.post="dec2hex", character.only=FALSE)
+v.math = function(..., fn="sum", fn.pre="hex2dec", fn.post="dec2hex")
 	{
-	# pre/post have to be strings ... ARGH! 
-	# character.only=FALSE
-	if(character.only) 
-		{ 
-		fn.str = unlist(list(...)); 
-		} else {
-				fn.str = str.fromObjectName(...);
-				}	
+	# get names / values ... 
+	# xlist = list(...);
+	# dots = match.call(expand.dots = FALSE)$...
+	# names = as.character(dots);
+	###### THIS is a vec function ... 
+	vec = dots.addTo(NULL, ...);
+# dput(vec);
+	vec = do.call(fn.pre, list(vec));
+# dput(vec); 
+	vec = do.call(fn, list(vec));
+# dput(vec);
+	vec = do.call(fn.post, list(vec));
+# dput(vec);
+	minvisible(vec, print=TRUE);	
 	}
 
+
+ 
 
 v.match = function(a, B.len, B.nam)
 	{
@@ -659,12 +667,12 @@ cat("\n b: ", b, " \t r: ", r,
 	} 
 
 
-
-v.return = function(idx)
+# res as idx mostly
+v.return = function(res)
 	{
-	if(is.null(idx)) { return(NULL); }
-	if(length(idx) == 0) { return(NULL); }
-	idx;	
+	if(is.null(res)) { return(NULL); }
+	if(length(res) == 0) { return(NULL); }
+	res;	
 	}
 
 
@@ -702,26 +710,37 @@ v.which = function(vec, what="", invert=FALSE)
 		idx = which(vec == what); 
 		}
 		
-	if(invert) { IDX = 1:length(vec); idx = IDX[-c(idx)]; }
-	return(v.return(idx));
+	if(invert) { idx = v.invert(vec,idx); }
+	v.return(idx);
 	}
 
-# this is univariate
-v.remove = function(vec, what="")
+v.invert = function(vec, idx)
 	{
-	idx = v.which(vec, what=what);
+	IDX = 1:length(vec); idx = IDX[-c(idx)];
+	v.return(idx);
+	}
+
+v.remove = function(vec, what="", invert=FALSE)
+	{
+	idx = v.which(vec, what=what, invert=invert);
 	if(is.null(idx)) { return(vec); } # nothing to remove
-	vec[ -c( idx ) ];  
+	v.return(vec[ -c( idx ) ]);  
 	}
 	 
-v.truncate = function(vec, parent)
-	{
-	# shorten parent by removing vec 
-	res = set.diff(parent, vec);
-	if(length(res) == 0) { return(NULL); }
-	res;
-	}
 
+
+# subtract vec from parent ... 
+v.truncate = function(vec, parent, by="value", invert=FALSE)  
+	{
+	BY = prep.arg(by, n=1);
+	# shorten parent by removing vec 
+	idx = set.match(vec, parent); 
+	if(invert) { idx = v.invert(vec,idx); }
+	res = (1:length(parent))[-c(idx)]; 
+	if(BY=="v") { res = parent[-c(idx)]; }
+	# res = set.diff(parent, vec);
+	v.return(res);
+	}
 
 
 
@@ -755,28 +774,6 @@ v.shortTypes = function(types, force.odd=TRUE)
 	}
 	
 
-
-.begin = function(vec)
-	{
-	1;
-	}
-	
-.end = function(vec)
-	{
-	length(vec);
-	} 
-
-v.begin = function(vec, n=1)
-	{
-	vec[n];
-	}
- 
-v.end = function(x)  # could it be from THIS
-	{
-	vec[length(x)];
-	}
-
-
 v.nearest = function(vec, what, howmany=1)
 	{
 	idx = v.nearest.idx(vec, what, howmany=howmany);
@@ -791,15 +788,17 @@ v.nearest.idx = function(vec, what, howmany=1)
 	}
 	
 
-v.freq = function(vec, what)
+v.freq = function(vec, what="", invert=FALSE)
 	{
-	length(v.which(vec, what));
+	length(v.which(vec, what, invert=invert));
 	}
 	
-v.mode = function(vec)
+v.mode = function(vec, invert=FALSE)
 	{
 	m = stats.mode(vec, force.numeric=FALSE); # values
-	set.match(m, vec);	# idx
+	idx = set.match(m, vec);	# idx
+	if(invert) { IDX = 1:length(vec); idx = IDX[-c(idx)]; }
+	v.return(idx);
 	}
 
 
@@ -842,8 +841,8 @@ v.getLastN = function (vec, n.out = 1)
 
 # use memory ... e.g., this is stack.init ... 
 # "LIFO" = FILO is javascript; "FIFO" = LILO is queueing		
-
-v.stack = function(max.size=5,  
+# # https://stackoverflow.com/questions/2805102/
+v.stack = function(max.size=Inf,  
 							default = NULL,
 							type="character", 
 							method="LIFO",	 				
@@ -865,11 +864,12 @@ v.stack = function(max.size=5,
 
 
 ## do push/pop with FIFO
-v.push = function(val, key="-CURRENT-STACK-")
+v.push = function(val, ..., key="-CURRENT_STACK-")
 	{
+	val = dots.addTo(val, ...);
 	mem = memory.get(key, "STACK");
 	if(is.null(mem)) { stop("You need to configure stack with v.stack() first!"); }
-	
+dput(mem);	
 	# push onto end ... LIFO (javascript)
 	# push on first ... FIFO (queueing) ... end may truncate ... 
 	
@@ -891,10 +891,11 @@ v.push = function(val, key="-CURRENT-STACK-")
 	
 	# just like stack history, R needs a symbol history ...
 	
-v.pop = function(n=1, key="-CURRENT-STACK-")
+v.pop = function(n=1, key="-CURRENT_STACK-")
 	{
 	## TODO
 	mem = memory.get(key, "STACK");
+dput(mem);
 	if(is.null(mem)) { stop("You need to configure stack with v.stack() first!"); }
 	
 	# pop from end ... LIFO (javascript)
@@ -919,125 +920,18 @@ v.pop = function(n=1, key="-CURRENT-STACK-")
 	}
 	
 
-
-
-
-
-
-
-
-
-#' popVector
-#'
-#' @param vec
-#' @param idx
-#' @param method
-#'
-#' @return
-#' @export
-popVector = function(vec, idx=1, method="FIFO")  # Inf would work for unlimited stack
-  {
-  # https://stackoverflow.com/questions/2805102/how-is-pushing-and-popping-defined
-# vec = 1: 10;
-# popVector(vec)
-# popVector(vec, method="LIFO-LILO")
-  if(method=="FIFO")   # QUEUING
-    {
-    val = vec[idx];
-    vec = vec[-c(idx)];
-    } else {
-            n = length(vec) + 1 - idx;
-            val = vec[n];
-            vec = vec[-c(n)];
-    }
-  # list or "attributes" ?
-  list("val" = val, "vec" = vec, "popped" = NULL, method=method); # updated ...
-  }
-
-
-#' pushVector
-#'
-#' @param val
-#' @param vec
-#' @param n.max
-#' @param method
-#'
-#' @return
-#' @export
-#'
-#' @examples
-pushVector = function() {}
-pushVector = function(val, vec, n.max=1+length(vec), method="FIFO")
-  {
-  # vec = 1: 10;
-# popVector(pushVector(13, vec)$vec)
-# pushVector(13, vec, n.max=5)
-# pushVector(13, vec, n.max=5, method="LIFO-LILO")
-
-
-  # n.max is max size, so vals popped may return ...
-  n = length(vec);
-  popped = NULL;
-  if(method=="FIFO")  # in this model, new values are added to end
-    {
-    if(n < n.max)
-      {
-      vec = c(vec,val);
-      } else {
-              vec = c(vec,val);
-              nn = 1 + n;
-              nd = nn - n.max;
-              if(nd > 0)
-                {
-                popped = vec[1:nd];
-                vec = vec[(1+nd):nn];
-                }
-              }
-    } else {        # in this model, new values are added to beginning
-            if(n < n.max)
-              {
-              vec = c(val,vec);
-              } else {
-                      vec = c(val,vec);
-                      nn = 1 + n;
-                      if(nn > (1+n.max))
-                        {
-                        popped = vec[(1+n.max):nn];  # off the end ?
-                        vec = vec[1:n.max];
-                        }
-                      }
-            }
-  # list or "attributes" ?
-  list("vec" = vec, "popped" = popped, "val"=val, method=method);
-  }
-
-
-v.pop_back = function(vector)
-	{ 
-	nv = length(vector); element = vector[nv];
-	vector = vector[-c(nv)];
-	# return what ... this needs to be part of the v.stack/push/pop ...
-	}
+## EMPTY elements, maintain stack TYPE
+v.purge = function(n=1, key="-CURRENT_STACK-")
+	{
+	mem = memory.get(key, "STACK");
+	if(is.null(mem)) { stop("You need to configure stack with v.stack() first!"); }
 	
-## vector.push_back(element) is C++
-v.push_back = function(element, vector)
-	{
-	c(vector, element);
+	n = length(mem$vec);  
+	if(n > 0) { mem$vec = mem$vec[-c(1:n)]; }
+	
+	memory.set(key, "STACK", mem);	#update the memory/history 
+	minvisible(mem, print="str");
 	}
-
-#' @rdname push_last
-#' @export
-v.push_last = v.push_back;
-
-v.push_front = function(element, vector)
-	{
-	c(element, vector);
-	}
-
-#' @rdname push.first
-#' @export
-v.push_first = v.push_front;
-
 
 
 

@@ -174,7 +174,8 @@ include.cpp = include.Rcpp = i.Rcpp = i.ccp = function() {}
 # include.file
 include.file = i.file = i.f = function() {}	
 
-f.download = filedlkfj.download() {}
+f.download = filedlkfj.download = function() {}
+	
 	
 include = function(..., character.only=FALSE)
 	{

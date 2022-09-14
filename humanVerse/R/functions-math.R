@@ -20,7 +20,7 @@ fromBase = function(xstr, ..., base=10)
 	{
 	xstr = dots.addTo(xstr, ...);
 	xstr = cleanup.base(xstr);
-dput(xstr);
+# dput(xstr);
 	b = check.base(base);
 	base.chars = c(as.character(0:9), LETTERS[1:22]);
 	

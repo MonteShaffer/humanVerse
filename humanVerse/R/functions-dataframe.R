@@ -215,7 +215,7 @@ df.row = function(...)
 	dots = match.call(expand.dots = FALSE)$...
 	names = as.character(dots);
 	# values = dots.addTo(NULL, ...);
-	
+	 
 	names(xlist) = names;
 	dfr = dataframe(xlist); 
 	dfr;

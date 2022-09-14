@@ -100,6 +100,9 @@ memory.log = function(key, MEMORY, action="get")
 	if(is.null(what)) { what = info; } else { what = rbind(what,info); }
 	.GlobalEnv$.humanVerse[["."]][["-SYSTEM_LOG-"]] = what;
 	}
+	
+	
+# DOWN ARROW on CONSOLE BRINGS UP WORD 'ANS' ... how to ADD to history??? 
 
 memory.get = function(key, MEMORY="BASE", unused=NULL) 
 	{	
