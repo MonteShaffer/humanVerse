@@ -241,6 +241,7 @@ gggassign = function(key, val)
 		}
 		
 	# "key" %GLOBAL% val 
+	key = KEY;
 	# what if "key" is not a string yet?
 	if(!is.character(KEY)) { key = deparse(substitute(KEY)); }
 	gggassign(key,VALUE);	
@@ -255,7 +256,10 @@ gggassign = function(key, val)
 	assign(key, val, envir=WHERE );
 	}
 	
-	
+# x = 44;
+# y = function(envir = .GlobalEnv) { x=NULL; x %to% envir; }
+# y();
+# x; 
 
 
 

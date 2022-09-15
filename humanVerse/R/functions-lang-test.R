@@ -530,10 +530,11 @@ pause();
 		# cc as "current char"
 		cval = NULL; 		cval %to% envir;
 		
+		if(is.null(cval) && cc == OP) { do.OP(); }
 		if(is.null(cval) && is.null(cres) && cc != DQ && cc != SQ) { do.OBJ(); }
 		if(is.null(cval) && cc == DQ) { do.DQ(); }
 		if(is.null(cval) && cc == SQ) { do.SQ(); }
-		if(is.null(cval) && cc == OP) { do.OP(); }
+		
 		if(is.null(cval) && cc == CP) { do.CP(); }
 		if(is.null(cval) && cc == COMMA) { do.COMMA(); }
 		
