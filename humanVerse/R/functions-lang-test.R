@@ -608,7 +608,10 @@ if(debug)
 cat("\n SEARCHING FOUND MATCH: ", tline, "\n\n");
 	}
 	
-	
+	# use pos here to do the first.paranthesis LOGIC ... 
+	# then we skip whitespace NOT in a STRING, until we get to STRING/OBJECT ...
+	# WE DON'T HAVE SKIP_WHITESPACE fully developed ... 
+	# 'we' ... the mouse in my pocket ... me/gods
 			tmp = str.explode(fn.search, line);
 			# simple line, so we are vectors not lists of vectors 
 			tlen = length(tmp);

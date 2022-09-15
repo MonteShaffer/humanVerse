@@ -107,15 +107,23 @@ v.type = function(vec)
 
 
 
+# toNA ... assigns elements as NA 
+v.toNA = function(vec, idx)
+	{
+	vec[idx] = NA;
+	vec;	
+	}
+	
 
+	
+# naTO, not NATO  
 
-v.naTo = function(vec, to="")
+v.naTO = function(vec, to="")
 	{
 	vec[is.na(vec)] = to;
 	vec;	
 	}
 	
-v.naTO = v.naTo;
  
  
  
@@ -740,8 +748,67 @@ prep.clist = function(clist, dots)
 	clist;
 	}
 
-# if(!cdf) 	{ return(dt(x, df)); }  # pdf 
-stats.PDF = function(x, method="norm", ...)
+
+# complement of ERF 
+ERF.C = function(z, ...)
+	{
+	# pracma::erfc ... 2*pnorm(-sqrt(2)*x)
+	z = dots.addTo(z, ...);
+	1 - ERF(z);	
+	}
+	
+ERF = function(z, ...) 
+	{
+	z = dots.addTo(z, ...);
+	if(!is.complex(z)) 
+		{ 
+		z = math.cleanup(z);
+		# erf (−z) = −erf z 
+		# math.sign just calls cleanup ... 
+		erf = sign(x) * pchisq(2 * z^2, 1);
+		return(erf);
+		}
+	# if complex, where was that code ...
+	stop("TODO: complex, where was that code??? Taylor Series?");
+	}
+	
+ERF.inv = function(zinv, ...) 
+	{
+	# inverse in [-1,1] nicely
+	zinv = dots.addTo(zinv, ...);
+	if(!is.complex(zinv)) 
+		{ 
+		zinv = math.cleanup(zinv);
+		 
+		zinv.abs = abs(zinv);
+		
+		zinv = v.toNA(zinv, (zinv.abs > 1));
+		erfinv = sign(zinv) * sqrt(qchisq(zinv.abs, 1)/2);
+
+		return(erfinv);
+		}
+	# if complex, where was that code ...
+	# pracma::erfz?
+	stop("TODO: complex, where was that code??? Taylor Series?");
+	# extend the taylor series ... better precisions?  Adebo bug? what was it?
+	}
+
+
+
+# what is erfi?  imaginary but not complex?
+
+	
+ERF.fn = function() {}
+ERF.num = function() {} # numerical integration?
+
+
+
+
+PDF.inv = function() {} 
+PDF.fn = function() {}
+
+
+PDF = function(x, method="norm", ...)
 	{
 	# probability density function ... height at point x ... 
 	dots = match.call(expand.dots = FALSE)$...
@@ -794,7 +861,9 @@ stats.PDF = function(x, method="norm", ...)
 	}
 
 
-stats.CDF = function(q, method="norm", ...)
+CDF.fn = function() {}
+
+CDF = function(q, method="norm", ...)
 	{
 	# cumulative distribution function ... cumulative area from -Inf to x 
 	dots = match.call(expand.dots = FALSE)$...
@@ -850,7 +919,7 @@ stats.CDF = function(q, method="norm", ...)
 	}
 	
 
-stats.inverseCDF = function(p, method="norm", ...)
+CDF.inv = function(p, method="norm", ...)
 	{
 	# inverse cumulative distribution function ...
 	#	cumulative area from -Inf to x 
@@ -907,15 +976,16 @@ stats.inverseCDF = function(p, method="norm", ...)
 	}
 	
 
-stats.betweenCDF = function(p.lower, p.upper, method="norm", ...)
+
+CDF.between = function(p.lower, p.upper, method="norm", ...)
 	{
 	ct.method = check.type(method);
 	if(!ct.method || !is.character(method)) 
 		{ method = deparse(substitute(method)); }
 	
 	
-	lower = stats.CDF(p.lower, method=method, ...);
-	upper = stats.CDF(p.upper, method=method, ...);
+	lower = CDF(p.lower, method=method, ...);
+	upper = CDF(p.upper, method=method, ...);
 	
 	res = as.numeric(upper-lower);
 	
@@ -996,6 +1066,8 @@ v.random = function(n=100, method="norm", ..., seed=NULL)
 	invisible(res);
 	}
  
+# https://cplusplus.com/reference/vector/vector/
+# https://www.educba.com/c-plus-plus-shuffle/
 v.shuffle = function(vec, seed=NULL) 
 	{
 	s = seed.set(seed);

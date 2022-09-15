@@ -208,7 +208,7 @@ dots.magic = function(dots)
 	
 	}
 
-df.row = function(...)
+df.row = function(..., use.names=FALSE)
 	{
 # dput( (list(...)) );   # list(structure(1663114668.6615, class = c("POSIXct", "POSIXt")), "set", "STACK", "alex")
 	xlist = list(...);
@@ -216,8 +216,9 @@ df.row = function(...)
 	names = as.character(dots);
 	# values = dots.addTo(NULL, ...);
 	 
-	names(xlist) = names;
+	# names(xlist) = names;
 	dfr = dataframe(xlist); 
+	if(use.names) { colnames(dfr) = names; }
 	dfr;
 	}
 

@@ -272,12 +272,6 @@ str.explode = function(sep = " ", str = "hello friend", method="stringi")
 
 	hasResult = FALSE;
 
-	if(METHOD == "b")
-		{
-		res = strsplit(str, sep, fixed=TRUE);
-		hasResult = TRUE;
-		}
-
 	if(!hasResult && METHOD == "s" && is.library("stringi") )
 		{
 		res = (stringi::stri_split_fixed(str, sep));
@@ -296,7 +290,26 @@ str.explode = function(sep = " ", str = "hello friend", method="stringi")
 		# if "<i>humanVerse</i>" ... 
 			# "<i>" returns "" "humanVerse</i>"
 			# "</i>" returns "<i>humanVerse" without trailing "" 
-		res = strsplit(str, sep, fixed=TRUE);
+			# SO ... it's a feature ... 
+			fill = "~"; if(sep == "~") { fill = "^"; }
+			flen = str.len(fill);
+			tmp = paste0(str,fill);
+		res = tres = strsplit(tmp, sep, fixed=TRUE);
+			nt = length(tres);
+			tlen = list.getLengths(tres);
+		for(i in 1:nt)
+			{
+			sidx = tlen[i];
+			element = tres[[i]][ sidx ];
+			slen = str.len(element);
+			
+			if(slen == flen) { element = ""; }
+			if(slen > flen)  { element = substring(element, 1, slen-flen); }
+			res[[i]][ sidx ] = element;
+			}
+			
+		# res = strsplit(str, sep, fixed=TRUE);
+		# res;
 		}
 
 	# will be collapsed into CharacterVector if len == 1
