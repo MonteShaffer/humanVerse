@@ -264,7 +264,8 @@ str_trim = str.trim;
 #'
 #' @examples
 #------------------------------------------------# 
-str.explode = function(sep = " ", str = "hello friend", method="base")
+# BASE is broken ... 
+str.explode = function(sep = " ", str = "hello friend", method="stringi")
 	{
 	# necessary overhead
 	METHOD = prep.arg(method, 1);
@@ -697,5 +698,42 @@ str.translate = function(str, to="latin-ascii")
 
 # STRPOS() returns the index of the first occurence of its second argument (“needle”) in its first argument (“haystack”), or -1 if there are no occurrences.
 
-
-#
+# n=1 returns first position of occurrence 
+# skip != 0 ... skip this far into the search (truncate but add result pos back)
+# if n=1 we return a vector ... of pos with NA for not found 
+# x = "monte says hi monte loves alex and mama and all";
+# str.pos(c(x, str.wordShuffle(x), str.wordShuffle(x)), "and");
+str.pos = function(str, search, n=Inf, skip=0)
+	{
+	slen = str.len(str);	
+dput(str);	
+	len.search = str.len(search);
+	info = check.list(str.explode(search, str));
+	ni = length(info);
+	res = vector("list", ni);
+	for(i in 1:ni)
+		{
+		vec = info[[i]];
+		vlen = str.len(vec);
+		vn = length(vlen);
+		vlen = vlen[-c(vn)]; 
+		pos = vlen + 1;
+		pn = length(pos);
+		if(pn > 1)
+			{
+			for(j in 2:pn)
+				{
+				pos[j] = pos[j-1] + len.search + vlen[j];
+				}
+			}
+		idx = v.return(which(pos < skip));
+		if(!is.null(idx)) { pos = pos[-c(idx)]; }
+		if(n < Inf)
+			{
+			pos = v.fill(pos, n, NA);
+			}		
+		pos = v.return(pos);
+		res[[i]] = pos;
+		}
+	list.return(res);
+	}

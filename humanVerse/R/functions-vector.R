@@ -728,8 +728,24 @@ v.remove = function(vec, what="", invert=FALSE)
 	}
 	 
 
+v.shuffle = function(vec, seed=NULL) 
+	{
+	s = seed.set(seed);
+	res = sample(vec);
+	res = property.set("seed", res, as.integer(s));
+	res;
+	}
 
-# subtract vec from parent ... 
+v.fill = function(vec, to.length=5, with=NA)
+	{
+	n = length(vec);
+	r = to.length - n;
+	if(r >= 1) { add = rep(with, r); } else { add = NULL; }
+	c(vec, add);	
+	}
+
+# subtract vec from parent ...
+# should truncate be about a set or a length ...  
 v.truncate = function(vec, parent, by="value", invert=FALSE)  
 	{
 	BY = prep.arg(by, n=1);

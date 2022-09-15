@@ -61,18 +61,30 @@ seed.set = function(key = "LAST-SEED",
 							seed.args = list() 	# seed() parameters
 					)
 	{
+debug=FALSE;
+	
+	force.new = FALSE;
 	# accounting for standard set.seed(NULL) logic ...
-	if(is.null(key)) 	{ key = "LAST-SEED"; }
+	if(is.null(key)) 	{ key = "LAST-SEED"; force.new = TRUE;}
 	if(is.numeric(key)) { seed.value = key; key = "LAST-SEED"; }
 	if(is.numeric(seed.value)) { seed.value = as.integer(seed.value); }	
-	
-	
-	
+
+#########################  SEED PARAMS #####################	
+	# TRAPS "NULL" in a list ... 
+	seed.args_ = list(	"kind" = NULL, 
+						"normal.kind" = NULL, 
+						"sample.kind" = NULL
+					);
+	## THIS SEEMS LIKE A SEPARATE 'VARIADIC' FUNCTION
+	seed.args_ = map.args(seed.args_, seed.args);
+
+if(debug)
+	{	
 cat("\n key: ", key, " \t\t seed.value : ", seed.value, " \n");
-	
+	}
 	
 	memory.init();
-	if(is.null(seed.value) && from.memory)
+	if(is.null(seed.value) && from.memory && !force.new)
 		{
 		seed.value = seed.get(key, details=TRUE);
 		}
@@ -85,17 +97,14 @@ cat("\n key: ", key, " \t\t seed.value : ", seed.value, " \n");
 		seed.value = property.set("when", seed.value, Sys.time());
 		memory.set(key, "-SEED-", seed.value);
 		}
+
+if(debug)
+	{
 cat("\n key: ", key, " \t\t seed.value : ", seed.value, " \n");
+	}
 	
 	memory.append("-SEED-HISTORY-", "-SYSTEM-", seed.value);	
 	
-	# TRAPS "NULL" in a list ... 
-	seed.args_ = list(	"kind" = NULL, 
-						"normal.kind" = NULL, 
-						"sample.kind" = NULL
-					);
-	## THIS SEEMS LIKE A SEPARATE 'VARIADIC' FUNCTION
-	seed.args_ = map.args(seed.args_, seed.args);
 
 	## VERY END, so STACK doesn't change things 	
 	set.seed(seed.value, 
@@ -103,4 +112,5 @@ cat("\n key: ", key, " \t\t seed.value : ", seed.value, " \n");
 				normal.kind	= seed.args_$normal.kind, 
 				sample.kind	= seed.args_$sample.kind
 			);
+	seed.value;
 	}

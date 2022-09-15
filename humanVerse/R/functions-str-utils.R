@@ -413,7 +413,17 @@ str.replaceFromList = function(mylist, mysubject, ...)
 
 
 
-
+str.wordShuffle = function(str, sep=" ")
+	{
+	info = check.list(str.explode(sep, str));
+	ni = length(info);
+	res = character(ni);
+	for(i in 1:ni)
+		{
+		res[i] = paste0(v.shuffle(info[[i]]), collapse=sep);
+		}
+	res;
+	}
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#

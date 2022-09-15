@@ -131,7 +131,7 @@ if(debug)
 			
 		if(level == "line")
 			{ # searching / scanning mode (mostly searching)
-			cat("\n", "searching: \t line [",i,"] ... [", slen, "] ", whitespace(line), "\n");	
+			cat("\n", status, ": \t line [",i,"] ... [", slen, "] ", whitespace(line), "\n");	
 			pause();		
 			} 
 		if(level == "char")
@@ -142,7 +142,7 @@ if(nnn == 1)
 cat("\n\t [",idx,"] => line [",i,":",j,"] ... ", 
 				whitespace(pc), " => ",  whitespace(cc),
 				"\t p: ", p.count, 
-				"\t io: ", OBJ, 
+				"\t io: ", IN_OBJECT, 
 				"\t is: ", IN_STRING, 
 				"\t ist: ", IN_STRING.type, 
 				"\t cv: ", cval, 
@@ -153,7 +153,7 @@ cat("\n\t [",idx,"] => line [",i,":",j,"] ... ",
 cat("\n\t\t\t\t",						" ... ", 
 				whitespace(pc), " => ", whitespace(cc),
 				"\t p: ", p.count, 
-				"\t io: ", OBJ, 
+				"\t io: ", IN_OBJECT, 
 				"\t is: ", IN_STRING, 
 				"\t ist: ", IN_STRING.type, 
 				"\t cv: ", cval, 
@@ -209,6 +209,8 @@ cat("\n do.DQ \n");
 			}
 		if(!IN_STRING)
 			{
+			# start a string 
+			cres = NULL;
 			IN_STRING = TRUE;		IN_STRING 		%to% envir;
 			IN_OBJECT = FALSE;		IN_OBJECT 		%to% envir;
 			IN_STRING.type = "DQ";	IN_STRING.type 	%to% envir;
@@ -267,6 +269,8 @@ cat("\n do.SQ \n");
 			}
 		if(!IN_STRING)
 			{
+			# start a string 
+			cres = NULL;			cres			%to% envir;
 			IN_STRING = TRUE;		IN_STRING 		%to% envir;
 			IN_OBJECT = FALSE;		IN_OBJECT 		%to% envir;
 			IN_STRING.type = "SQ";	IN_STRING.type 	%to% envir;
@@ -314,9 +318,10 @@ if(debug)
 	{
 cat("\n do.OP \n");
 	}
-		cval 		= TRUE; 	cval 		%to% envir;
-		p.count = p.count + 1;	p.count 	%to% envir;
-		if(p.count > 1) { add.to(); }
+		cval 		= TRUE; 	cval 	%to% envir;
+		p.count = p.count + 1;	p.count %to% envir;
+		if(p.count > 1) { add.to(); } else { cres = NULL; } 
+								cres 	%to% envir;
 		}
 		
 	do.CP = function() {}
@@ -530,15 +535,20 @@ pause();
 		# cc as "current char"
 		cval = NULL; 		cval %to% envir;
 		
-		if(is.null(cval) && cc == OP) { do.OP(); }
-		if(is.null(cval) && is.null(cres) && cc != DQ && cc != SQ) { do.OBJ(); }
-		if(is.null(cval) && cc == DQ) { do.DQ(); }
-		if(is.null(cval) && cc == SQ) { do.SQ(); }
 		
-		if(is.null(cval) && cc == CP) { do.CP(); }
-		if(is.null(cval) && cc == COMMA) { do.COMMA(); }
+		if(is.null(cval) && cc == OP) { do.OP(); }
+		
+		if(p.count > 1)
+			{
+			if(is.null(cval) && cc == DQ) { do.DQ(); }
+			if(is.null(cval) && cc == SQ) { do.SQ(); }
+			
+			if(is.null(cval) && cc == CP) { do.CP(); }
+			if(is.null(cval) && cc == COMMA) { do.COMMA(); }
+			}
 		
 		if(is.null(cval)) { add.to(); }
+		
 		show.status("char", 2);
 		
 		pc = cc;		pc %to% envir;		
@@ -593,7 +603,12 @@ cat("\n SCAN: ", scan, "\n");
 			count.finds = 1 + count.finds;
 							count.finds 	%to% envir;
 							
-			
+if(debug)
+	{
+cat("\n SEARCHING FOUND MATCH: ", tline, "\n\n");
+	}
+	
+	
 			tmp = str.explode(fn.search, line);
 			# simple line, so we are vectors not lists of vectors 
 			tlen = length(tmp);
