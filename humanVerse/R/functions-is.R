@@ -84,8 +84,8 @@ is.boolean = is.bool = is.logical;
 #' @param haystack (is MULTI-VARIATE)
 #'
 #' @return TRUE or FALSE (Logical VECTOR of length(haystack)
-#' @export
-#'
+#' @export 
+#' 
 #' @examples
 is.substring = function(needle, haystack)
 	{

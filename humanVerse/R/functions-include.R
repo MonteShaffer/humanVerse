@@ -128,9 +128,9 @@ debug = FALSE;
 quick.dir = function() 
 	{ 
 	setwd("C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R");
-	alex = include.dir(getwd()); View(alex); 
-	fn = ls(all.names = TRUE, pos=1); str(fn); View(fn);
-	alex = property.set("fn", alex, fn);
+	alex = include.dir(getwd()); # View(alex); 
+	fn = ls(all.names = TRUE, pos=1); # str(fn); View(fn);
+	alex = property.set("fn", alex, fn); 
 	memory.init(); memory.set("alex", "SYSTEM", alex);
 		"alex" %GLOBAL% alex;
 	

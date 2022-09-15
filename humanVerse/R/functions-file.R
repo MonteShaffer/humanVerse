@@ -231,7 +231,7 @@ freadlines = function(filename, howmany=Inf, direction="FORWARD", skip.lines=0)
 	# could do some voodoo on howmany +/- and skip.lines +/- to remove direction ... voodoo is not generally human readable
 	if(skip.lines < 0) { skip.lines = 0; }
 	skip.lines = as.integer(skip.lines);
-	
+	 
 	DIR = prep.arg(direction, n=1);
 	SEEK = "end";
 	if(DIR == "f") { SEEK = "start"; }
@@ -263,30 +263,6 @@ freadlines = function(filename, howmany=Inf, direction="FORWARD", skip.lines=0)
 	info = readChar(fp, nchars = buffer);
 	}
 	
-buffer = 1024;
-	file.size = file.info(filename)$size;
-	if (file.size < buffer) 
-		{
-		buffer = file.size;
-		}
-	fp = file(filename, "rb");  # we have to read in binary 
-		on.exit(close(fp));
-		
-	SEEK_END = "end";
-	pos = 1;
-	fragment = "";
-	out = NULL;
-
-# can I while loop this like fseek on PHP	
-	fs = seek(fp, -1 * pos * buffer, origin = SEEK_END);
-	info = readChar(fp, nchars = buffer);
-	lines = str.explode("\r\n", info);
-		n.lines = length(lines);
-		n.pipes = str.count(lines, what="|");
-		n.mode = stats.mode(n.pipes);
-		n.bad = which(n.pipes != n.mode);
-	
-
 
 
 #' writeRDS

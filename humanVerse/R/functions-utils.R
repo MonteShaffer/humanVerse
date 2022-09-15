@@ -194,6 +194,13 @@ access = function(str)
 
 
 
+allNA = function(vec)
+	{
+	n = length(vec);
+	nna = stats.countNA(vec);
+	(n == nna);
+	}
+
 
 
 
@@ -217,7 +224,7 @@ gggassign = function(key, val)
 	return(invisible(NULL));
 	}
 	
-"%GLOBAL%" = function(KEY, VALUE)
+"%GLOBAL%" = global = function(KEY, VALUE)
 	{
 	ct.KEY = check.type(KEY);
 	ct.VAL = check.type(VALUE);
@@ -249,7 +256,7 @@ gggassign = function(key, val)
 
 
 
-"%to%" = function(WHAT, WHERE)
+"%to%" = to = function(WHAT, WHERE)
 	{
 	val = WHAT;
 	key = deparse(substitute(WHAT));

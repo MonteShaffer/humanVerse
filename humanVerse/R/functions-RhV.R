@@ -26,11 +26,11 @@
 
 
 
-str = "monte says \cite p";
+################ str = "monte says \cite p";
 # Error: '\c' is an unrecognized escape in character string starting ""monte says \c"
 
 
-str = "monte says "hi" after watching the game";
+################ str = "monte says "hi" after watching the game";
 # Error: unexpected symbol in "str = "monte says "hi"
 
 

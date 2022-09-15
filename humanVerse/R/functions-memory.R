@@ -95,7 +95,7 @@ memory.log = function(key, MEMORY, action="get")
 	# manual set the value so no recursion 
 	# we are logging timestamps, not values ... 
 		now = as.POSIXct(Sys.time());
-		info = df.row(now, action, MEMORY, key); # works nicely 
+		info = df.row(now, action, MEMORY, key, use.names=TRUE); # works nicely 
 	what = .GlobalEnv$.humanVerse[["."]][["-SYSTEM_LOG-"]];
 	if(is.null(what)) { what = info; } else { what = rbind(what,info); }
 	.GlobalEnv$.humanVerse[["."]][["-SYSTEM_LOG-"]] = what;

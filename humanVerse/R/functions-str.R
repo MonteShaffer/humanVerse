@@ -713,7 +713,7 @@ str.translate = function(str, to="latin-ascii")
 str.pos = function(str, search, n=Inf, skip=0)
 	{
 	slen = str.len(str);	
-dput(str);	
+# dput(str);	
 	len.search = str.len(search);
 	info = check.list(str.explode(search, str));
 	ni = length(info);
