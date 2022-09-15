@@ -38,16 +38,10 @@ str.count = function(str, what="|")
 	{ 
 	# count occurrence of "what" in a string 
 	# n.pipes = str.count(lines, what="|");
-	filler = " "; if(what == " ") { filler = "|"; }
-	# if WHAT is at the end of string, not picking it up
-	# base strsplit BUG 
-	str = paste0(filler, str, filler);  # hack, but I am not counting filler
 	info = str.explode(what, str);
 # dput(info);
 	res = list.getLengths(info);
 	if(is.null(res)) { return(0*length(str)); }	
-	# if the explode is length(2), that means (1) what was there 
-	# unless the element was at the end ... BASE BUG ?
 	res-1;  
 	}
 	
