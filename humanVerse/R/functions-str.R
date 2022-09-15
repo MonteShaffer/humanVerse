@@ -42,7 +42,7 @@ str.count = function(str, what="|")
 # dput(info);
 	res = list.getLengths(info);
 	if(is.null(res)) { return(0*length(str)); }	
-	res-1;  
+	res-1;  # 2 splits = 1 occurrence; ... 3 splits = 2 occurrences ... 
 	}
 	
 
