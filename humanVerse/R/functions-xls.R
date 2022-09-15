@@ -136,7 +136,7 @@ xls.PERMUT = function(n, r)
 xls.T.DIST = function(x, df, cdf=TRUE)
 	{
 	if(cdf) 	{ return(pt(x, df)); }  # cdf 
-	if(!cdf) 	{ return(dt(x, df)); }  # pdf 	
+	if(!cdf) 	{ return(dt(x, df)); }  # pdf 	 
 	}
 	
 xls.T.DIST.2T = function(x, df)
@@ -1263,7 +1263,7 @@ xls.REGRESSION = function() {}
 # with copy/paste, can I get the CELLS ... read.delim('clipboard') ...
 # can I get any formulas when copy ... they have to be THERE in the clipboard as XLS uses them to update REFERENCES ...
 # could I paste back into XLS with formulas that would allow the auto-updates on referencing ... I pretend everything was from A1 on my build 
-# interesting ...
+# interesting ... 
 # PEOPLE don't want to name data, name rows and cols, often they just want the answers... HASH name for df, cols(A, B, C) by default ... and so on 
 # Replace OpenOffice ... provide a FREE alternative that is all
 # web-based, in the cloud (even localhost form)

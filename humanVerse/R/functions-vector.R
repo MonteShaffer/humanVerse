@@ -727,7 +727,275 @@ v.remove = function(vec, what="", invert=FALSE)
 	v.return(vec[ -c( idx ) ]);  
 	}
 	 
+prep.clist = function(clist, dots)
+	{
+	keys = names(dots);
+	vals = unname(dots);
+	nk = length(keys);
+	for(i in 1:nk)
+		{
+		key = keys[i]; val = vals[i];
+		clist[[key]] = val;
+		}
+	clist;
+	}
 
+# if(!cdf) 	{ return(dt(x, df)); }  # pdf 
+stats.PDF = function(x, method="norm", ...)
+	{
+	# probability density function ... height at point x ... 
+	dots = match.call(expand.dots = FALSE)$...
+	clist = list(x=x); 
+	if(!is.null(dots)) 
+		{
+		dots = unlist(list(...));
+		clist = prep.clist(clist, dots);
+		}
+	ct.method = check.type(method);
+	if(!ct.method || !is.character(method)) 
+		{ method = deparse(substitute(method)); }
+	METHOD = prep.arg(method, 4);
+	# http://127.0.0.1:23214/library/stats/html/Distributions.html
+	fn.name = switch(METHOD,
+						"unif" 	= "dunif",		# unif 		
+						"norm" 	= "dnorm",		# norm
+						"t"		= "dt",			# t
+						"f"		= "df",			# f 
+						"chis"	= "dchisq",		# chisq 
+						"beta"	= "dbeta",		# beta 
+						"gamm"	= "dgamma", 	# gamma
+						"exp"	= "dexp",		# exp 
+						"cauc"	= "dcauchy",	# cauchy 
+						
+						"bino"	= "dbinom", 	# binom
+						"nbin"	= "dnbinom",	# nbinom
+						"pois"	= "dpois",		# pois
+						
+						"lnor"	= "dlnorm", 	# lnorm
+						"mult"	= "dmultinom", 	# multinom
+						"logi"	= "dlogis", 	# logis
+						
+						"weib"	= "dweibull",	# weibull						
+						"geom"	= "dgeom", 		# geom
+						"hype"	= "dhyper",		# hyper
+						
+						"rsig"	= "dsignrank", 	# signrank 
+						"wilc"	= "dwilcox", 	# wilcox 
+						"wish"	= "dWishart",	# Wishart
+						
+					"dnorm"
+					);
+	
+	res = do.call(fn.name, clist);	
+	res = property.set("params", res, clist);
+	res = property.set("fn.name", res, fn.name);
+	minvisible(res, print="str");
+	invisible(res);
+	}
+
+
+stats.CDF = function(q, method="norm", ...)
+	{
+	# cumulative distribution function ... cumulative area from -Inf to x 
+	dots = match.call(expand.dots = FALSE)$...
+	clist = list(q=q); 
+	if(!is.null(dots)) 
+		{
+		dots = unlist(list(...));
+		clist = prep.clist(clist, dots);
+		}
+	ct.method = check.type(method);
+	if(!ct.method || !is.character(method)) 
+		{ method = deparse(substitute(method)); }
+	METHOD = prep.arg(method, 4);
+	# http://127.0.0.1:23214/library/stats/html/Distributions.html
+	fn.name = switch(METHOD,
+						"unif" 	= "punif",		# unif 		
+						"norm" 	= "pnorm",		# norm
+						"t"		= "pt",			# t
+						"f"		= "pf",			# f 
+						"chis"	= "pchisq",		# chisq 
+						"beta"	= "pbeta",		# beta 
+						"gamm"	= "pgamma", 	# gamma
+						"exp"	= "pexp",		# exp 
+						"cauc"	= "pcauchy",	# cauchy 
+						
+						"bino"	= "pbinom", 	# binom
+						"nbin"	= "pnbinom",	# nbinom
+						"pois"	= "ppois",		# pois
+						
+						"lnor"	= "plnorm", 	# lnorm
+						"mult"	= "pmultinom", 	# multinom
+						"logi"	= "plogis", 	# logis
+						
+						"weib"	= "pweibull",	# weibull						
+						"geom"	= "pgeom", 		# geom
+						"hype"	= "phyper",		# hyper
+						
+						"rsig"	= "psignrank", 	# signrank 
+						"wilc"	= "pwilcox", 	# wilcox 
+						"wish"	= "pWishart",	# Wishart
+						
+						"mvch"	= "pmvchi",		# mvchi (multi-variate chi-squ)
+						
+						
+					"pnorm"
+					);
+
+	res = do.call(fn.name, clist);	
+	res = property.set("params", res, clist);
+	res = property.set("fn.name", res, fn.name);
+	minvisible(res, print="str");
+	invisible(res);
+	}
+	
+
+stats.inverseCDF = function(p, method="norm", ...)
+	{
+	# inverse cumulative distribution function ...
+	#	cumulative area from -Inf to x 
+	# give me the area (a as probability [0,1]), I will give you the x value 
+	dots = match.call(expand.dots = FALSE)$...
+	clist = list(p=p); 
+	if(!is.null(dots)) 
+		{
+		dots = unlist(list(...));
+		clist = prep.clist(clist, dots);
+		}
+	ct.method = check.type(method);
+	if(!ct.method || !is.character(method)) 
+		{ method = deparse(substitute(method)); }
+	METHOD = prep.arg(method, 4);
+	# http://127.0.0.1:23214/library/stats/html/Distributions.html
+	fn.name = switch(METHOD,
+						"unif" 	= "qunif",		# unif 		
+						"norm" 	= "qnorm",		# norm
+						"t"		= "qt",			# t
+						"f"		= "qf",			# f 
+						"chis"	= "qchisq",		# chisq 
+						"beta"	= "qbeta",		# beta 
+						"gamm"	= "qgamma", 	# gamma
+						"exp"	= "qexp",		# exp 
+						"cauc"	= "qcauchy",	# cauchy 
+						
+						"bino"	= "qbinom", 	# binom
+						"nbin"	= "qnbinom",	# nbinom
+						"pois"	= "qpois",		# pois
+						
+						"lnor"	= "qlnorm", 	# lnorm
+						"mult"	= "qmultinom", 	# multinom
+						"logi"	= "qlogis", 	# logis
+						
+						"weib"	= "qweibull",	# weibull						
+						"geom"	= "qgeom", 		# geom
+						"hype"	= "qhyper",		# hyper
+						
+						"rsig"	= "qsignrank", 	# signrank 
+						"wilc"	= "qwilcox", 	# wilcox 
+						"wish"	= "qWishart",	# Wishart
+						
+						"mvch"	= "qmvchi",		# mvchi (multi-variate chi-squ)
+						
+					"qnorm"
+					);
+	
+	res = do.call(fn.name, clist);	
+	res = property.set("params", res, clist);
+	res = property.set("fn.name", res, fn.name);
+	minvisible(res, print="str");
+	invisible(res);
+	}
+	
+
+stats.betweenCDF = function(p.lower, p.upper, method="norm", ...)
+	{
+	ct.method = check.type(method);
+	if(!ct.method || !is.character(method)) 
+		{ method = deparse(substitute(method)); }
+	
+	
+	lower = stats.CDF(p.lower, method=method, ...);
+	upper = stats.CDF(p.upper, method=method, ...);
+	
+	res = as.numeric(upper-lower);
+	
+	minvisible(res, print="str");
+	invisible(res);
+	}
+
+
+
+stats.test = function(X.stat, method="norm", ..., tail="both", alpha=0.05)
+	{
+	# for given X.stat and alpha ... compute X.crit and pvalue 
+	# based on a distribution with its needed parameters 
+	# tail = "both", "lower", "upper" ... what to do with alpha 
+	
+	ct.method = check.type(method);
+	if(!ct.method || !is.character(method)) 
+		{ method = deparse(substitute(method)); }
+	
+	# just call the generic function PDF/CDF/inverseCDF to solve the problem 
+	# here you would do the appropriate 1-p if necessary 
+	# should I add the multivariate chi-square to these ...
+	# I have a p and a q?
+	
+	}
+	 
+v.random = function(n=100, method="norm", ..., seed=NULL)
+	{
+	dots = match.call(expand.dots = FALSE)$...
+	clist = list(n=n); 
+	if(!is.null(dots)) 
+		{
+		dots = unlist(list(...));
+		clist = prep.clist(clist, dots);
+		}
+	ct.method = check.type(method);
+	if(!ct.method || !is.character(method)) 
+		{ method = deparse(substitute(method)); }
+	METHOD = prep.arg(method, 4);
+	# http://127.0.0.1:23214/library/stats/html/Distributions.html
+	fn.name = switch(METHOD,
+						"unif" 	= "runif",		# unif 		
+						"norm" 	= "rnorm",		# norm
+						"t"		= "rt",			# t
+						"f"		= "rf",			# f 
+						"chis"	= "rchisq",		# chisq 
+						"beta"	= "rbeta",		# beta 
+						"gamm"	= "rgamma", 	# gamma
+						"exp"	= "rexp",		# exp 
+						"cauc"	= "rcauchy",	# cauchy 
+						
+						"bino"	= "rbinom", 	# binom
+						"nbin"	= "rnbinom",	# nbinom
+						"pois"	= "rpois",		# pois
+						
+						"lnor"	= "rlnorm", 	# lnorm
+						"mult"	= "rmultinom", 	# multinom
+						"logi"	= "rlogis", 	# logis
+						
+						"weib"	= "rweibull",	# weibull						
+						"geom"	= "rgeom", 		# geom
+						"hype"	= "rhyper",		# hyper
+						
+						"rsig"	= "rsignrank", 	# signrank 
+						"wilc"	= "rwilcox", 	# wilcox 
+						"wish"	= "rWishart",	# Wishart
+					"rnorm"
+					);
+	
+	# paste0("r",method);		
+		
+	s = seed.set(seed);
+	res = do.call(fn.name, clist);	
+	res = property.set("seed", res, as.integer(s));	
+	res = property.set("params", res, clist);
+	res = property.set("fn.name", res, fn.name);
+	minvisible(res, print="str");
+	invisible(res);
+	}
+ 
 v.shuffle = function(vec, seed=NULL) 
 	{
 	s = seed.set(seed);

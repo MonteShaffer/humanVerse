@@ -635,7 +635,7 @@ pip.formatter = function(x, TEMPLATE)
 		warning.cat("\n KEY->VAL pairs don't match, calling fn.name with DEFAULT params \n");
 		return( do.call(fn.name, clist) ); 
 		}
-	
+	 
 	# maybe cast back into format required from INFO based on types
 	finfo = function.info(fn.name, character.only=TRUE)$params;
 	n = length(fpkeys);

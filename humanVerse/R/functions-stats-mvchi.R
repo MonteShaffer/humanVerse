@@ -1,6 +1,9 @@
 
 # SEE https://github.com/MonteShaffer/R-ramblings/blob/master/R.mvchi/
 
+## can we create rmvchi (using mvfast library)
+## can we create dmvchi ... 
+
 stats.pmvchi = function(c,nu,t,rho,alpha=1)	
 	{ 
 	b = sqrt(rho);	a = sqrt(1-rho);	v = b^2/a^2;	crit=c/a^2;

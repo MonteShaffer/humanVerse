@@ -61,7 +61,7 @@ seed.set = function(key = "LAST-SEED",
 							seed.args = list() 	# seed() parameters
 					)
 	{
-debug=FALSE;
+debug=FALSE; 
 	
 	force.new = FALSE;
 	# accounting for standard set.seed(NULL) logic ...
