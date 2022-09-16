@@ -850,7 +850,7 @@ PDF = function(x, method="norm", ...)
 						"wilc"	= "dwilcox", 	# wilcox 
 						"wish"	= "dWishart",	# Wishart
 						
-					"dnorm"
+					stop("not found, METHOD wrapped in msg");
 					);
 	
 	res = do.call(fn.name, clist);	
@@ -908,7 +908,7 @@ CDF = function(q, method="norm", ...)
 						"mvch"	= "pmvchi",		# mvchi (multi-variate chi-squ)
 						
 						
-					"pnorm"
+					stop("not found, METHOD wrapped in msg");
 					);
 
 	res = do.call(fn.name, clist);	
@@ -965,7 +965,7 @@ CDF.inv = function(p, method="norm", ...)
 						
 						"mvch"	= "qmvchi",		# mvchi (multi-variate chi-squ)
 						
-					"qnorm"
+					stop("not found, METHOD wrapped in msg");
 					);
 	
 	res = do.call(fn.name, clist);	
@@ -1052,7 +1052,8 @@ v.random = function(n=100, method="norm", ..., seed=NULL)
 						"rsig"	= "rsignrank", 	# signrank 
 						"wilc"	= "rwilcox", 	# wilcox 
 						"wish"	= "rWishart",	# Wishart
-					"rnorm"
+					
+					stop("not found, METHOD wrapped in msg");
 					);
 	
 	# paste0("r",method);		
