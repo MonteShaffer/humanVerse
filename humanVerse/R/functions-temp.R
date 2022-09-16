@@ -1,3 +1,31 @@
+
+
+units.convert = function() {}
+# we have color.convert, temp.convert, base.convert, SI units in num.toEng 
+# in => foot => nautical mile => regular mile (british vs french, OLD MAPS)
+# gravity = m.s2 ... m/s^2 (default)
+# c ... speed of light 182, mph 
+# speed ... m/s is default 
+# area ... m2 (m^2)... acre 
+# lat/long ... DMS ... DD.ddd ... 
+# moles is just SI units ...
+# energy (Joule)
+# filesize, SI_units_base2 ... TODO 
+# flow ... liter per sec ... with [per] we have to embedded units to convert
+#
+#  maybe unit.convertTime ... unit.convertDistance 
+# interactions 
+# fathom, yard, naut_mi, naut2_mi, au, light_year, parsec, 
+# point/pixel/pica ???
+# mass ... g, Da?, carat, metric_ton, oz, pound, short_ton, long_ton, stone 
+# power ... "W" ... erg/sec ... cal/sec ... BTU/sec (or /hour) ... hp (horsepower)
+# conv_unit.R ....
+# pressure "atm" ... 
+# volume "liter" ... m3 ... us_cup, gallon, british tsp 
+# 
+
+
+
 	
 temp.constants = function() {}
 temp.constants = function(envir=parent.env(environment()))
@@ -6,6 +34,10 @@ temp.constants = function(envir=parent.env(environment()))
 	ABS_ZERO_C = -273.15; 
 	ABS_ZERO_K = 0;
 	ABS_ZERO_R = -459.67; 
+	
+	C_FREEZING = 0.01;
+	C_BOILING = 99.9839;
+	C_MAGIC = 4;  # 4 degrees C, 40 degrees F ... water magic (ice floats)
 	
 	assign("ABS_ZERO_F", ABS_ZERO_F, envir=envir);
 	assign("ABS_ZERO_C", ABS_ZERO_C, envir=envir);

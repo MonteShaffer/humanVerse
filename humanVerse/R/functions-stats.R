@@ -95,20 +95,44 @@ tukeySummary = tukey.summary;
 #' @export
 #'
 #' @examples
-stats.warningNA = function(x, show.warning=TRUE)
+stats.warningNA = function(x, key="na", show.warning=TRUE)
 	{
-	res = anyNA(x);
-	if(res && show.warning) 
-		{ 
-		howMany = sum(is.na(x));
-		values = if(howMany == 1) { "value" } else { "values" }
-		warning(paste0("Your data has ", howMany, 
-						" missing ", values," [NA] ",
-						" :: omitted from analysis"
-						)
-				); 
+	KEY = prep.arg(key, n=2, keep="-");
+	if(KEY == "na")
+		{
+		idx = v.which(x, NA);
 		}
-	res;
+	if(KEY == "le-eq-ze")  # key = "less-equal-zero"
+		{ 
+		idx = v.which(x, (x <= 0));
+		}
+	
+	
+	test = is.null(idx);
+	xx = x;	howMany = 0; strval = "values";
+	if(!test)
+		{
+		howMany = length(idx);
+		if(howMany == 1) { strval = "value"; }
+		xx = v.return(x[!idx]);
+		}
+	
+	if(show.warning && !test)
+		{
+		if(KEY == "na")
+			{
+			# how to translate grammaticalNumber ?
+			msg = prep.msg("Your data has ", howMany, "missing", str.grammaticalNumber("value", n=howMany, type="noun"), " [NA] ", " :: omitted from the analysis.");
+			}
+		if(KEY == "le-eq-ze")  # key = "less-equal-zero"
+			{
+			msg = prep.msg("Your data has ", howMany, str.grammaticalNumber("value", n=howMany, type="noun"), "less than or equal to zero", " [x <= 0] ", " :: omitted from the analysis.");
+			}
+		
+		cat.warning(msg);
+		}
+	
+	xx;
 	}
 
 
@@ -139,12 +163,18 @@ stats.countNA = function(x, ...)
 stats.sum = function(x, ..., na.rm=TRUE, show.warning=na.rm)
 	{
 	x = dots.addTo(x, ...);
-	warning = stats.warningNA(x, show.warning=show.warning);
-	res = base::sum(x, na.rm=na.rm)
+	xx = stats.warningNA(x, show.warning=show.warning);
+	x_ = stats.whichX(x, xx, na.rm);
+	res = base::sum(x_, na.rm=na.rm)
 	res; 
 	}
 
-
+stats.whichX = function(x, xx, test=TRUE)
+	{
+	nx = x;
+	if(test) { nx = xx; }
+	nx;
+	}
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
@@ -166,9 +196,10 @@ stats.sum = function(x, ..., na.rm=TRUE, show.warning=na.rm)
 stats.median = function(x, ..., type=1, na.rm=TRUE, show.warning=na.rm, names=FALSE, digits=7)
 	{
 	x = dots.addTo(x, ...);
-	warning = stats.warningNA(x, show.warning=show.warning);
+	xx = stats.warningNA(x, show.warning=show.warning);
+	x_ = stats.whichX(x, xx, na.rm);
 	# how to pass q.args into quantile ... 
-	res = stats::quantile(x, prob=c(0.5), type=type, 
+	res = stats::quantile(x_, prob=c(0.5), type=type, 
 							na.rm=na.rm, names=names, digits=digits);
 	res;
 	}
@@ -195,8 +226,10 @@ stats.median = function(x, ..., type=1, na.rm=TRUE, show.warning=na.rm, names=FA
 stats.quantile = function(x, ..., qs=c(0, 0.25,0.5,0.75, 1), type=1, na.rm=TRUE, names=FALSE, digits=7)
 	{
 	x = dots.addTo(x, ...);
-	warning = stats.warningNA(x, show.warning=show.warning);
-	res = stats::quantile(x, prob=qs, type=type, na.rm=na.rm, names=names, ...);
+	xx = stats.warningNA(x, show.warning=show.warning);
+	x_ = stats.whichX(x, xx, na.rm);
+	# allows the USER to throw an error on BELOW 
+	res = stats::quantile(x_, prob=qs, type=type, na.rm=na.rm, names=names, ...);
 	res;
 	}
 
@@ -225,14 +258,16 @@ getQuantiles = stats.quantile;
 stats.mean = function(x, ..., na.rm=TRUE, is.member=FALSE, show.warning=na.rm, trim=0)
 	{
 	x = dots.addTo(x, ...);
-	m = mean(x, na.rm=na.rm, trim=trim);	
+	xx = stats.warningNA(x, show.warning=show.warning);
+	x_ = stats.whichX(x, xx, na.rm);
+	m = mean(x_, na.rm=na.rm, trim=trim);	
 	if(!is.member) { return(m); } # plain vanilla 
 	
-	warning = stats.warningNA(x, show.warning=show.warning);
+	
 	
 	# this returns the first (smallest) if deviations tied
-	m.dev = abs(x - m);			m.mins = stats.whichMin(m.dev);
-								x.bar = x[ m.mins[1] ]; 
+	m.dev = abs(x_ - m);		m.mins = stats.whichMin(m.dev);
+								x.bar = x_[ m.mins[1] ]; 
 	x.bar; 
 	}
 
@@ -244,32 +279,37 @@ doMean = stats.mean;
 stats.sd = function(x, ..., na.rm=TRUE, is.member=FALSE, show.warning=na.rm)
 	{
 	x = dots.addTo(x, ...);
-	if(!is.member) { sd(x, na.rm=na.rm); }  # plain vanilla 
-	warning = stats.warningNA(x, show.warning=show.warning);
+	xx = stats.warningNA(x, show.warning=show.warning);
+	x_ = stats.whichX(x, xx, na.rm);
+	if(!is.member) { sd(x_, na.rm=na.rm); }  # plain vanilla 
+	
 	
 	# I don't know about sd and MEMBERSHIP ... maybe a z-score of 1 (from the data) ... 
 	
 	n = length(x);
-	n2 = n - stats.countNA(x); 
+	# n2 = n - stats.countNA(x); 
+	n2 = length(xx);
+	
+	if(!na.rm && (n != n2)) { stop("can't continue with na.rm"); }
 	
 	x.sum = x.sum2 = 0;
 	# NAIVE algorithm, so-called
 	for(i in 1:n2)
 		{
-		x.sum 	= x[i] + x.sum;
-		x.sum2	= x[i]*x[i] + x.sum2;
+		x.sum 	= xx[i] + x.sum;
+		x.sum2	= xx[i]*xx[i] + x.sum2;
 		}
 	
 	x.mean	= x.sum/n2;
 	x.var	= (x.sum2 - (x.sum*x.sum)/n2)/(n2-1);
 	x.sd	= sqrt(x.var);
 	
-	m.dev 	= abs(x.sort - x.mean); 			m.mins = stats.whichMin(m.dev);
-												x.bar = x.sort[ m.mins[1] ]; 
+	m.dev 	= abs(xx - x.mean); 			m.mins = stats.whichMin(m.dev);
+												x.bar = xx[ m.mins[1] ]; 
 	# this is mean centered ... +/- one SD is 68% of the data ?, trecile (33%)
 	#m2.dev 	= abs(x.sort - x.bar);
-	s.dev 	= abs(x.sort - x.sd ); 				s.mins = stats.whichMin(s.dev);
-												s.hat = abs(x.sort[ s.mins[1] ]);
+	s.dev 	= abs(xx - x.sd ); 				s.mins = stats.whichMin(s.dev);
+												s.hat = abs(xx[ s.mins[1] ]);
 	# this is the element that is closest to computed sd in the set 
 						
 	# 457 - 300; 457 + 300; # pracma::primes(1000); 
@@ -294,6 +334,21 @@ stats.sd = function(x, ..., na.rm=TRUE, is.member=FALSE, show.warning=na.rm)
 # CENSORSHIP on penis
 # https://www.fileformat.info/info/unicode/char/130B8/browsertest.htm
 # https://unicode-explorer.com/c/130B8#:~:text=%F0%93%82%B8%20penis%2C%20phallus%20%7C%20EGYPTIAN%20HIEROGLYPH%20D052&text=The%20Unicode%20character%20depicting%20a,the%20Egyptian%20hieroglyphics%20unicode%20block.
+
+
+
+
+stats.geomean = function(x, ..., na.rm=TRUE, trim=0, show.warning=na.rm, zero.rm=TRUE, show.warning2=zero.rm)
+	{
+	x = dots.addTo(x, ...);	
+	xx = stats.warningNA(x, show.warning=show.warning);
+	x_ = stats.whichX(x, xx, na.rm);
+	xxx = stats.warningNA(xx, key = "less-equal-zero", show.warning=show.warning2);
+	x_ = stats.whichX(x_, xxx, zero.rm);
+	# we've alreay removed everything, no?
+	exp( mean(log(x_), na.rm=na.rm, trim=trim) );
+	}
+
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -594,8 +649,8 @@ stats.summary = function(x, ..., type=1, sort.ASC = FALSE,
 		names(res$Ns) = paste0( (0:9), "/9" );
 	res$ITR = as.numeric(res$Ns[7] - res$Ns[4]); # inner third of the data 
 	
-	res$mean 	= stats.mean(xx);					# members of the set
-	res$sd		= stats.sd(xx);
+	res$mean 	= stats.mean(xx, is.member=TRUE);		# members of the set
+	res$sd		= stats.sd(xx, is.member=TRUE);
 	res$var		= (res$sd)^2;
 	res$var.p	= res$var*(n2-1)/n2;
 	res$sd.p 	= sqrt(res$var.p);	

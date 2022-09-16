@@ -51,27 +51,33 @@ math.cleanup = function(x, tol = sqrt(.Machine$double.eps), ...)
 
 
 
-
-angle.convert = function(A, ..., from="degrees", to="radians")
+# degree, radian, grad, arcmin, arcsec, turn
+angle.convert = function(in, ..., from="degrees", to="radians")
 	{
-	A = dots.addTo(A, ...);
+	in = dots.addTo(in, ...);
 	# convert everthing to "degrees" on first pass
 	FROM = prep.arg(from, n=1, case="upper");
 	TO = prep.arg(to, n=1, case="upper");
 # dput(A); dput(F); dput(T); 
 	deg = switch(FROM,					  			
-					  "D" 	= A,
-					  "R"	= (180/pi) * A,	
-					  "G"  	= A * 9/10,			
-				A											# DEFAULT
+					  "D"	= in,
+					  "R"	= (180/pi) * in,	
+					  "G"	= in * 9/10,	
+					  "M"	= 60*in, 	# arc-min
+					  "S"	= 3600*in,	# arc-sec
+					  "T"	= 360*in,	# turns 
+				in											# DEFAULT
 				);
 	
 	# convert everything from "degrees" on second pass 
 	
-	res = switch(TO,					  			
+	out = switch(TO,					  			
 					  "D" 	= deg,
 					  "R"	= (pi/180) * deg,	
-					  "G"  	= deg * 10/9,					
+					  "G"  	= deg * 10/9,
+					  "M"	= deg/60, 	# arc-min
+					  "S"	= deg/3600,	# arc-sec
+					  "T"	= deg/360,	# turns 					  
 				deg											# DEFAULT
 				);
 	math.cleanup( res );
@@ -97,7 +103,7 @@ angle.convert = function(A, ..., from="degrees", to="radians")
 	# flon = xlon[pmatch(tolower(first), xlon)]; 
 	# second = mm[2];
 	# slon = xlon[pmatch(tolower(second), xlon)];
-	temp.c2f = 	function(degC) { temp.convert(degC, "C", "F"); }
+	# temp.c2f = 	function(degC) { temp.convert(degC, "C", "F"); }
 	# row = paste0( flon, "2", slon, " = function(A", tolower(first), ", ...) { angle.convert(A", tolower(first), ", ...,  from=\"", toupper(first), "\", to=\"", toupper(second), "\"); } ");
 	# print.noquote(row);
 	# cat(row, "\n\n");

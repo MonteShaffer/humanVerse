@@ -19,7 +19,7 @@
 #'
 #'
 #------------------------------------------------#
-str.grammaticalNumber = function(str, n=1, type="noun")
+str.grammaticalNumber = function(str, n=1, type="noun") 
 	{
 	# 1 timer, 0 timers, 3 timers 
 	# we just return the word (input is singular) as a plural if necessary

@@ -687,8 +687,12 @@ v.return = function(res)
 v.which = function(vec, what="", invert=FALSE)
 	{ 
 	idx = NULL;
+	if(is.null(idx) && is.na(what))
+		{
+		idx = which(is.na(vec));
+		}	
 	# type = v.type(what);
-	if(is.logical(what))
+	if(is.null(idx) && is.logical(what))
 		{
 		if(length(what) == 1)
 			{
@@ -707,10 +711,6 @@ v.which = function(vec, what="", invert=FALSE)
 	if(is.null(idx) && is.character(what))
 		{
 		idx = which(vec == what);
-		}
-	if(is.null(idx) && is.na(what))
-		{
-		idx = which(is.na(vec));
 		}
 	## DEFAULT
 	if(is.null(idx))
@@ -1136,11 +1136,18 @@ v.nearest = function(vec, what, howmany=1)
 	vec[ idx ];
 	}
 
+
+
+
 v.nearest.idx = function(vec, what, howmany=1)
 	{
-	vec.dev = abs(what-vec);
-	if(is.null(howmany)) { return( stats.whichMin(vec.dev) ); } # all results
-	stats.whichMin(vec.dev)[1:howmany];
+	vec.dev = abs(what-vec); 			# deviation
+	idx.min = stats.whichMin(vec.dev);	# minimum
+	if(is.null(howmany) || is.Inf(howmany) || is.negative(howmany))
+		{
+		return(idx.min);  # will have a min 
+		}
+	idx.min[1:howmany];  # this will append NA's if too long ...
 	}
 	
 
