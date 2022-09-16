@@ -311,6 +311,20 @@ list.getElements = function(info, n=1)
 
 
 
+
+list.mapNtoOne(dict$search, variants, type);
+
+list.mapNtoOne = function(info, keys, val)
+	{
+	# inverted from val=>keys ... keys => val (for index lookup)
+	for(key in keys)
+		{
+		info[[key]] = val;
+		}
+	info;	
+	}
+
+
 list.fromError = function(e)
 	{
 	res = list();

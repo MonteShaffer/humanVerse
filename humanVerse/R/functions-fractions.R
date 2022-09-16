@@ -68,8 +68,10 @@ num.den = function(num, den, expand=TRUE)
 
 "%frac%" = num.den;
  
+ 
 
 
+num.constants = function() {} 
 num.constants = function(envir=parent.env(environment()))
 	{
 	# units: "m"eters, "g"ram, "s"econd, "a"mpere, "k"elvin, "mol"e, "c"an"d"ela
@@ -91,6 +93,9 @@ num.constants = function(envir=parent.env(environment()))
 	## mnm = c(mn, m); # properties are lost ...
 	
 	## for file systems, see: https://physics.nist.gov/cuu/Units/binary.html
+	# TODO:  bytes vs bits on return ... 1024 vs 1000 rule ... 
+	# assign("SI_BINARY", mdf, envir=envir);	
+	
 	
 	m = c(1, 2, 3, 6, 9, 12, 15, 18, 21, 24);
 	m = c(-1*m, m);
@@ -296,14 +301,24 @@ options(op);
 
 ## if "ENG" and force.by ... maybe FORCE all numbers to that SCALE
 	if(METHOD == "E")
-		{		
+		{	
+		if(is.character(force.scale))
+			{ 
+			# lookup ... e.g., force.scale = "micro"
+			
+			FS = prep.arg(force.scale, n=3);
+			choices =  substring(SI_PREFIX$SI.name, 1, 3);
+			idx = v.which(choices, FS);
+			if(!is.null(idx)) {  force.scale = SI_PREFIX$SI.idx[idx]; }
+			
+			}
 		if(is.numeric(force.scale))
 			{
 			b = as.integer(force.scale); # this needs to be a multiple of 3
 			b = num.round(b, 3, "integer");
 			de = as.integer(ex - b); # this is delta							
 			# if currently is 0 and needs to be 6, much smaller 
-			nwh = w*10^(de);
+			nwh = wh*10^(de);
 			nex = nwh*0 + b;
 			} else {
 					# any multiples of 3 
@@ -409,7 +424,7 @@ num.toENG = num.toEngineering;
 
 
 
-
+# integer rounding ... floor/ceiling/integer 
 num.round = function(x, by=3, how="integer")
 	{
 	# round vs up vs down ... 
