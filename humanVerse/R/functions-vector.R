@@ -1069,10 +1069,13 @@ v.random = function(n=100, method="norm", ..., seed=NULL)
  
 # https://cplusplus.com/reference/vector/vector/
 # https://www.educba.com/c-plus-plus-shuffle/
-v.shuffle = function(vec, seed=NULL) 
+# Inf just MEANS "ALL OF THEM" in vec ... 
+v.shuffle = function(vec, n=length(vec), seed=NULL) 
 	{
+	nv = length(vec); if(n > nv) { n = nv; } 
 	s = seed.set(seed);
-	res = sample(vec);
+	# no replacement, but return the number we want ... 
+	res = sample(vec, n);
 	res = property.set("seed", res, as.integer(s));
 	res;
 	}

@@ -13,6 +13,8 @@ snails.pace = function(snails = 6, finish.line = 8, moves = 200,
 							snail.col = c("orange", "blue", "pink", "green", "yellow", "red"), ...
 						)
 	{
+	envir = environment(); 
+	
 	old.par = par(no.readonly = TRUE);
 	move.history = NULL;
 	on.exit({par(new = FALSE); par(old.par); invisible(move.history)}); # add=TRUE to on.exit ... always, maybe like dput(all)
@@ -86,7 +88,7 @@ snails.pace = function(snails = 6, finish.line = 8, moves = 200,
 			snail.lab = paste0(snail.x, "*", snail.rank);
 			snail.lab[!has.rank] = snail.x[!has.rank];
 			# assign("snail.lab", snail.lab, envir=parent.env(environment()) );
-			snail.lab %to% . ;
+			snail.lab %to% envir; 
 		# overlay "points" again so trail doesn't have text ...
 		# maybe not even use plot ?
 		# overlay doesn't work with BAD UTF character ... weird ?
@@ -127,21 +129,14 @@ snails.pace = function(snails = 6, finish.line = 8, moves = 200,
 				{
 				x = readline(prompt="Press [enter] to continue, [ESC] to quit");
 				} 
-		n = sample((1:snails), 1);
-		# assign("n", n, envir=parent.env(environment()) );
-		n %to% . ;
+		# n = sample((1:snails), 1);	n %to% envir;
+		n = v.shuffle((1:snails), 1);	n %to% envir;
 		
 		snail.x[n] = 1 + snail.x[n];
 		if( (snail.rank[n] == 0) && (snail.x[n] >= finish.line) )
 			{ 			
-			snail.rank[n] = crank;
-			## crank = 1 + crank;
-			crank %++% . ;
-			# update to MAIN environment
-			## assign("snail.rank", snail.rank, envir=parent.env(environment()) );
-			## assign("crank", crank, envir=parent.env(environment()) );
-			snail.rank %to% . ;
-			crank %to% . ;
+			snail.rank[n] = crank;		snail.rank 	%to% envir;
+			crank %++%. ;				crank 		%to% envir;
 			}		
 		snail.x;
 		}
@@ -151,8 +146,7 @@ snails.pace = function(snails = 6, finish.line = 8, moves = 200,
 	snails.plot(); 
 	while(move.number < moves)
 		{
-		# move.number = 1 + move.number;
-		move.number %++% . ; 
+		move.number %++%. ; 
 		snail.x = snails.update();
 		move.history = c(move.history, n);  # prevent multi-color BUG
 		snails.plot();	

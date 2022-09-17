@@ -15,6 +15,11 @@
 # we have idx , line.no , char.no , WHAT ... dataframe
 parse.lang = function(lines, debug=FALSE, from.readLines=TRUE)
 	{
+	envir = environment();
+print(environment());
+print(parent.frame(1));
+print(parent.env(environment()));
+
 	# inside strings, R parser !Q?FMDS
 	if(from.readLines)
 		{
@@ -172,35 +177,34 @@ cat("\n\t\t\t\t",						" ... ",
 		}
 	
 	add.to = function() {}
-	add.to = function(envir=parent.env(environment()))
+	add.to = function()
 		{
-		cres = c(cres, cc);	
-		assign("cres", cres, envir=envir );
+		cres = c(cres, cc);		cres 		%to% envir ;
 		}
 	
 	do.OBJ = function() {}
-	do.OBJ = function(envir=parent.env(environment()))
+	do.OBJ = function()
 		{
 if(debug)
 	{
 cat("\n do.OBJ \n");
 	}
-		cval 		= TRUE; 	cval 		%to% envir;
-		IN_OBJECT 	= TRUE; 	IN_OBJECT 	%to% envir;
+		cval 		= TRUE; 	cval 		%to% envir ;
+		IN_OBJECT 	= TRUE; 	IN_OBJECT 	%to% envir ;
 		
 		add.to();
 		return(TRUE);		
 		}
 	
 	do.DQ = function() {}
-	do.DQ = function(envir=parent.env(environment()))
+	do.DQ = function()
 		{
 if(debug)
 	{
 cat("\n do.DQ \n");
 	}
 
-		cval 		= TRUE; 	cval 		%to% envir;
+		cval 		= TRUE; 	cval 		%to% envir ;
 		if(IN_OBJECT)
 			{
 			# we encountered a DQ inside the OBJ envir 
@@ -211,10 +215,10 @@ cat("\n do.DQ \n");
 			{
 			# start a string 
 			cres = NULL;
-			IN_STRING = TRUE;		IN_STRING 		%to% envir;
-			IN_OBJECT = FALSE;		IN_OBJECT 		%to% envir;
-			IN_STRING.type = "DQ";	IN_STRING.type 	%to% envir;
-			j.start = j+1;			j.start 		%to% envir;			
+			IN_STRING = TRUE;		IN_STRING 		%to% envir ;
+			IN_OBJECT = FALSE;		IN_OBJECT 		%to% envir ;
+			IN_STRING.type = "DQ";	IN_STRING.type 	%to% envir ;
+			j.start = j+1;			j.start 		%to% envir ;			
 			return(TRUE);
 			} 
 			
@@ -225,9 +229,9 @@ cat("\n do.DQ \n");
 			if(pc != BACKSLASH)
 				{
 				# we are at the end of IN_STRING ... TIE it OFF 
-				IN_STRING 		= FALSE;			IN_STRING 		%to% envir;
-				quote 			= IN_STRING.type;		quote 		%to% envir;
-				IN_STRING.type 	= "";				IN_STRING.type 	%to% envir;			
+				IN_STRING 		= FALSE;			IN_STRING 		%to% envir ;
+				quote 			= IN_STRING.type;		quote 		%to% envir ;
+				IN_STRING.type 	= "";				IN_STRING.type 	%to% envir ;			
 				} else {
 if(debug)
 	{
@@ -253,14 +257,14 @@ cat("\n DQ inside SQ \n");
 
 		
 	do.SQ = function() {}
-	do.SQ = function(envir=parent.env(environment()))
+	do.SQ = function()
 		{
 if(debug)
 	{
 cat("\n do.SQ \n");
 	}
 		# all the way up or just the CALLER?		
-		cval 		= TRUE; 	cval 		%to% envir;
+		cval 		= TRUE; 	cval 		%to% envir ;
 		if(IN_OBJECT)
 			{
 			# we encountered a SQ inside the OBJ envir 
@@ -270,11 +274,11 @@ cat("\n do.SQ \n");
 		if(!IN_STRING)
 			{
 			# start a string 
-			cres = NULL;			cres			%to% envir;
-			IN_STRING = TRUE;		IN_STRING 		%to% envir;
-			IN_OBJECT = FALSE;		IN_OBJECT 		%to% envir;
-			IN_STRING.type = "SQ";	IN_STRING.type 	%to% envir;
-			j.start = j+1;			j.start 		%to% envir;	
+			cres = NULL;			cres			%to% envir ;
+			IN_STRING = TRUE;		IN_STRING 		%to% envir ;
+			IN_OBJECT = FALSE;		IN_OBJECT 		%to% envir ;
+			IN_STRING.type = "SQ";	IN_STRING.type 	%to% envir ;
+			j.start = j+1;			j.start 		%to% envir ;	
 			return(TRUE);
 			} 
 			
@@ -285,9 +289,9 @@ cat("\n do.SQ \n");
 			if(pc != BACKSLASH)
 				{
 				# we are at the end of IN_STRING ... TIE it OFF 
-				IN_STRING 		= FALSE;			IN_STRING 		%to% envir;
-				quote 			= IN_STRING.type;		quote 		%to% envir;
-				IN_STRING.type 	= "";				IN_STRING.type 	%to% envir;	
+				IN_STRING 		= FALSE;			IN_STRING 		%to% envir ;
+				quote 			= IN_STRING.type;		quote 		%to% envir ;
+				IN_STRING.type 	= "";				IN_STRING.type 	%to% envir ;	
 				} else {
 if(debug)
 	{
@@ -312,27 +316,27 @@ cat("\n SQ inside DQ \n");
 		}
 		
 	do.OP = function() {}
-	do.OP = function(envir=parent.env(environment()))
+	do.OP = function()
 		{
 if(debug)
 	{
 cat("\n do.OP \n");
 	}
-		cval 		= TRUE; 	cval 	%to% envir;
-		p.count = p.count + 1;	p.count %to% envir;
+		cval 		= TRUE; 	cval 	%to% envir ;
+		p.count = p.count + 1;	p.count %to% envir ;
 		if(p.count > 1) { add.to(); } else { cres = NULL; } 
-								cres 	%to% envir;
+								cres 	%to% envir ;
 		}
 		
 	do.CP = function() {}
-	do.CP = function(envir=parent.env(environment()))
+	do.CP = function()
 		{
 if(debug)
 	{ 
 cat("\n do.CP \n");
 	}
-		cval 		= TRUE; 	cval 		%to% envir;
-		p.count = p.count - 1; 	p.count 	%to% envir;
+		cval 		= TRUE; 	cval 		%to% envir ;
+		p.count = p.count - 1; 	p.count 	%to% envir ;
 		if(p.count >= 1) { add.to(); }
 		if(p.count == 0)
 			{
@@ -348,14 +352,14 @@ cat("\n CLOSING FUNCTION ... p.count = 0 \n");
  
 
 	do.COMMA = function() {}
-	do.COMMA = function(envir=parent.env(environment()))
+	do.COMMA = function()
 		{
 if(debug)
 	{
 cat("\n do.COMMA \n");
 	}
 		# what if comma is just in the text ... 
-		cval 		= TRUE; 	cval 		%to% envir;
+		cval 		= TRUE; 	cval 		%to% envir ;
 		if(IN_STRING)
 			{
 			add.to();
@@ -365,7 +369,7 @@ cat("\n do.COMMA \n");
 		}
 	
 	process.one = function() {}
-	process.one = function(envir=parent.env(environment())) 
+	process.one = function() 
 		{
 		# assign("ctype", NULL, envir=envir );
 		# I think this is LOCAL to this function only 
@@ -458,14 +462,14 @@ cat("\n ANSI: ", ca, "\n");
 		j = j_;
 		j.start = j.start_;
 		
-		df = rbind(df, row);	df 			%to% envir;
+		df = rbind(df, row);	df 			%to% envir ;
 							
-		idx = 1 + idx; 			idx 		%to% envir;
-		j.start = j; 			j.start 	%to% envir;
+		idx = 1 + idx; 			idx 		%to% envir ;
+		j.start = j; 			j.start 	%to% envir ;
 		
 		# resetting ... if we got this far, we shouldn't have PARSE errors
-		IN_OBJECT = FALSE; 		IN_OBJECT 	%to% envir;
-		cres = NULL;			cres 		%to% envir;
+		IN_OBJECT = FALSE; 		IN_OBJECT 	%to% envir ;
+		cres = NULL;			cres 		%to% envir ;
 
 		
 if(debug)
@@ -478,7 +482,7 @@ if(debug)
 	}
 		
 		## TRUNCATE line for DEBUGGING PURPOSES ... scan already has REAL LINE 
-		line = substring(line, j+1, slen);	line %to% envir;
+		line = substring(line, j+1, slen);	line %to% envir ;
 		
 if(debug)
 	{	
@@ -498,7 +502,7 @@ traceback();
 		}
 
 	finish = function() {}	
-	finish = function(envir=parent.env(environment())) 
+	finish = function() 
 		{
 		# we collected everything between wrap.lang(EVERYTHING)
 		# it is possible that the line has two of them, so we 
@@ -516,9 +520,9 @@ traceback();
 		out[[count.finds]] = df;
 # df will *also* nullify on init()?
 		status = "searching";
-		df = NULL;					df 		%to% envir;
-									out 	%to% envir;
-									status 	%to% envir;
+		df = NULL;					df 		%to% envir ;
+									out 	%to% envir ;
+									status 	%to% envir ;
 		
 if(debug)
 	{			
@@ -529,11 +533,11 @@ pause();
 		}	
 				
 	scan.char = function() {}
-	scan.char = function(envir=parent.env(environment()))
+	scan.char = function()
 		{				
 		show.status("char", 1);
 		# cc as "current char"
-		cval = NULL; 		cval %to% envir;
+		cval = NULL; 		cval %to% envir ;
 		
 		
 		if(is.null(cval) && cc == OP) { do.OP(); }
@@ -551,33 +555,33 @@ pause();
 		
 		show.status("char", 2);
 		
-		pc = cc;		pc %to% envir;		
+		pc = cc;		pc %to% envir ;		
 		}
 		
 	scan.init = function() {}
-	scan.init = function(envir=parent.env(environment())) 
+	scan.init = function() 
 		{
-		scan = str.explode("", line); 	scan %to% envir; 
+		scan = str.explode("", line); 	scan %to% envir ; 
 		
 if(debug)
 	{	
 cat("\n SCAN: ", scan, "\n");
 	}
-		slen = length(scan);			slen %to% envir;
+		slen = length(scan);			slen %to% envir ;
 		scanning();
 		}
 	
 	
 	scanning = function() {}
-	scanning = function(envir=parent.env(environment()))
+	scanning = function()
 		{		
 		if(slen > 0)
 			{
 			for(j in 1:slen)
 				{
 				cc = scan[j]; 
-									j %to% envir;
-									cc %to% envir;
+									j %to% envir ;
+									cc %to% envir ;
 				scan.char();
 				}
 			}		
@@ -587,21 +591,24 @@ cat("\n SCAN: ", scan, "\n");
 	
 	
 	searching = function() {}
-	searching = function(envir=parent.env(environment()))
+	searching = function()
 		{
-		line.eval = TRUE;		line.eval %to% envir;
+#print(parent.frame(1));
+#print(parent.env(environment()));
+
+		line.eval = TRUE;		line.eval %to% envir ;
 		
 			# make certain "FN.NAME(" are attached in search
 		tline = str.removeWhiteSpace(line, replace="", n=1);
 		if(str.contains( paste0(fn.search,"("), tline))
 			{
-			df 	= NULL; 			df 		%to% envir;
-			cres 	= NULL; 		cres 	%to% envir;
-			idx 	= 1;			idx 	%to% envir;
-			status 	= "scanning"; 	status 	%to% envir;
+			df 	= NULL; 			df 		%to% envir ;
+			cres 	= NULL; 		cres 	%to% envir ;
+			idx 	= 1;			idx 	%to% envir ;
+			status 	= "scanning"; 	status 	%to% envir ;
 			
 			count.finds = 1 + count.finds;
-							count.finds 	%to% envir;
+							count.finds 	%to% envir ;
 							
 if(debug)
 	{
@@ -629,7 +636,7 @@ cat("\n SEARCHING FOUND MATCH: ", tline, "\n\n");
 				# from a previous line ... EDGE CASE
 				# hard to imagine since I am reading the file from 
 				# beginning search for first element ...
-				line = r;		line %to% envir;
+				line = r;		line %to% envir ;
 				scan.init();
 				}				
 			}

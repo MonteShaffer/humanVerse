@@ -240,6 +240,12 @@ plusplus = function() {}
 	ct.KEY = check.type(KEY);
 	ct.VAL = check.type(VALUE);
 	
+# dput(KEY);
+# dput( deparse(substitute(KEY)) );
+# dput( eval(parse(text = deparse(substitute(KEY)) ) ) );
+# print(WHERE);
+# dput(environmentName(WHERE));
+
 	# i %++% .
 	if(ct.KEY && !ct.VAL)
 		{
@@ -247,7 +253,12 @@ plusplus = function() {}
 		nval = 1+val;
 		key = deparse(substitute(KEY));
 		# use the basic %to% logic ...
-		assign(key, nval, envir=WHERE );
+		# assign(key, nval, envir=WHERE );
+		# snails.x[n] %++%.
+		str = paste0(key, " = ", nval, ";");
+dput(str);
+		eval(parse(text = str), envir=WHERE);
+		# eval.parent(parse(text = str));
 		return(nval);
 		}
 		
@@ -258,7 +269,13 @@ plusplus = function() {}
 		nval = 1+val;
 		key = deparse(substitute(VALUE));
 		# use the basic %to% logic ...
-		assign(key, nval, envir=WHERE );
+		# assign(key, nval, envir=WHERE );
+		#  .%++% snails.x[n]
+
+		str = paste0(key, " = ", nval, ";");
+dput(str);
+		eval(parse(text = str), envir=WHERE);
+		
 		return(val);
 		}
 	
@@ -297,10 +314,15 @@ global = function() {}
 	gggassign(key,VALUE);	
 	}
 
-
+ 
 to = function() {}
 "%to%" = to = function(WHAT, WHERE=parent.frame(2))
 	{
+cat("\n");
+print(environment());
+print(parent.env(environment()));
+print(parent.env(parent.env(environment())));
+	#DEFAULT = parent.frame(1); # caller? parent
 	DEFAULT = parent.frame(2); # one above caller? grandparent
 	# allows x %to% . 
 	ct.WHERE = check.type(WHERE);
