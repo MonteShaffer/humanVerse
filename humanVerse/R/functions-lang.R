@@ -102,6 +102,8 @@ prep.msg = function(...,  type="msg", out="paste0", sep=" ")
 	
 count.ansi = function(str)
 	{
+	v  = str.count(str, "<v>");		# this is a "garbage" tag used to 
+	vc = str.count(str, "</v>");	# ignore the element for prep.msg (TRANSLATE)
 	i  = str.count(str, "<i>");
 	ic = str.count(str, "</i>");
 	u  = str.count(str, "<u>");

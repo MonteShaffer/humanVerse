@@ -163,7 +163,7 @@ stats.countNA = function(x, ...)
 stats.sum = function(x, ..., na.rm=TRUE, show.warning=na.rm)
 	{
 	x = dots.addTo(x, ...);
-	xx = stats.warningNA(x, show.warning=show.warning);
+	xx = stats.warningNA(x, show.warning=show.warning);  
 	x_ = stats.whichX(x, xx, na.rm);
 	res = base::sum(x_, na.rm=na.rm)
 	res; 
@@ -831,7 +831,7 @@ standardizeToMin = function(x, myMin=NULL)
 	x/myMin;
 	}
 
-#' standardizeToMax
+#' standardizeToMax 
 #'
 #' Standarize a vector to its maximum
 #'
@@ -864,7 +864,7 @@ standardizeToMax = function(x, myMax=NULL)
 #' @return numeric vector, updated
 #' @export
 #'
-#' @examples
+#' @examples 
 #' standardizeToN ( c(2: 10) );
 #' standardizeToN ( c(-2, 1: 10) );
 #'

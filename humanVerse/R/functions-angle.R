@@ -52,21 +52,21 @@ math.cleanup = function(x, tol = sqrt(.Machine$double.eps), ...)
 
 
 # degree, radian, grad, arcmin, arcsec, turn
-angle.convert = function(in, ..., from="degrees", to="radians")
+angle.convert = function(x, ..., from="degrees", to="radians")
 	{
-	in = dots.addTo(in, ...);
+	x = dots.addTo(x, ...);
 	# convert everthing to "degrees" on first pass
 	FROM = prep.arg(from, n=1, case="upper");
 	TO = prep.arg(to, n=1, case="upper");
 # dput(A); dput(F); dput(T); 
 	deg = switch(FROM,					  			
-					  "D"	= in,
-					  "R"	= (180/pi) * in,	
-					  "G"	= in * 9/10,	
-					  "M"	= 60*in, 	# arc-min
-					  "S"	= 3600*in,	# arc-sec
-					  "T"	= 360*in,	# turns 
-				in											# DEFAULT
+					  "D"	= x,
+					  "R"	= (180/pi) * x,	
+					  "G"	= x * 9/10,	
+					  "M"	= 60*x, 	# arc-min
+					  "S"	= 3600*x,	# arc-sec
+					  "T"	= 360*x,	# turns 
+				x											# DEFAULT
 				);
 	
 	# convert everything from "degrees" on second pass 

@@ -1,6 +1,6 @@
 
 
-# mytype = suppressError(
+# mytype = suppressError( 
 # may be different for tryCatch(
 is.error = function(e, where="suppressError")
 	{

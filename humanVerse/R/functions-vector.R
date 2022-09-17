@@ -1072,13 +1072,25 @@ v.random = function(n=100, method="norm", ..., seed=NULL)
 # Inf just MEANS "ALL OF THEM" in vec ... 
 v.shuffle = function(vec, n=length(vec), seed=NULL) 
 	{
+	# shuffle implies no replacement ...  
 	nv = length(vec); if(n > nv) { n = nv; } 
-	s = seed.set(seed);
-	# no replacement, but return the number we want ... 
+	s = seed.set(seed);	
 	res = sample(vec, n);
 	res = property.set("seed", res, as.integer(s));
 	res;
 	}
+
+v.sample = function(vec, size, replace=FALSE, prob=NULL, seed=NULL) 
+	{
+	s = seed.set(seed); 
+	res = sample(vec, size, replace=replace, prob=prob);
+	res = property.set("seed", res, as.integer(s));
+	res;
+	}
+
+
+
+
 
 v.fill = function(vec, to.length=5, with=NA)
 	{
@@ -1157,6 +1169,171 @@ v.mode = function(vec, invert=FALSE)
 
 
 
+
+
+
+   
+v.norm = function(vec, method="sum", lower=NULL, upper=NULL, force.abs=FALSE, na.rm=TRUE, show.warning=na.rm)
+	{
+	METHOD = prep.arg(method, n=3, keep="-"); 
+	# why call the function if you have na ... ?
+	vec = stats.warningNA(vec, show.warning=show.warning); 
+	if(force.abs) { vec = abs(vec); }
+	 
+	if(METHOD %IN% c("Sum", "sum"))   
+		{
+		return(  vec / sum(vec) ); 
+		}
+	if(METHOD %IN% c("Minimum", "min"))
+		{
+		return(  vec / min(vec) ); 
+		}	
+	if(METHOD %IN% c("Maximum", "max"))
+		{
+		return(  vec / max(vec) ); 
+		}
+	# bounded between [0,1]
+	if(METHOD %IN% c("Minimum-Maximum", "min-max", "max-min"))
+		{
+		vmin = min(vec); vmax = max(vec); vrange = vmax - vmin;
+		return(  ( vec - vmin) / vrange ); 
+		}
+	if(METHOD %IN% c("Custom-Range", "cus-ran", "r", "ran", "c-r"))  # custom range
+		{
+		if(length(lower) == 1)
+			{
+			# data determine min/max of vec 
+			# old range is c(min(vec), max(vec))
+			# new range is c(lower, upper)
+			vmin = min(vec); 	vmax = max(vec); 	vrange = vmax - vmin;
+			nmin = lower[1]; 	nmax = upper[1]; 	nrange = nmax - nmin; 
+			} else { 
+					# LIKERT 5 to LIKERT 7 (data may not have min/max)
+					# lower = c(1,5); upper = c(1, 7);
+					# lower is old.range; upper is new.range 
+					vmin = lower[1]; vmax = lower[2]; vrange = vmax - vmin;
+					nmin = upper[1]; nmax = upper[2]; nrange = nmax - nmin; 
+					}
+		return(  nmin + (nrange) * (vec - vmin) / (vrange) );
+		}
+	if(METHOD %IN% c("zScores", "zsc", "z", "z-s", "z-sco", "mea-sca", "sca"))
+		{
+		vmean = mean(vec); vstd = xls.STDEV.S(vec); # should be biased form?
+		return(  ( vec - vmean) / vstd ); 
+		}
+	if(METHOD %IN% c("mScores", "msc", "m", "m-s", "m-sco", "med-sco", "med-sca"))
+		{
+		vmedian = stats.median(vec); mdev = stats.MAD(vec);
+		return(  ( vec - vmedian) / mdev ); 
+		}
+	if(METHOD %IN% c("Lower-Divide", "low-div", "low"))
+		{
+		return(  vec / lower[1] ); 
+		}
+	if(METHOD %IN% c("Upper-Multiply", "upp-mul", "upp"))
+		{
+		return(  vec * upper[1] );
+		}
+	if(METHOD %IN% c("Euclidean", "euc")) 			# Euclidian norm
+		{		
+		# over/under flow 
+		# https://stackoverflow.com/a/63763823/184614
+		k = NULL;
+		if(!is.null(k) && !is.null(lower)) { k = lower[1]; }
+		if(!is.null(k) && !is.null(upper)) { k = upper[1]; }
+		if(!is.null(k)) { k = 2; } # traditional Euclidean 
+			
+		v.abs = abs(vec); v.max.abs = max(v.abs);		 
+		res = v.max.abs * ( (sum(( v.abs / v.max.abs )^k))^(1/k) ) 
+		return(res); 		
+		}
+	# equivalently just do "sum" norm with force.abs = TRUE 
+	if(METHOD %IN% c("Manhattan", "man", "abs"))		# Manhattan norm
+		{		
+		return( vec / (abs(sum(vec))) ); 		
+		}
+		
+		
+		
+	# maybe update %in% function to create a memory
+	# start recording ... stop recording ... error msg can
+	# have unique key/maps to alert as possible options tied to a default?
+	# ADD first element as BOGUS for search, but default ...
+	## ... nested like 'convert' function ... maybe scan for outer one first ... and stop ... then scan internally on the exact value ... 
+	## use %IN% to return exact value ... 
+	
+	msg = prep.msg("It appears that you entered an *INCORRECT*",
+					"<v>method</v>.", 
+					"\n\n\t",
+					"You entered: ", "<v>[</v>", method, "<v>]</v>",
+					"\n\n\t\t",
+					"which was cleansed to: ", "<v>[</v>", METHOD, "<v>].</v>",
+					"\n\n",
+					"Please try again.",
+					"\n\n",					
+					"Below is a list of options with allowed 'shortcodes'",
+					"\n\n",
+					IN.msg()
+					);
+
+	"\n\n", "Please try again.  Below is a list of pot
+	print(method); print(METHOD);
+	print(str(IN.get()));
+	stop("missing method");
+	}
+	
+
+# e = yt - y.hat
+# xls.RMSE(e) ... xls.ME ... xls.MAD ... xls.MPE ... xls.MAPE 
+# xls.RSQ ... xls.INTERSEPT ... xls.SLOPE ... 
+# rewrite TRENDLINE function ... trendline ... use only xls.COMMANDS 
+# transform the x, y to call SLOPE/INTERSEPT 
+# fn = B0 + B1x1 + B2x2
+# linear prob / logistic / 2-param Richards (floor=0, ceil=1) ... equivalent?
+# sigma() ... fitted() ... 
+# accuracy() ... forecast::forecast()
+# matching coefficient ... jaccards coefficient
+# misscaliffication aka error
+# sensitivity ... aka recall
+# 
+
+set.info = function(A, B)
+	{
+	all = c(A,B);
+	all.u = unique(all);
+	
+	A = c(1,1,3,4); # table(A);  FREQ ,,, 
+	B = c(5,3,3,1); # table(B);  FREQ ,,,
+	
+	# match is like which.min ... just returns the first element 
+	# set.info do everything ... dataframe ... duplicates yes or no version 
+	# 
+	
+	}
+	
+set.union = function(A, B, allow.duplicates=FALSE)
+	{
+	all = c(A,B);
+	
+	}
+	
+# R set theory is wrong ... based on unique indexes?
+# allow.duplicates=FALSE (replicate R behavior)
+# pair theory ... not useful in data 
+# https://www.youtube.com/watch?v=AAJB9l-HAZs
+# complemtn of A/B from universal 
+# x = 1,2,3 ... y = 3,1,3 ... 
+# union would be collection with matches removed as duplicates
+# unique or duplicates are not pair-matching ... bad design
+# we don't assume in set theory that members of x are UNIQUE, do we?
+# set.subtract (a from b)
+# str.subtract (a from b)
+# x = set* first 10 primes AND first 10 odd numbers ... duplicate entries
+# y = set* first 3 primes, 8th prime ... AND third/fifth odd number 
+# what does UNION imply?  INTERSECT, etc.  unique/duplicate seems wrong.
+
+	
+	
 
 
 # original = c("P.1", "P.2", "P.3", "P.4", "P.5", "P.6", "P.7", "P.8", "P.9", "P.10");

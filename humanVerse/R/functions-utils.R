@@ -247,6 +247,8 @@ plusplus = function() {}
 # dput( eval(parse(text = deparse(substitute(KEY)) ) ) );
 # print(WHERE);
 # dput(environmentName(WHERE));
+# 871dcc472a3a1b66f8a266c330d56907d725fc8c
+# git log --all --full-history -- "**/functions-integrate.*"
 
 	# i %++% .
 	if(ct.KEY && !ct.VAL)
@@ -309,9 +311,115 @@ global = function() {}
 	gggassign(key,VALUE);	
 	}
 
+IN.capture = function(mem.key = "-CURRENT_IN-")
+	{
+	memory.set(mem.key, "-IN-", list()); 
+	}
+
+IN.get = function(mem.key = "-CURRENT_IN-")
+	{
+	memory.get(mem.key, "-IN-");	
+	}
+	
+	
+IN.msg = function(mem.key = "-CURRENT_IN-")
+	{
+	info = memory.get(mem.key, "-IN-");
+	BEGIN = "\n\n\t";	START = "\n\t\t\t"; BETWEEN = "\t";	END = "\n\n";
+	
+	n = length(info);
+	keys = names(info);
+	str = END;
+	for(i in 1:n)
+		{
+		key = keys[i];
+		val = info[[key]];
+		str = paste0(str, BEGIN, key, START, paste0(val, collapse=BETWEEN), END)
+		}
+	str;
+	}
+
+	
+IN.print = function(mem.key = "-CURRENT_IN-")
+	{
+	info = memory.get(mem.key, "-IN-");
+	print(str(info));
+	}
+	
+
+IN = function(KEY, VALUE, mem.key = "-CURRENT_IN-")
+	{
+	# perform %in% with memory 	
+	info = memory.get(mem.key, "-IN-");
+	if(is.null(info)) { info = list(); }
+	
+	# use vector notation, is.element ... 
+	# match(as.vector(el), as.vector(set), 0L) > 0L
+	# "%in%" <- function(x, table) match(x, table, nomatch = 0) > 0
+	
+	ele = as.vector(KEY);
+	set = as.vector(VALUE); 
+	key = set[1];
+	
+	info[[key]] = set[-c(1)];	
+	memory.set(mem.key, "-IN-", info); 
+	
+	# ?el 
+	
+	(match(ele, set, 0L) > 0L);
+	}
+   
+"%IN%" = IN;
+ 
+# this = function(...) { print(sys.call(1)); }
+#  .%THIS%.
+THIS = function(KEY, VALUE)
+	{
+
+	DEFAULT_FRAME 	= 2;	# parent.frame(n);
+	DEFAULT_CALL 	= 2;	# sys.call(n);
+		
+	## KEY is the FRAME 
+	ct.KEY = check.type(KEY);
+	key = NULL;
+	if(is.null(key) && !ct.KEY)
+		{
+		key = parent.frame(DEFAULT_FRAME);		
+		}
+	if(is.null(key) && is.environment(KEY))
+		{
+		key = KEY;
+		}
+	if(is.null(key) && is.numeric(KEY))
+		{		
+		key = parent.frame(KEY);
+		}
+
+	ct.VAL = check.type(VALUE);
+	## VALUE is the CALL
+	val = NULL;
+	if(is.null(val) && !ct.VAL)
+		{
+		val = sys.call(DEFAULT_CALL);		
+		}
+	if(is.null(val) && is.numeric(VALUE))
+		{		
+		val = sys.call(VALUE);
+		}
+
+	# parse key/val ... get what we want 
+	# key is envir 
+	# val is call with parameters 
+	res = list("envir" = key, "call" = val);
+	
+	WHERE=parent.frame(2); # or WHERE = env?
+	assign("THIS", res, envir=WHERE );
+	}
+"%THIS%" = this = THIS; 
+ 
  
 to = function() {}
-"%to%" = to = function(WHAT, WHERE=parent.frame(2))
+TO = function(WHAT, WHERE=parent.frame(2))
 	{
 cat("\n");
 print(environment());
@@ -327,6 +435,9 @@ print(parent.env(parent.env(environment())));
 	key = deparse(substitute(WHAT));		
 	assign(key, val, envir=WHERE );
 	}
+	
+"%to%" = to = TO;	
+	
 	
 # x = 44;
 # y = function(envir = .GlobalEnv) { x=NULL; x %to% envir; }
