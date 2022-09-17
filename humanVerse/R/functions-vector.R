@@ -735,6 +735,75 @@ v.remove = function(vec, what="", invert=FALSE)
 	v.return(vec[ -c( idx ) ]);  
 	}
 	 
+	 
+prep.dist = function(METHOD)
+	{
+	IN.init();
+	key = NULL;
+	if(METHOD %IN% c("Uniform Distribution", "unif", "unif-dist")) 
+		{ key = "unif"; }
+	if(METHOD %IN% c("Normal Distribution",  "norm", "norm-dist")) 
+		{ key = "norm"; }
+	if(METHOD %IN% c("t Distribution",  "t", "stud-t", "t-dist")) 
+		{ key = "t"; }
+	if(METHOD %IN% c("F Distribution",  "f", "f-dist")) 
+		{ key = "f"; }
+	if(METHOD %IN% c("Chi-Squared Distribution",  "chisq", "chi-squa", "chi-dist")) 
+		{ key = "chisq"; }
+	if(METHOD %IN% c("Beta Distribution",  "beta", "beta-dist")) 
+		{ key = "beta"; }
+	if(METHOD %IN% c("Gamma Distribution",  "gamma", "gamm", "gamm-dist")) 
+		{ key = "gamma"; }
+	if(METHOD %IN% c("Cauchy Distribution",  "cauchy", "cauc", "cauc-dist")) 
+		{ key = "cauchy"; }
+	if(METHOD %IN% c("Exponential Distribution",  "exp", "expo", "exp-dist", "expo-dist")) 
+		{ key = "exp"; }
+	if(METHOD %IN% c("Binomial Distribution",  "binom", "bino", "bino-dist")) 
+		{ key = "binom"; }
+	if(METHOD %IN% c("Negative-Binomial Distribution",  "nbinom", "nbin", "nbin-dist", "nega-bino-dist", "neg-bino", "neg-bin", "neg-bino-dist", "neg-bin-dist")) 
+		{ key = "nbinom"; }
+	if(METHOD %IN% c("Poisson Distribution",  "pois", "pois-dist")) 
+		{ key = "pois"; }
+	if(METHOD %IN% c("Log-Normal Distribution",  "lnorm", "lnor", "lnor-dist", "logo-norm", "logo-norm-dist", "log-", "log-norm", "log-norm-dist")) 
+		{ key = "lnorm"; }
+		
+	if(METHOD %IN% c("Multinomial Distribution",  "multinom", "mult", "mult-dist", "mult-nom", "mult-nomi")) 
+		{ key = "multinom"; }
+	if(METHOD %IN% c("Logistic Distribution",  "logis", "logi", "logi-dist")) 
+		{ key = "logis"; }
+		
+	if(METHOD %IN% c("Weibull Distribution",  "weibull", "weib", "weib-dist")) 
+		{ key = "weibull"; }
+		
+	if(METHOD %IN% c("Geometric Distribution",  "geom", "geom-dist")) 
+		{ key = "geom"; }
+	if(METHOD %IN% c("HyperGeometric Distribution",  "hyper", "hype", "hype-dist","hype-geo", "hype-geom", "hype-geo-dist", "hype-geom-dist")) 
+		{ key = "hyper"; }
+		
+	if(METHOD %IN% c("Signed Rank (Wilcoxon) Distribution",  "signrank", "sign", "sign-dist", "sign-rank", "sign-rank-dist")) 
+		{ key = "signrank"; }
+		
+	if(METHOD %IN% c("Wilcoxon Rank Sum Distribution",  "wilcox", "wilc", "wilc-dist", "wilc-rank-dist", "wilc-rank-sum-dist", "wilc-sum-dist")) 
+		{ key = "wilcox"; }
+
+	## only has an rWishart function ...
+	if(METHOD %IN% c("Wishart Distribution",  "Wishart", "wish", "wish-dist")) 
+		{ key = "Wishart"; }
+							
+
+	
+	if(is.null(key)) { key = "--NULL--"; }
+	
+	df = IN.df();
+	IN.clear();
+	minvisible(df, print=FALSE);
+	key = property.set("IN", key, df);
+	key;
+	}
+	
+	
+	
+# call-list ... do.call()
 prep.clist = function(clist, dots)
 	{
 	keys = names(dots);
@@ -742,7 +811,7 @@ prep.clist = function(clist, dots)
 	nk = length(keys);
 	for(i in 1:nk)
 		{
-		key = keys[i]; val = vals[i];
+		key = keys[i]; val = unlist(vals[i]);  # vectored?
 		clist[[key]] = val;
 		}
 	clist;
@@ -815,43 +884,26 @@ PDF = function(x, method="norm", ...)
 	clist = list(x=x); 
 	if(!is.null(dots)) 
 		{
-		dots = unlist(list(...));
+		dots = list(...);
 		clist = prep.clist(clist, dots);
 		}
 	ct.method = check.type(method);
 	if(!ct.method || !is.character(method)) 
 		{ method = deparse(substitute(method)); }
-	METHOD = prep.arg(method, 4);
+	METHOD = prep.arg(method, n=4, keep="-");
 	# http://127.0.0.1:23214/library/stats/html/Distributions.html
-	fn.name = switch(METHOD,
-						"unif" 	= "dunif",		# unif 		
-						"norm" 	= "dnorm",		# norm
-						"t"		= "dt",			# t
-						"f"		= "df",			# f 
-						"chis"	= "dchisq",		# chisq 
-						"beta"	= "dbeta",		# beta 
-						"gamm"	= "dgamma", 	# gamma
-						"exp"	= "dexp",		# exp 
-						"cauc"	= "dcauchy",	# cauchy 
-						
-						"bino"	= "dbinom", 	# binom
-						"nbin"	= "dnbinom",	# nbinom
-						"pois"	= "dpois",		# pois
-						
-						"lnor"	= "dlnorm", 	# lnorm
-						"mult"	= "dmultinom", 	# multinom
-						"logi"	= "dlogis", 	# logis
-						
-						"weib"	= "dweibull",	# weibull						
-						"geom"	= "dgeom", 		# geom
-						"hype"	= "dhyper",		# hyper
-						
-						"rsig"	= "dsignrank", 	# signrank 
-						"wilc"	= "dwilcox", 	# wilcox 
-						"wish"	= "dWishart",	# Wishart
-						
-					stop("not found, METHOD wrapped in msg")
-					);
+		
+	KEY = prep.dist(METHOD);
+	if(KEY == "--NULL--")
+		{
+		df = property.get("IN", KEY);
+		msg = msg.badOption("method", method, METHOD);	
+		cat("\n\n"); minvisible( df, print=TRUE ); cat("\n\n"); 
+		IN.clear();	
+		cat.stop(msg);
+		}
+	fn.name = paste0("d", as.character(KEY));
+	
 	
 	res = do.call(fn.name, clist);	
 	res = property.set("params", res, clist);
@@ -870,47 +922,26 @@ CDF = function(q, method="norm", ...)
 	clist = list(q=q); 
 	if(!is.null(dots)) 
 		{
-		dots = unlist(list(...));
+		dots = list(...);
 		clist = prep.clist(clist, dots);
 		}
 	ct.method = check.type(method);
 	if(!ct.method || !is.character(method)) 
 		{ method = deparse(substitute(method)); }
-	METHOD = prep.arg(method, 4);
+	METHOD = prep.arg(method, n=4, keep="-");
 	# http://127.0.0.1:23214/library/stats/html/Distributions.html
-	fn.name = switch(METHOD,
-						"unif" 	= "punif",		# unif 		
-						"norm" 	= "pnorm",		# norm
-						"t"		= "pt",			# t
-						"f"		= "pf",			# f 
-						"chis"	= "pchisq",		# chisq 
-						"beta"	= "pbeta",		# beta 
-						"gamm"	= "pgamma", 	# gamma
-						"exp"	= "pexp",		# exp 
-						"cauc"	= "pcauchy",	# cauchy 
-						
-						"bino"	= "pbinom", 	# binom
-						"nbin"	= "pnbinom",	# nbinom
-						"pois"	= "ppois",		# pois
-						
-						"lnor"	= "plnorm", 	# lnorm
-						"mult"	= "pmultinom", 	# multinom
-						"logi"	= "plogis", 	# logis
-						
-						"weib"	= "pweibull",	# weibull						
-						"geom"	= "pgeom", 		# geom
-						"hype"	= "phyper",		# hyper
-						
-						"rsig"	= "psignrank", 	# signrank 
-						"wilc"	= "pwilcox", 	# wilcox 
-						"wish"	= "pWishart",	# Wishart
-						
-						"mvch"	= "pmvchi",		# mvchi (multi-variate chi-squ)
-						
-						
-					stop("not found, METHOD wrapped in msg")
-					);
-
+		
+	KEY = prep.dist(METHOD);
+	if(KEY == "--NULL--")
+		{
+		df = property.get("IN", KEY);
+		msg = msg.badOption("method", method, METHOD);	
+		cat("\n\n"); minvisible( df, print=TRUE ); cat("\n\n"); 
+		IN.clear();	
+		cat.stop(msg);
+		}
+	fn.name = paste0("p", as.character(KEY));
+	
 	res = do.call(fn.name, clist);	
 	res = property.set("params", res, clist);
 	res = property.set("fn.name", res, fn.name);
@@ -928,45 +959,29 @@ CDF.inv = function(p, method="norm", ...)
 	clist = list(p=p); 
 	if(!is.null(dots)) 
 		{
-		dots = unlist(list(...));
+		dots = list(...); 
 		clist = prep.clist(clist, dots);
 		}
 	ct.method = check.type(method);
 	if(!ct.method || !is.character(method)) 
 		{ method = deparse(substitute(method)); }
-	METHOD = prep.arg(method, 4);
+	
+	METHOD = prep.arg(method, n=4, keep="-");
 	# http://127.0.0.1:23214/library/stats/html/Distributions.html
-	fn.name = switch(METHOD,
-						"unif" 	= "qunif",		# unif 		
-						"norm" 	= "qnorm",		# norm
-						"t"		= "qt",			# t
-						"f"		= "qf",			# f 
-						"chis"	= "qchisq",		# chisq 
-						"beta"	= "qbeta",		# beta 
-						"gamm"	= "qgamma", 	# gamma
-						"exp"	= "qexp",		# exp 
-						"cauc"	= "qcauchy",	# cauchy 
-						
-						"bino"	= "qbinom", 	# binom
-						"nbin"	= "qnbinom",	# nbinom
-						"pois"	= "qpois",		# pois
-						
-						"lnor"	= "qlnorm", 	# lnorm
-						"mult"	= "qmultinom", 	# multinom
-						"logi"	= "qlogis", 	# logis
-						
-						"weib"	= "qweibull",	# weibull						
-						"geom"	= "qgeom", 		# geom
-						"hype"	= "qhyper",		# hyper
-						
-						"rsig"	= "qsignrank", 	# signrank 
-						"wilc"	= "qwilcox", 	# wilcox 
-						"wish"	= "qWishart",	# Wishart
-						
-						"mvch"	= "qmvchi",		# mvchi (multi-variate chi-squ)
-						
-					stop("not found, METHOD wrapped in msg")
-					);
+		
+	KEY = prep.dist(METHOD);
+	if(KEY == "--NULL--")
+		{
+		df = property.get("IN", KEY);
+		msg = msg.badOption("method", method, METHOD);	
+		cat("\n\n"); minvisible( df, print=TRUE ); cat("\n\n"); 
+		IN.clear();	
+		cat.stop(msg);
+		}
+	fn.name = paste0("q", as.character(KEY));
+	# https://www.stat.umn.edu/geyer/old/5101/rlook.html
+	
+	# dnorm is "mean" not "mu" ... how to trap this and deliver SMARTLY?
 	
 	res = do.call(fn.name, clist);	
 	res = property.set("params", res, clist);
@@ -1193,6 +1208,38 @@ v.norm = function(vec, method="sum", lower=NULL, upper=NULL, force.abs=FALSE, na
 		{
 		return(  vec / max(vec) ); 
 		}
+	if(METHOD %IN% c("Length", "len"))
+		{
+		return(  vec / length(vec) ); 
+		}
+	# Likert 1-7, reverse coded ...
+	if(METHOD %IN% c("Reverse-code", "rev-cod", "rev-sco", "rev-lik"))
+		{
+		vmin = vmax = NULL;
+		if(is.null(vmin) && !is.null(lower))
+			{
+			lolen = length(lower);
+			if(lolen == 2) { vmin = lower[1]; vmax = lower[2]; }
+			if(lolen == 1) { vmin = lower[1]; }
+			}
+		if(is.null(vmax) && !is.null(upper))
+			{
+			uplen = length(upper);
+			if(uplen == 2) { vmin = upper[1]; vmax = upper[2]; }	
+			if(uplen == 1) { vmax = upper[1]; }			
+			}
+		if(is.null(vmin))
+			{
+			vmin = min(vec);
+			}
+		if(is.null(vmax))
+			{
+			vmax = max(vec);
+			}			
+		six = vmax + vmin;  # 6 for a Likert 5 
+		return(  six - vec ); 
+		}
+		
 	# bounded between [0,1]
 	if(METHOD %IN% c("Minimum-Maximum", "min-max", "max-min"))
 		{

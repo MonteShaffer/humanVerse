@@ -1,4 +1,5 @@
 
+# ?readClipboard 
 xls.pasteFrom = function()
 	{
 	df = read.delim("clipboard");
@@ -6,6 +7,7 @@ xls.pasteFrom = function()
 	minvisible(df, print=FALSE);
 	}
 	
+# ?writeClipboard
 xls.copyTo = function(df, row.names=FALSE, col.names=TRUE, ...)
 	{
 	write.table(df, "clipboard", sep="\t",
@@ -23,102 +25,98 @@ xls.copyTo = function(df, row.names=FALSE, col.names=TRUE, ...)
 
 xls.AVERAGE = function(x, na.rm=TRUE, show.warning=TRUE)
 	{ 
-	warning = stats.warningNA(x, show.warning=show.warning);
-	mean(x, na.rm=na.rm);
+	xx = stats.warningNA(x, show.warning=show.warning);
+	mean(xx, na.rm=na.rm);
 	}
 	
 xls.SUM = function(x, na.rm=TRUE, show.warning=TRUE)
 	{
-	warning = stats.warningNA(x, show.warning=show.warning);
-	sum(x, na.rm=na.rm);
+	xx = stats.warningNA(x, show.warning=show.warning);
+	sum(xx, na.rm=na.rm);
 	}
 	
 xls.COUNT = function(x, na.rm=TRUE, show.warning=TRUE)
 	{
-	warning = stats.warningNA(x, show.warning=show.warning);
-	if(na.rm)
-		{
-		length(na.omit(x));
-		} else { length(x); }
+	xx = stats.warningNA(x, show.warning=show.warning);
+	if(na.rm) { return( length(xx) ); }
+	length(x);
 	}
 	
 xls.COUNTBLANK = function(x)
 	{
-	warning = stats.warningNA(x, show.warning=show.warning);
+	xx = stats.warningNA(x, show.warning=FALSE);
 	n = length(x);
-	n2 = length(na.omit(x));
+	n2 = length(xx);
 	n - n2;
 	}
 
 xls.VAR.P = function(x, na.rm=TRUE, show.warning=TRUE)
 	{
-	warning = stats.warningNA(x, show.warning=show.warning);  # doubled
-	n2 = xls.COUNT(x, na.rm=na.rm);
-	var(x, na.rm=na.rm)*(n2-1)/n2;
+	xx = stats.warningNA(x, show.warning=show.warning);  # doubled
+	n2 = length(xx);  # assuming a vector not a list ... 
+	stats::var(xx, na.rm=na.rm)*(n2-1)/n2;
 	}
 	
 xls.VAR.S = function(x, na.rm=TRUE, show.warning=TRUE)
 	{
-	warning = stats.warningNA(x, show.warning=show.warning);
-	var(x, na.rm=na.rm);
+	xx = stats.warningNA(x, show.warning=show.warning);
+	stats::var(xx, na.rm=na.rm);
 	}
 
-xls.STDEV.P = function(x, na.rm=TRUE, show.warning=TRUE)
+xls.STDEV.P = function(x, ...)
 	{
-	warning = stats.warningNA(x, show.warning=show.warning);
-	sqrt( xls.VAR.P(x, na.rm=na.rm) );
+	sqrt( xls.VAR.P(x, ...) );
 	}
 	
-xls.STDEV.S = function(x, na.rm=TRUE, show.warning=TRUE)
+xls.STDEV.S = function(x, ...)
 	{
-	warning = stats.warningNA(x, show.warning=show.warning);
-	sqrt( xls.VAR.S(x, na.rm=na.rm) );
+	sqrt( xls.VAR.S(x, ...) );
 	}
 
 
 xls.MIN = function(x, na.rm=TRUE, show.warning=TRUE)
 	{
-	warning = stats.warningNA(x, show.warning=show.warning);
-	min(x, na.rm=na.rm);
+	xx = stats.warningNA(x, show.warning=show.warning);
+	min(xx, na.rm=na.rm);
 	}
 
 xls.MAX = function(x, na.rm=TRUE, show.warning=TRUE)
 	{
-	warning = stats.warningNA(x, show.warning=show.warning);
-	max(x, na.rm=na.rm);
+	xx = stats.warningNA(x, show.warning=show.warning);
+	max(xx, na.rm=na.rm);
 	}
 
 xls.MEDIAN = function(x, na.rm=TRUE, show.warning=TRUE)
 	{
-	warning = stats.warningNA(x, show.warning=show.warning);
-	median(x, na.rm=na.rm);  # looks like type=6 or type=7	
+	xx = stats.warningNA(x, show.warning=show.warning);
+	stats::median(xx, na.rm=na.rm);  # looks like type=6 or type=7	
 	}
 	
 	
 xls.PERCENTILE.INC = function(x, prob=0.88, na.rm=TRUE, show.warning=TRUE)
 	{
-	warning = stats.warningNA(x, show.warning=show.warning);
-	quantile(x, prob=prob, type=7, na.rm=na.rm);
+	xx = stats.warningNA(x, show.warning=show.warning);
+	stats::quantile(xx, prob=prob, type=7, na.rm=na.rm);
 	}
 	
 xls.PERCENTILE.EXC = function(x, prob=0.88, na.rm=TRUE, show.warning=TRUE)
 	{
-	warning = stats.warningNA(x, show.warning=show.warning);
-	quantile(x, prob=prob, type=6, na.rm=na.rm);
+	xx = stats.warningNA(x, show.warning=show.warning);
+	stats::quantile(xx, prob=prob, type=6, na.rm=na.rm);
 	}
 	
 xls.QUARTILE.INC = function(x, q=1, na.rm=TRUE, show.warning=TRUE)
 	{
-	warning = stats.warningNA(x, show.warning=show.warning);
+	xx = stats.warningNA(x, show.warning=show.warning);
 	if(!(q %in% 1:3)) { stop("q must be 1 (Q1), 2 (Q2), 3 (Q3)");}
-	quantile(x, prob=0.25*q, type=7, na.rm=na.rm);
+	stats::quantile(xx, prob=0.25*q, type=7, na.rm=na.rm);
 	}
 	
 xls.QUARTILE.EXC = function(x, q=1, na.rm=TRUE, show.warning=TRUE)
 	{
-	warning = stats.warningNA(x, show.warning=show.warning);
+	xx = stats.warningNA(x, show.warning=show.warning);
 	if(!(q %in% 1:3)) { stop("q must be 1 (Q1), 2 (Q2), 3 (Q3)");}
-	quantile(x, prob=0.25*q, type=6, na.rm=na.rm);
+	stats::quantile(xx, prob=0.25*q, type=6, na.rm=na.rm);
 	}
 	
 
@@ -135,31 +133,31 @@ xls.PERMUT = function(n, r)
 	
 xls.T.DIST = function(x, df, cdf=TRUE)
 	{
-	if(cdf) 	{ return(pt(x, df)); }  # cdf 
-	if(!cdf) 	{ return(dt(x, df)); }  # pdf 	 
+	if(cdf) 	{ return(stats::pt(x, df)); }  # cdf 
+	if(!cdf) 	{ return(stats::dt(x, df)); }  # pdf 	 
 	}
 	
 xls.T.DIST.2T = function(x, df)
 	{
-	2*pt(x, df, lower.tail=FALSE);	
+	2*stats::pt(x, df, lower.tail=FALSE);	
 	}
 	
 xls.T.DIST.RT = function(x, df)
 	{
-	pt(x, df, lower.tail=FALSE);	
+	stats::pt(x, df, lower.tail=FALSE);	
 	}
 	
 xls.T.INV = function(prob, df)
 	{
-	qt(prob, df);
+	stats::qt(prob, df);
 	}
 	
 xls.T.INV.2T = function(prob, df)
 	{
-	qt(prob/2, df);
+	stats::qt(prob/2, df);
 	}
 	
-	
+# two data t-test 	
 xls.T.TEST = function(x, y, tails=1, type=1)
 	{
 	paired = FALSE; 	if(type == 1)  { paired = TRUE; }
@@ -167,9 +165,29 @@ xls.T.TEST = function(x, y, tails=1, type=1)
 	alternative = NULL;	if(tails == 2) { alternative = "two.sided"; } 
 	# alternative ... a character string specifying the alternative hypothesis, must be one of "two.sided" (default), "greater" or "less". You can specify just the initial letter
 	
-	res = t.test(x, y, alternative = alternative, paired = paired, var.equal = var.equal);
+	res = t.test(x=x, y=y, alternative = alternative, paired = paired, var.equal = var.equal);
 	res$p.value;
 	}
+	
+
+## EDITS, stopped here ... 
+xls.ttest = function(x, y=null, tails=1, type=1, mu=0)
+	{
+	# for one value (x, no y), one test ...
+	paired = FALSE; 	if(type == 1)  { paired = TRUE; }
+	var.equal = TRUE; 	if(type == 3)  { var.equal = FALSE; }
+	alternative = NULL;	if(tails == 2) { alternative = "two.sided"; } 
+	
+	# maybe do the var.test 
+	res = t.test(x=x, y=y, mu=mu, alternative = alternative, paired = paired, var.equal = var.equal);
+
+	res;
+	}
+	
+	
+	
+	
+	
 	
 ## not directly fns in EXCEL but needed to do "HW"
 xls.TCRIT.SAMPLE = function(x, mu=0, ...)
