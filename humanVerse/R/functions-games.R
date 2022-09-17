@@ -88,7 +88,7 @@ snails.pace = function(snails = 6, finish.line = 8, moves = 200,
 			snail.lab = paste0(snail.x, "*", snail.rank);
 			snail.lab[!has.rank] = snail.x[!has.rank];
 			# assign("snail.lab", snail.lab, envir=parent.env(environment()) );
-			snail.lab %to% envir; 
+			snail.lab %TO% envir; 
 		# overlay "points" again so trail doesn't have text ...
 		# maybe not even use plot ?
 		# overlay doesn't work with BAD UTF character ... weird ?
@@ -129,14 +129,14 @@ snails.pace = function(snails = 6, finish.line = 8, moves = 200,
 				{
 				x = readline(prompt="Press [enter] to continue, [ESC] to quit");
 				} 
-		# n = sample((1:snails), 1);	n %to% envir;
-		n = v.shuffle((1:snails), 1);	n %to% envir;
+		# n = sample((1:snails), 1);	n %TO% envir;
+		n = v.shuffle((1:snails), 1);	n %TO% envir;
 		
 		snail.x[n] %++%. ;  # = 1 + snail.x[n];
 		if( (snail.rank[n] == 0) && (snail.x[n] >= finish.line) )
 			{ 			
-			snail.rank[n] = crank;		snail.rank 	%to% envir;
-			crank %++%. ;				crank 		%to% envir;
+			snail.rank[n] = crank;		snail.rank 	%TO% envir;
+			crank %++%. ;				crank 		%TO% envir;
 			}		
 		snail.x;
 		}

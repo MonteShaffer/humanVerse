@@ -179,7 +179,7 @@ cat("\n\t\t\t\t",						" ... ",
 	add.to = function() {}
 	add.to = function()
 		{
-		cres = c(cres, cc);		cres 		%to% envir ;
+		cres = c(cres, cc);		cres 		%TO% envir ;
 		}
 	
 	do.OBJ = function() {}
@@ -189,8 +189,8 @@ if(debug)
 	{
 cat("\n do.OBJ \n");
 	}
-		cval 		= TRUE; 	cval 		%to% envir ;
-		IN_OBJECT 	= TRUE; 	IN_OBJECT 	%to% envir ;
+		cval 		= TRUE; 	cval 		%TO% envir ;
+		IN_OBJECT 	= TRUE; 	IN_OBJECT 	%TO% envir ;
 		
 		add.to();
 		return(TRUE);		
@@ -204,7 +204,7 @@ if(debug)
 cat("\n do.DQ \n");
 	}
 
-		cval 		= TRUE; 	cval 		%to% envir ;
+		cval 		= TRUE; 	cval 		%TO% envir ;
 		if(IN_OBJECT)
 			{
 			# we encountered a DQ inside the OBJ envir 
@@ -215,10 +215,10 @@ cat("\n do.DQ \n");
 			{
 			# start a string 
 			cres = NULL;
-			IN_STRING = TRUE;		IN_STRING 		%to% envir ;
-			IN_OBJECT = FALSE;		IN_OBJECT 		%to% envir ;
-			IN_STRING.type = "DQ";	IN_STRING.type 	%to% envir ;
-			j.start = j+1;			j.start 		%to% envir ;			
+			IN_STRING = TRUE;		IN_STRING 		%TO% envir ;
+			IN_OBJECT = FALSE;		IN_OBJECT 		%TO% envir ;
+			IN_STRING.type = "DQ";	IN_STRING.type 	%TO% envir ;
+			j.start = j+1;			j.start 		%TO% envir ;			
 			return(TRUE);
 			} 
 			
@@ -229,9 +229,9 @@ cat("\n do.DQ \n");
 			if(pc != BACKSLASH)
 				{
 				# we are at the end of IN_STRING ... TIE it OFF 
-				IN_STRING 		= FALSE;			IN_STRING 		%to% envir ;
-				quote 			= IN_STRING.type;		quote 		%to% envir ;
-				IN_STRING.type 	= "";				IN_STRING.type 	%to% envir ;			
+				IN_STRING 		= FALSE;			IN_STRING 		%TO% envir ;
+				quote 			= IN_STRING.type;		quote 		%TO% envir ;
+				IN_STRING.type 	= "";				IN_STRING.type 	%TO% envir ;			
 				} else {
 if(debug)
 	{
@@ -264,7 +264,7 @@ if(debug)
 cat("\n do.SQ \n");
 	}
 		# all the way up or just the CALLER?		
-		cval 		= TRUE; 	cval 		%to% envir ;
+		cval 		= TRUE; 	cval 		%TO% envir ;
 		if(IN_OBJECT)
 			{
 			# we encountered a SQ inside the OBJ envir 
@@ -274,11 +274,11 @@ cat("\n do.SQ \n");
 		if(!IN_STRING)
 			{
 			# start a string 
-			cres = NULL;			cres			%to% envir ;
-			IN_STRING = TRUE;		IN_STRING 		%to% envir ;
-			IN_OBJECT = FALSE;		IN_OBJECT 		%to% envir ;
-			IN_STRING.type = "SQ";	IN_STRING.type 	%to% envir ;
-			j.start = j+1;			j.start 		%to% envir ;	
+			cres = NULL;			cres			%TO% envir ;
+			IN_STRING = TRUE;		IN_STRING 		%TO% envir ;
+			IN_OBJECT = FALSE;		IN_OBJECT 		%TO% envir ;
+			IN_STRING.type = "SQ";	IN_STRING.type 	%TO% envir ;
+			j.start = j+1;			j.start 		%TO% envir ;	
 			return(TRUE);
 			} 
 			
@@ -289,9 +289,9 @@ cat("\n do.SQ \n");
 			if(pc != BACKSLASH)
 				{
 				# we are at the end of IN_STRING ... TIE it OFF 
-				IN_STRING 		= FALSE;			IN_STRING 		%to% envir ;
-				quote 			= IN_STRING.type;		quote 		%to% envir ;
-				IN_STRING.type 	= "";				IN_STRING.type 	%to% envir ;	
+				IN_STRING 		= FALSE;			IN_STRING 		%TO% envir ;
+				quote 			= IN_STRING.type;		quote 		%TO% envir ;
+				IN_STRING.type 	= "";				IN_STRING.type 	%TO% envir ;	
 				} else {
 if(debug)
 	{
@@ -322,10 +322,10 @@ if(debug)
 	{
 cat("\n do.OP \n");
 	}
-		cval 		= TRUE; 	cval 	%to% envir ;
-		p.count = p.count + 1;	p.count %to% envir ;
+		cval 		= TRUE; 	cval 	%TO% envir ;
+		p.count = p.count + 1;	p.count %TO% envir ;
 		if(p.count > 1) { add.to(); } else { cres = NULL; } 
-								cres 	%to% envir ;
+								cres 	%TO% envir ;
 		}
 		
 	do.CP = function() {}
@@ -335,8 +335,8 @@ if(debug)
 	{ 
 cat("\n do.CP \n");
 	}
-		cval 		= TRUE; 	cval 		%to% envir ;
-		p.count = p.count - 1; 	p.count 	%to% envir ;
+		cval 		= TRUE; 	cval 		%TO% envir ;
+		p.count = p.count - 1; 	p.count 	%TO% envir ;
 		if(p.count >= 1) { add.to(); }
 		if(p.count == 0)
 			{
@@ -359,7 +359,7 @@ if(debug)
 cat("\n do.COMMA \n");
 	}
 		# what if comma is just in the text ... 
-		cval 		= TRUE; 	cval 		%to% envir ;
+		cval 		= TRUE; 	cval 		%TO% envir ;
 		if(IN_STRING)
 			{
 			add.to();
@@ -462,14 +462,14 @@ cat("\n ANSI: ", ca, "\n");
 		j = j_;
 		j.start = j.start_;
 		
-		df = rbind(df, row);	df 			%to% envir ;
+		df = rbind(df, row);	df 			%TO% envir ;
 							
-		idx = 1 + idx; 			idx 		%to% envir ;
-		j.start = j; 			j.start 	%to% envir ;
+		idx = 1 + idx; 			idx 		%TO% envir ;
+		j.start = j; 			j.start 	%TO% envir ;
 		
 		# resetting ... if we got this far, we shouldn't have PARSE errors
-		IN_OBJECT = FALSE; 		IN_OBJECT 	%to% envir ;
-		cres = NULL;			cres 		%to% envir ;
+		IN_OBJECT = FALSE; 		IN_OBJECT 	%TO% envir ;
+		cres = NULL;			cres 		%TO% envir ;
 
 		
 if(debug)
@@ -482,7 +482,7 @@ if(debug)
 	}
 		
 		## TRUNCATE line for DEBUGGING PURPOSES ... scan already has REAL LINE 
-		line = substring(line, j+1, slen);	line %to% envir ;
+		line = substring(line, j+1, slen);	line %TO% envir ;
 		
 if(debug)
 	{	
@@ -520,9 +520,9 @@ traceback();
 		out[[count.finds]] = df;
 # df will *also* nullify on init()?
 		status = "searching";
-		df = NULL;					df 		%to% envir ;
-									out 	%to% envir ;
-									status 	%to% envir ;
+		df = NULL;					df 		%TO% envir ;
+									out 	%TO% envir ;
+									status 	%TO% envir ;
 		
 if(debug)
 	{			
@@ -537,7 +537,7 @@ pause();
 		{				
 		show.status("char", 1);
 		# cc as "current char"
-		cval = NULL; 		cval %to% envir ;
+		cval = NULL; 		cval %TO% envir ;
 		
 		
 		if(is.null(cval) && cc == OP) { do.OP(); }
@@ -555,19 +555,19 @@ pause();
 		
 		show.status("char", 2);
 		
-		pc = cc;		pc %to% envir ;		
+		pc = cc;		pc %TO% envir ;		
 		}
 		
 	scan.init = function() {}
 	scan.init = function() 
 		{
-		scan = str.explode("", line); 	scan %to% envir ; 
+		scan = str.explode("", line); 	scan %TO% envir ; 
 		
 if(debug)
 	{	
 cat("\n SCAN: ", scan, "\n");
 	}
-		slen = length(scan);			slen %to% envir ;
+		slen = length(scan);			slen %TO% envir ;
 		scanning();
 		}
 	
@@ -580,8 +580,8 @@ cat("\n SCAN: ", scan, "\n");
 			for(j in 1:slen)
 				{
 				cc = scan[j]; 
-									j %to% envir ;
-									cc %to% envir ;
+									j %TO% envir ;
+									cc %TO% envir ;
 				scan.char();
 				}
 			}		
@@ -596,19 +596,19 @@ cat("\n SCAN: ", scan, "\n");
 #print(parent.frame(1));
 #print(parent.env(environment()));
 
-		line.eval = TRUE;		line.eval %to% envir ;
+		line.eval = TRUE;		line.eval %TO% envir ;
 		
 			# make certain "FN.NAME(" are attached in search
 		tline = str.removeWhiteSpace(line, replace="", n=1);
 		if(str.contains( paste0(fn.search,"("), tline))
 			{
-			df 	= NULL; 			df 		%to% envir ;
-			cres 	= NULL; 		cres 	%to% envir ;
-			idx 	= 1;			idx 	%to% envir ;
-			status 	= "scanning"; 	status 	%to% envir ;
+			df 	= NULL; 			df 		%TO% envir ;
+			cres 	= NULL; 		cres 	%TO% envir ;
+			idx 	= 1;			idx 	%TO% envir ;
+			status 	= "scanning"; 	status 	%TO% envir ;
 			
 			count.finds = 1 + count.finds;
-							count.finds 	%to% envir ;
+							count.finds 	%TO% envir ;
 							
 if(debug)
 	{
@@ -636,7 +636,7 @@ cat("\n SEARCHING FOUND MATCH: ", tline, "\n\n");
 				# from a previous line ... EDGE CASE
 				# hard to imagine since I am reading the file from 
 				# beginning search for first element ...
-				line = r;		line %to% envir ;
+				line = r;		line %TO% envir ;
 				scan.init();
 				}				
 			}

@@ -1,6 +1,6 @@
 
 
-add = function(a,b)
+ADD = function(a,b)
 	{ 
 	a = as.numeric(a); 
 	b = as.numeric(b);
@@ -25,7 +25,7 @@ add = function(a,b)
 	math.cleanup(out);
 	}
 	
-"%+%" = add;
+"%+%" = ADD;
 
 
 # dataframe(x, y) : could not find function "dataframe"
@@ -225,12 +225,10 @@ gggassign = function(key, val)
 	}
 	
 	
-plusplus = function() {}
+PLUSPLUS = function() {}
 # x = function() { print(environment()); print(parent.env(environment())); print(parent.frame(1)); print(parent.frame(2)); i = 0; a = 0; b = 0; for(j in 1:3) { a = i%++%.; cat("\n ja -->", j, "\t a:",a, "\t b:",b, "\t i:",i); b = .%++%i; cat("\n jb -->", j, "\t a:",a, "\t b:",b, "\t i:",i); }; cat("\n"); }
 
-# WHERE = parent.env(environment())  # did not work as expected 
-# WHERE=parent.frame(1)
-"%++%" = plusplus = function(KEY, VALUE, WHERE=parent.frame(1))
+PLUSPLUS = function(KEY, VALUE, WHERE=parent.frame(1))
 	{
 # cat("\n");
 # print(environment()); 
@@ -278,10 +276,12 @@ plusplus = function() {}
 	
 	stop("how did you get here");
 	}
+
+"%++%" = PLUSPLUS;	
 	
 	
-global = function() {}
-"%GLOBAL%" = global = function(KEY, VALUE)
+	
+GLOBAL = function(KEY, VALUE)
 	{
 	ct.KEY = check.type(KEY);
 	ct.VAL = check.type(VALUE);
@@ -310,8 +310,17 @@ global = function() {}
 	if(!is.character(KEY)) { key = deparse(substitute(KEY)); }
 	gggassign(key,VALUE);	
 	}
+	
+"%GLOBAL%" = GLOBAL;
 
-IN.capture = function(mem.key = "-CURRENT_IN-")
+
+
+IN.init = function(mem.key = "-CURRENT_IN-")
+	{
+	memory.set(mem.key, "-IN-", list()); 
+	}
+	
+IN.clear = function(mem.key = "-CURRENT_IN-")
 	{
 	memory.set(mem.key, "-IN-", list()); 
 	}
@@ -346,23 +355,11 @@ IN.df = function(mem.key = "-CURRENT_IN-")
 	df;
 	}
 
-	
-IN.print = function(mem.key = "-CURRENT_IN-")
-	{
-	info = memory.get(mem.key, "-IN-");
-	print(str(info));
-	}
-	
-
 IN = function(KEY, VALUE, mem.key = "-CURRENT_IN-")
 	{
 	# perform %in% with memory 	
 	info = memory.get(mem.key, "-IN-");
 	if(is.null(info)) { info = list(); }
-	
-	# use vector notation, is.element ... 
-	# match(as.vector(el), as.vector(set), 0L) > 0L
-	# "%in%" <- function(x, table) match(x, table, nomatch = 0) > 0
 	
 	ele = as.vector(KEY);
 	set = as.vector(VALUE); 
@@ -422,10 +419,10 @@ THIS = function(KEY, VALUE)
 	WHERE=parent.frame(2); # or WHERE = env?
 	assign("THIS", res, envir=WHERE );
 	}
-"%THIS%" = this = THIS; 
+"%THIS%" = THIS; 
  
  
-to = function() {}
+TO = function() {}
 TO = function(WHAT, WHERE=parent.frame(2))
 	{
 cat("\n");
@@ -434,7 +431,7 @@ print(parent.env(environment()));
 print(parent.env(parent.env(environment())));
 	#DEFAULT = parent.frame(1); # caller? parent
 	DEFAULT = parent.frame(2); # one above caller? grandparent
-	# allows x %to% . 
+	# allows x %TO% . 
 	ct.WHERE = check.type(WHERE);
 	if(!ct.WHERE) { WHERE = DEFAULT; }
 		
@@ -443,11 +440,11 @@ print(parent.env(parent.env(environment())));
 	assign(key, val, envir=WHERE );
 	}
 	
-"%to%" = to = TO;	
+"%TO%" = TO;	
 	
 	
 # x = 44;
-# y = function(envir = .GlobalEnv) { x=NULL; x %to% envir; }
+# y = function(envir = .GlobalEnv) { x=NULL; x %TO% envir; }
 # y();
 # x; 
 

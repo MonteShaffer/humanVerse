@@ -1180,6 +1180,7 @@ v.norm = function(vec, method="sum", lower=NULL, upper=NULL, force.abs=FALSE, na
 	vec = stats.warningNA(vec, show.warning=show.warning); 
 	if(force.abs) { vec = abs(vec); }
 	 
+	IN.init();
 	if(METHOD %IN% c("Sum", "sum"))   
 		{
 		return(  vec / sum(vec) ); 
@@ -1256,19 +1257,9 @@ v.norm = function(vec, method="sum", lower=NULL, upper=NULL, force.abs=FALSE, na
 		return( vec / (abs(sum(vec))) ); 		
 		}
 		
-		
-		
-	# maybe update %in% function to create a memory
-	# start recording ... stop recording ... error msg can
-	# have unique key/maps to alert as possible options tied to a default?
-	# ADD first element as BOGUS for search, but default ...
-	## ... nested like 'convert' function ... maybe scan for outer one first ... and stop ... then scan internally on the exact value ... 
-	## use %IN% to return exact value ... 
-	
-	
-	msg = msg.badOption("method", method, METHOD);
-	
-	cat("\n\n"); minvisible( IN.df(), print=TRUE ); cat("\n\n");   
+	msg = msg.badOption("method", method, METHOD);	
+	cat("\n\n"); minvisible( IN.df(), print=TRUE ); cat("\n\n"); 
+	IN.clear();	
 	cat.stop(msg);
 	}
 	
