@@ -1239,16 +1239,19 @@ v.norm = function(vec, method="sum", lower=NULL, upper=NULL, force.abs=FALSE, na
 		# over/under flow 
 		# https://stackoverflow.com/a/63763823/184614
 		k = NULL;
-		if(!is.null(k) && !is.null(lower)) { k = lower[1]; }
-		if(!is.null(k) && !is.null(upper)) { k = upper[1]; }
-		if(!is.null(k)) { k = 2; } # traditional Euclidean 
-			
+		if(is.null(k) && !is.null(lower)) { k = lower[1]; }
+		if(is.null(k) && !is.null(upper)) { k = upper[1]; }
+		if(is.null(k)) { k = 2; } # traditional Euclidean 
+		
+		# x = c(-8e+299, -6e+299, 5e+299, -8e+298, -5e+299)
+		# norm(x, type='2')
+
 		v.abs = abs(vec); v.max.abs = max(v.abs);		 
-		res = v.max.abs * ( (sum(( v.abs / v.max.abs )^k))^(1/k) ) 
-		return(res); 		
+		norm = v.max.abs * ( (sum(( v.abs / v.max.abs )^k))^(1/k) );
+		return( vec / norm ); 		
 		}
 	# equivalently just do "sum" norm with force.abs = TRUE 
-	if(METHOD %IN% c("Manhattan", "man", "abs"))		# Manhattan norm
+	if(METHOD %IN% c("Manhattan", "man", "abs", "abs-sum", "sum-abs"))		# Manhattan norm
 		{		
 		return( vec / (abs(sum(vec))) ); 		
 		}
@@ -1262,24 +1265,11 @@ v.norm = function(vec, method="sum", lower=NULL, upper=NULL, force.abs=FALSE, na
 	## ... nested like 'convert' function ... maybe scan for outer one first ... and stop ... then scan internally on the exact value ... 
 	## use %IN% to return exact value ... 
 	
-	msg = prep.msg("It appears that you entered an *INCORRECT*",
-					"<v>method</v>.", 
-					"\n\n\t",
-					"You entered: ", "<v>[</v>", method, "<v>]</v>",
-					"\n\n\t\t",
-					"which was cleansed to: ", "<v>[</v>", METHOD, "<v>].</v>",
-					"\n\n",
-					"Please try again.",
-					"\n\n",					
-					"Below is a list of options with allowed 'shortcodes'",
-					"\n\n",
-					IN.msg()
-					);
-
-	"\n\n", "Please try again.  Below is a list of pot
-	print(method); print(METHOD);
-	print(str(IN.get()));
-	stop("missing method");
+	
+	msg = msg.badOption("method", method, METHOD);
+	
+	cat("\n\n"); minvisible( IN.df(), print=TRUE ); cat("\n\n");   
+	cat.stop(msg);
 	}
 	
 

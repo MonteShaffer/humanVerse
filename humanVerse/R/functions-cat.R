@@ -67,3 +67,28 @@ cat.init = function()
 	}
 
 
+
+
+msg.badOption = function(KEY="method", 
+								OPTION="Original-Entry", 
+								SHORTCODE="ori-ent")
+		{
+		prep.msg("\n\n\t",
+					"It appears that you entered an INCORRECT",
+					"<v>[</v>", KEY, "<v>]</v>", 
+					"\n\n\t",
+					"You entered: ", "<v>[</v>", OPTION, "<v>]</v>",
+					"\n\n\t\t",
+					"which was 'short-coded' to: ", "<v>[</v>", SHORTCODE, "<v>].</v>",
+					"\n\n",
+					"Please try again.",
+					"\n\n",					
+					"Above is a list of options with allowed 'shortcodes'.",
+					"\n\n",
+					"Which can be retrieved as a dataframe using ",
+					"<v>* ANS *</v> ", 
+					"\n\n"
+					);		
+		}
+	
+	

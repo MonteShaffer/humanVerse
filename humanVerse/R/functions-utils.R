@@ -322,21 +322,28 @@ IN.get = function(mem.key = "-CURRENT_IN-")
 	}
 	
 	
-IN.msg = function(mem.key = "-CURRENT_IN-")
+IN.df = function(mem.key = "-CURRENT_IN-")
 	{
 	info = memory.get(mem.key, "-IN-");
-	BEGIN = "\n\n\t";	START = "\n\t\t\t"; BETWEEN = "\t";	END = "\n\n";
 	
-	n = length(info);
-	keys = names(info);
-	str = END;
+	n 		= length(info);
+	keys 	= names(info);
+	klen	= max(list.getLengths(info));
+	df = NULL;
+	
+	
 	for(i in 1:n)
 		{
 		key = keys[i];
-		val = info[[key]];
-		str = paste0(str, BEGIN, key, START, paste0(val, collapse=BETWEEN), END)
+		val = v.fill( info[[key]], klen, ""); 
+		row = df.row(c(key, val), use.names=FALSE);
+		df = rbind(df, row);
 		}
-	str;
+	cnames = c("-OPTION-", "shortcode", paste0("ALT-", 1:(klen-1)) ); 	
+	colnames(df) = cnames;
+	# rownames(df) = rep("", n);
+		
+	df;
 	}
 
 	
@@ -625,7 +632,10 @@ minvisible = function(x, key="LAST", print=TRUE)
 	{
 	memory.set(key, "-MINVISIBLE-", x);
 	# also store to ANS variable ... 
-	ANS %GLOBAL% x; Ans %GLOBAL% x;
+	# I could do ANS = Ans = x;   ANS %GLOBAL%. ; Ans %GLOBAL%. ;
+	# ANS %GLOBAL% x;  # undefined ANS ... treated as "." (dot)
+	"ANS" %GLOBAL% x; 
+	"Ans" %GLOBAL% x;
 # dput(print);
 	if(print == "str") { print(str(x)); }
 	if(print == TRUE) { print(x); }	

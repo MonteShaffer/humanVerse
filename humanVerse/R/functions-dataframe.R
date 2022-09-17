@@ -211,15 +211,21 @@ dots.magic = function(dots)
 df.row = function(..., use.names=FALSE)
 	{
 # dput( (list(...)) );   # list(structure(1663114668.6615, class = c("POSIXct", "POSIXt")), "set", "STACK", "alex")
-	xlist = list(...);
-	dots = match.call(expand.dots = FALSE)$...
-	names = as.character(dots);
-	# values = dots.addTo(NULL, ...);
-	 
-	# names(xlist) = names;
-	dfr = dataframe(xlist); 
-	if(use.names) { colnames(dfr) = names; }
-	dfr;
+# x = df.row(c(1,2,3,4)); y = df.row(1,2,3,4); identical(x,y);
+ 
+	xlist = list(...);	names = NULL;
+	if(length(xlist) == 1)
+		{
+		df = dataframe(t(unlist(xlist)));  # a vector of the same type 		
+		} else { df = dataframe(xlist); }
+
+	if(use.names)
+		{
+		dots = match.call(expand.dots = FALSE)$...
+		names = as.character(dots);
+		colnames(df) = names;
+		}
+	df;
 	}
 
  	
