@@ -69,12 +69,7 @@ num.den = function(num, den, expand=TRUE)
 "%frac%" = num.den;
  
  
-
-
-num.constants = function() {} 
-num.constants = function(envir=parent.env(environment()))
-	{
-	# units: "m"eters, "g"ram, "s"econd, "a"mpere, "k"elvin, "mol"e, "c"an"d"ela
+# units: "m"eters, "g"ram, "s"econd, "a"mpere, "k"elvin, "mol"e, "c"an"d"ela
 	# "l"iter, "m^3", "m/s" ... 
 	# https://www.nist.gov/pml/owm/metric-si-prefixes
 	# force.by == TRUE, why are you here?  SIENCTIFIC
@@ -96,16 +91,45 @@ num.constants = function(envir=parent.env(environment()))
 	# TODO:  bytes vs bits on return ... 1024 vs 1000 rule ... 
 	# assign("SI_BINARY", mdf, envir=envir);	
 	
+num.SIunits = function(which="regular")
+	{
+	WHICH = prep.arg(which, n=3);
 	
+	if(WHICH != "bin") { WHICH == "_"; } # DEFAULT 
+	mem.key =  paste0("SI_UNITS_",WHICH); 
+	
+	mem = memory.get(mem.key, "SI");
+	if(!is.null(mem)) { return(mem); }
+	
+	if(WHICH=="bin")  # binary 
+		{
+		
+		memory.set(mem.key, "SI", mdf);
+		return(mdf);
+		}
+		
+	# DEFAULT 	
+		
 	m = c(1, 2, 3, 6, 9, 12, 15, 18, 21, 24);
-	m = c(-1*m, m);
-		my.names = c( c("deci", "centi", "milli", "micro", "nano", "pico", "femto", "atto", "zepto", "yocto"), c("deka", "hecto", "kilo", "mega", "giga", "tera", "peta", "exa", "zetta", "yotta") );
-		my.single = c( c("d", "c", "m", "µ", "n", "p", "f", "a", "z", "y"), c("da", "h", "k", "M", "G", "T", "P", "E", "Z", "Y") );
+	m = c(-1*m, 0, m);
+		my.names = c( c("deci", "centi", "milli", "micro", "nano", "pico", "femto", "atto", "zepto", "yocto"), c("~BASE~"), c("deka", "hecto", "kilo", "mega", "giga", "tera", "peta", "exa", "zetta", "yotta") ); 
+		my.single = c( c("d", "c", "m", "µ", "n", "p", "f", "a", "z", "y"), c("~"), c("da", "h", "k", "M", "G", "T", "P", "E", "Z", "Y") );
 	mdf = as.data.frame(cbind(m, my.names, my.single));
 		mdf$m = as.integer(mdf$m);
+		# order by m (ASC) 
+	mdf = df.sortBy(mdf, "m", "ASC");
+	# mdf = mdf[ c(rev(1:10), 11, 12:21), ];	
 		colnames(mdf) = c("SI.idx", "SI.name", "SI.symbol");
-	mdf = mdf[ c(rev(1:10), 11:20), ];
 	
+		row.names(mdf) = 1:length(m);
+	memory.set(mem.key, "SI", mdf);
+	return(mdf);
+	}
+
+num.constants = function() {} 
+num.constants = function(envir=parent.env(environment()))
+	{
+	mdf = num.SIunits("regular");  # with caching mechanism ... 
 	assign("SI_PREFIX", mdf, envir=envir);	
 	}
 

@@ -1,4 +1,102 @@
 
+# x could be a list of long/lati/alt  ... from="list" 
+# x could be strings in a certain format ... most likely
+# allow geocaching format, any format ... fixed-width?
+geo.convert = function(x, ..., from="", to="")
+	{
+	
+	
+	
+	}
+
+
+
+
+SI.prepKey = function(key="micro")
+	{
+	# multivariate ? 
+	search = NULL;
+	num.constants();
+	KEY	= prep.arg(key, n=3, case="lower");
+	
+	# search on number 
+	if(is.null(search) && is.numeric(key))
+		{
+		nums =  SI_PREFIX$SI.idx;
+		# index in search ... 
+		idx = v.nearestIDX(nums, key);
+		# if numeric, a nearest should be found
+		if(!is.null(idx)) {  search = idx; } 
+		}
+		
+		
+	# search on name ... 
+	if(is.null(search))
+		{
+		choices =  substring(SI_PREFIX$SI.name, 1, 3);
+		idx = v.which(choices, KEY);
+		if(!is.null(idx)) {  search = idx; }
+		}
+	# search on name ... 
+	if(is.null(search))
+		{
+		Ke	= prep.arg(key, n=2, case="unchanged");
+		choices_ =  substring(SI_PREFIX$SI.symbol, 1, 2);
+		idx = v.which(choices_, Ke);
+		if(!is.null(idx)) {  search = idx; }
+		}
+	if(is.null(search))
+		{
+		if(KEY %in% c("mu", "µ")) 
+			{  # may change, so lookup 
+			idx = v.which(SI_PREFIX$SI.idx, -6);
+			if(!is.null(idx)) {  search = idx; }
+			}
+		}
+	if(is.null(search))
+		{
+		### how to reference the BASE element ... 
+		if(KEY %in% c("bas", "ba", "b", "~ba", "~b", "~", "-ba", "-b", "-", "gra", "met", "m/s")) 
+			{  # may change, so lookup 
+			idx = v.which(SI_PREFIX$SI.idx, 0);
+			if(!is.null(idx)) {  search = idx; }
+			}
+		}
+	## maybe remove trailing units ... cm => c 
+	# cm ... I remove m[illi] and c[enti]
+	# nkey = str.replace(SI_PREFIX$SI.symbol, "", key);
+	## h391ow to subtract to strings ... 
+	
+	# return actual key with row as attribute 
+	res = SI_PREFIX[idx, ];
+	res;
+	}
+	
+# SI.convert(1:10, from="kilo", to="BASE", force.from=TRUE)
+# SI.convert(1:10, from=7, to="nano", force.from=TRUE)
+SI.convert = function(x, ..., from="micro", to="nano", force.from=FALSE, force.to=FALSE)
+	{
+	x = dots.addTo(x, ...);
+	
+	info.f = SI.prepKey(from);  FROM.exp = info.f$SI.idx;  # -6
+		rownames(info.f) = "";
+	if(force.from) { FROM.exp = from; }
+	info.t = SI.prepKey(to); 	TO.exp = info.t$SI.idx;    # -9
+		rownames(info.t) = "";
+	if(force.to) { TO.exp = to; }
+		
+	de = TO.exp - FROM.exp;
+	
+	res = x * 10^de;	
+	# may have slightly changed?
+	res = property.set("SI.from", res, info.f);
+	res = property.set("SI.to", res, info.t);
+	res = property.set("from", res, FROM.exp);
+	res = property.set("to", res, TO.exp);
+	minvisible(res);
+	}
+
+
 units.convert = function(x, ..., from="in", to="ft", type="distance")
 	{
 	x = dots.addTo(x, ...);
@@ -10,22 +108,26 @@ units.convert = function(x, ..., from="in", to="ft", type="distance")
 	if(TYPE == "angl")
 		{
 		msg = prep.msg("There is a function ", "<i>[angle.convert]</i>", " with helper functions in the humanVerse.  To convert degrees to radians and so on.");
-		cat.stop(msg);		
+		cat.warning(msg);
+		angle.convert(x, from=from, to=to);
 		}
 	if(TYPE == "base")
 		{
 		msg = prep.msg("There is a function ", "<i>[base.convert]</i>", " with helper functions in the humanVerse.  To convert numbers to string forms of other bases (hexadecimal, octal, binary).");
-		cat.stop(msg);		
+		cat.warning(msg);	
+		base.convert(x, from=from, to=to);		
 		}
 	if(TYPE == "colo")
 		{
 		msg = prep.msg("There is a function ", "<i>[color.convert]</i>", " with helper functions in the humanVerse.  To convert colors from different formats (hex to rgb to cmyk to hsl).");
-		cat.stop(msg);		
+		cat.warning(msg);
+		color.convert(x, from=from, to=to);		
 		}
 	if(TYPE == "temp")
 		{
 		msg = prep.msg("There is a function ", "<i>[temp.convert]</i>", " with helper functions in the humanVerse.  To convert temperature from different formats (C to F to K).");
-		cat.stop(msg);		
+		cat.warning(msg);	
+		temp.convert(x, from=from, to=to);
 		}
 		
 	std = NULL;
@@ -310,7 +412,7 @@ dput(out);
 	
 	
 	# AREA
-	https://www.nist.gov/physical-measurement-laboratory/nist-guide-si-appendix-b9#AREA
+# 	https://www.nist.gov/physical-measurement-laboratory/nist-guide-si-appendix-b9#AREA
 	conv.area = function() {}
 	if(TYPE %in% c("area", "are", "ar"))  # area ... 
 		{
@@ -404,7 +506,228 @@ dput(out);
 ## VOLUME is LARGE ... 
 	# https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors/nist-guide-si-appendix-b9#VOLUME
 	# VOLUME 
-	# VOLUME is a chore ... 
+
+	conv.vol = function() {}
+	if(TYPE %in% c("volu", "vol", "vo"))  # volume ... 
+		{
+		# cubic-meter ... m3 ... m^3 ...  
+		if(is.null(std) && FROM %in% c("cub-met", "met-cub", "m3", "m^3")) 
+			{ std = 1 * x; }
+			
+		# acre-foot ... acre-foot (based on U.S. survey foot)  
+		if(is.null(std) && FROM %in% c("acr-foo", "acr", "acr-ft", "acr-fee")) 
+			{ std = 1233.489 * x; }
+		# barrel [for petroleum, 42 gallons (U.S.)]  
+		if(is.null(std) && FROM %in% c("bar", "us-bar", "bar-us")) 
+			{ std = 0.1589873 * x; }
+		# bushel (U.S.) (bu)  
+		if(is.null(std) && FROM %in% c("bus", "us-bus", "bus-us", "bu", "us-bu", "bu-us")) 
+			{ std = 0.03523907 * x; }
+		# cord (128 ft3) 
+		if(is.null(std) && FROM %in% c("cor", "co")) 
+			{ std = 3.624556 * x; }
+		# cubic foot (ft3) 
+		if(is.null(std) && FROM %in% c("cub-ft", "cub-foo", "cub-fee", "ft-cub", "fee-cub", "foo-cub", "ft3", "ft^")) 
+			{ std = 0.02831685 * x; }
+		# cubic inch (in3) 
+		if(is.null(std) && FROM %in% c("cub-in", "cub-inc", "in-cub", "inc-cub", "in3", "in^")) 
+			{ std = 0.00001638706 * x; }
+		# cubic mile (mi3) 
+		if(is.null(std) && FROM %in% c("cub-mi", "cub-mil", "mi-cub", "mil-cub", "mi3", "mi^")) 
+			{ std = 4168182000 * x; }
+		# cubic yard (yd3)
+		if(is.null(std) && FROM %in% c("cub-yd", "cub-yar", "yd-cub", "yar-cub", "yd3", "yd^")) 
+			{ std = 0.7645549 * x; }
+			
+		# cup (U.S.)
+		if(is.null(std) && FROM %in% c("cup-us", "us-cup", "cup-usa", "usa-cup")) 
+			{ std = 0.0002365882 * x; }
+			
+		# us-gallon... gallon (U.S.) (gal)
+		if(is.null(std) && FROM %in% c("us-gal", "usa-gal", "gal-us", "gal-usa")) 
+			{ std = 0.003785412 * x; }
+			
+		# imperial-gallon... gallon [Canadian and U.K. (Imperial)] (gal)
+		if(is.null(std) && FROM %in% c("imp-gal", "uk-gal", "gal-uk", "gal-imp")) 
+			{ std = 0.00454609 * x; }
+			
+		# us-gill... gill (U.S.) (gi)
+		if(is.null(std) && FROM %in% c("usa-gil", "us-gil", "gil-us", "gil-usa", "usa-gi", "us-gi", "gi-us", "gi-usa")) 
+			{ std = 0.0001420653 * x; }
+
+
+		# imperial-gill... gill [Canadian and U.K. (Imperial)] (gi)
+		if(is.null(std) && FROM %in% c("imp-gil", "uk-gil", "gil-uk", "gil-imp", "imp-gi", "uk-gi", "gi-uk", "gi-imp")) 
+			{ std = 0.0001420653 * x; }
+			
+		# us-ounce ... fluid ounce (U.S.) (fl oz)
+		if(is.null(std) && FROM %in% c("usa-oun", "us-oun", "oun-us", "oun-usa", "usa-oz", "us-oz", "oz-us", "oz-usa")) 
+			{ std = 0.00002957353 * x; }
+			
+		# imperial-ounce ... ounce [Canadian and U.K. fluid (Imperial)] (fl oz)
+		if(is.null(std) && FROM %in% c("imp-oun", "uk-oun", "oun-uk", "oun-imp", "imp-oz", "uk-oz", "oz-uk", "oz-imp")) 
+			{ std = 0.00002841306 * x; }
+			
+			
+		# liter ... liter (L) 19
+		if(is.null(std) && FROM %in% c("lit", "li", "l")) 
+			{ std = 0.001 * x; }
+			
+		
+		# peck ... peck (U.S.) (pk)
+		if(is.null(std) && FROM %in% c("usa-pec", "us-pec", "pec-us", "pec-usa", "pec")) 
+			{ std = 0.008809768 * x; }
+			
+		# dry-pint ... pint (U.S. dry) (dry pt)
+		if(is.null(std) && FROM %in% c("pt-dry", "dry-pt", "pin-dry", "dry-pin")) 
+			{ std = 0.0005506105 * x; }
+		# liquid-pint ... pint (U.S. liquid) (liq pt)
+		if(is.null(std) && FROM %in% c("pt-liq", "liq-pt", "pin-liq", "liq-pin")) 
+			{ std = 0.0004731765 * x; }
+			
+		# dry-quart ... quart (U.S. dry) (dry qt)
+		if(is.null(std) && FROM %in% c("qt-dry", "dry-qt", "qua-dry", "dry-qua")) 
+			{ std = 0.001101221 * x; }
+		# liquid-quart ... quart (U.S. liquid) (liq qt)
+		if(is.null(std) && FROM %in% c("qt-liq", "liq-qt", "qua-liq", "liq-qua")) 
+			{ std = 0.0009463529 * x; }
+			
+		# stere (st)
+		if(is.null(std) && FROM %in% c("st", "ste")) 
+			{ std = 1 * x; }
+		
+		# tablespoon
+		if(is.null(std) && FROM %in% c("tab", "tbl", "tas")) 
+			{ std = 0.00001478676 * x; }
+		# teaspoon
+		if(is.null(std) && FROM %in% c("tea", "tsp", "tes")) 
+			{ std = 0.000004928922 * x; }
+			
+		# ton, register
+		if(is.null(std) && FROM %in% c("ton", "reg")) 
+			{ std = 2.831685 * x; }
+		
+		
+
+		
+		
+		if(is.null(std)) { stop("what show METHOD and FROM "); }
+		
+		################### REVERSE ############################
+		
+		# cubic-meter ... m3 ... m^3 ...  
+		if(is.null(out) && TO %in% c("cub-met", "met-cub", "m3", "m^3")) 
+			{ out = std/1 ; }
+			
+		# acre-foot ... acre-foot (based on U.S. survey foot)  
+		if(is.null(out) && TO %in% c("acr-foo", "acr", "acr-ft", "acr-fee")) 
+			{ out = std/1233.489 ; }
+		# barrel [for petroleum, 42 gallons (U.S.)]  
+		if(is.null(out) && TO %in% c("bar", "us-bar", "bar-us")) 
+			{ out = std/0.1589873 ; }
+		# bushel (U.S.) (bu)  
+		if(is.null(out) && TO %in% c("bus", "us-bus", "bus-us", "bu", "us-bu", "bu-us")) 
+			{ out = std/0.03523907 ; }
+		# cord (128 ft3) 
+		if(is.null(out) && TO %in% c("cor", "co")) 
+			{ out = std/3.624556 ; }
+		# cubic foot (ft3) 
+		if(is.null(out) && TO %in% c("cub-ft", "cub-foo", "cub-fee", "ft-cub", "fee-cub", "foo-cub", "ft3", "ft^")) 
+			{ out = std/0.02831685 ; }
+		# cubic inch (in3) 
+		if(is.null(out) && TO %in% c("cub-in", "cub-inc", "in-cub", "inc-cub", "in3", "in^")) 
+			{ out = std/0.00001638706 ; }
+		# cubic mile (mi3) 
+		if(is.null(out) && TO %in% c("cub-mi", "cub-mil", "mi-cub", "mil-cub", "mi3", "mi^")) 
+			{ out = std/4168182000 ; }
+		# cubic yard (yd3)
+		if(is.null(out) && TO %in% c("cub-yd", "cub-yar", "yd-cub", "yar-cub", "yd3", "yd^")) 
+			{ out = std/0.7645549 ; }
+			
+		# cup (U.S.)
+		if(is.null(out) && TO %in% c("cup-us", "us-cup", "cup-usa", "usa-cup")) 
+			{ out = std/0.0002365882 ; }
+			
+		# us-gallon... gallon (U.S.) (gal)
+		if(is.null(out) && TO %in% c("us-gal", "usa-gal", "gal-us", "gal-usa")) 
+			{ out = std/0.003785412 ; }
+			
+		# imperial-gallon... gallon [Canadian and U.K. (Imperial)] (gal)
+		if(is.null(out) && TO %in% c("imp-gal", "uk-gal", "gal-uk", "gal-imp")) 
+			{ out = std/0.00454609 ; }
+			
+		# us-gill... gill (U.S.) (gi)
+		if(is.null(out) && TO %in% c("usa-gil", "us-gil", "gil-us", "gil-usa", "usa-gi", "us-gi", "gi-us", "gi-usa")) 
+			{ out = std/0.0001420653 ; }
+
+
+		# imperial-gill... gill [Canadian and U.K. (Imperial)] (gi)
+		if(is.null(out) && TO %in% c("imp-gil", "uk-gil", "gil-uk", "gil-imp", "imp-gi", "uk-gi", "gi-uk", "gi-imp")) 
+			{ out = std/0.0001420653 ; }
+			
+		# us-ounce ... fluid ounce (U.S.) (fl oz)
+		if(is.null(out) && TO %in% c("usa-oun", "us-oun", "oun-us", "oun-usa", "usa-oz", "us-oz", "oz-us", "oz-usa")) 
+			{ out = std/0.00002957353 ; }
+			
+		# imperial-ounce ... ounce [Canadian and U.K. fluid (Imperial)] (fl oz)
+		if(is.null(out) && TO %in% c("imp-oun", "uk-oun", "oun-uk", "oun-imp", "imp-oz", "uk-oz", "oz-uk", "oz-imp")) 
+			{ out = std/0.00002841306 ; }
+			
+			
+		# liter ... liter (L) 19
+		if(is.null(out) && TO %in% c("lit", "li", "l")) 
+			{ out = std/0.001 ; }
+			
+		
+		# peck ... peck (U.S.) (pk)
+		if(is.null(out) && TO %in% c("usa-pec", "us-pec", "pec-us", "pec-usa", "pec")) 
+			{ out = std/0.008809768 ; }
+			
+		# dry-pint ... pint (U.S. dry) (dry pt)
+		if(is.null(out) && TO %in% c("pt-dry", "dry-pt", "pin-dry", "dry-pin")) 
+			{ out = std/0.0005506105 ; }
+		# liquid-pint ... pint (U.S. liquid) (liq pt)
+		if(is.null(out) && TO %in% c("pt-liq", "liq-pt", "pin-liq", "liq-pin")) 
+			{ out = std/0.0004731765 ; }
+			
+		# dry-quart ... quart (U.S. dry) (dry qt)
+		if(is.null(out) && TO %in% c("qt-dry", "dry-qt", "qua-dry", "dry-qua")) 
+			{ out = std/0.001101221 ; }
+		# liquid-quart ... quart (U.S. liquid) (liq qt)
+		if(is.null(out) && TO %in% c("qt-liq", "liq-qt", "qua-liq", "liq-qua")) 
+			{ out = std/0.0009463529 ; }
+			
+		# stere (st)
+		if(is.null(out) && TO %in% c("st", "ste")) 
+			{ out = std/1 ; }
+		
+		# tablespoon
+		if(is.null(out) && TO %in% c("tab", "tbl", "tas")) 
+			{ out = std/0.00001478676 ; }
+		# teaspoon
+		if(is.null(out) && TO %in% c("tea", "tsp", "tes")) 
+			{ out = std/0.000004928922 ; }
+			
+		# ton, register
+		if(is.null(out) && TO %in% c("ton", "reg")) 
+			{ out = std/2.831685 ; }
+		
+		
+
+
+
+	
+		if(is.null(out)) { stop("what out show METHOD and FROM "); }
+		
+		return(out);
+		}
+
+	
+	
+	# NO to fractions (acceleration is unique)
+	# what about FORCE / WORK ( Newton / Joule )???
+	# not now ... 
+	# unit.tests with other libraries???
 	
 	
 	# https://www.nist.gov/system/files/documents/2021/03/18/ansi-nist_archived_2010_geographic.pdf
@@ -415,7 +738,22 @@ dput(out);
 	# GMT type format CCYYMMDDHHMMSSz
 	# DEG ; Long Name: DegreeValue | Optionally populated, the format shall be ±xxx.xxxx±yyy.yyyy, where x refers to latitude and y refers to longitude. Can be auto captured/converted using GPS signals when available. For example, +039.1455- 077.2057. 
 	# DMS ; Long Name : DegreeMinuteSecondValue | Optionally populated, the format shall be ±xxxDxxMxxS±yyyDyyMyyS, where x refers to latitude and y refers to longitude. Can be auto captured/converted from GPS signals when available. For example, +039D08M44S-077D12M20S.
-	
+	# 48°24′42″N 114°20′24″W # https://en.wikipedia.org/wiki/Whitefish,_Montana
+	# https://geohack.toolforge.org/geohack.php?pagename=Whitefish,_Montana&params=48_24_42_N_114_20_24_W_region:US-MT_type:city
+	# DMS		48° 24′ 42″ N, 114° 20′ 24″ W
+	# Decimal	48.411667, -114.34
+	# Geo URI	geo:48.411667,-114.34
+	# https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system
+	# https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system#Simplified_formulae
+	# These grid zones are uniform over the globe, except in two areas. On the southwest coast of Norway, grid zone 32V (9° of longitude in width) is extended further west, and grid zone 31V (3° of longitude in width) is correspondingly shrunk to cover only open water. Also, in the region around Svalbard, the four grid zones 31X (9° of longitude in width), 33X (12° of longitude in width), 35X (12° of longitude in width), and 37X (9° of longitude in width) are extended to cover what would otherwise have been covered by the seven grid zones 31X to 37X. The three grid zones 32X, 34X and 36X are not used.
+	# UTM	11U 696832 5365475
+	# always an acception ...
+	# maybe make XTM from GIZA ... 
+	# https://cran.r-project.org/web/packages/geosphere/geosphere.pdf
+	#02° 31’ 21" North by 32° 5’ 39" East
+	# 02 31 21 N, 32 5 39 E
+	# 023121N, 320539E
+	# 023121, 320539
 
 	}
 

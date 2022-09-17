@@ -47,16 +47,22 @@ set.match = function(searching, set, ...)
 	
 # maybe just set.match = match 
 set.diff = function() {}
+# very similar to intersect ... 
 set.diff = setdiff; 
 set.union = function() {}
 set.union = union;
 set.merge = union;
 set.intersect = function() {}
+# would it be faster if it was union logic
+# find c(u,v) ... find unique(c,v) ... and subtract ?
 set.intersect = intersect;
 set.equal = function() {}
-set.equal = setequal;
+# would it be faster to sort and do identical?
+# than to do match(a,b) and match(b,a)
+set.equal = setequal;  
 set.isElement = function() {}
 set.isElement = is.element;
+# is .Internal(which) or .Internal(match) faster?
 	
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'	
@@ -78,4 +84,21 @@ set.remove = function(elements, set, ...)
 	if(length(x) == 0) { return(set); }
 	set[-c(x)];
 	}
-	
+
+# set.remove is set.substract(a, b) 
+# below let's you get the indexes ...	
+
+
+# subtract vec from parent ...
+# should truncate be about a set or a length ...  
+v.truncate = function(vec, parent, by="value", invert=FALSE)  
+	{
+	BY = prep.arg(by, n=1);
+	# shorten parent by removing vec 
+	idx = set.match(vec, parent); 
+	if(invert) { idx = v.invert(vec,idx); }
+	res = (1:length(parent))[-c(idx)]; 
+	if(BY=="v") { res = parent[-c(idx)]; }
+	# res = set.diff(parent, vec);
+	v.return(res);
+	}

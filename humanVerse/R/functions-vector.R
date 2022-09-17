@@ -850,7 +850,7 @@ PDF = function(x, method="norm", ...)
 						"wilc"	= "dwilcox", 	# wilcox 
 						"wish"	= "dWishart",	# Wishart
 						
-					stop("not found, METHOD wrapped in msg");
+					stop("not found, METHOD wrapped in msg")
 					);
 	
 	res = do.call(fn.name, clist);	
@@ -908,7 +908,7 @@ CDF = function(q, method="norm", ...)
 						"mvch"	= "pmvchi",		# mvchi (multi-variate chi-squ)
 						
 						
-					stop("not found, METHOD wrapped in msg");
+					stop("not found, METHOD wrapped in msg")
 					);
 
 	res = do.call(fn.name, clist);	
@@ -965,7 +965,7 @@ CDF.inv = function(p, method="norm", ...)
 						
 						"mvch"	= "qmvchi",		# mvchi (multi-variate chi-squ)
 						
-					stop("not found, METHOD wrapped in msg");
+					stop("not found, METHOD wrapped in msg")
 					);
 	
 	res = do.call(fn.name, clist);	
@@ -1053,7 +1053,7 @@ v.random = function(n=100, method="norm", ..., seed=NULL)
 						"wilc"	= "rwilcox", 	# wilcox 
 						"wish"	= "rWishart",	# Wishart
 					
-					stop("not found, METHOD wrapped in msg");
+					stop("not found, METHOD wrapped in msg")
 					);
 	
 	# paste0("r",method);		
@@ -1085,19 +1085,6 @@ v.fill = function(vec, to.length=5, with=NA)
 	c(vec, add);	
 	}
 
-# subtract vec from parent ...
-# should truncate be about a set or a length ...  
-v.truncate = function(vec, parent, by="value", invert=FALSE)  
-	{
-	BY = prep.arg(by, n=1);
-	# shorten parent by removing vec 
-	idx = set.match(vec, parent); 
-	if(invert) { idx = v.invert(vec,idx); }
-	res = (1:length(parent))[-c(idx)]; 
-	if(BY=="v") { res = parent[-c(idx)]; }
-	# res = set.diff(parent, vec);
-	v.return(res);
-	}
 
 
 
@@ -1133,14 +1120,14 @@ v.shortTypes = function(types, force.odd=TRUE)
 
 v.nearest = function(vec, what, howmany=1)
 	{
-	idx = v.nearest.idx(vec, what, howmany=howmany);
+	idx = v.nearestIDX(vec, what, howmany=howmany);
 	vec[ idx ];
 	}
 
 
 
 
-v.nearest.idx = function(vec, what, howmany=1)
+v.nearestIDX = function(vec, what, howmany=1)
 	{
 	vec.dev = abs(what-vec); 			# deviation
 	idx.min = stats.whichMin(vec.dev);	# minimum

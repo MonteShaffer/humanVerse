@@ -224,6 +224,49 @@ gggassign = function(key, val)
 	return(invisible(NULL));
 	}
 	
+	
+plusplus = function() {}
+# x = function() { print(environment()); print(parent.env(environment())); print(parent.frame(1)); print(parent.frame(2)); i = 0; a = 0; b = 0; for(j in 1:3) { a = i%++%.; cat("\n ja -->", j, "\t a:",a, "\t b:",b, "\t i:",i); b = .%++%i; cat("\n jb -->", j, "\t a:",a, "\t b:",b, "\t i:",i); }; cat("\n"); }
+
+# WHERE = parent.env(environment())  # did not work as expected 
+# WHERE=parent.frame(1)
+"%++%" = plusplus = function(KEY, VALUE, WHERE=parent.frame(1))
+	{
+# cat("\n");
+# print(environment()); 
+# print(parent.env(environment())); 
+# print(parent.frame(1));
+# print(parent.frame(2));
+	ct.KEY = check.type(KEY);
+	ct.VAL = check.type(VALUE);
+	
+	# i %++% .
+	if(ct.KEY && !ct.VAL)
+		{
+		val = KEY;
+		nval = 1+val;
+		key = deparse(substitute(KEY));
+		# use the basic %to% logic ...
+		assign(key, nval, envir=WHERE );
+		return(nval);
+		}
+		
+	# . %++% i
+	if(!ct.KEY && ct.VAL)
+		{
+		val = VALUE;
+		nval = 1+val;
+		key = deparse(substitute(VALUE));
+		# use the basic %to% logic ...
+		assign(key, nval, envir=WHERE );
+		return(val);
+		}
+	
+	stop("how did you get here");
+	}
+	
+	
+global = function() {}
 "%GLOBAL%" = global = function(KEY, VALUE)
 	{
 	ct.KEY = check.type(KEY);
@@ -255,11 +298,16 @@ gggassign = function(key, val)
 	}
 
 
-
-"%to%" = to = function(WHAT, WHERE)
+to = function() {}
+"%to%" = to = function(WHAT, WHERE=parent.frame(2))
 	{
+	DEFAULT = parent.frame(2); # one above caller? grandparent
+	# allows x %to% . 
+	ct.WHERE = check.type(WHERE);
+	if(!ct.WHERE) { WHERE = DEFAULT; }
+		
 	val = WHAT;
-	key = deparse(substitute(WHAT));
+	key = deparse(substitute(WHAT));		
 	assign(key, val, envir=WHERE );
 	}
 	
@@ -449,9 +497,8 @@ minvisible = function(x, key="LAST", print=TRUE)
 	{
 	memory.set(key, "-MINVISIBLE-", x);
 	# also store to ANS variable ... 
-	"ANS" %GLOBAL% x; 
-	"Ans" %GLOBAL% x;
-dput(print);
+	ANS %GLOBAL% x; Ans %GLOBAL% x;
+# dput(print);
 	if(print == "str") { print(str(x)); }
 	if(print == TRUE) { print(x); }	
 	invisible(x);	

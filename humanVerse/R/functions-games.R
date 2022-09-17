@@ -85,7 +85,8 @@ snails.pace = function(snails = 6, finish.line = 8, moves = 200,
 			has.rank = (snail.rank != 0);
 			snail.lab = paste0(snail.x, "*", snail.rank);
 			snail.lab[!has.rank] = snail.x[!has.rank];
-			assign("snail.lab", snail.lab, envir=parent.env(environment()) );
+			# assign("snail.lab", snail.lab, envir=parent.env(environment()) );
+			snail.lab %to% . ;
 		# overlay "points" again so trail doesn't have text ...
 		# maybe not even use plot ?
 		# overlay doesn't work with BAD UTF character ... weird ?
@@ -127,16 +128,20 @@ snails.pace = function(snails = 6, finish.line = 8, moves = 200,
 				x = readline(prompt="Press [enter] to continue, [ESC] to quit");
 				} 
 		n = sample((1:snails), 1);
-		assign("n", n, envir=parent.env(environment()) );
+		# assign("n", n, envir=parent.env(environment()) );
+		n %to% . ;
 		
 		snail.x[n] = 1 + snail.x[n];
 		if( (snail.rank[n] == 0) && (snail.x[n] >= finish.line) )
 			{ 			
 			snail.rank[n] = crank;
-			crank = 1 + crank; 			
+			## crank = 1 + crank;
+			crank %++% . ;
 			# update to MAIN environment
-			assign("snail.rank", snail.rank, envir=parent.env(environment()) );
-			assign("crank", crank, envir=parent.env(environment()) );
+			## assign("snail.rank", snail.rank, envir=parent.env(environment()) );
+			## assign("crank", crank, envir=parent.env(environment()) );
+			snail.rank %to% . ;
+			crank %to% . ;
 			}		
 		snail.x;
 		}
@@ -146,7 +151,8 @@ snails.pace = function(snails = 6, finish.line = 8, moves = 200,
 	snails.plot(); 
 	while(move.number < moves)
 		{
-		move.number = 1 + move.number;
+		# move.number = 1 + move.number;
+		move.number %++% . ; 
 		snail.x = snails.update();
 		move.history = c(move.history, n);  # prevent multi-color BUG
 		snails.plot();	
@@ -158,7 +164,7 @@ snails.pace = function(snails = 6, finish.line = 8, moves = 200,
 		}
 	attr(move.history, "color") = snail.col;
 	attr(move.history, "info") 	= snail.lab;
-	invisible(move.history);	
+	minvisible(move.history, print=FALSE);	
 	}
 
 
