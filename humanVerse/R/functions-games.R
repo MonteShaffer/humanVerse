@@ -132,7 +132,7 @@ snails.pace = function(snails = 6, finish.line = 8, moves = 200,
 		# n = sample((1:snails), 1);	n %to% envir;
 		n = v.shuffle((1:snails), 1);	n %to% envir;
 		
-		snail.x[n] = 1 + snail.x[n];
+		snail.x[n] %++%. ;  # = 1 + snail.x[n];
 		if( (snail.rank[n] == 0) && (snail.x[n] >= finish.line) )
 			{ 			
 			snail.rank[n] = crank;		snail.rank 	%to% envir;

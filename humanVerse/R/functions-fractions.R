@@ -330,6 +330,7 @@ options(op);
 			{ 
 			# lookup ... e.g., force.scale = "micro"
 			
+			# FS = SI.prepKey(force.scale);
 			FS = prep.arg(force.scale, n=3);
 			choices =  substring(SI_PREFIX$SI.name, 1, 3);
 			idx = v.which(choices, FS);

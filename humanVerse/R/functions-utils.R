@@ -240,6 +240,8 @@ plusplus = function() {}
 	ct.KEY = check.type(KEY);
 	ct.VAL = check.type(VALUE);
 	
+# https://stackoverflow.com/questions/16583211/how-to-get-environment-of-a-variable-in-r
+# pryr::where("mean")
 # dput(KEY);
 # dput( deparse(substitute(KEY)) );
 # dput( eval(parse(text = deparse(substitute(KEY)) ) ) );
@@ -252,13 +254,10 @@ plusplus = function() {}
 		val = KEY;
 		nval = 1+val;
 		key = deparse(substitute(KEY));
-		# use the basic %to% logic ...
-		# assign(key, nval, envir=WHERE );
 		# snails.x[n] %++%.
 		str = paste0(key, " = ", nval, ";");
-dput(str);
+# dput(str);
 		eval(parse(text = str), envir=WHERE);
-		# eval.parent(parse(text = str));
 		return(nval);
 		}
 		
@@ -268,14 +267,10 @@ dput(str);
 		val = VALUE;
 		nval = 1+val;
 		key = deparse(substitute(VALUE));
-		# use the basic %to% logic ...
-		# assign(key, nval, envir=WHERE );
 		#  .%++% snails.x[n]
-
 		str = paste0(key, " = ", nval, ";");
-dput(str);
-		eval(parse(text = str), envir=WHERE);
-		
+# dput(str);
+		eval(parse(text = str), envir=WHERE);		
 		return(val);
 		}
 	
