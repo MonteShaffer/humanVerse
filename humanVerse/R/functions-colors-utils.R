@@ -79,6 +79,13 @@ hexcolor.return = function(hexstr, case="upper", alpha.case="lower")
 	}
   
 # as.hexcolor = color.hex; 
+hex.prepend = function(hexstr, ..., prepend="#")
+	{
+	hexstr = dots.addTo(hexstr, ...);
+	hexstr = str.replace(c("O","o"),"0", hexstr); # oh's not zeroes'
+	hexstr = cleanup.base(hexstr); 
+	paste0(prepend, hexstr);	
+	}
   
 color.hex = function() {}
 color.hex = function(hexstr, ..., 
@@ -89,8 +96,8 @@ color.hex = function(hexstr, ...,
 					)
 	{
 	hexstr = dots.addTo(hexstr, ...);
-	hexstr = cleanup.base(hexstr); 
 	hexstr = str.replace(c("O","o"),"0", hexstr); # oh's not zeroes'
+	hexstr = cleanup.base(hexstr); 
 	if(three.to.six)  #   #F0C ==> FF00CC [old school]
 		{
 		hlen = str.len(hexstr);

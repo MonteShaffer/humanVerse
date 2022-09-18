@@ -103,7 +103,7 @@ prep.norm = function(METHOD)
 	
 
 v.norm = function(vec, method="sum", ..., force.abs=FALSE, na.rm=TRUE, show.warning=na.rm)
-	{
+	{ 
 	# this works naturally, AS-IS on vectors/matrices
 	if(is.dataframe(vec)) { vec = as.matrix(vec); }
 	
@@ -117,7 +117,7 @@ v.norm = function(vec, method="sum", ..., force.abs=FALSE, na.rm=TRUE, show.warn
 		{
 		df = property.get("IN", KEY);
 		msg = msg.badOption("method", method, METHOD);	
-		cat("\n\n"); minvisible( df, print=TRUE ); cat("\n\n"); 
+		cat("\n\n"); minvisible( df, display=TRUE ); cat("\n\n"); 
 		IN.clear();	
 		cat.stop(msg);
 		}

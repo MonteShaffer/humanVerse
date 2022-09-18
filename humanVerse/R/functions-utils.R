@@ -417,7 +417,7 @@ IN = function(KEY, VALUE, mem.key = "-CURRENT_IN-")
 
 	fn = sys.calls()[[sys.nframe()-1]];  # close 
 	finfo = parse.syscall(fn);
- 
+  
 	res = list("envir" = key, "call" = val, "fn.info" = finfo);
 		
 	WHERE=parent.frame(1); # or WHERE = env?
@@ -615,10 +615,8 @@ charCode = function(svec)
 
 
 
-
-eval.fromTemplate = function(TEMPLATE, key, value)
+prep.eval = function(value)
 	{
-	TEMPLATE = str.replace("{key}", key, TEMPLATE);
 	nv = length(value);
 	if(is.character(value) && nv==1) 
 		{ 
@@ -626,7 +624,16 @@ eval.fromTemplate = function(TEMPLATE, key, value)
 		} else { 
 				value = deparse(value);
 				}
-		# str.replace failed here trying to be smart ... force=1
+	value;
+	}
+
+eval.fromTemplate = function(TEMPLATE, key, value)
+	{
+	TEMPLATE = str.replace("{key}", key, TEMPLATE);
+	
+	value = prep.eval(value);
+	
+	# str.replace failed here trying to be smart ... force=1
 	TEMPLATE = gsub("{value}", value, TEMPLATE, fixed=TRUE);
 	
 	eval(parse(text=TEMPLATE));
@@ -640,17 +647,31 @@ minvisible.get = function(key="LAST")
 	memory.get(key, "-MINVISIBLE-");
 	}
 
-minvisible = function(x, key="LAST", print=TRUE)
+minvisible = function(x, key="LAST", display=TRUE)
 	{
 	memory.set(key, "-MINVISIBLE-", x);
 	# also store to ANS variable ... 
 	# I could do ANS = Ans = x;   ANS %GLOBAL%. ; Ans %GLOBAL%. ;
 	# ANS %GLOBAL% x;  # undefined ANS ... treated as "." (dot)
 	"ANS" %GLOBAL% x; 
-	"Ans" %GLOBAL% x;
-# dput(print);
-	if(print == "str") { print(str(x)); }
-	if(print == TRUE) { print(x); }	
+	"Ans" %GLOBAL% x; 
+	
+	
+	ct.DISPLAY = check.type(display);
+	if(!ct.DISPLAY || !is.character(display))	
+		{ 
+		display = deparse(substitute(display)); 
+		display = prep.arg(display, n=3);
+		}
+	# str may be object ... str may be a var in GLOBAL ... str="hello world";
+
+	has.displayed = NULL;
+	if(is.null(has.displayed) && display == "str") 
+		{ (has.displayed = print(str(x)) ); }
+	if(is.null(has.displayed) && display == TRUE) 
+		{ (has.displayed = print(x) ); }	
+
+	
 	invisible(x);	
 	}
 

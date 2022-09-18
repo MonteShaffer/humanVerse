@@ -95,7 +95,7 @@ v.dist = function(vec1, vec2, method="Euclidean", ..., na.rm=TRUE, show.warning=
 		{
 		df = property.get("IN", KEY);
 		msg = msg.badOption("method", method, METHOD);	
-		cat("\n\n"); minvisible( df, print=TRUE ); cat("\n\n"); 
+		cat("\n\n"); minvisible( df, display=TRUE ); cat("\n\n"); 
 		IN.clear();	
 		cat.stop(msg);
 		}
@@ -126,7 +126,7 @@ matrix.dist = function(m, method="euclidean", ...)
 		{
 		df = property.get("IN", KEY);
 		msg = msg.badOption("method", method, METHOD);	
-		cat("\n\n"); minvisible( df, print=TRUE ); cat("\n\n"); 
+		cat("\n\n"); minvisible( df, display=TRUE ); cat("\n\n"); 
 		IN.clear();	
 		cat.stop(msg);
 		}
@@ -152,7 +152,7 @@ cat("\n\n");
 			d[i, j] = d[j, i] = fn(a, b, ...);
 			}
 		}
-	# s = 1-d;  # similarity is 1-distance
+	# s = 1-d;  # similarity is 1-distance 
 	# d = property.set("similarity", d, s);
 	d;
 	}

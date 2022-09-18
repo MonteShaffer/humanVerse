@@ -35,7 +35,69 @@ parse.syscall = function(syscall)
 	# put everything back but the function call 
 	nstr = str.implode("(", info[-c(1)] );
 	nstr = str.replace(")", "", nstr);
-	ninfo = str.trim(str.explode("," , nstr));
+	ninfo = check.list(str.explode('=', str.trim(str.explode("," , nstr))));
+	n = length(ninfo);
+	pkeys = str.replace('"', "", str.trim(list.getElements(ninfo, 1)));
+	pvals = str.trim(list.getElements(ninfo, 2));
+	params = list();
+	for(i in 1:n)
+		{
+		pval = pvals[i];
+		if(!is.na(pval))
+			{
+			params[[ pkeys[i] ]] = eval(parse(text=pval));
+			}
+		# params[[ pkeys[i] ]] = NA;  # you can't always trap NULL ... 
+		} 
+		
+	
+# have to trap keys/vals in a list to preserve type ...
+	# let's get the keys first 
+cat("\n\n");
+dput(ninfo); 
+cat("\n\n");
+dput(n); 
+cat("\n\n");
+dput(params);
+cat("\n\n");
+cat("\n\n");
+stop('monte');	
+	
+
+	
+	
+	
+	nkeys = ninfo;
+	nn = length(nkeys);
+	nvals = rep(NA, nn);
+	
+	# maybe extract keys/values from ninfo ... 
+	nmore = str.explode("=", ninfo);
+	nlen = list.getLengths(nmore);
+	nidx = v.which(nlen, 1, invert=TRUE);
+dput(nidx);
+	if(!is.null(nidx))
+		{
+		npairs = nmore[nidx];
+		npkeys = str.trim(list.getElements(npairs, 1));
+		nkeys[nidx] = npkeys;
+		npvals = str.trim(list.getElements(npairs, 2));
+		
+		nnn = length(idx);
+		for(i in 1:nnn)
+			{
+			nvals[ nidx[i] ] = eval(parse(text=npvals[i]));
+			}
+		}
+dput(nkeys);
+dput(nvals);
+
+
+	
+	
+	
+print(nlen);
+dput(nmore); stop("monte");
 	
 	# missing = v.return(set.diff(keys, ninfo));
 	# I don't know what are missing, maybe howMany 
@@ -45,45 +107,30 @@ parse.syscall = function(syscall)
 		"fn" = fn, 
 		"params" = ninfo, 
 		"missing" = missing, 
-		"formals" = list("keys" = keys, "vals"=vals)
+		"formals" = f
 		);
 	}
    
-v.mathWrap = function(vec, ...)
+# v.chain(vec, hex2dec, sum, dec2hex, hex.prepend)
+v.chain = function(vec, ...)   
 	{ 
-	.%THIS%. ;  minvisible(THIS, print=FALSE); # this gives me sys.call and envir
-	# fn = match.call()[[1]]; 
+	.%THIS%. ;  minvisible(THIS, display=str); # this gives me sys.call and envir
+	# fn = match.call()[[1]];  
 	
 	# make this a generic message
 	if(THIS$fn.info$missing > 0) { print(str(THIS)); stop("looks like you have a [1] missing param in functon"); }
 	params = THIS$fn.info$params;
+	np = length(params);
+	if(np < 2) { stop("looks like there is nothing to do"); }
 
 	# get to the main event 
-	vec = do.call(params[2], list(vec));
-	vec = do.call(params[3], list(vec));
-	vec = do.call(params[4], list(vec));
+	for(i in 2:np)
+		{
+		vec = do.call(params[i], list(vec));
+		}
 	vec;
 	}
 
-
-
-v.math = function(..., fn="sum", fn.pre="hex2dec", fn.post="dec2hex")
-	{
-	# get names / values ... 
-	# xlist = list(...);
-	# dots = match.call(expand.dots = FALSE)$...
-	# names = as.character(dots);
-	###### THIS is a vec function ... 
-	vec = dots.addTo(NULL, ...);
-# dput(vec);
-	vec = do.call(fn.pre, list(vec));
-# dput(vec); 
-	vec = do.call(fn, list(vec));
-# dput(vec);
-	vec = do.call(fn.post, list(vec));
-# dput(vec);
-	minvisible(vec, print=TRUE);	
-	}
 
 
  
@@ -960,7 +1007,7 @@ PDF = function(x, method="norm", ...)
 		{
 		df = property.get("IN", KEY);
 		msg = msg.badOption("method", method, METHOD);	
-		cat("\n\n"); minvisible( df, print=TRUE ); cat("\n\n"); 
+		cat("\n\n"); minvisible( df, display=TRUE ); cat("\n\n"); 
 		IN.clear();	
 		cat.stop(msg);
 		}
@@ -998,7 +1045,7 @@ CDF = function(q, method="norm", ...)
 		{
 		df = property.get("IN", KEY);
 		msg = msg.badOption("method", method, METHOD);	
-		cat("\n\n"); minvisible( df, print=TRUE ); cat("\n\n"); 
+		cat("\n\n"); minvisible( df, display=TRUE ); cat("\n\n"); 
 		IN.clear();	
 		cat.stop(msg);
 		}
@@ -1036,7 +1083,7 @@ CDF.inv = function(p, method="norm", ...)
 		{
 		df = property.get("IN", KEY);
 		msg = msg.badOption("method", method, METHOD);	
-		cat("\n\n"); minvisible( df, print=TRUE ); cat("\n\n"); 
+		cat("\n\n"); minvisible( df, display=TRUE ); cat("\n\n"); 
 		IN.clear();	
 		cat.stop(msg);
 		}
@@ -1392,7 +1439,7 @@ v.push = function(val, ..., key="-CURRENT_STACK-")
 				}	
 	memory.set(key, "STACK", mem);	
 	minvisible(mem, print="str");  #update the memory/history
-	minvisible(dropvec, print=TRUE);
+	minvisible(dropvec, display=TRUE);
 	}
 	
 	
@@ -1423,7 +1470,7 @@ dput(mem);
 				}	
 	memory.set(key, "STACK", mem);	#update the memory/history 
 	minvisible(mem, print="str");
-	minvisible(val, print=TRUE);
+	minvisible(val, display=TRUE);
 	}
 	
 

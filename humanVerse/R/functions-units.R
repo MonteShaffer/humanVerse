@@ -198,7 +198,7 @@ units.convert = function(x, ..., from="in", to="ft", type="distance")
 		if(is.null(std)) 
 			{ 
 			msg = msg.badOption("from", from, FROM);			
-			cat("\n\n"); minvisible( IN.df(), print=TRUE ); cat("\n\n"); 
+			cat("\n\n"); minvisible( IN.df(), display=TRUE ); cat("\n\n"); 
 			IN.clear();
 			cat.stop(msg);
 			}
@@ -275,7 +275,7 @@ dput(out);
 		if(is.null(out)) 
 			{ 
 			msg = msg.badOption("to", to, TO);			
-			cat("\n\n"); minvisible( IN.df(), print=TRUE ); cat("\n\n"); 
+			cat("\n\n"); minvisible( IN.df(), display=TRUE ); cat("\n\n"); 
 			IN.clear();	
 			cat.stop(msg);
 			}	
@@ -312,7 +312,7 @@ dput(out);
 		if(is.null(std)) 
 			{ 
 			msg = msg.badOption("from", from, FROM);			
-			cat("\n\n"); minvisible( IN.df(), print=TRUE ); cat("\n\n"); 
+			cat("\n\n"); minvisible( IN.df(), display=TRUE ); cat("\n\n"); 
 			IN.clear();
 			cat.stop(msg);
 			}
@@ -343,7 +343,7 @@ dput(out);
 		if(is.null(out)) 
 			{ 
 			msg = msg.badOption("to", to, TO);			
-			cat("\n\n"); minvisible( IN.df(), print=TRUE ); cat("\n\n"); 
+			cat("\n\n"); minvisible( IN.df(), display=TRUE ); cat("\n\n"); 
 			IN.clear();	
 			cat.stop(msg);
 			}	
@@ -404,7 +404,7 @@ dput(out);
 		if(is.null(std)) 
 			{ 
 			msg = msg.badOption("from", from, FROM);			
-			cat("\n\n"); minvisible( IN.df(), print=TRUE ); cat("\n\n"); 
+			cat("\n\n"); minvisible( IN.df(), display=TRUE ); cat("\n\n"); 
 			IN.clear();
 			cat.stop(msg);
 			}
@@ -461,7 +461,7 @@ dput(out);
 		if(is.null(out)) 
 			{ 
 			msg = msg.badOption("to", to, TO);			
-			cat("\n\n"); minvisible( IN.df(), print=TRUE ); cat("\n\n"); 
+			cat("\n\n"); minvisible( IN.df(), display=TRUE ); cat("\n\n"); 
 			IN.clear();	
 			cat.stop(msg);
 			}	
@@ -519,7 +519,7 @@ dput(out);
 		if(is.null(std)) 
 			{ 
 			msg = msg.badOption("from", from, FROM);			
-			cat("\n\n"); minvisible( IN.df(), print=TRUE ); cat("\n\n"); 
+			cat("\n\n"); minvisible( IN.df(), display=TRUE ); cat("\n\n"); 
 			IN.clear();
 			cat.stop(msg);
 			}
@@ -572,7 +572,7 @@ dput(out);
 		if(is.null(out)) 
 			{ 
 			msg = msg.badOption("to", to, TO);			
-			cat("\n\n"); minvisible( IN.df(), print=TRUE ); cat("\n\n"); 
+			cat("\n\n"); minvisible( IN.df(), display=TRUE ); cat("\n\n"); 
 			IN.clear();	
 			cat.stop(msg);
 			}	
@@ -696,7 +696,7 @@ dput(out);
 		if(is.null(std)) 
 			{ 
 			msg = msg.badOption("from", from, FROM);			
-			cat("\n\n"); minvisible( IN.df(), print=TRUE ); cat("\n\n"); 
+			cat("\n\n"); minvisible( IN.df(), display=TRUE ); cat("\n\n"); 
 			IN.clear();
 			cat.stop(msg);
 			}
@@ -818,7 +818,7 @@ dput(out);
 		if(is.null(out)) 
 			{ 
 			msg = msg.badOption("to", to, TO);			
-			cat("\n\n"); minvisible( IN.df(), print=TRUE ); cat("\n\n"); 
+			cat("\n\n"); minvisible( IN.df(), display=TRUE ); cat("\n\n"); 
 			IN.clear();	
 			cat.stop(msg);
 			}	
