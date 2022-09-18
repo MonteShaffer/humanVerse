@@ -92,3 +92,16 @@ msg.badOption = function(KEY="method",
 		}
 	
 	
+
+msg.missingParam = function(PARAM="f", DEFAULT=1)
+		{
+		prep.msg("\n\n\t",
+					"It appears that you are missing a PARAMETER",
+					"<v>[</v>", PARAM, "<v>]</v>", 
+					"\n\n\t",
+					"Assigning to DEFAULT value ", "<v>[</v>", DEFAULT, "<v>]</v>",
+					"\n\n\t\t",
+					"The result may not be what you intended.  You may want to try again.",
+					"\n\n"
+					);		
+		}

@@ -1192,66 +1192,38 @@ fn.distance = function(method.key="euclidean");
 	if(!ct.KEY)	{ method.key = deparse(substitute(method.key)); }
 	
 	DISTANCE = list(
-		"euclidean" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"manhattan" = function(a,b,p) { sum(abs(a - b)); },
+		"euclidean" = function(a,b) { sqrt(sum((a - b)^2)); }, # norm-euclidean?
+		"manhattan" = function(a,b) { sum(abs(a - b)); },
 		"minkowski" = function(a,b,p) { (sum(abs(a - b)^p))^(1/p); },
-		"chebyshev" = function(a,b,p) { max(abs(a - b)); },
-		"min-chebyshev" = function(a,b,p) { min(abs(a - b)); },
-		"sorensen" = function(a,b,p) { (sum(abs(a - b))) / (sum(a,b)); },
-		"gower" = function(a,b,p) { (sum(abs(a - b)))/(length(a)); },
-		"soergel" = function(a,b,p) { (sum(abs(a - b)))/(sum(pmax(a,b))); },
-		"canberra" = function(a,b,p) { (sum(abs(a - b)))/(abs(a)+abs(b)); },
-		"lorentzian" = function(a,b,p) { (sum(ln(1 + abs(a - b)))); },
-		"intersection" = function(a,b,p) { (sum(pmin(a,b))); },
-		"non-intersection" = function(a,b,p) { 1-(sum(pmin(a,b))); },
-		"kulczynski-d" = function(a,b,p) { (sum(abs(a - b)))/(sum(pmin(a,b))); },
-		"kulczynski-s" = function(a,b,p) { 1-(sum(abs(a - b)))/(sum(pmin(a,b))); },
-		"wave" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"czekanowski" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"tanimoto" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"ruzicka" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"inner-product" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"harmonic" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"hassebrook" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"jaccard" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"dice" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"fidelity" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"bhattacharyya" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"hellinger" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"matusita" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"chord^2" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"euclidean^2" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"pearson" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"neyman" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"chi^2" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"prob-s" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"divergence" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"clark" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"additive-s" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"kullback-leibler" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"jeffreys" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"k-divergence" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"topsoe" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"jensen-shannon" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"jensen-difference" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"taneja" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"kumar-johnson" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"average" = function(a,b,p) { sqrt(sum((a - b)^2)); }		
-		);	
+		"chebyshev" = function(a,b) { max(abs(a - b)); },
+		"min-chebyshev" = function(a,b) { min(abs(a - b)); },
+		"gower" = function(a,b) { (sum(abs(a - b)))/(length(a)); },
+		"canberra" = function(a,b) { (sum(abs(a - b)))/(abs(a)+abs(b)); },
+		"lorentzian" = function(a,b) { (sum(ln(1 + abs(a - b)))); }
+		);
 		
-	# V1 = c(1.7123324991176, -0.087035482548805, -0.926744124580803, -0.949060940876174, 0.802102347778727, 0.813412610707904, -0.556306188175876, 1.66926772248692, 0.85880968135697, 0.00765593568411784, -2.68022409172632, 0.618090840457905, -0.389199195818067, 0.14075077422064, 0.283485680709692, -0.481275821816208, 0.21864479073757, 0.132048065066265, -0.989820178958714, -1.2469087838849);
-	# V2 = c(-1.68797330342279, 0.829939318101389, 0.512926206890701, -0.0543858421532067, 0.40044742918973, -0.532909910832637, 1.00348061668397, 2.69962897865334, -1.16238208995448, -1.39518123163493, -0.101898562619623, -0.107289835954468, 0.120833930652221, 0.277337073172011, -1.68274204364937, 2.47554302076088, -0.515408405806101, -0.300685269945378, -0.290732748786564, 0.657786857247692);
-	
-	# DISTANCE[["eucl"]](V1,V2,2);
 		
-	# if ALL, return the LIST ... NULL ... otherwise just the function ... 
-	# load function into MATRIX call, so it is just looping ... not having to check which method ...
-
-	if(is.null(method.key)) { return (LIST); }
+	if(is.null(method.key)) { return (DISTANCE); }
 	fn = DISTANCE[[method.key]]; 
-	if(is.null(fn)) { return (LIST); }
+	if(is.null(fn)) { return (DISTANCE); }
 	fn;
 	}
+
+.distance = function(a, b, method="euclidean", p=2)
+	{
+	# a and b are rows where columns may have x,y,z or lat/lon/alt
+	
+	# This assumes the method variable has already been cleansed, 
+	# see v.dist or matrix.dist 
+	# 
+	fn = fn.distance(method);
+	
+	if(method %in% c("minkowski"))
+		{
+		fn(a,b, p=p);
+		} else { fn(a,b); }
+	}
+
 
 prep.distance = function(method)
 	{
@@ -1264,7 +1236,7 @@ prep.distance = function(method)
 		{ key = "manhattan"; }
 	if(is.null(key) && METHOD %IN% c("Minkowski Distance", "minkowski-distance", "mink", "mink-dist"))   
 		{ key = "minkowski"; }
-	if(is.null(key) && METHOD %IN% c("Chebyshev Distance", "chebyshev-distance", "cheb", "cheb-dist"))    
+	if(is.null(key) && METHOD %IN% c("Chebyshev Distance {stats::dist('maximum');}", "chebyshev-distance", "cheb", "cheb-dist", "maxi-dist", "max-dist", "maximum"))    
 		{ key = "chebyshev"; }
 	if(is.null(key) && METHOD %IN% c("Minimum Chebyshev Distance", "minimum-chebyshev-distance", "mini-cheb", "min-cheb", "mini-cheb-dist", "min-cheb-dist"))  
 		{ key = "min-chebyshev"; }
@@ -1276,92 +1248,10 @@ prep.distance = function(method)
 		{ key = "canberra"; }
 	if(is.null(key) && METHOD %IN% c("Lorentzian Distance", "lorentzian-distance", "lore", "lore-dist"))   
 		{ key = "lorentzian"; }
-	if(is.null(key) && METHOD %IN% c("Intersection Similarity", "intersection-similarity", "inte", "inte-simi"))  
-		{ key = "intersection"; }
-	if(is.null(key) && METHOD %IN% c("Non-Intersection Distance", "non-intersection-distance", "non-inte", "non-inte-dist"))   
-		{ key = "non-intersection"; }
-	if(is.null(key) && METHOD %IN% c("Kulczynski Distance", "kulczynski-distance", "kulc-d", "kulc-dist"))   
-		{ key = "kulczynski-d"; }
-	if(is.null(key) && METHOD %IN% c("Kulczynski Similarity", "kulczynski-similarity", "kulc-s", "kulc-sim", "kulc-simi"))  
-		{ key = "kulczynski-s"; }
-	if(is.null(key) && METHOD %IN% c("Wave Hedges Distance", "wave-hedges-distance", "wave", "wave-dist", "wave-hedg", "wave-hedg-dist"))  
-		{ key = "wave"; }
-	# Same as Sorenson (Czek first)... also DICE?
-	# # https://en-academic.com/dic.nsf/enwiki/8107894
-	if(is.null(key) && METHOD %IN% c("Czekanowski Distance", "czekanowski-distance", "czek-dist", "czek", "Sorensen Distance", "sorensen-distance", "sore", "sore-dist"))   
-		{ key = "czekanowski"; }
 		
 		
-		
-	if(is.null(key) && METHOD %IN% c("Motyka Distance", "motyka-distance", "motyka", "moty", "moty-dist"))  
-		{ key = "motyka"; }	
-		
-	# 	# https://www.sequentix.de/gelquest/help/distance_measures.htm
-	if(is.null(key) && METHOD %IN% c("Tanimoto Distance", "tanimoto-distance", "tanimoto", "tani-dist", "tani", "Soergel Distance", "soergel-distance", "soer", "soer-dist"))    
-		{ key = "tanimoto"; }
-		
-	if(is.null(key) && METHOD %IN% c("Ruzicka Distance", "ruzicka-distance", "ruzi", "ruzi-dist"))  
-		{ key = "ruzicka"; }
-	if(is.null(key) && METHOD %IN% c("Inner Product Similarity", "inner-product-similarity", "inner-product", "inne-prod-simi", "inne-prod-s", "inne-simi", "inner-s", "inne-s", "inne-prod-sim", "inne-sim"))  
-		{ key = "inner-product"; }
-	if(is.null(key) && METHOD %IN% c("Harmonic Mean Similarity", "harmonic-mean-similarity", "harm-mean-simi", "harm-mean-sim", "harm-mean-s", "harm-simi", "harm-sim", "harm-s"))  
-		{ key = "harmonic"; }
-	if(is.null(key) && METHOD %IN% c("Cosine Similarity", "cosine-similarity", "cos-sim", "cosi-simi", "cos-s", "cos-simi", "*CAREFUL*, see fn [cosine.similarity] for better EDGE-CASE implementation"))  
-		{ key = "cosine"; }
-	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
-		{ key = "hassebrook"; }
-	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
-		{ key = "jaccard"; }
-	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
-		{ key = "dice"; }
-	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
-		{ key = "fidelity"; }
-	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
-		{ key = "bhattacharyya"; }
-	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
-		{ key = "hellinger"; }
-	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
-		{ key = "matusita"; }
-	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
-		{ key = "chord^2"; }
-	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
-		{ key = "euclidean^2"; }
-	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
-		{ key = "pearson"; }
-	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
-		{ key = "neyman"; }
-	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
-		{ key = "chi^2"; }
-	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
-		{ key = "prob-s"; }
-	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
-		{ key = "divergence"; }
-	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
-		{ key = "clark"; }
-	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
-		{ key = "additive-s"; }
-	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
-		{ key = "kullback-leibler"; }
-	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
-		{ key = "jeffreys"; }
-	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
-		{ key = "k-divergence"; }
-	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
-		{ key = "topsoe"; }
-	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
-		{ key = "jensen-shannon""; }
-	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
-		{ key = "jensen-difference"; }
-	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
-		{ key = "taneja"; }
-	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
-		{ key = "kumar-johnson"; }
-	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
-		{ key = "average"; }
-		
-		
-		
-		
+	# binary is for bits ... meaningless in general ...
+	# "Jaccard" may be useful for proportion matching ... 
 		
 	if(is.null(key)) { key = "--NULL--"; }
 	
@@ -1371,64 +1261,6 @@ prep.distance = function(method)
 	key = property.set("IN", key, df);
 	key;
 
-	}
-
-.dist = function(a, b, method="euclidean", p=2)
-	{
-	# a and b are rows where columns may have x,y,z or lat/lon/alt
-	
-	# This assumes the method variable has already been cleansed, 
-	# see v.dist or matrix.dist 
-	# 
-	fn = fn.distance(method);
-	
-	fn(a,b, p=p);
-	
-
-
-# "wavehedges", "czekanowski", "motyka", "kulczynski_s", "tanimoto", "ruzicka", "inner_product", "harmonic_mean", "cosine", "hassebrook", "jaccard", "dice", "fidelity", "bhattacharyya", "hellinger", "matusita", "squared_chord", "squared_euclidean", "pearson", "neyman", "squared_chi", "prob_symm", "divergence", "clark", "additive_symm", "kullback-leibler", "jeffreys", "k_divergence", "topsoe", "jensen-shannon", "jensen_difference", "taneja", "kumar-johnson", "avg")
-
-	msg = msg.badOption("method", method, METHOD);	
-	cat("\n\n"); minvisible( IN.df(), print=TRUE ); cat("\n\n"); 
-	IN.clear();	
-	cat.stop(msg);
-	}
-
-
-matrix.dist = function(m, method="euclidean", p=2)
-	{
-	m = as.matrix(m);
-	if(anyNA(m)) { stop("we have missing values!"; }
-	
-	METHOD = prep.arg(method, n=3, keep="-");
-	KEY = prep.distance(METHOD);
-	if(KEY == "--NULL--")
-		{
-		df = property.get("IN", KEY);
-		msg = msg.badOption("method", method, METHOD);	
-		cat("\n\n"); minvisible( df, print=TRUE ); cat("\n\n"); 
-		IN.clear();	
-		cat.stop(msg);
-		}
-	
-	fn = fn.distance(as.character(KEY));
-	
-	n = nrow(m);
-	m.names = rownames(m);
-	d = matrix(0, nrow=n, ncol=n, dimnames = list(m.names, m.names));
-	for(i in 1:n)
-		{
-		a = m[i, ];
-		for(j in i:n)
-			{			
-			b = m[j, ];
-			o = fn(a,b, p=p);
-			
-			d[i, j] = d[j, i] = o;
-			}
-		}
-	s = 1-d;  # similarity is 1-distance
-	d = property.set("similarity", d, s); 
 	}
 
 v.dist = function(vec1, vec2, method="Euclidean", p=2, na.rm=TRUE, show.warning=na.rm)
@@ -1453,106 +1285,203 @@ v.dist = function(vec1, vec2, method="Euclidean", p=2, na.rm=TRUE, show.warning=
 	return(.dist(vec1_,vec2_, method=as.character(KEY), p=p);
 	}
 
-
-
-	
-	
-v.norm = function(vec, method="sum", lower=NULL, upper=NULL, force.abs=FALSE, na.rm=TRUE, show.warning=na.rm)
+matrix.dist = function(m, method="euclidean", p=2)
 	{
-	METHOD = prep.arg(method, n=3, keep="-"); 
-	# why call the function if you have na ... ?
+	m = as.matrix(m);
+	# if(anyNA(m)) { stop("we have missing values!"; }
+	
+	METHOD = prep.arg(method, n=3, keep="-");
+	KEY = prep.distance(METHOD);
+	if(KEY == "--NULL--")
+		{
+		df = property.get("IN", KEY);
+		msg = msg.badOption("method", method, METHOD);	
+		cat("\n\n"); minvisible( df, print=TRUE ); cat("\n\n"); 
+		IN.clear();	
+		cat.stop(msg);
+		}
+	
+	fn = fn.distance(as.character(KEY));
+	
+	n = nrow(m);
+	m.names = rownames(m);
+	d = matrix(0, nrow=n, ncol=n, dimnames = list(m.names, m.names));
+	for(i in 1:n)
+		{
+		a = m[i, ];
+		for(j in i:n)
+			{			
+			b = m[j, ];
+			
+			if(method %in% c("minkowski"))
+				{
+				o = fn(a,b, p=p);
+				} else { o = fn(a,b); }
+				
+			d[i, j] = d[j, i] = o;
+			}
+		}
+	# s = 1-d;  # similarity is 1-distance
+	# d = property.set("similarity", d, s);
+	d;
+	}
+
+
+
+
+fn.norm = function(method.key="euclidean");
+	{
+	ct.KEY = check.type(method.key);
+	if(!ct.KEY)	{ method.key = deparse(substitute(method.key)); }
+	
+	NORM = list(
+		"sum" = function(x) { x/sum(x); },
+		"manhattan" = function(x) { x/sum(abs(x)); },  		# L1
+		"euclidean" = function(x,k=2) { xa = abs(x); xam = max(xa); norm = xam * ( (sum((xa / xam)^k))^(1/k) ); x/norm; },  	# L2+ (overflow prevention
+		"min" = function(x) { x/min(x); },
+		"max" = function(x) { x/max(x); },
+		"length" = function(x) { x/length(x); },
+		"divide" = function(x,f) { x/f; },
+		"multiply" = function(x,f) { x*f; },
+		"reverse" = function(x, lo=min(x), hi=max(x) ) { (hi + lo) - x; },
+		"min-max" = function(x) { lo=min(x); hi=max(x); d = (hi-lo); ( x - lo) / d; },
+		"custom-range" = function(x, from=(min(x), max(x)), to=c(-1,1) ) { to[1] + diff(to) * (x-from[1]) / diff(from); },		
+		"z-scores" = function(x) { (x-mean(x))/sd(x); },
+		"m-scores" = function(x) { m = stats.median(x); (x-m)/stats.MAD(x, m=m); }
+		);
+		
+	# if ALL, return the LIST ... NULL ... otherwise just the function ... 
+	# load function into MATRIX call, so it is just looping ... not having to check which method ...
+
+	if(is.null(method.key)) { return (NORM); }
+	fn = NORM[[method.key]]; 
+	if(is.null(fn)) { return (NORM); }
+	fn;
+	}
+
+
+.norm = function(vec, method="sum", ...)
+	{
+	fn = fn.norm(method);
+	
+	
+	
+	if(method %in% c("divide", "multiply"))
+		{
+		if( !exists("f", inherits = FALSE ) )			
+			{ 
+			f = 1;
+			cat.warning(msg.missingParam("f",1));			
+			}		
+		return( fn(x, f=f) );
+		}
+	
+	if(method %in% c("euclidean"))
+		{
+		# return( fn(x, k=k) );
+		return( fn(x, ...) );
+		}
+	if(method %in% c("divide", "multiply"))
+		{
+		# return( fn(x, f=f) );
+		return( fn(x, ...) );
+		}
+	if(method %in% c("reverse"))
+		{
+		# return( fn(x, lo=lo, hi=hi) );
+		return( fn(x, ...) );
+		}
+	if(method %in% c("custom-range"))
+		{
+		# return( fn(x, from=from, to=to) );
+		return( fn(x, ...) );
+		}
+	fn(x);	
+	}	
+	
+prep.norm = function(method)
+	{
+	IN.init();
+	key = NULL;
+	# add is.null(key) && 
+	if(is.null(key) && METHOD %IN% c("Sum", "sum"))
+		{ key = "sum"; }
+	if(is.null(key) && METHOD %IN% c("Minimum", "min"))
+		{ key = "min"; }
+	if(is.null(key) && METHOD %IN% c("Maximum", "max"))
+		{ key = "max"; }
+	if(is.null(key) && METHOD %IN% c("Length", "length", "len"))
+		{ key = "length"; }
+	if(is.null(key) && METHOD %IN% c("Reverse-code", "reverse", "rev-cod", "rev-sco", "rev-lik"))
+		{ key = "reverse"; }
+	# # # bounded between [0,1] # # # 
+	if(is.null(key) && METHOD %IN% c("Minimum-Maximum", "minimum-maximum", "min-max", "max-min"))
+		{ key = "min-max"; }
+	if(is.null(key) && METHOD %IN% c("Custom-Range", "custom-range", "cus-ran", "r", "ran", "c-r"))
+		{ key = "custom-range"; }
+	if(is.null(key) && METHOD %IN% c("zScores", "z-scores", "zsc", "z", "z-s", "z-sco", "mea-sca", "sca"))	
+		{ key = "z-scores"; }
+	if(is.null(key) && METHOD %IN% c("mScores", "m-scores", "msc", "m", "m-s", "m-sco", "med-sco", "med-sca"))
+		{ key = "m-scores"; }
+	if(is.null(key) && METHOD %IN% c("Divide", "divide", "div"))
+		{ key = "divide"; }
+	if(is.null(key) && METHOD %IN% c("Multiply", "multiply", "mul"))
+		{ key = "multiply"; }
+	if(is.null(key) && METHOD %IN% c("Euclidean", "euclidean", "euc"))
+		{ key = "euclidean"; }
+	if(is.null(key) && METHOD %IN% c("Manhattan", "manhattan", "man", "abs", "abs-sum", "sum-abs"))
+		{ key = "manhattan"; }
+		
+		
+	if(is.null(key)) { key = "--NULL--"; }
+	
+	df = IN.df();
+	IN.clear();
+	minvisible(df, print=FALSE);
+	key = property.set("IN", key, df);
+	key;
+	}
+	
+	
+
+v.norm = function(vec, method="sum", ..., force.abs=FALSE, na.rm=TRUE, show.warning=na.rm)
+	{
+	METHOD = prep.arg(method, n=3, keep="-");
+	KEY = prep.distance(METHOD);
+	if(KEY == "--NULL--")
+		{
+		df = property.get("IN", KEY);
+		msg = msg.badOption("method", method, METHOD);	
+		cat("\n\n"); minvisible( df, print=TRUE ); cat("\n\n"); 
+		IN.clear();	
+		cat.stop(msg);
+		}
+	
 	vec = stats.warningNA(vec, show.warning=show.warning); 
 	if(force.abs) { vec = abs(vec); }
 	
-	on.exit( IN.clear() );
-	 
-	IN.init();
-	if(METHOD %IN% c("Sum", "sum"))   
+	.norm(vec, method, ...);
+	
+	if(method %in% c("divide", "multiply"))
 		{
-		return(  vec / sum(vec) ); 
+		if( !exists("f", inherits = FALSE ) )			
+			{ 
+			f = 1;
+			cat.warning(msg.missingParam("f",1));			
+			}		
+		return( fn(x, f=f) );
 		}
-	if(METHOD %IN% c("Minimum", "min"))
+	if(method %in% c("reverse"))
 		{
-		return(  vec / min(vec) ); 
-		}	
-	if(METHOD %IN% c("Maximum", "max"))
-		{
-		return(  vec / max(vec) ); 
+		# these have defaults ...
+		return( fn(x, lo=lo, hi=hi) );
 		}
-	if(METHOD %IN% c("Length", "len"))
+	if(method %in% c("custom-range"))
 		{
-		return(  vec / length(vec) ); 
+		# these have defaults ...
+		return( fn(x, from=from, to=to) );
 		}
-	# Likert 1-7, reverse coded ...
-	if(METHOD %IN% c("Reverse-code", "rev-cod", "rev-sco", "rev-lik"))
-		{
-		vmin = vmax = NULL;
-		if(is.null(vmin) && !is.null(lower))
-			{
-			lolen = length(lower);
-			if(lolen == 2) { vmin = lower[1]; vmax = lower[2]; }
-			if(lolen == 1) { vmin = lower[1]; }
-			}
-		if(is.null(vmax) && !is.null(upper))
-			{
-			uplen = length(upper);
-			if(uplen == 2) { vmin = upper[1]; vmax = upper[2]; }	
-			if(uplen == 1) { vmax = upper[1]; }			
-			}
-		if(is.null(vmin))
-			{
-			vmin = min(vec);
-			}
-		if(is.null(vmax))
-			{
-			vmax = max(vec);
-			}			
-		six = vmax + vmin;  # 6 for a Likert 5 
-		return(  six - vec ); 
-		}
-		
-	# bounded between [0,1]
-	if(METHOD %IN% c("Minimum-Maximum", "min-max", "max-min"))
-		{
-		vmin = min(vec); vmax = max(vec); vrange = vmax - vmin;
-		return(  ( vec - vmin) / vrange ); 
-		}
-	if(METHOD %IN% c("Custom-Range", "cus-ran", "r", "ran", "c-r"))  # custom range
-		{
-		if(length(lower) == 1)
-			{
-			# data determine min/max of vec 
-			# old range is c(min(vec), max(vec))
-			# new range is c(lower, upper)
-			vmin = min(vec); 	vmax = max(vec); 	vrange = vmax - vmin;
-			nmin = lower[1]; 	nmax = upper[1]; 	nrange = nmax - nmin; 
-			} else { 
-					# LIKERT 5 to LIKERT 7 (data may not have min/max)
-					# lower = c(1,5); upper = c(1, 7);
-					# lower is old.range; upper is new.range 
-					vmin = lower[1]; vmax = lower[2]; vrange = vmax - vmin;
-					nmin = upper[1]; nmax = upper[2]; nrange = nmax - nmin; 
-					}
-		return(  nmin + (nrange) * (vec - vmin) / (vrange) );
-		}
-	if(METHOD %IN% c("zScores", "zsc", "z", "z-s", "z-sco", "mea-sca", "sca"))
-		{
-		vmean = mean(vec); vstd = xls.STDEV.S(vec); # should be biased form?
-		return(  ( vec - vmean) / vstd ); 
-		}
-	if(METHOD %IN% c("mScores", "msc", "m", "m-s", "m-sco", "med-sco", "med-sca"))
-		{
-		vmedian = stats.median(vec); mdev = stats.MAD(vec);
-		return(  ( vec - vmedian) / mdev ); 
-		}
-	if(METHOD %IN% c("Lower-Divide", "low-div", "low"))
-		{
-		return(  vec / lower[1] ); 
-		}
-	if(METHOD %IN% c("Upper-Multiply", "upp-mul", "upp"))
-		{
-		return(  vec * upper[1] );
-		}
+	
 	if(METHOD %IN% c("Euclidean", "euc")) 			# Euclidian norm
 		{		
 		# over/under flow 

@@ -539,6 +539,18 @@ stats.zScores = function(x, x.bar = NULL, s.hat = NULL, method="base")
 calculateZscores = stats.zScores;
 
 
+
+
+stats.MAD = function(x, ..., m=NULL, na.rm=TRUE, show.warning=na.rm)
+	{ 
+	# median absolute deviation
+	x = dots.addTo(x, ...);
+	warning = stats.warningNA(x, show.warning=show.warning);
+	if(is.null(m)) { m = stats.median(x); }
+	stats.median( abs( x - m ) );
+	}
+
+
 stats.min = function(x, ..., na.rm=TRUE, show.warning=na.rm)
 	{
 	x = dots.addTo(x, ...);

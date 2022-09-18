@@ -379,6 +379,7 @@ arctanh = math.atanh;
 		{
 		theta = crossprod(a, b) / (sqrt(crossprod(a, a)) * sqrt(crossprod(b, b)));
 		} else	{
+				# just a*b ?
 				theta = (a %*% b) / (sqrt(sum(a^2)) * sqrt(sum(b^2)));
 				}
 
@@ -458,6 +459,8 @@ cosine.similarity = function(a, b=NULL, by="col", ...)
 	{	
 	# is.vector assumes there are not attributes attached ... 
 	# is.atomic returns TRUE for matrix 
+	if(is.dataframe(a)) { a = as.matrix(a); }
+	if(is.dataframe(b)) { b = as.matrix(b); }
 	adim = dim(a); bdim = dim(b);
 	if(is.null(adim) && is.atomic(a) && !is.null(b) && is.null(bdim) && is.atomic(b))
 		{
