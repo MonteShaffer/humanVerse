@@ -49,34 +49,19 @@ parse.syscall = function(syscall)
 		);
 	}
    
-v.mathWrap = function(vec,  FUN.pre, FUN, FUN.post)
+v.mathWrap = function(vec, ...)
 	{ 
 	.%THIS%. ;  minvisible(THIS, print=FALSE); # this gives me sys.call and envir
 	# fn = match.call()[[1]]; 
 	
-		
-	
-				# make this a generic message
+	# make this a generic message
 	if(THIS$fn.info$missing > 0) { print(str(THIS)); stop("looks like you have a [1] missing param in functon"); }
 	params = THIS$fn.info$params;
 
-
-dput(THIS$fn.info);
-	
-	# takes input [whether a str/obj] and returns a string.
-	# at this point, it is a string ... don't need to call magicFunction
-	# 
-	fn.pre = magicFunction( (params[2]), "character");
-dput(fn.pre); 
-	fn = magicFunction( eval(params[3]) , "character");
-dput(fn);	
-	fn.post = magicFunction( eval(params[4]), "character");
-dput(fn.post);
-
 	# get to the main event 
-	vec = do.call(fn.pre, list(vec));
-	vec = do.call(fn, list(vec));
-	vec = do.call(fn.post, list(vec));
+	vec = do.call(params[2], list(vec));
+	vec = do.call(params[3], list(vec));
+	vec = do.call(params[4], list(vec));
 	vec;
 	}
 
