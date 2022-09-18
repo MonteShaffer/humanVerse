@@ -1191,9 +1191,30 @@ fn.distance = function(method.key="euclidean");
 		"chebyshev" = function(V1,V2) { max(abs(V1 - V2)); },
 		"min-chebyshev" = function(V1,V2) { min(abs(V1 - V2)); },
 		"sorensen" = function(V1,V2) { (sum(abs(V1 - V2))) / (sum(V1,V2)); },
-		"gower" = function(V1,V2) { (sum(abs(V1 - V2)))/(length(V1)); }
-			);
+		"gower" = function(V1,V2) { (sum(abs(V1 - V2)))/(length(V1)); },
+		"soergel" = function(V1,V2) { (sum(abs(V1 - V2)))/(sum(pmax(V1,V2))); },
+		"canberra" = function(V1,V2) { (sum(abs(V1 - V2)))/(abs(V1)+abs(V2)); },
+		"lorentzian" = function(V1,V2) { (sum(ln(1 + abs(V1 - V2)))); },
+		"intersection" = function(V1,V2) { (sum(pmin(V1,V2))); },
+		"non-intersection" = function(V1,V2) { 1-(sum(pmin(V1,V2))); },
+		"kulczynski-d" = function(V1,V2) { (sum(abs(V1 - V2)))/(sum(pmin(V1,V2))); },
+		"kulczynski-s" = function(V1,V2) { 1-(sum(abs(V1 - V2)))/(sum(pmin(V1,V2))); },
+		"eucl" = function(V1,V2) { sqrt(sum((V1 - V2)^2)); },
+		"eucl" = function(V1,V2) { sqrt(sum((V1 - V2)^2)); },
+		"eucl" = function(V1,V2) { sqrt(sum((V1 - V2)^2)); },
+		"eucl" = function(V1,V2) { sqrt(sum((V1 - V2)^2)); },
+		"eucl" = function(V1,V2) { sqrt(sum((V1 - V2)^2)); },
+		"eucl" = function(V1,V2) { sqrt(sum((V1 - V2)^2)); },
+		"eucl" = function(V1,V2) { sqrt(sum((V1 - V2)^2)); },
+		"eucl" = function(V1,V2) { sqrt(sum((V1 - V2)^2)); },
+		"eucl" = function(V1,V2) { sqrt(sum((V1 - V2)^2)); }
+		);
 	
+	# V1 = c(1.7123324991176, -0.087035482548805, -0.926744124580803, -0.949060940876174, 0.802102347778727, 0.813412610707904, -0.556306188175876, 1.66926772248692, 0.85880968135697, 0.00765593568411784, -2.68022409172632, 0.618090840457905, -0.389199195818067, 0.14075077422064, 0.283485680709692, -0.481275821816208, 0.21864479073757, 0.132048065066265, -0.989820178958714, -1.2469087838849);
+	# V2 = c(-1.68797330342279, 0.829939318101389, 0.512926206890701, -0.0543858421532067, 0.40044742918973, -0.532909910832637, 1.00348061668397, 2.69962897865334, -1.16238208995448, -1.39518123163493, -0.101898562619623, -0.107289835954468, 0.120833930652221, 0.277337073172011, -1.68274204364937, 2.47554302076088, -0.515408405806101, -0.300685269945378, -0.290732748786564, 0.657786857247692);
+	
+	# LIST[["eucl"]](V1,V2);
+		
 	# if ALL, return the LIST ... NULL ... otherwise just the function ... 
 	# load function into MATRIX call, so it is just looping ... not having to check which method ... 
 	}
@@ -1215,63 +1236,39 @@ prep.distance = function(method)
 		{ key = "min-chebyshev"; }
 	if(METHOD %IN% c("Sorensen Distance", "sorensen-distance", "sore", "sore-dist"))   
 		{ key = "sorensen"; }
-	if(is.null(key) && METHOD %IN% c("Minkowski Distance", "minkowski-distance", "mink", "mink-dist"))   
-		{ key = "minkowski"; }
-	if(is.null(key) && METHOD %IN% c("Minkowski Distance", "minkowski-distance", "mink", "mink-dist"))   
-		{ key = "minkowski"; }
-	 
-	if(METHOD %IN% c("Sorensen Distance", "sorensen-distance", "sore", "sore-dist"))   
-		{
-		return( (sum(abs(V1 - V2))) / (sum(V1,V2)) );
-		}
-	#https://statisticaloddsandends.wordpress.com/2021/02/23/what-is-gowers-distance/
-
-	if(METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))
-		{
-		return( (sum(abs(V1 - V2)))/(length(V1)) );
-		}
-
-	if(METHOD %IN% c("Soergel Distance", "soergel-distance", "soer", "soer-dist"))   
-		{
-		# sum of pairwise MAX values ... 
-		# https://stackoverflow.com/a/19994671/184614
-		return( (sum(abs(V1 - V2)))/(sum(pmax(V1,V2))) );
-		}
-	
-	# should be binary data?
-	if(METHOD %IN% c("Canberra Distance", "canberra-distance", "canb", "canb-dist"))   
-		{
-		return( (sum(abs(V1 - V2)))/(abs(V1)+abs(V2)) );
-		}
-		
+	if(METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
+		{ key = "gower"; }
+	if(METHOD %IN% c("Soergel Distance", "soergel-distance", "soer", "soer-dist"))    
+		{ key = "soergel"; }
+	if(METHOD %IN% c("Canberra Distance", "canberra-distance", "canb", "canb-dist"))  
+		{ key = "canberra"; }
 	if(METHOD %IN% c("Lorentzian Distance", "lorentzian-distance", "lore", "lore-dist"))   
-		{
-		return( (sum(ln(1 + abs(V1 - V2)))) );
-		}
-		
-	if(METHOD %IN% c("Intersection Similarity", "intersection-similarity", "inte", "inte-simi"))   
-		{
-		return( (sum(pmin(V1,V2))) );
-		}
-		
+		{ key = "lorentzian"; }
+	if(METHOD %IN% c("Intersection Similarity", "intersection-similarity", "inte", "inte-simi"))  
+		{ key = "intersection"; }
 	if(METHOD %IN% c("Non-Intersection Distance", "non-intersection-distance", "non-inte", "non-inte-dist"))   
-		{
-		return( 1-(sum(pmin(V1,V2))) );
-		}
-		
-		
+		{ key = "non-intersection"; }
 	if(METHOD %IN% c("Kulczynski Distance", "kulczynski-distance", "kulc-d", "kulc-dist"))   
-		{
-		return( (sum(abs(V1 - V2)))/(sum(pmin(V1,V2))) );
-		}
-
+		{ key = "kulczynski-d"; }
+	if(METHOD %IN% c("Kulczynski Similarity", "kulczynski-similarity", "kulc-s", "kulc-sim", "kulc-simi"))  
+		{ key = "kulczynski-s"; }
+	if(METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
+		{ key = "gower"; }
+	if(METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
+		{ key = "gower"; }
+	if(METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
+		{ key = "gower"; }
+	if(METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
+		{ key = "gower"; }
+	if(METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
+		{ key = "gower"; }
+	if(METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
+		{ key = "gower"; }
+	if(METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
+		{ key = "gower"; }
+	 
 		
-	if(METHOD %IN% c("Kulczynski Similarity", "kulczynski-similarity", "kulc-s", "kulc-sim", "kulc-simi"))   
-		{
-		return( 1-(sum(abs(V1 - V2)))/(sum(pmin(V1,V2))) );
-		}
-
-	
+		
 	if(is.null(key)) { key = "--NULL--"; }
 	
 	df = IN.df();
