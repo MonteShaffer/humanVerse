@@ -118,11 +118,15 @@ v.toNA = function(vec, idx)
 	
 # naTO, not NATO  
 
-v.naTO = function(vec, to="")
+v.TO = function(vec, what="NA", to="")
 	{
-	vec[is.na(vec)] = to;
+	if(what == "NA" || is.na(what)) {	vec[is.na(vec)] = to; }
+	if(what == "Inf" || is.infinite(what)) { vec[is.infinite(vec)] = to; }
 	vec;	
 	}
+	
+
+
 	
  
  
@@ -1193,26 +1197,47 @@ fn.distance = function(method.key="euclidean");
 		"minkowski" = function(a,b,p) { (sum(abs(a - b)^p))^(1/p); },
 		"chebyshev" = function(a,b,p) { max(abs(a - b)); },
 		"min-chebyshev" = function(a,b,p) { min(abs(a - b)); },
-		"sorensen" = function(a,b,p) { (sum(abs(a - b))) / (sum(a,b,p)); },
+		"sorensen" = function(a,b,p) { (sum(abs(a - b))) / (sum(a,b)); },
 		"gower" = function(a,b,p) { (sum(abs(a - b)))/(length(a)); },
-		"soergel" = function(a,b,p) { (sum(abs(a - b)))/(sum(pmax(a,b,p))); },
+		"soergel" = function(a,b,p) { (sum(abs(a - b)))/(sum(pmax(a,b))); },
 		"canberra" = function(a,b,p) { (sum(abs(a - b)))/(abs(a)+abs(b)); },
 		"lorentzian" = function(a,b,p) { (sum(ln(1 + abs(a - b)))); },
-		"intersection" = function(a,b,p) { (sum(pmin(a,b,p))); },
-		"non-intersection" = function(a,b,p) { 1-(sum(pmin(a,b,p))); },
-		"kulczynski-d" = function(a,b,p) { (sum(abs(a - b)))/(sum(pmin(a,b,p))); },
-		"kulczynski-s" = function(a,b,p) { 1-(sum(abs(a - b)))/(sum(pmin(a,b,p))); },
-		"eucl" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"eucl" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"eucl" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"eucl" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"eucl" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"eucl" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"eucl" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"eucl" = function(a,b,p) { sqrt(sum((a - b)^2)); },
-		"eucl" = function(a,b,p) { sqrt(sum((a - b)^2)); }
-		);
-		
+		"intersection" = function(a,b,p) { (sum(pmin(a,b))); },
+		"non-intersection" = function(a,b,p) { 1-(sum(pmin(a,b))); },
+		"kulczynski-d" = function(a,b,p) { (sum(abs(a - b)))/(sum(pmin(a,b))); },
+		"kulczynski-s" = function(a,b,p) { 1-(sum(abs(a - b)))/(sum(pmin(a,b))); },
+		"wave" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"czekanowski" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"tanimoto" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"ruzicka" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"inner-product" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"harmonic" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"hassebrook" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"jaccard" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"dice" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"fidelity" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"bhattacharyya" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"hellinger" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"matusita" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"chord^2" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"euclidean^2" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"pearson" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"neyman" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"chi^2" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"prob-s" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"divergence" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"clark" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"additive-s" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"kullback-leibler" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"jeffreys" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"k-divergence" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"topsoe" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"jensen-shannon" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"jensen-difference" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"taneja" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"kumar-johnson" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"average" = function(a,b,p) { sqrt(sum((a - b)^2)); }		
+		);	
 		
 	# V1 = c(1.7123324991176, -0.087035482548805, -0.926744124580803, -0.949060940876174, 0.802102347778727, 0.813412610707904, -0.556306188175876, 1.66926772248692, 0.85880968135697, 0.00765593568411784, -2.68022409172632, 0.618090840457905, -0.389199195818067, 0.14075077422064, 0.283485680709692, -0.481275821816208, 0.21864479073757, 0.132048065066265, -0.989820178958714, -1.2469087838849);
 	# V2 = c(-1.68797330342279, 0.829939318101389, 0.512926206890701, -0.0543858421532067, 0.40044742918973, -0.532909910832637, 1.00348061668397, 2.69962897865334, -1.16238208995448, -1.39518123163493, -0.101898562619623, -0.107289835954468, 0.120833930652221, 0.277337073172011, -1.68274204364937, 2.47554302076088, -0.515408405806101, -0.300685269945378, -0.290732748786564, 0.657786857247692);
@@ -1239,43 +1264,103 @@ prep.distance = function(method)
 		{ key = "manhattan"; }
 	if(is.null(key) && METHOD %IN% c("Minkowski Distance", "minkowski-distance", "mink", "mink-dist"))   
 		{ key = "minkowski"; }
-	if(METHOD %IN% c("Chebyshev Distance", "chebyshev-distance", "cheb", "cheb-dist"))    
+	if(is.null(key) && METHOD %IN% c("Chebyshev Distance", "chebyshev-distance", "cheb", "cheb-dist"))    
 		{ key = "chebyshev"; }
-	if(METHOD %IN% c("Minimum Chebyshev Distance", "minimum-chebyshev-distance", "mini-cheb", "min-cheb", "mini-cheb-dist", "min-cheb-dist"))  
+	if(is.null(key) && METHOD %IN% c("Minimum Chebyshev Distance", "minimum-chebyshev-distance", "mini-cheb", "min-cheb", "mini-cheb-dist", "min-cheb-dist"))  
 		{ key = "min-chebyshev"; }
-	if(METHOD %IN% c("Sorensen Distance", "sorensen-distance", "sore", "sore-dist"))   
-		{ key = "sorensen"; }
-	if(METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
+	
+	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
 		{ key = "gower"; }
-	if(METHOD %IN% c("Soergel Distance", "soergel-distance", "soer", "soer-dist"))    
-		{ key = "soergel"; }
-	if(METHOD %IN% c("Canberra Distance", "canberra-distance", "canb", "canb-dist"))  
+	
+	if(is.null(key) && METHOD %IN% c("Canberra Distance", "canberra-distance", "canb", "canb-dist"))  
 		{ key = "canberra"; }
-	if(METHOD %IN% c("Lorentzian Distance", "lorentzian-distance", "lore", "lore-dist"))   
+	if(is.null(key) && METHOD %IN% c("Lorentzian Distance", "lorentzian-distance", "lore", "lore-dist"))   
 		{ key = "lorentzian"; }
-	if(METHOD %IN% c("Intersection Similarity", "intersection-similarity", "inte", "inte-simi"))  
+	if(is.null(key) && METHOD %IN% c("Intersection Similarity", "intersection-similarity", "inte", "inte-simi"))  
 		{ key = "intersection"; }
-	if(METHOD %IN% c("Non-Intersection Distance", "non-intersection-distance", "non-inte", "non-inte-dist"))   
+	if(is.null(key) && METHOD %IN% c("Non-Intersection Distance", "non-intersection-distance", "non-inte", "non-inte-dist"))   
 		{ key = "non-intersection"; }
-	if(METHOD %IN% c("Kulczynski Distance", "kulczynski-distance", "kulc-d", "kulc-dist"))   
+	if(is.null(key) && METHOD %IN% c("Kulczynski Distance", "kulczynski-distance", "kulc-d", "kulc-dist"))   
 		{ key = "kulczynski-d"; }
-	if(METHOD %IN% c("Kulczynski Similarity", "kulczynski-similarity", "kulc-s", "kulc-sim", "kulc-simi"))  
+	if(is.null(key) && METHOD %IN% c("Kulczynski Similarity", "kulczynski-similarity", "kulc-s", "kulc-sim", "kulc-simi"))  
 		{ key = "kulczynski-s"; }
-	if(METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
-		{ key = "gower"; }
-	if(METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
-		{ key = "gower"; }
-	if(METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
-		{ key = "gower"; }
-	if(METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
-		{ key = "gower"; }
-	if(METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
-		{ key = "gower"; }
-	if(METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
-		{ key = "gower"; }
-	if(METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
-		{ key = "gower"; }
-	 
+	if(is.null(key) && METHOD %IN% c("Wave Hedges Distance", "wave-hedges-distance", "wave", "wave-dist", "wave-hedg", "wave-hedg-dist"))  
+		{ key = "wave"; }
+	# Same as Sorenson (Czek first)... also DICE?
+	# # https://en-academic.com/dic.nsf/enwiki/8107894
+	if(is.null(key) && METHOD %IN% c("Czekanowski Distance", "czekanowski-distance", "czek-dist", "czek", "Sorensen Distance", "sorensen-distance", "sore", "sore-dist"))   
+		{ key = "czekanowski"; }
+		
+		
+		
+	if(is.null(key) && METHOD %IN% c("Motyka Distance", "motyka-distance", "motyka", "moty", "moty-dist"))  
+		{ key = "motyka"; }	
+		
+	# 	# https://www.sequentix.de/gelquest/help/distance_measures.htm
+	if(is.null(key) && METHOD %IN% c("Tanimoto Distance", "tanimoto-distance", "tanimoto", "tani-dist", "tani", "Soergel Distance", "soergel-distance", "soer", "soer-dist"))    
+		{ key = "tanimoto"; }
+		
+	if(is.null(key) && METHOD %IN% c("Ruzicka Distance", "ruzicka-distance", "ruzi", "ruzi-dist"))  
+		{ key = "ruzicka"; }
+	if(is.null(key) && METHOD %IN% c("Inner Product Similarity", "inner-product-similarity", "inner-product", "inne-prod-simi", "inne-prod-s", "inne-simi", "inner-s", "inne-s", "inne-prod-sim", "inne-sim"))  
+		{ key = "inner-product"; }
+	if(is.null(key) && METHOD %IN% c("Harmonic Mean Similarity", "harmonic-mean-similarity", "harm-mean-simi", "harm-mean-sim", "harm-mean-s", "harm-simi", "harm-sim", "harm-s"))  
+		{ key = "harmonic"; }
+	if(is.null(key) && METHOD %IN% c("Cosine Similarity", "cosine-similarity", "cos-sim", "cosi-simi", "cos-s", "cos-simi", "*CAREFUL*, see fn [cosine.similarity] for better EDGE-CASE implementation"))  
+		{ key = "cosine"; }
+	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
+		{ key = "hassebrook"; }
+	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
+		{ key = "jaccard"; }
+	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
+		{ key = "dice"; }
+	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
+		{ key = "fidelity"; }
+	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
+		{ key = "bhattacharyya"; }
+	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
+		{ key = "hellinger"; }
+	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
+		{ key = "matusita"; }
+	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
+		{ key = "chord^2"; }
+	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
+		{ key = "euclidean^2"; }
+	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
+		{ key = "pearson"; }
+	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
+		{ key = "neyman"; }
+	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
+		{ key = "chi^2"; }
+	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
+		{ key = "prob-s"; }
+	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
+		{ key = "divergence"; }
+	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
+		{ key = "clark"; }
+	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
+		{ key = "additive-s"; }
+	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
+		{ key = "kullback-leibler"; }
+	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
+		{ key = "jeffreys"; }
+	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
+		{ key = "k-divergence"; }
+	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
+		{ key = "topsoe"; }
+	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
+		{ key = "jensen-shannon""; }
+	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
+		{ key = "jensen-difference"; }
+	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
+		{ key = "taneja"; }
+	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
+		{ key = "kumar-johnson"; }
+	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
+		{ key = "average"; }
+		
+		
+		
 		
 		
 	if(is.null(key)) { key = "--NULL--"; }

@@ -195,7 +195,7 @@ options(op);
 		x.info = str.split(".", x.char);
 		numb = list.getElements(x.info, 1);
 		frac = list.getElements(x.info, 2);
-		frac = v.naTO(frac, "0");
+		frac = v.TO(frac, NA, "0");
 		} else {
 				x.info = x.char;
 				numb = x.info;
@@ -384,12 +384,12 @@ options(op);
 	
 	# prefix.as.symbol = TRUE, ... if symbol, SI.symbol else SI.name
 	add.name = SI_PREFIX$SI.name[idx]; 
-	add.name = v.naTO(add.name, " ");
+	add.name = v.TO(add.name, NA, " ");
 		add.len = max(str.len(add.name), na.rm=TRUE);	
 	add.name = str.pad(add.name, add.len, " ", "LEFT");
 	
 	add.symbol = SI_PREFIX$SI.symbol[idx];
-	add.symbol = v.naTO(add.symbol, " ");
+	add.symbol = v.TO(add.symbol, NA, " ");
 		add.len = max(str.len(add.symbol), na.rm=TRUE);	
 	add.symbol = str.pad(add.symbol, add.len, " ", "LEFT");
 	
@@ -399,7 +399,7 @@ options(op);
 		x.info = str.split(".", x.char);
 		numb = list.getElements(x.info, 1);
 		frac = list.getElements(x.info, 2);
-		frac = v.naTO(frac, "0");
+		frac = v.TO(frac, NA, "0");
 		} else {
 				x.info = x.char;
 				numb = x.info;
