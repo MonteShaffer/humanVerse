@@ -736,58 +736,58 @@ v.remove = function(vec, what="", invert=FALSE)
 	}
 	 
 	 
-prep.dist = function(METHOD)
+prep.distribution = function(METHOD)
 	{
 	IN.init();
 	key = NULL;
-	if(METHOD %IN% c("Uniform Distribution", "unif", "unif-dist")) 
+	if(is.null(key) && METHOD %IN% c("Uniform Distribution", "unif", "unif-dist")) 
 		{ key = "unif"; }
-	if(METHOD %IN% c("Normal Distribution",  "norm", "norm-dist")) 
+	if(is.null(key) && METHOD %IN% c("Normal Distribution",  "norm", "norm-dist")) 
 		{ key = "norm"; }
-	if(METHOD %IN% c("t Distribution",  "t", "stud-t", "t-dist")) 
+	if(is.null(key) && METHOD %IN% c("t Distribution",  "t", "stud-t", "t-dist")) 
 		{ key = "t"; }
-	if(METHOD %IN% c("F Distribution",  "f", "f-dist")) 
+	if(is.null(key) && METHOD %IN% c("F Distribution",  "f", "f-dist")) 
 		{ key = "f"; }
-	if(METHOD %IN% c("Chi-Squared Distribution",  "chisq", "chi-squa", "chi-dist")) 
+	if(is.null(key) && METHOD %IN% c("Chi-Squared Distribution",  "chisq", "chi-squa", "chi-dist")) 
 		{ key = "chisq"; }
-	if(METHOD %IN% c("Beta Distribution",  "beta", "beta-dist")) 
+	if(is.null(key) && METHOD %IN% c("Beta Distribution",  "beta", "beta-dist")) 
 		{ key = "beta"; }
-	if(METHOD %IN% c("Gamma Distribution",  "gamma", "gamm", "gamm-dist")) 
+	if(is.null(key) && METHOD %IN% c("Gamma Distribution",  "gamma", "gamm", "gamm-dist")) 
 		{ key = "gamma"; }
-	if(METHOD %IN% c("Cauchy Distribution",  "cauchy", "cauc", "cauc-dist")) 
+	if(is.null(key) && METHOD %IN% c("Cauchy Distribution",  "cauchy", "cauc", "cauc-dist")) 
 		{ key = "cauchy"; }
-	if(METHOD %IN% c("Exponential Distribution",  "exp", "expo", "exp-dist", "expo-dist")) 
+	if(is.null(key) && METHOD %IN% c("Exponential Distribution",  "exp", "expo", "exp-dist", "expo-dist")) 
 		{ key = "exp"; }
-	if(METHOD %IN% c("Binomial Distribution",  "binom", "bino", "bino-dist")) 
+	if(is.null(key) && METHOD %IN% c("Binomial Distribution",  "binom", "bino", "bino-dist")) 
 		{ key = "binom"; }
-	if(METHOD %IN% c("Negative-Binomial Distribution",  "nbinom", "nbin", "nbin-dist", "nega-bino-dist", "neg-bino", "neg-bin", "neg-bino-dist", "neg-bin-dist")) 
+	if(is.null(key) && METHOD %IN% c("Negative-Binomial Distribution",  "nbinom", "nbin", "nbin-dist", "nega-bino-dist", "neg-bino", "neg-bin", "neg-bino-dist", "neg-bin-dist")) 
 		{ key = "nbinom"; }
-	if(METHOD %IN% c("Poisson Distribution",  "pois", "pois-dist")) 
+	if(is.null(key) && METHOD %IN% c("Poisson Distribution",  "pois", "pois-dist")) 
 		{ key = "pois"; }
-	if(METHOD %IN% c("Log-Normal Distribution",  "lnorm", "lnor", "lnor-dist", "logo-norm", "logo-norm-dist", "log-", "log-norm", "log-norm-dist")) 
+	if(is.null(key) && METHOD %IN% c("Log-Normal Distribution",  "lnorm", "lnor", "lnor-dist", "logo-norm", "logo-norm-dist", "log-", "log-norm", "log-norm-dist")) 
 		{ key = "lnorm"; }
 		
-	if(METHOD %IN% c("Multinomial Distribution",  "multinom", "mult", "mult-dist", "mult-nom", "mult-nomi")) 
+	if(is.null(key) && METHOD %IN% c("Multinomial Distribution",  "multinom", "mult", "mult-dist", "mult-nom", "mult-nomi")) 
 		{ key = "multinom"; }
-	if(METHOD %IN% c("Logistic Distribution",  "logis", "logi", "logi-dist")) 
+	if(is.null(key) && METHOD %IN% c("Logistic Distribution",  "logis", "logi", "logi-dist")) 
 		{ key = "logis"; }
 		
-	if(METHOD %IN% c("Weibull Distribution",  "weibull", "weib", "weib-dist")) 
+	if(is.null(key) && METHOD %IN% c("Weibull Distribution",  "weibull", "weib", "weib-dist")) 
 		{ key = "weibull"; }
 		
-	if(METHOD %IN% c("Geometric Distribution",  "geom", "geom-dist")) 
+	if(is.null(key) && METHOD %IN% c("Geometric Distribution",  "geom", "geom-dist")) 
 		{ key = "geom"; }
-	if(METHOD %IN% c("HyperGeometric Distribution",  "hyper", "hype", "hype-dist","hype-geo", "hype-geom", "hype-geo-dist", "hype-geom-dist")) 
+	if(is.null(key) && METHOD %IN% c("HyperGeometric Distribution",  "hyper", "hype", "hype-dist","hype-geo", "hype-geom", "hype-geo-dist", "hype-geom-dist")) 
 		{ key = "hyper"; }
 		
-	if(METHOD %IN% c("Signed Rank (Wilcoxon) Distribution",  "signrank", "sign", "sign-dist", "sign-rank", "sign-rank-dist")) 
+	if(is.null(key) && METHOD %IN% c("Signed Rank (Wilcoxon) Distribution",  "signrank", "sign", "sign-dist", "sign-rank", "sign-rank-dist")) 
 		{ key = "signrank"; }
 		
-	if(METHOD %IN% c("Wilcoxon Rank Sum Distribution",  "wilcox", "wilc", "wilc-dist", "wilc-rank-dist", "wilc-rank-sum-dist", "wilc-sum-dist")) 
+	if(is.null(key) && METHOD %IN% c("Wilcoxon Rank Sum Distribution",  "wilcox", "wilc", "wilc-dist", "wilc-rank-dist", "wilc-rank-sum-dist", "wilc-sum-dist")) 
 		{ key = "wilcox"; }
 
 	## only has an rWishart function ...
-	if(METHOD %IN% c("Wishart Distribution",  "Wishart", "wish", "wish-dist")) 
+	if(is.null(key) && METHOD %IN% c("Wishart Distribution",  "Wishart", "wish", "wish-dist")) 
 		{ key = "Wishart"; }
 							
 
@@ -893,7 +893,7 @@ PDF = function(x, method="norm", ...)
 	METHOD = prep.arg(method, n=4, keep="-");
 	# http://127.0.0.1:23214/library/stats/html/Distributions.html
 		
-	KEY = prep.dist(METHOD);
+	KEY = prep.distribution(METHOD);
 	if(KEY == "--NULL--")
 		{
 		df = property.get("IN", KEY);
@@ -1182,18 +1182,260 @@ v.mode = function(vec, invert=FALSE)
 	v.return(idx);
 	}
 
+fn.distance = function(method.key="euclidean");
+	{
+	LIST = list(
+		"euclidean" = function(V1,V2) { sqrt(sum((V1 - V2)^2)); },
+		"manhattan" = function(V1,V2) { sum(abs(V1 - V2)); },
+		"minkowski" = function(V1,V2,p) { (sum(abs(V1 - V2)^p))^(1/p); },
+		"chebyshev" = function(V1,V2) { max(abs(V1 - V2)); },
+		"min-chebyshev" = function(V1,V2) { min(abs(V1 - V2)); },
+		"sorensen" = function(V1,V2) { (sum(abs(V1 - V2))) / (sum(V1,V2)); },
+		"gower" = function(V1,V2) { (sum(abs(V1 - V2)))/(length(V1)); }
+			);
+	
+	# if ALL, return the LIST ... NULL ... otherwise just the function ... 
+	# load function into MATRIX call, so it is just looping ... not having to check which method ... 
+	}
+
+prep.distance = function(method)
+	{
+	IN.init();
+	key = NULL;
+	# add is.null(key) && 
+	if(is.null(key) && METHOD %IN% c("Euclidean (Pythagorean) Distance", "euclidean-distance", "eucl", "eucl-dist", "e", "pythagorean-distance", "pyth-dist", "pyth", "p"))
+		{ key = "euclidean"; }
+	if(is.null(key) && METHOD %IN% c("Manhattan Distance", "manhattan-distance", "manh", "manh-dist"))   
+		{ key = "manhattan"; }
+	if(is.null(key) && METHOD %IN% c("Minkowski Distance", "minkowski-distance", "mink", "mink-dist"))   
+		{ key = "minkowski"; }
+	if(METHOD %IN% c("Chebyshev Distance", "chebyshev-distance", "cheb", "cheb-dist"))    
+		{ key = "chebyshev"; }
+	if(METHOD %IN% c("Minimum Chebyshev Distance", "minimum-chebyshev-distance", "mini-cheb", "min-cheb", "mini-cheb-dist", "min-cheb-dist"))  
+		{ key = "min-chebyshev"; }
+	if(METHOD %IN% c("Sorensen Distance", "sorensen-distance", "sore", "sore-dist"))   
+		{ key = "sorensen"; }
+	if(is.null(key) && METHOD %IN% c("Minkowski Distance", "minkowski-distance", "mink", "mink-dist"))   
+		{ key = "minkowski"; }
+	if(is.null(key) && METHOD %IN% c("Minkowski Distance", "minkowski-distance", "mink", "mink-dist"))   
+		{ key = "minkowski"; }
+	 
+	if(METHOD %IN% c("Sorensen Distance", "sorensen-distance", "sore", "sore-dist"))   
+		{
+		return( (sum(abs(V1 - V2))) / (sum(V1,V2)) );
+		}
+	#https://statisticaloddsandends.wordpress.com/2021/02/23/what-is-gowers-distance/
+
+	if(METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))
+		{
+		return( (sum(abs(V1 - V2)))/(length(V1)) );
+		}
+
+	if(METHOD %IN% c("Soergel Distance", "soergel-distance", "soer", "soer-dist"))   
+		{
+		# sum of pairwise MAX values ... 
+		# https://stackoverflow.com/a/19994671/184614
+		return( (sum(abs(V1 - V2)))/(sum(pmax(V1,V2))) );
+		}
+	
+	# should be binary data?
+	if(METHOD %IN% c("Canberra Distance", "canberra-distance", "canb", "canb-dist"))   
+		{
+		return( (sum(abs(V1 - V2)))/(abs(V1)+abs(V2)) );
+		}
+		
+	if(METHOD %IN% c("Lorentzian Distance", "lorentzian-distance", "lore", "lore-dist"))   
+		{
+		return( (sum(ln(1 + abs(V1 - V2)))) );
+		}
+		
+	if(METHOD %IN% c("Intersection Similarity", "intersection-similarity", "inte", "inte-simi"))   
+		{
+		return( (sum(pmin(V1,V2))) );
+		}
+		
+	if(METHOD %IN% c("Non-Intersection Distance", "non-intersection-distance", "non-inte", "non-inte-dist"))   
+		{
+		return( 1-(sum(pmin(V1,V2))) );
+		}
+		
+		
+	if(METHOD %IN% c("Kulczynski Distance", "kulczynski-distance", "kulc-d", "kulc-dist"))   
+		{
+		return( (sum(abs(V1 - V2)))/(sum(pmin(V1,V2))) );
+		}
+
+		
+	if(METHOD %IN% c("Kulczynski Similarity", "kulczynski-similarity", "kulc-s", "kulc-sim", "kulc-simi"))   
+		{
+		return( 1-(sum(abs(V1 - V2)))/(sum(pmin(V1,V2))) );
+		}
+
+	
+	if(is.null(key)) { key = "--NULL--"; }
+	
+	df = IN.df();
+	IN.clear();
+	minvisible(df, print=FALSE);
+	key = property.set("IN", key, df);
+	key;
+
+	}
+
+.dist = function(V1, V2, method="Euclidean", p=2)
+	{
+	# V1 and V2 are rows where columns may have x,y,z or lat/lon/alt
+	METHOD = prep.arg(method, n=3, keep="-"); 
+	on.exit( IN.clear() );
+	
+	IN.init();
+	
+	
+	
+	if(METHOD %IN% c("Euclidean (Pythagorean) Distance", "euclidean-distance", "eucl", "eucl-dist", "e", "pythagorean-distance", "pyth-dist", "pyth", "p"))
+		{
+		return( sqrt(sum((V1 - V2)^2)) );
+		}
+		
+	if(METHOD %IN% c("Manhattan Distance", "manhattan-distance", "manh", "manh-dist"))   
+		{
+		return( sum(abs(V1 - V2)) );
+		}
+
+	if(METHOD %IN% c("Minkowski Distance", "minkowski-distance", "mink", "mink-dist"))   
+		{
+		return( (sum(abs(V1 - V2)^p))^(1/p) );
+		}
+		
+	if(METHOD %IN% c("Chebyshev Distance", "chebyshev-distance", "cheb", "cheb-dist"))   
+		{
+		return( max(abs(V1 - V2)) );
+		}
+		
+	if(METHOD %IN% c("Minimum Chebyshev Distance", "minimum-chebyshev-distance", "mini-cheb", "min-cheb", "mini-cheb-dist", "min-cheb-dist"))   
+		{
+		return( min(abs(V1 - V2)) );
+		}
+		
+	if(METHOD %IN% c("Sorensen Distance", "sorensen-distance", "sore", "sore-dist"))   
+		{
+		return( (sum(abs(V1 - V2))) / (sum(V1,V2)) );
+		}
+	#https://statisticaloddsandends.wordpress.com/2021/02/23/what-is-gowers-distance/
+
+	if(METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))
+		{
+		return( (sum(abs(V1 - V2)))/(length(V1)) );
+		}
+
+	if(METHOD %IN% c("Soergel Distance", "soergel-distance", "soer", "soer-dist"))   
+		{
+		# sum of pairwise MAX values ... 
+		# https://stackoverflow.com/a/19994671/184614
+		return( (sum(abs(V1 - V2)))/(sum(pmax(V1,V2))) );
+		}
+	
+	# should be binary data?
+	if(METHOD %IN% c("Canberra Distance", "canberra-distance", "canb", "canb-dist"))   
+		{
+		return( (sum(abs(V1 - V2)))/(abs(V1)+abs(V2)) );
+		}
+		
+	if(METHOD %IN% c("Lorentzian Distance", "lorentzian-distance", "lore", "lore-dist"))   
+		{
+		return( (sum(ln(1 + abs(V1 - V2)))) );
+		}
+		
+	if(METHOD %IN% c("Intersection Similarity", "intersection-similarity", "inte", "inte-simi"))   
+		{
+		return( (sum(pmin(V1,V2))) );
+		}
+		
+	if(METHOD %IN% c("Non-Intersection Distance", "non-intersection-distance", "non-inte", "non-inte-dist"))   
+		{
+		return( 1-(sum(pmin(V1,V2))) );
+		}
+		
+		
+	if(METHOD %IN% c("Kulczynski Distance", "kulczynski-distance", "kulc-d", "kulc-dist"))   
+		{
+		return( (sum(abs(V1 - V2)))/(sum(pmin(V1,V2))) );
+		}
+
+		
+	if(METHOD %IN% c("Kulczynski Similarity", "kulczynski-similarity", "kulc-s", "kulc-sim", "kulc-simi"))   
+		{
+		return( 1-(sum(abs(V1 - V2)))/(sum(pmin(V1,V2))) );
+		}
+
+
+# "wavehedges", "czekanowski", "motyka", "kulczynski_s", "tanimoto", "ruzicka", "inner_product", "harmonic_mean", "cosine", "hassebrook", "jaccard", "dice", "fidelity", "bhattacharyya", "hellinger", "matusita", "squared_chord", "squared_euclidean", "pearson", "neyman", "squared_chi", "prob_symm", "divergence", "clark", "additive_symm", "kullback-leibler", "jeffreys", "k_divergence", "topsoe", "jensen-shannon", "jensen_difference", "taneja", "kumar-johnson", "avg")
+
+	msg = msg.badOption("method", method, METHOD);	
+	cat("\n\n"); minvisible( IN.df(), print=TRUE ); cat("\n\n"); 
+	IN.clear();	
+	cat.stop(msg);
+	}
+
+
+matrix.dist = function(m, method="Euclidean", p=2)
+	{
+	METHOD = prep.arg(method, n=3, keep="-"); 
+	m = as.matrix(m);
+	if(anyNA(m)) { stop("we have missing values!"; }
+	
+	KEY = prep.distance(METHOD);
+	if(KEY == "--NULL--")
+		{
+		df = property.get("IN", KEY);
+		msg = msg.badOption("method", method, METHOD);	
+		cat("\n\n"); minvisible( df, print=TRUE ); cat("\n\n"); 
+		IN.clear();	
+		cat.stop(msg);
+		}
+	
+	
+	n = nrow(m);
+	m.names = rownames(m);
+	d = matrix(0, nrow=n, ncol=n, dimnames = list(m.names, m.names));
+	for(i in 1:n)
+		{
+		for(j in i:n)
+			{
+			V1 = m[i, ];
+			V2 = m[j, ];
+			o = .dist(V1, V2, method=method, p=p);
+			
+			d[i, j] = d[j, i] = o;
+			}
+		}
+	s = 1-d;  # similarity is 1-distance
+	d = property.set("similarity", d, s); 
+	}
+
+v.dist = function(vec1, vec2, method="Euclidean", p=2, na.rm=TRUE, show.warning=na.rm)
+	{
+	METHOD = prep.arg(method, n=3, keep="-"); 
+	# why call the function if you have na ... ?
+	vec1_ = stats.warningNA(vec1, show.warning=show.warning); 
+	vec2_ = stats.warningNA(vec2, show.warning=show.warning); 
+	if(length(vec1_) != length(vec2_)) { stop("vector lengths are unqueal!"); }
+	
+	return(.dist(vec1_,vec2_, method=method, p=p);
+	}
 
 
 
-
-
-   
+	
+	
 v.norm = function(vec, method="sum", lower=NULL, upper=NULL, force.abs=FALSE, na.rm=TRUE, show.warning=na.rm)
 	{
 	METHOD = prep.arg(method, n=3, keep="-"); 
 	# why call the function if you have na ... ?
 	vec = stats.warningNA(vec, show.warning=show.warning); 
 	if(force.abs) { vec = abs(vec); }
+	
+	on.exit( IN.clear() );
 	 
 	IN.init();
 	if(METHOD %IN% c("Sum", "sum"))   
@@ -1303,7 +1545,7 @@ v.norm = function(vec, method="sum", lower=NULL, upper=NULL, force.abs=FALSE, na
 		{		
 		return( vec / (abs(sum(vec))) ); 		
 		}
-		
+		 
 	msg = msg.badOption("method", method, METHOD);	
 	cat("\n\n"); minvisible( IN.df(), print=TRUE ); cat("\n\n"); 
 	IN.clear();	

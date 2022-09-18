@@ -1,14 +1,6 @@
 
-# x could be a list of long/lati/alt  ... from="list" 
-# x could be strings in a certain format ... most likely
-# allow geocaching format, any format ... fixed-width?
-geo.convert = function(x, ..., from="", to="")
-	{
-	
-	
-	
-	}
 
+	
 
 
 
@@ -365,89 +357,115 @@ dput(out);
 	conv.time = function() {}
 	if(TYPE %IN% c("time", "tim"))  # time ... 
 		{
+		IN.init();
+		
 		# second 
-		if(is.null(std) && FROM %IN% c("sec", "s")) 
+		if(is.null(std) && FROM %IN% c("Second", "sec", "s")) 
 			{ std = 1 * x; }
+		# second-siderail
+		if(is.null(std) && FROM %IN% c("Second-Sidereal", "sec-sid", "s-sid", "sec-s", "s-s")) 
+			{ std = 0.9972696 * x; }
 		# day 
-		if(is.null(std) && FROM %IN% c("day", "d")) 
+		if(is.null(std) && FROM %IN% c("Day", "day", "d")) 
 			{ std = 86400 * x; }
 		# day-siderial
-		if(is.null(std) && FROM %IN% c("day-sid", "day-s", "d-s")) 
+		if(is.null(std) && FROM %IN% c("Day-Sidereal", "day-sid", "day-s", "d-s")) 
 			{ std = 86164.09 * x; }
 		# hour 
-		if(is.null(std) && FROM %IN% c("hou", "hr", "h")) 
+		if(is.null(std) && FROM %IN% c("Hour", "hou", "hr", "h")) 
 			{ std = 3600 * x; }
 		# hour-siderail
-		if(is.null(std) && FROM %IN% c("hou-sid", "hr-sid", "hr-s", "h-sid", "h-s")) 
+		if(is.null(std) && FROM %IN% c("Hour-Sidereal", "hou-sid", "hr-sid", "hr-s", "h-sid", "h-s")) 
 			{ std = 3590.170 * x; }
 		# minute 
-		if(is.null(std) && FROM %IN% c("min", "m")) 
+		if(is.null(std) && FROM %IN% c("Minute", "min", "m")) 
 			{ std = 60 * x; }
 		# minute-siderail
-		if(is.null(std) && FROM %IN% c("min-sid", "m-sid", "min-s", "m-s")) 
+		if(is.null(std) && FROM %IN% c("Minute-Sidereal", "min-sid", "m-sid", "min-s", "m-s")) 
 			{ std = 59.83617 * x; }
-		# second-siderail
-		if(is.null(std) && FROM %IN% c("sec-sid", "s-sid", "sec-s", "s-s")) 
-			{ std = 0.9972696 * x; }
+		
 		# shake
-		if(is.null(std) && FROM %IN% c("sha")) 
+		if(is.null(std) && FROM %IN% c("Shake", "sha")) 
 			{ std = 0.00000001 * x; }
 		# year-365
-		if(is.null(std) && FROM %IN% c("yea-365","yr-365", "y-365", "yea-3", "yr-3", "y-3")) 
+		if(is.null(std) && FROM %IN% c("Year (Based on Julian 365.25)", "yea","yr", "y")) 
+			{ std =  31557600 * x; }
+		# year-365
+		if(is.null(std) && FROM %IN% c("Year-365", "yea-365","yr-365", "y-365", "yea-3", "yr-3", "y-3")) 
 			{ std = 31536000 * x; }
 		# year-sidereal
-		if(is.null(std) && FROM %IN% c("yea-sid","yr-sid", "y-sid", "yea-s", "yr-s", "y-s")) 
+		if(is.null(std) && FROM %IN% c("Year-Sidereal", "yea-sid","yr-sid", "y-sid", "yea-s", "yr-s", "y-s")) 
 			{ std = 31558150 * x; }
 		# year-tropical
-		if(is.null(std) && FROM %IN% c("yea-tro","yr-tro", "y-tro", "yea-t", "yr-t", "y-t")) 
+		if(is.null(std) && FROM %IN% c("Year-Tropical", "yea-tro","yr-tro", "y-tro", "yea-t", "yr-t", "y-t")) 
 			{ std = 31556930 * x; }
 		
-		if(is.null(std)) { stop("what show METHOD and FROM "); }
+		
+		if(is.null(std)) 
+			{ 
+			msg = msg.badOption("from", from, FROM);			
+			cat("\n\n"); minvisible( IN.df(), print=TRUE ); cat("\n\n"); 
+			IN.clear();
+			cat.stop(msg);
+			}
+		IN.clear();
+		
+		
+		
 		
 		################### REVERSE ############################
 		
-				# second 
-		if(is.null(out) && TO %IN% c("sec", "s")) 
+		IN.init();
+		
+		# second 
+		if(is.null(out) && TO %IN% c("Second", "sec", "s")) 
 			{ out = std/1; }
+		# second-siderail
+		if(is.null(out) && TO %IN% c("Second-Sidereal", "sec-sid", "s-sid", "sec-s", "s-s")) 
+			{ out = std/0.9972696; }
 		# day 
-		if(is.null(out) && TO %IN% c("day", "d")) 
+		if(is.null(out) && TO %IN% c("Day", "day", "d")) 
 			{ out = std/86400; }
 		# day-siderial
-		if(is.null(out) && TO %IN% c("day-sid", "day-s", "d-s")) 
+		if(is.null(out) && TO %IN% c("Day-Sidereal", "day-sid", "day-s", "d-s")) 
 			{ out = std/86164.09; }
 		# hour 
-		if(is.null(out) && TO %IN% c("hou", "hr", "h")) 
+		if(is.null(out) && TO %IN% c("Hour", "hou", "hr", "h")) 
 			{ out = std/3600; }
 		# hour-siderail
-		if(is.null(out) && TO %IN% c("hou-sid", "hr-sid", "hr-s", "h-sid", "h-s")) 
+		if(is.null(out) && TO %IN% c("Hour-Sidereal", "hou-sid", "hr-sid", "hr-s", "h-sid", "h-s")) 
 			{ out = std/3590.170; }
 		# minute 
-		if(is.null(out) && TO %IN% c("min", "m")) 
+		if(is.null(out) && TO %IN% c("Minute", "min", "m")) 
 			{ out = std/60; }
 		# minute-siderail
-		if(is.null(out) && TO %IN% c("min-sid", "m-sid", "min-s", "m-s")) 
+		if(is.null(out) && TO %IN% c("Minute-Sidereal", "min-sid", "m-sid", "min-s", "m-s")) 
 			{ out = std/59.83617; }
-		# second-siderail
-		if(is.null(out) && TO %IN% c("sec-sid", "s-sid", "sec-s", "s-s")) 
-			{ out = std/0.9972696; }
+		
 		# shake
-		if(is.null(out) && TO %IN% c("sha")) 
+		if(is.null(out) && TO %IN% c("Shake", "sha")) 
 			{ out = std/0.00000001; }
 		# year-365
-		if(is.null(out) && TO %IN% c("yea-365","yr-365", "y-365", "yea-3", "yr-3", "y-3")) 
+		if(is.null(out) && TO %IN% c("Year (Based on Julian 365.25)", "yea","yr", "y")) 
+			{ out = std/ 31557600; }
+		# year-365
+		if(is.null(out) && TO %IN% c("Year-365", "yea-365","yr-365", "y-365", "yea-3", "yr-3", "y-3")) 
 			{ out = std/31536000; }
 		# year-sidereal
-		if(is.null(out) && TO %IN% c("yea-sid","yr-sid", "y-sid", "yea-s", "yr-s", "y-s")) 
+		if(is.null(out) && TO %IN% c("Year-Sidereal", "yea-sid","yr-sid", "y-sid", "yea-s", "yr-s", "y-s")) 
 			{ out = std/31558150; }
 		# year-tropical
-		if(is.null(out) && TO %IN% c("yea-tro","yr-tro", "y-tro", "yea-t", "yr-t", "y-t")) 
+		if(is.null(out) && TO %IN% c("Year-Tropical", "yea-tro","yr-tro", "y-tro", "yea-t", "yr-t", "y-t")) 
 			{ out = std/31556930; }
 		
-
-
-
-	
-		if(is.null(out)) { stop("what out show METHOD and FROM "); }
+		if(is.null(out)) 
+			{ 
+			msg = msg.badOption("to", to, TO);			
+			cat("\n\n"); minvisible( IN.df(), print=TRUE ); cat("\n\n"); 
+			IN.clear();	
+			cat.stop(msg);
+			}	
+		IN.clear();
 		
 		return(out);
 		}
@@ -460,89 +478,106 @@ dput(out);
 	conv.area = function() {}
 	if(TYPE %IN% c("area", "are", "ar"))  # area ... 
 		{
+		IN.init(); 
+		
 		# square-meter ... m2 ... m^2 ...  
-		if(is.null(std) && FROM %IN% c("squ-met", "met-squ", "m2", "m^2")) 
+		if(is.null(std) && FROM %IN% c("Square Meter (m^2)", "m^2", "squ-met", "met-squ", "m2")) 
 			{ std = 1 * x; }
 		# acre (based on U.S. survey foot) 
-		if(is.null(std) && FROM %IN% c("acr", "us-acr", "sur-acr")) 
+		if(is.null(std) && FROM %IN% c("Acre (based on Survey-Foot)", "acre", "acr", "us-acr", "sur-acr")) 
 			{ std = 4046.873 * x; }
 		# are (a)
-		if(is.null(std) && FROM %IN% c("are", "a")) 
+		if(is.null(std) && FROM %IN% c("Are (a)", "a", "are")) 
 			{ std = 100 * x; }
 		# barn (b)
-		if(is.null(std) && FROM %IN% c("bar", "b")) 
+		if(is.null(std) && FROM %IN% c("Barn (b)", "b", "barn", "bar")) 
 			{ std = 0.0000000000000000000000000001 * x; }
 		# circular mil
-		if(is.null(std) && FROM %IN% c("cir-mil", "c-m", "cm")) 
+		if(is.null(std) && FROM %IN% c("Circular-Mill", "cir-mil")) 
 			{ std = 0.0000000005067075 * x; }
 		# hectare (ha)
-		if(is.null(std) && FROM %IN% c("hec", "ha")) 
+		if(is.null(std) && FROM %IN% c("Hectare (ha)", "ha", "hec")) 
 			{ std = 10000 * x; }
 		# square foot (ft2)
-		if(is.null(std) && FROM %IN% c("ft2", "ft^", "sq-ft","squ-ft", "sq-foo", "sq-fee", "squ-foo", "squ-foo", "ft-sq", "ft-squ", "foo-sq", "fee-sq", "foo-squ", "fee-squ")) 
+		if(is.null(std) && FROM %IN% c("Square Foot (ft^2)", "ft^2", "ft2", "ft^", "sq-ft","squ-ft", "sq-foo", "sq-fee", "squ-foo", "squ-foo", "ft-sq", "ft-squ", "foo-sq", "fee-sq", "foo-squ", "fee-squ")) 
 			{ std = 0.09290304 * x; }
 		# square inch (in2)
-		if(is.null(std) && FROM %IN% c("in2", "in^", "sq-in","squ-in", "sq-inc", "squ-inc", "squ-inc", "in-sq", "in-squ", "inc-sq", "inc-squ")) 
+		if(is.null(std) && FROM %IN% c("Square Inch (in^2)", "in^2", "in2", "in^", "sq-in","squ-in", "sq-inc", "squ-inc", "squ-inc", "in-sq", "in-squ", "inc-sq", "inc-squ")) 
 			{ std = 0.00064516 * x; }
 		# square mile (mi2)
-		if(is.null(std) && FROM %IN% c("mi2", "mi^", "sq-mi","squ-mi", "sq-mil", "squ-mil", "squ-mil", "mi-sq", "mi-squ", "mil-sq", "mil-squ")) 
+		if(is.null(std) && FROM %IN% c("Square Mile (mi^2)", "mi^2", "mi2", "mi^", "sq-mi","squ-mi", "sq-mil", "squ-mil", "squ-mil", "mi-sq", "mi-squ", "mil-sq", "mil-squ")) 
 			{ std = 2589988 * x; }
 		# square mile (based on U.S. survey foot) (mi2) 
-		if(is.null(std) && FROM %IN% c("us-mi2", "us-mi^", "us-sq-mi","us-squ-mi", "us-sq-mil", "us-squ-mil", "us-squ-mil", "us-mi-sq", "us-mi-squ", "us-mil-sq", "us-mil-squ")) 
+		if(is.null(std) && FROM %IN% c("Survey Square Mile (Based on Survey-Foot)", "surv-mi^2", "sur-squ-mil", "sur-squ-mi", "sur-mi^", "ssm", "us-mi2", "us-mi^", "us-sq-mi","us-squ-mi", "us-sq-mil", "us-squ-mil", "us-squ-mil", "us-mi-sq", "us-mi-squ", "us-mil-sq", "us-mil-squ")) 
 			{ std = 2589998 * x; }
 		# square yard (yd2)
-		if(is.null(std) && FROM %IN% c("yd2", "yd^", "sq-yd","squ-yd", "sq-yar", "squ-yar", "squ-yar", "yd-sq", "yd-squ", "yar-sq", "yar-squ")) 
+		if(is.null(std) && FROM %IN% c("Square Yard (yd^2)", "yd^2", "yd2", "yd^", "sq-yd","squ-yd", "sq-yar", "squ-yar", "squ-yar", "yd-sq", "yd-squ", "yar-sq", "yar-squ")) 
 			{ std = 0.8361274 * x; }
 			
-			
-			
-			
 		
-		if(is.null(std)) { stop("what show METHOD and FROM "); }
 		
+		if(is.null(std)) 
+			{ 
+			msg = msg.badOption("from", from, FROM);			
+			cat("\n\n"); minvisible( IN.df(), print=TRUE ); cat("\n\n"); 
+			IN.clear();
+			cat.stop(msg);
+			}
+		IN.clear();
+		
+			
+			
+			
+			
 		################### REVERSE ############################
+		IN.init();
+		
 		
 		# square-meter ... m2 ... m^2 ...  
-		if(is.null(out) && TO %IN% c("squ-met", "met-squ", "m2", "m^2")) 
+		if(is.null(out) && TO %IN% c("Square Meter (m^2)", "m^2", "squ-met", "met-squ", "m2")) 
 			{ out = std/1; }
 		# acre (based on U.S. survey foot) 
-		if(is.null(out) && TO %IN% c("acr", "us-acr", "sur-acr")) 
+		if(is.null(out) && TO %IN% c("Acre (based on Survey-Foot)", "acre", "acr", "us-acr", "sur-acr")) 
 			{ out = std/4046.873; }
 		# are (a)
-		if(is.null(out) && TO %IN% c("are", "a")) 
+		if(is.null(out) && TO %IN% c("Are (a)", "a", "are")) 
 			{ out = std/100; }
 		# barn (b)
-		if(is.null(out) && TO %IN% c("bar", "b")) 
+		if(is.null(out) && TO %IN% c("Barn (b)", "b", "barn", "bar")) 
 			{ out = std/0.0000000000000000000000000001; }
 		# circular mil
-		if(is.null(out) && TO %IN% c("cir-mil", "c-m", "cm")) 
+		if(is.null(out) && TO %IN% c("Circular-Mill", "cir-mil")) 
 			{ out = std/0.0000000005067075; }
 		# hectare (ha)
-		if(is.null(out) && TO %IN% c("hec", "ha")) 
+		if(is.null(out) && TO %IN% c("Hectare (ha)", "ha", "hec")) 
 			{ out = std/10000; }
 		# square foot (ft2)
-		if(is.null(out) && TO %IN% c("ft2", "ft^", "sq-ft","squ-ft", "sq-foo", "sq-fee", "squ-foo", "squ-foo", "ft-sq", "ft-squ", "foo-sq", "fee-sq", "foo-squ", "fee-squ")) 
+		if(is.null(out) && TO %IN% c("Square Foot (ft^2)", "ft^2", "ft2", "ft^", "sq-ft","squ-ft", "sq-foo", "sq-fee", "squ-foo", "squ-foo", "ft-sq", "ft-squ", "foo-sq", "fee-sq", "foo-squ", "fee-squ")) 
 			{ out = std/0.09290304; }
 		# square inch (in2)
-		if(is.null(out) && TO %IN% c("in2", "in^", "sq-in","squ-in", "sq-inc", "squ-inc", "squ-inc", "in-sq", "in-squ", "inc-sq", "inc-squ")) 
+		if(is.null(out) && TO %IN% c("Square Inch (in^2)", "in^2", "in2", "in^", "sq-in","squ-in", "sq-inc", "squ-inc", "squ-inc", "in-sq", "in-squ", "inc-sq", "inc-squ")) 
 			{ out = std/0.00064516; }
 		# square mile (mi2)
-		if(is.null(out) && TO %IN% c("mi2", "mi^", "sq-mi","squ-mi", "sq-mil", "squ-mil", "squ-mil", "mi-sq", "mi-squ", "mil-sq", "mil-squ")) 
+		if(is.null(out) && TO %IN% c("Square Mile (mi^2)", "mi^2", "mi2", "mi^", "sq-mi","squ-mi", "sq-mil", "squ-mil", "squ-mil", "mi-sq", "mi-squ", "mil-sq", "mil-squ")) 
 			{ out = std/2589988; }
 		# square mile (based on U.S. survey foot) (mi2) 
-		if(is.null(out) && TO %IN% c("us-mi2", "us-mi^", "us-sq-mi","us-squ-mi", "us-sq-mil", "us-squ-mil", "us-squ-mil", "us-mi-sq", "us-mi-squ", "us-mil-sq", "us-mil-squ")) 
+		if(is.null(out) && TO %IN% c("Survey Square Mile (Based on Survey-Foot)", "surv-mi^2", "sur-squ-mil", "sur-squ-mi", "sur-mi^", "ssm", "us-mi2", "us-mi^", "us-sq-mi","us-squ-mi", "us-sq-mil", "us-squ-mil", "us-squ-mil", "us-mi-sq", "us-mi-squ", "us-mil-sq", "us-mil-squ")) 
 			{ out = std/2589998; }
 		# square yard (yd2)
-		if(is.null(out) && TO %IN% c("yd2", "yd^", "sq-yd","squ-yd", "sq-yar", "squ-yar", "squ-yar", "yd-sq", "yd-squ", "yar-sq", "yar-squ")) 
+		if(is.null(out) && TO %IN% c("Square Yard (yd^2)", "yd^2", "yd2", "yd^", "sq-yd","squ-yd", "sq-yar", "squ-yar", "squ-yar", "yd-sq", "yd-squ", "yar-sq", "yar-squ")) 
 			{ out = std/0.8361274; }
 			
-			
 		
-
-
-
-	
-		if(is.null(out)) { stop("what out show METHOD and FROM "); }
+		
+		if(is.null(out)) 
+			{ 
+			msg = msg.badOption("to", to, TO);			
+			cat("\n\n"); minvisible( IN.df(), print=TRUE ); cat("\n\n"); 
+			IN.clear();	
+			cat.stop(msg);
+			}	
+		IN.clear();
+		
 		
 		return(out);
 		}
@@ -554,251 +589,247 @@ dput(out);
 	conv.vol = function() {}
 	if(TYPE %IN% c("volu", "vol", "vo"))  # volume ... 
 		{
+		IN.init();
+		
 		# cubic-meter ... m3 ... m^3 ...  
-		if(is.null(std) && FROM %IN% c("cub-met", "met-cub", "m3", "m^3")) 
+		if(is.null(std) && FROM %IN% c("Cubic meter (m^3)", "m^3", "cub-met", "met-cub", "m3")) 
 			{ std = 1 * x; }
 			
 		# acre-foot ... acre-foot (based on U.S. survey foot)  
-		if(is.null(std) && FROM %IN% c("acr-foo", "acr", "acr-ft", "acr-fee")) 
+		if(is.null(std) && FROM %IN% c("Acre-Foot (based on Survey-Foot)", "acre-foot", "acr-foo", "acr", "acr-ft", "acr-fee")) 
 			{ std = 1233.489 * x; }
 		# barrel [for petroleum, 42 gallons (U.S.)]  
-		if(is.null(std) && FROM %IN% c("bar", "us-bar", "bar-us")) 
+		if(is.null(std) && FROM %IN% c("Barrel (e.g., U.S. petroleum [42 gallons])", "barrel", "bar", "us-bar", "bar-us")) 
 			{ std = 0.1589873 * x; }
 		# bushel (U.S.) (bu)  
-		if(is.null(std) && FROM %IN% c("bus", "us-bus", "bus-us", "bu", "us-bu", "bu-us")) 
+		if(is.null(std) && FROM %IN% c("Bushel (bu, U.S.)", "bushel", "bus", "us-bus", "bus-us", "bu", "us-bu", "bu-us")) 
 			{ std = 0.03523907 * x; }
 		# cord (128 ft3) 
-		if(is.null(std) && FROM %IN% c("cor", "co")) 
+		if(is.null(std) && FROM %IN% c("Cord", "cord", "cor", "co")) 
 			{ std = 3.624556 * x; }
 		# cubic foot (ft3) 
-		if(is.null(std) && FROM %IN% c("cub-ft", "cub-foo", "cub-fee", "ft-cub", "fee-cub", "foo-cub", "ft3", "ft^")) 
+		if(is.null(std) && FROM %IN% c("Cubic Foot (ft^3)", "ft^3", "cub-ft", "cub-foo", "cub-fee", "ft-cub", "fee-cub", "foo-cub", "ft3", "ft^")) 
 			{ std = 0.02831685 * x; }
 		# cubic inch (in3) 
-		if(is.null(std) && FROM %IN% c("cub-in", "cub-inc", "in-cub", "inc-cub", "in3", "in^")) 
+		if(is.null(std) && FROM %IN% c("Cubic Inch (in^3)", "in^3", "cub-in", "cub-inc", "in-cub", "inc-cub", "in3", "in^")) 
 			{ std = 0.00001638706 * x; }
 		# cubic mile (mi3) 
-		if(is.null(std) && FROM %IN% c("cub-mi", "cub-mil", "mi-cub", "mil-cub", "mi3", "mi^")) 
+		if(is.null(std) && FROM %IN% c("Cubic Mile (mi^3)", "mi^3", "cub-mi", "cub-mil", "mi-cub", "mil-cub", "mi3", "mi^")) 
 			{ std = 4168182000 * x; }
 		# cubic yard (yd3)
-		if(is.null(std) && FROM %IN% c("cub-yd", "cub-yar", "yd-cub", "yar-cub", "yd3", "yd^")) 
+		if(is.null(std) && FROM %IN% c("Cubic Yard (yd^3)", "yd^3", "cub-yd", "cub-yar", "yd-cub", "yar-cub", "yd3", "yd^")) 
 			{ std = 0.7645549 * x; }
 			
 		# cup (U.S.)
-		if(is.null(std) && FROM %IN% c("cup-us", "us-cup", "cup-usa", "usa-cup")) 
+		if(is.null(std) && FROM %IN% c("Cup (U.S.)", "cup-us", "us-cup", "cup-usa", "usa-cup")) 
 			{ std = 0.0002365882 * x; }
 			
 		# us-gallon... gallon (U.S.) (gal)
-		if(is.null(std) && FROM %IN% c("us-gal", "usa-gal", "gal-us", "gal-usa")) 
+		if(is.null(std) && FROM %IN% c("Gallon (U.S.)", "gallon-us", "us-gal", "usa-gal", "gal-us", "gal-usa")) 
 			{ std = 0.003785412 * x; }
 			
 		# imperial-gallon... gallon [Canadian and U.K. (Imperial)] (gal)
-		if(is.null(std) && FROM %IN% c("imp-gal", "uk-gal", "gal-uk", "gal-imp")) 
+		if(is.null(std) && FROM %IN% c("Gallon (Imperial)", "gallon-imp", "imp-gal", "uk-gal", "gal-uk", "gal-imp")) 
 			{ std = 0.00454609 * x; }
 			
 		# us-gill... gill (U.S.) (gi)
-		if(is.null(std) && FROM %IN% c("usa-gil", "us-gil", "gil-us", "gil-usa", "usa-gi", "us-gi", "gi-us", "gi-usa")) 
+		if(is.null(std) && FROM %IN% c("Gill (U.S.)", "gill-us", "usa-gil", "us-gil", "gil-us", "gil-usa", "usa-gi", "us-gi", "gi-us", "gi-usa")) 
 			{ std = 0.0001420653 * x; }
 
 
 		# imperial-gill... gill [Canadian and U.K. (Imperial)] (gi)
-		if(is.null(std) && FROM %IN% c("imp-gil", "uk-gil", "gil-uk", "gil-imp", "imp-gi", "uk-gi", "gi-uk", "gi-imp")) 
+		if(is.null(std) && FROM %IN% c("Gill (Imperial)", "gill-imp", "imp-gil", "uk-gil", "gil-uk", "gil-imp", "imp-gi", "uk-gi", "gi-uk", "gi-imp")) 
 			{ std = 0.0001420653 * x; }
 			
 		# us-ounce ... fluid ounce (U.S.) (fl oz)
-		if(is.null(std) && FROM %IN% c("usa-oun", "us-oun", "oun-us", "oun-usa", "usa-oz", "us-oz", "oz-us", "oz-usa")) 
+		if(is.null(std) && FROM %IN% c("Fluid Ounce (U.S.)", "fl-oz-us", "usa-oun", "us-oun", "oun-us", "oun-usa", "usa-oz", "us-oz", "oz-us", "oz-usa")) 
 			{ std = 0.00002957353 * x; }
 			
 		# imperial-ounce ... ounce [Canadian and U.K. fluid (Imperial)] (fl oz)
-		if(is.null(std) && FROM %IN% c("imp-oun", "uk-oun", "oun-uk", "oun-imp", "imp-oz", "uk-oz", "oz-uk", "oz-imp")) 
+		if(is.null(std) && FROM %IN% c("Fluid Ounce (Imperial)", "fl-oz-imp", "imp-oun", "uk-oun", "oun-uk", "oun-imp", "imp-oz", "uk-oz", "oz-uk", "oz-imp")) 
 			{ std = 0.00002841306 * x; }
 			
 			
 		# liter ... liter (L) 19
-		if(is.null(std) && FROM %IN% c("lit", "li", "l")) 
+		if(is.null(std) && FROM %IN% c("Liter", "lit", "li", "l")) 
 			{ std = 0.001 * x; }
 			
 		
 		# peck ... peck (U.S.) (pk)
-		if(is.null(std) && FROM %IN% c("usa-pec", "us-pec", "pec-us", "pec-usa", "pec")) 
+		if(is.null(std) && FROM %IN% c("Peck (U.S.)", "peck", "peck-us", "usa-pec", "us-pec", "pec-us", "pec-usa", "pec")) 
 			{ std = 0.008809768 * x; }
 			
 		# dry-pint ... pint (U.S. dry) (dry pt)
-		if(is.null(std) && FROM %IN% c("pt-dry", "dry-pt", "pin-dry", "dry-pin")) 
+		if(is.null(std) && FROM %IN% c("Dry Pint (U.S.)", "dry-pint", "pt-dry", "dry-pt", "pin-dry", "dry-pin")) 
 			{ std = 0.0005506105 * x; }
 		# liquid-pint ... pint (U.S. liquid) (liq pt)
-		if(is.null(std) && FROM %IN% c("pt-liq", "liq-pt", "pin-liq", "liq-pin")) 
+		if(is.null(std) && FROM %IN% c("Liquid Pint (U.S.)", "liquid-pint", "pt-liq", "liq-pt", "pin-liq", "liq-pin")) 
 			{ std = 0.0004731765 * x; }
 			
 		# dry-quart ... quart (U.S. dry) (dry qt)
-		if(is.null(std) && FROM %IN% c("qt-dry", "dry-qt", "qua-dry", "dry-qua")) 
+		if(is.null(std) && FROM %IN% c("Dry Quart (U.S.)", "dry-quart", "qt-dry", "dry-qt", "qua-dry", "dry-qua")) 
 			{ std = 0.001101221 * x; }
 		# liquid-quart ... quart (U.S. liquid) (liq qt)
-		if(is.null(std) && FROM %IN% c("qt-liq", "liq-qt", "qua-liq", "liq-qua")) 
+		if(is.null(std) && FROM %IN% c("Liquid Quart (U.S.)", "liquid-quart","qt-liq", "liq-qt", "qua-liq", "liq-qua")) 
 			{ std = 0.0009463529 * x; }
 			
 		# stere (st)
-		if(is.null(std) && FROM %IN% c("st", "ste")) 
+		if(is.null(std) && FROM %IN% c("Stere", "st", "ste")) 
 			{ std = 1 * x; }
 		
 		# tablespoon
-		if(is.null(std) && FROM %IN% c("tab", "tbl", "tas")) 
+		if(is.null(std) && FROM %IN% c("Tablespoon", "tab", "tbl", "tas")) 
 			{ std = 0.00001478676 * x; }
 		# teaspoon
-		if(is.null(std) && FROM %IN% c("tea", "tsp", "tes")) 
+		if(is.null(std) && FROM %IN% c("Teaspoon", "tea", "tsp", "tes")) 
 			{ std = 0.000004928922 * x; }
 			
-		# ton, register
-		if(is.null(std) && FROM %IN% c("ton", "reg")) 
+		# register
+		if(is.null(std) && FROM %IN% c("Register", "register", "reg")) 
+			{ std = 2.831685 * x; }
+		# ton
+		if(is.null(std) && FROM %IN% c("Ton", "ton", "tonne")) 
 			{ std = 2.831685 * x; }
 		
 		
-
+		
+		if(is.null(std)) 
+			{ 
+			msg = msg.badOption("from", from, FROM);			
+			cat("\n\n"); minvisible( IN.df(), print=TRUE ); cat("\n\n"); 
+			IN.clear();
+			cat.stop(msg);
+			}
+		IN.clear();
 		
 		
-		if(is.null(std)) { stop("what show METHOD and FROM "); }
 		
 		################### REVERSE ############################
 		
+		
+		IN.init();
+		
+		
+		
 		# cubic-meter ... m3 ... m^3 ...  
-		if(is.null(out) && TO %IN% c("cub-met", "met-cub", "m3", "m^3")) 
-			{ out = std/1 ; }
+		if(is.null(out) && TO %IN% c("Cubic meter (m^3)", "m^3", "cub-met", "met-cub", "m3")) 
+			{ out = std/1; }
 			
 		# acre-foot ... acre-foot (based on U.S. survey foot)  
-		if(is.null(out) && TO %IN% c("acr-foo", "acr", "acr-ft", "acr-fee")) 
-			{ out = std/1233.489 ; }
+		if(is.null(out) && TO %IN% c("Acre-Foot (based on Survey-Foot)", "acre-foot", "acr-foo", "acr", "acr-ft", "acr-fee")) 
+			{ out = std/1233.489; }
 		# barrel [for petroleum, 42 gallons (U.S.)]  
-		if(is.null(out) && TO %IN% c("bar", "us-bar", "bar-us")) 
-			{ out = std/0.1589873 ; }
+		if(is.null(out) && TO %IN% c("Barrel (e.g., U.S. petroleum [42 gallons])", "barrel", "bar", "us-bar", "bar-us")) 
+			{ out = std/0.1589873; }
 		# bushel (U.S.) (bu)  
-		if(is.null(out) && TO %IN% c("bus", "us-bus", "bus-us", "bu", "us-bu", "bu-us")) 
-			{ out = std/0.03523907 ; }
+		if(is.null(out) && TO %IN% c("Bushel (bu, U.S.)", "bushel", "bus", "us-bus", "bus-us", "bu", "us-bu", "bu-us")) 
+			{ out = std/0.03523907; }
 		# cord (128 ft3) 
-		if(is.null(out) && TO %IN% c("cor", "co")) 
-			{ out = std/3.624556 ; }
+		if(is.null(out) && TO %IN% c("Cord", "cord", "cor", "co")) 
+			{ out = std/3.624556; }
 		# cubic foot (ft3) 
-		if(is.null(out) && TO %IN% c("cub-ft", "cub-foo", "cub-fee", "ft-cub", "fee-cub", "foo-cub", "ft3", "ft^")) 
-			{ out = std/0.02831685 ; }
+		if(is.null(out) && TO %IN% c("Cubic Foot (ft^3)", "ft^3", "cub-ft", "cub-foo", "cub-fee", "ft-cub", "fee-cub", "foo-cub", "ft3", "ft^")) 
+			{ out = std/0.02831685; }
 		# cubic inch (in3) 
-		if(is.null(out) && TO %IN% c("cub-in", "cub-inc", "in-cub", "inc-cub", "in3", "in^")) 
-			{ out = std/0.00001638706 ; }
+		if(is.null(out) && TO %IN% c("Cubic Inch (in^3)", "in^3", "cub-in", "cub-inc", "in-cub", "inc-cub", "in3", "in^")) 
+			{ out = std/0.00001638706; }
 		# cubic mile (mi3) 
-		if(is.null(out) && TO %IN% c("cub-mi", "cub-mil", "mi-cub", "mil-cub", "mi3", "mi^")) 
-			{ out = std/4168182000 ; }
+		if(is.null(out) && TO %IN% c("Cubic Mile (mi^3)", "mi^3", "cub-mi", "cub-mil", "mi-cub", "mil-cub", "mi3", "mi^")) 
+			{ out = std/4168182000; }
 		# cubic yard (yd3)
-		if(is.null(out) && TO %IN% c("cub-yd", "cub-yar", "yd-cub", "yar-cub", "yd3", "yd^")) 
-			{ out = std/0.7645549 ; }
+		if(is.null(out) && TO %IN% c("Cubic Yard (yd^3)", "yd^3", "cub-yd", "cub-yar", "yd-cub", "yar-cub", "yd3", "yd^")) 
+			{ out = std/0.7645549; }
 			
 		# cup (U.S.)
-		if(is.null(out) && TO %IN% c("cup-us", "us-cup", "cup-usa", "usa-cup")) 
-			{ out = std/0.0002365882 ; }
+		if(is.null(out) && TO %IN% c("Cup (U.S.)", "cup-us", "us-cup", "cup-usa", "usa-cup")) 
+			{ out = std/0.0002365882; }
 			
 		# us-gallon... gallon (U.S.) (gal)
-		if(is.null(out) && TO %IN% c("us-gal", "usa-gal", "gal-us", "gal-usa")) 
-			{ out = std/0.003785412 ; }
+		if(is.null(out) && TO %IN% c("Gallon (U.S.)", "gallon-us", "us-gal", "usa-gal", "gal-us", "gal-usa")) 
+			{ out = std/0.003785412; }
 			
 		# imperial-gallon... gallon [Canadian and U.K. (Imperial)] (gal)
-		if(is.null(out) && TO %IN% c("imp-gal", "uk-gal", "gal-uk", "gal-imp")) 
-			{ out = std/0.00454609 ; }
+		if(is.null(out) && TO %IN% c("Gallon (Imperial)", "gallon-imp", "imp-gal", "uk-gal", "gal-uk", "gal-imp")) 
+			{ out = std/0.00454609; }
 			
 		# us-gill... gill (U.S.) (gi)
-		if(is.null(out) && TO %IN% c("usa-gil", "us-gil", "gil-us", "gil-usa", "usa-gi", "us-gi", "gi-us", "gi-usa")) 
-			{ out = std/0.0001420653 ; }
+		if(is.null(out) && TO %IN% c("Gill (U.S.)", "gill-us", "usa-gil", "us-gil", "gil-us", "gil-usa", "usa-gi", "us-gi", "gi-us", "gi-usa")) 
+			{ out = std/0.0001420653; }
 
 
 		# imperial-gill... gill [Canadian and U.K. (Imperial)] (gi)
-		if(is.null(out) && TO %IN% c("imp-gil", "uk-gil", "gil-uk", "gil-imp", "imp-gi", "uk-gi", "gi-uk", "gi-imp")) 
-			{ out = std/0.0001420653 ; }
+		if(is.null(out) && TO %IN% c("Gill (Imperial)", "gill-imp", "imp-gil", "uk-gil", "gil-uk", "gil-imp", "imp-gi", "uk-gi", "gi-uk", "gi-imp")) 
+			{ out = std/0.0001420653; }
 			
 		# us-ounce ... fluid ounce (U.S.) (fl oz)
-		if(is.null(out) && TO %IN% c("usa-oun", "us-oun", "oun-us", "oun-usa", "usa-oz", "us-oz", "oz-us", "oz-usa")) 
-			{ out = std/0.00002957353 ; }
+		if(is.null(out) && TO %IN% c("Fluid Ounce (U.S.)", "fl-oz-us", "usa-oun", "us-oun", "oun-us", "oun-usa", "usa-oz", "us-oz", "oz-us", "oz-usa")) 
+			{ out = std/0.00002957353; }
 			
 		# imperial-ounce ... ounce [Canadian and U.K. fluid (Imperial)] (fl oz)
-		if(is.null(out) && TO %IN% c("imp-oun", "uk-oun", "oun-uk", "oun-imp", "imp-oz", "uk-oz", "oz-uk", "oz-imp")) 
-			{ out = std/0.00002841306 ; }
+		if(is.null(out) && TO %IN% c("Fluid Ounce (Imperial)", "fl-oz-imp", "imp-oun", "uk-oun", "oun-uk", "oun-imp", "imp-oz", "uk-oz", "oz-uk", "oz-imp")) 
+			{ out = std/0.00002841306; }
 			
 			
 		# liter ... liter (L) 19
-		if(is.null(out) && TO %IN% c("lit", "li", "l")) 
-			{ out = std/0.001 ; }
+		if(is.null(out) && TO %IN% c("Liter", "lit", "li", "l")) 
+			{ out = std/0.001; }
 			
 		
 		# peck ... peck (U.S.) (pk)
-		if(is.null(out) && TO %IN% c("usa-pec", "us-pec", "pec-us", "pec-usa", "pec")) 
-			{ out = std/0.008809768 ; }
+		if(is.null(out) && TO %IN% c("Peck (U.S.)", "peck", "peck-us", "usa-pec", "us-pec", "pec-us", "pec-usa", "pec")) 
+			{ out = std/0.008809768; }
 			
 		# dry-pint ... pint (U.S. dry) (dry pt)
-		if(is.null(out) && TO %IN% c("pt-dry", "dry-pt", "pin-dry", "dry-pin")) 
-			{ out = std/0.0005506105 ; }
+		if(is.null(out) && TO %IN% c("Dry Pint (U.S.)", "dry-pint", "pt-dry", "dry-pt", "pin-dry", "dry-pin")) 
+			{ out = std/0.0005506105; }
 		# liquid-pint ... pint (U.S. liquid) (liq pt)
-		if(is.null(out) && TO %IN% c("pt-liq", "liq-pt", "pin-liq", "liq-pin")) 
-			{ out = std/0.0004731765 ; }
+		if(is.null(out) && TO %IN% c("Liquid Pint (U.S.)", "liquid-pint", "pt-liq", "liq-pt", "pin-liq", "liq-pin")) 
+			{ out = std/0.0004731765; }
 			
 		# dry-quart ... quart (U.S. dry) (dry qt)
-		if(is.null(out) && TO %IN% c("qt-dry", "dry-qt", "qua-dry", "dry-qua")) 
-			{ out = std/0.001101221 ; }
+		if(is.null(out) && TO %IN% c("Dry Quart (U.S.)", "dry-quart", "qt-dry", "dry-qt", "qua-dry", "dry-qua")) 
+			{ out = std/0.001101221; }
 		# liquid-quart ... quart (U.S. liquid) (liq qt)
-		if(is.null(out) && TO %IN% c("qt-liq", "liq-qt", "qua-liq", "liq-qua")) 
-			{ out = std/0.0009463529 ; }
+		if(is.null(out) && TO %IN% c("Liquid Quart (U.S.)", "liquid-quart","qt-liq", "liq-qt", "qua-liq", "liq-qua")) 
+			{ out = std/0.0009463529; }
 			
 		# stere (st)
-		if(is.null(out) && TO %IN% c("st", "ste")) 
-			{ out = std/1 ; }
+		if(is.null(out) && TO %IN% c("Stere", "st", "ste")) 
+			{ out = std/1; }
 		
 		# tablespoon
-		if(is.null(out) && TO %IN% c("tab", "tbl", "tas")) 
-			{ out = std/0.00001478676 ; }
+		if(is.null(out) && TO %IN% c("Tablespoon", "tab", "tbl", "tas")) 
+			{ out = std/0.00001478676; }
 		# teaspoon
-		if(is.null(out) && TO %IN% c("tea", "tsp", "tes")) 
-			{ out = std/0.000004928922 ; }
+		if(is.null(out) && TO %IN% c("Teaspoon", "tea", "tsp", "tes")) 
+			{ out = std/0.000004928922; }
 			
-		# ton, register
-		if(is.null(out) && TO %IN% c("ton", "reg")) 
-			{ out = std/2.831685 ; }
+		# register
+		if(is.null(out) && TO %IN% c("Register", "register", "reg")) 
+			{ out = std/2.831685; }
+		# ton
+		if(is.null(out) && TO %IN% c("Ton", "ton", "tonne")) 
+			{ out = std/2.831685; }
 		
 		
-
-
-
-	
-		if(is.null(out)) { stop("what out show METHOD and FROM "); }
+		
+		
+		
+		if(is.null(out)) 
+			{ 
+			msg = msg.badOption("to", to, TO);			
+			cat("\n\n"); minvisible( IN.df(), print=TRUE ); cat("\n\n"); 
+			IN.clear();	
+			cat.stop(msg);
+			}	
+		IN.clear();
+		
+		
 		
 		return(out);
 		}
 
-	
-	
-	# NO to fractions (acceleration is unique)
-	# what about FORCE / WORK ( Newton / Joule )???
-	# not now ... 
-	# unit.tests with other libraries???
-	
-	
-	# https://www.nist.gov/system/files/documents/2021/03/18/ansi-nist_archived_2010_geographic.pdf
-	# COORDINATES ... https://en.wikipedia.org/wiki/ISO_6709
-	# lat,lon,alt ... dec, dec, meters 
-	# ... have lon offset (anchor) ... xela is Khufur ... Pyramid 
-	# DEG,DMS,GRT
-	# GMT type format CCYYMMDDHHMMSSz
-	# DEG ; Long Name: DegreeValue | Optionally populated, the format shall be ±xxx.xxxx±yyy.yyyy, where x refers to latitude and y refers to longitude. Can be auto captured/converted using GPS signals when available. For example, +039.1455- 077.2057. 
-	# DMS ; Long Name : DegreeMinuteSecondValue | Optionally populated, the format shall be ±xxxDxxMxxS±yyyDyyMyyS, where x refers to latitude and y refers to longitude. Can be auto captured/converted from GPS signals when available. For example, +039D08M44S-077D12M20S.
-	# 48°24′42″N 114°20′24″W # https://en.wikipedia.org/wiki/Whitefish,_Montana
-	# https://geohack.toolforge.org/geohack.php?pagename=Whitefish,_Montana&params=48_24_42_N_114_20_24_W_region:US-MT_type:city
-	# DMS		48° 24′ 42″ N, 114° 20′ 24″ W
-	# Decimal	48.411667, -114.34
-	# Geo URI	geo:48.411667,-114.34
-	# https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system
-	# https://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system#Simplified_formulae
-	# These grid zones are uniform over the globe, except in two areas. On the southwest coast of Norway, grid zone 32V (9° of longitude in width) is extended further west, and grid zone 31V (3° of longitude in width) is correspondingly shrunk to cover only open water. Also, in the region around Svalbard, the four grid zones 31X (9° of longitude in width), 33X (12° of longitude in width), 35X (12° of longitude in width), and 37X (9° of longitude in width) are extended to cover what would otherwise have been covered by the seven grid zones 31X to 37X. The three grid zones 32X, 34X and 36X are not used.
-	# UTM	11U 696832 5365475
-	# always an acception ...
-	# maybe make XTM from GIZA ... 
-	# https://cran.r-project.org/web/packages/geosphere/geosphere.pdf
-	#02° 31’ 21" North by 32° 5’ 39" East
-	# 02 31 21 N, 32 5 39 E
-	# 023121N, 320539E
-	# 023121, 320539
-
+	cat.stop("Conversion type", type, " shortcoded as ", TYPE, " was not found!");
 	}
 
 

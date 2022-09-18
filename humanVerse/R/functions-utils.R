@@ -362,7 +362,7 @@ IN = function(KEY, VALUE, mem.key = "-CURRENT_IN-")
 	if(is.null(info)) { info = list(); }
 	
 	ele = as.vector(KEY);
-	set = as.vector(VALUE); 
+	set = unique(as.vector(VALUE)); 
 	key = set[1];
 	
 	info[[key]] = set[-c(1)];	
@@ -421,6 +421,16 @@ THIS = function(KEY, VALUE)
 	}
 "%THIS%" = THIS; 
  
+ 
+ 
+ 
+dput.one = function(x, ...)
+	{
+	str = capture.output(dput(x, ...));
+	cat("\n\n", str, "\n\n", sep = "");	
+	minvisible(str, print=FALSE);
+	}
+
  
 TO = function() {}
 TO = function(WHAT, WHERE=parent.frame(2))

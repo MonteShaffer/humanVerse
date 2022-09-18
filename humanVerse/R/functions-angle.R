@@ -477,7 +477,7 @@ cosine.similarity = function(a, b=NULL, by="col", ...)
 #cat("\n ALEX \n");
 		if(by == "ro") { a = t(a); } # just transpose 
 		m.names = colnames(a);
-		n = ncol(a);
+		n = ncol(a); 
 		m = matrix(0, nrow=n, ncol=n, dimnames = list(m.names, m.names));
 		d = s = m;  # angular distance, angular similarity, cosine similarity
 		for(i in 1:n)
