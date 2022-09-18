@@ -50,83 +50,34 @@ parse.syscall = function(syscall)
 		# params[[ pkeys[i] ]] = NA;  # you can't always trap NULL ... 
 		} 
 		
-	
-# have to trap keys/vals in a list to preserve type ...
-	# let's get the keys first 
-cat("\n\n");
-dput(ninfo); 
-cat("\n\n");
-dput(n); 
-cat("\n\n");
-dput(params);
-cat("\n\n");
-cat("\n\n");
-stop('monte');	
-	
-
-	
-	
-	
-	nkeys = ninfo;
-	nn = length(nkeys);
-	nvals = rep(NA, nn);
-	
-	# maybe extract keys/values from ninfo ... 
-	nmore = str.explode("=", ninfo);
-	nlen = list.getLengths(nmore);
-	nidx = v.which(nlen, 1, invert=TRUE);
-dput(nidx);
-	if(!is.null(nidx))
-		{
-		npairs = nmore[nidx];
-		npkeys = str.trim(list.getElements(npairs, 1));
-		nkeys[nidx] = npkeys;
-		npvals = str.trim(list.getElements(npairs, 2));
-		
-		nnn = length(idx);
-		for(i in 1:nnn)
-			{
-			nvals[ nidx[i] ] = eval(parse(text=npvals[i]));
-			}
-		}
-dput(nkeys);
-dput(nvals);
-
-
-	
-	
-	
-print(nlen);
-dput(nmore); stop("monte");
-	
-	# missing = v.return(set.diff(keys, ninfo));
-	# I don't know what are missing, maybe howMany 
-	missing = length(keys) - length(ninfo);
+	missing = length(keys) - length(pkeys);
 	
 	list(
 		"fn" = fn, 
-		"params" = ninfo, 
+		"pkeys"  = pkeys,
+		"params" = params, 
 		"missing" = missing, 
 		"formals" = f
 		);
 	}
    
-# v.chain(vec, hex2dec, sum, dec2hex, hex.prepend)
+# v.chain(vec, hex2dec, mean, dec2hex, hex.prepend)
 v.chain = function(vec, ...)   
 	{ 
-	.%THIS%. ;  minvisible(THIS, display=str); # this gives me sys.call and envir
+	# this gives me sys.call and envir ... and now the fn.name with params 
+	.%THIS%. ;  minvisible(THIS, display=none); 
 	# fn = match.call()[[1]];  
 	
 	# make this a generic message
 	if(THIS$fn.info$missing > 0) { print(str(THIS)); stop("looks like you have a [1] missing param in functon"); }
-	params = THIS$fn.info$params;
-	np = length(params);
+	pkeys = THIS$fn.info$pkeys;
+	np = length(pkeys);
 	if(np < 2) { stop("looks like there is nothing to do"); }
 
 	# get to the main event 
 	for(i in 2:np)
 		{
-		vec = do.call(params[i], list(vec));
+		vec = do.call(pkeys[i], list(vec));
 		}
 	vec;
 	}

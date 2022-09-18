@@ -664,7 +664,7 @@ minvisible = function(x, key="LAST", display=TRUE)
 		display = prep.arg(display, n=3);
 		}
 	# str may be object ... str may be a var in GLOBAL ... str="hello world";
-
+# dput(display);
 	has.displayed = NULL;
 	if(is.null(has.displayed) && display == "str") 
 		{ (has.displayed = print(str(x)) ); }
