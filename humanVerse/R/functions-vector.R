@@ -1184,39 +1184,48 @@ v.mode = function(vec, invert=FALSE)
 
 fn.distance = function(method.key="euclidean");
 	{
-	LIST = list(
-		"euclidean" = function(V1,V2) { sqrt(sum((V1 - V2)^2)); },
-		"manhattan" = function(V1,V2) { sum(abs(V1 - V2)); },
-		"minkowski" = function(V1,V2,p) { (sum(abs(V1 - V2)^p))^(1/p); },
-		"chebyshev" = function(V1,V2) { max(abs(V1 - V2)); },
-		"min-chebyshev" = function(V1,V2) { min(abs(V1 - V2)); },
-		"sorensen" = function(V1,V2) { (sum(abs(V1 - V2))) / (sum(V1,V2)); },
-		"gower" = function(V1,V2) { (sum(abs(V1 - V2)))/(length(V1)); },
-		"soergel" = function(V1,V2) { (sum(abs(V1 - V2)))/(sum(pmax(V1,V2))); },
-		"canberra" = function(V1,V2) { (sum(abs(V1 - V2)))/(abs(V1)+abs(V2)); },
-		"lorentzian" = function(V1,V2) { (sum(ln(1 + abs(V1 - V2)))); },
-		"intersection" = function(V1,V2) { (sum(pmin(V1,V2))); },
-		"non-intersection" = function(V1,V2) { 1-(sum(pmin(V1,V2))); },
-		"kulczynski-d" = function(V1,V2) { (sum(abs(V1 - V2)))/(sum(pmin(V1,V2))); },
-		"kulczynski-s" = function(V1,V2) { 1-(sum(abs(V1 - V2)))/(sum(pmin(V1,V2))); },
-		"eucl" = function(V1,V2) { sqrt(sum((V1 - V2)^2)); },
-		"eucl" = function(V1,V2) { sqrt(sum((V1 - V2)^2)); },
-		"eucl" = function(V1,V2) { sqrt(sum((V1 - V2)^2)); },
-		"eucl" = function(V1,V2) { sqrt(sum((V1 - V2)^2)); },
-		"eucl" = function(V1,V2) { sqrt(sum((V1 - V2)^2)); },
-		"eucl" = function(V1,V2) { sqrt(sum((V1 - V2)^2)); },
-		"eucl" = function(V1,V2) { sqrt(sum((V1 - V2)^2)); },
-		"eucl" = function(V1,V2) { sqrt(sum((V1 - V2)^2)); },
-		"eucl" = function(V1,V2) { sqrt(sum((V1 - V2)^2)); }
-		);
+	ct.KEY = check.type(method.key);
+	if(!ct.KEY)	{ method.key = deparse(substitute(method.key)); }
 	
+	DISTANCE = list(
+		"euclidean" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"manhattan" = function(a,b,p) { sum(abs(a - b)); },
+		"minkowski" = function(a,b,p) { (sum(abs(a - b)^p))^(1/p); },
+		"chebyshev" = function(a,b,p) { max(abs(a - b)); },
+		"min-chebyshev" = function(a,b,p) { min(abs(a - b)); },
+		"sorensen" = function(a,b,p) { (sum(abs(a - b))) / (sum(a,b,p)); },
+		"gower" = function(a,b,p) { (sum(abs(a - b)))/(length(a)); },
+		"soergel" = function(a,b,p) { (sum(abs(a - b)))/(sum(pmax(a,b,p))); },
+		"canberra" = function(a,b,p) { (sum(abs(a - b)))/(abs(a)+abs(b)); },
+		"lorentzian" = function(a,b,p) { (sum(ln(1 + abs(a - b)))); },
+		"intersection" = function(a,b,p) { (sum(pmin(a,b,p))); },
+		"non-intersection" = function(a,b,p) { 1-(sum(pmin(a,b,p))); },
+		"kulczynski-d" = function(a,b,p) { (sum(abs(a - b)))/(sum(pmin(a,b,p))); },
+		"kulczynski-s" = function(a,b,p) { 1-(sum(abs(a - b)))/(sum(pmin(a,b,p))); },
+		"eucl" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"eucl" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"eucl" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"eucl" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"eucl" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"eucl" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"eucl" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"eucl" = function(a,b,p) { sqrt(sum((a - b)^2)); },
+		"eucl" = function(a,b,p) { sqrt(sum((a - b)^2)); }
+		);
+		
+		
 	# V1 = c(1.7123324991176, -0.087035482548805, -0.926744124580803, -0.949060940876174, 0.802102347778727, 0.813412610707904, -0.556306188175876, 1.66926772248692, 0.85880968135697, 0.00765593568411784, -2.68022409172632, 0.618090840457905, -0.389199195818067, 0.14075077422064, 0.283485680709692, -0.481275821816208, 0.21864479073757, 0.132048065066265, -0.989820178958714, -1.2469087838849);
 	# V2 = c(-1.68797330342279, 0.829939318101389, 0.512926206890701, -0.0543858421532067, 0.40044742918973, -0.532909910832637, 1.00348061668397, 2.69962897865334, -1.16238208995448, -1.39518123163493, -0.101898562619623, -0.107289835954468, 0.120833930652221, 0.277337073172011, -1.68274204364937, 2.47554302076088, -0.515408405806101, -0.300685269945378, -0.290732748786564, 0.657786857247692);
 	
-	# LIST[["eucl"]](V1,V2);
+	# DISTANCE[["eucl"]](V1,V2,2);
 		
 	# if ALL, return the LIST ... NULL ... otherwise just the function ... 
-	# load function into MATRIX call, so it is just looping ... not having to check which method ... 
+	# load function into MATRIX call, so it is just looping ... not having to check which method ...
+
+	if(is.null(method.key)) { return (LIST); }
+	fn = DISTANCE[[method.key]];
+	if(is.null(fn)) { return (LIST); }
+	fn;
 	}
 
 prep.distance = function(method)
@@ -1279,91 +1288,17 @@ prep.distance = function(method)
 
 	}
 
-.dist = function(V1, V2, method="Euclidean", p=2)
+.dist = function(a, b, method="euclidean", p=2)
 	{
-	# V1 and V2 are rows where columns may have x,y,z or lat/lon/alt
-	METHOD = prep.arg(method, n=3, keep="-"); 
-	on.exit( IN.clear() );
+	# a and b are rows where columns may have x,y,z or lat/lon/alt
 	
-	IN.init();
+	# This assumes the method variable has already been cleansed, 
+	# see v.dist or matrix.dist 
+	# 
+	fn = fn.distance(method);
 	
+	fn(a,b, p=p);
 	
-	
-	if(METHOD %IN% c("Euclidean (Pythagorean) Distance", "euclidean-distance", "eucl", "eucl-dist", "e", "pythagorean-distance", "pyth-dist", "pyth", "p"))
-		{
-		return( sqrt(sum((V1 - V2)^2)) );
-		}
-		
-	if(METHOD %IN% c("Manhattan Distance", "manhattan-distance", "manh", "manh-dist"))   
-		{
-		return( sum(abs(V1 - V2)) );
-		}
-
-	if(METHOD %IN% c("Minkowski Distance", "minkowski-distance", "mink", "mink-dist"))   
-		{
-		return( (sum(abs(V1 - V2)^p))^(1/p) );
-		}
-		
-	if(METHOD %IN% c("Chebyshev Distance", "chebyshev-distance", "cheb", "cheb-dist"))   
-		{
-		return( max(abs(V1 - V2)) );
-		}
-		
-	if(METHOD %IN% c("Minimum Chebyshev Distance", "minimum-chebyshev-distance", "mini-cheb", "min-cheb", "mini-cheb-dist", "min-cheb-dist"))   
-		{
-		return( min(abs(V1 - V2)) );
-		}
-		
-	if(METHOD %IN% c("Sorensen Distance", "sorensen-distance", "sore", "sore-dist"))   
-		{
-		return( (sum(abs(V1 - V2))) / (sum(V1,V2)) );
-		}
-	#https://statisticaloddsandends.wordpress.com/2021/02/23/what-is-gowers-distance/
-
-	if(METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))
-		{
-		return( (sum(abs(V1 - V2)))/(length(V1)) );
-		}
-
-	if(METHOD %IN% c("Soergel Distance", "soergel-distance", "soer", "soer-dist"))   
-		{
-		# sum of pairwise MAX values ... 
-		# https://stackoverflow.com/a/19994671/184614
-		return( (sum(abs(V1 - V2)))/(sum(pmax(V1,V2))) );
-		}
-	
-	# should be binary data?
-	if(METHOD %IN% c("Canberra Distance", "canberra-distance", "canb", "canb-dist"))   
-		{
-		return( (sum(abs(V1 - V2)))/(abs(V1)+abs(V2)) );
-		}
-		
-	if(METHOD %IN% c("Lorentzian Distance", "lorentzian-distance", "lore", "lore-dist"))   
-		{
-		return( (sum(ln(1 + abs(V1 - V2)))) );
-		}
-		
-	if(METHOD %IN% c("Intersection Similarity", "intersection-similarity", "inte", "inte-simi"))   
-		{
-		return( (sum(pmin(V1,V2))) );
-		}
-		
-	if(METHOD %IN% c("Non-Intersection Distance", "non-intersection-distance", "non-inte", "non-inte-dist"))   
-		{
-		return( 1-(sum(pmin(V1,V2))) );
-		}
-		
-		
-	if(METHOD %IN% c("Kulczynski Distance", "kulczynski-distance", "kulc-d", "kulc-dist"))   
-		{
-		return( (sum(abs(V1 - V2)))/(sum(pmin(V1,V2))) );
-		}
-
-		
-	if(METHOD %IN% c("Kulczynski Similarity", "kulczynski-similarity", "kulc-s", "kulc-sim", "kulc-simi"))   
-		{
-		return( 1-(sum(abs(V1 - V2)))/(sum(pmin(V1,V2))) );
-		}
 
 
 # "wavehedges", "czekanowski", "motyka", "kulczynski_s", "tanimoto", "ruzicka", "inner_product", "harmonic_mean", "cosine", "hassebrook", "jaccard", "dice", "fidelity", "bhattacharyya", "hellinger", "matusita", "squared_chord", "squared_euclidean", "pearson", "neyman", "squared_chi", "prob_symm", "divergence", "clark", "additive_symm", "kullback-leibler", "jeffreys", "k_divergence", "topsoe", "jensen-shannon", "jensen_difference", "taneja", "kumar-johnson", "avg")
@@ -1375,12 +1310,12 @@ prep.distance = function(method)
 	}
 
 
-matrix.dist = function(m, method="Euclidean", p=2)
+matrix.dist = function(m, method="euclidean", p=2)
 	{
-	METHOD = prep.arg(method, n=3, keep="-"); 
 	m = as.matrix(m);
 	if(anyNA(m)) { stop("we have missing values!"; }
 	
+	METHOD = prep.arg(method, n=3, keep="-");
 	KEY = prep.distance(METHOD);
 	if(KEY == "--NULL--")
 		{
@@ -1391,17 +1326,18 @@ matrix.dist = function(m, method="Euclidean", p=2)
 		cat.stop(msg);
 		}
 	
+	fn = fn.distance(KEY);
 	
 	n = nrow(m);
 	m.names = rownames(m);
 	d = matrix(0, nrow=n, ncol=n, dimnames = list(m.names, m.names));
 	for(i in 1:n)
 		{
+		a = m[i, ];
 		for(j in i:n)
-			{
-			V1 = m[i, ];
-			V2 = m[j, ];
-			o = .dist(V1, V2, method=method, p=p);
+			{			
+			b = m[j, ];
+			o = fn(a,b, p=p);
 			
 			d[i, j] = d[j, i] = o;
 			}
