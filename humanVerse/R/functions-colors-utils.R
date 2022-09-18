@@ -78,6 +78,8 @@ hexcolor.return = function(hexstr, case="upper", alpha.case="lower")
 	paste0(pre,alpha);	
 	}
   
+# as.hexcolor = color.hex; 
+  
 color.hex = function() {}
 color.hex = function(hexstr, ..., 
 						alpha=FALSE,
@@ -86,7 +88,7 @@ color.hex = function(hexstr, ...,
 						case="upper"
 					)
 	{
-	hexstr = dots.addTo(hexstr, ...)
+	hexstr = dots.addTo(hexstr, ...);
 	hexstr = cleanup.base(hexstr); 
 	hexstr = str.replace(c("O","o"),"0", hexstr); # oh's not zeroes'
 	if(three.to.six)  #   #F0C ==> FF00CC [old school]

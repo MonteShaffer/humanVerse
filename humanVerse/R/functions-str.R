@@ -632,7 +632,6 @@ str.truncate = function(str, to.length=5, keep="right")
 	{
 	# str.pad in stringi FAVORS the right ... 
 	#   "1"   "12"  "123" ==> "010" "120" "123"
-	str = dots.addTo(str, ...);
 	KEEP = prep.arg(keep, n=1);
 	if(KEEP == "l")
 		{

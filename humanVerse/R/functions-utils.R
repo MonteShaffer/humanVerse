@@ -1,6 +1,6 @@
 
 
-ADD = function(a,b)
+.ADD. = function(a,b)
 	{ 
 	a = as.numeric(a); 
 	b = as.numeric(b);
@@ -25,7 +25,7 @@ ADD = function(a,b)
 	math.cleanup(out);
 	}
 	
-"%+%" = ADD;
+"%+%" = .ADD.;
 
 
 # dataframe(x, y) : could not find function "dataframe"
@@ -225,10 +225,10 @@ gggassign = function(key, val)
 	}
 	
 	
-PLUSPLUS = function() {}
+.PLUSPLUS. = function() {}
 # x = function() { print(environment()); print(parent.env(environment())); print(parent.frame(1)); print(parent.frame(2)); i = 0; a = 0; b = 0; for(j in 1:3) { a = i%++%.; cat("\n ja -->", j, "\t a:",a, "\t b:",b, "\t i:",i); b = .%++%i; cat("\n jb -->", j, "\t a:",a, "\t b:",b, "\t i:",i); }; cat("\n"); }
 
-PLUSPLUS = function(KEY, VALUE, WHERE=parent.frame(1))
+.PLUSPLUS. = function(KEY, VALUE, WHERE=parent.frame(1))
 	{
 # cat("\n");
 # print(environment()); 
@@ -277,11 +277,11 @@ PLUSPLUS = function(KEY, VALUE, WHERE=parent.frame(1))
 	stop("how did you get here");
 	}
 
-"%++%" = PLUSPLUS;	
+"%++%" = .PLUSPLUS.;	
 	
 	
 	
-GLOBAL = function(KEY, VALUE)
+.GLOBAL. = function(KEY, VALUE)
 	{
 	ct.KEY = check.type(KEY);
 	ct.VAL = check.type(VALUE);
@@ -311,7 +311,7 @@ GLOBAL = function(KEY, VALUE)
 	gggassign(key,VALUE);	
 	}
 	
-"%GLOBAL%" = GLOBAL;
+"%GLOBAL%" = .GLOBAL.;
 
 
 
@@ -348,7 +348,7 @@ IN.df = function(mem.key = "-CURRENT_IN-")
 		row = df.row(c(key, val), use.names=FALSE);
 		df = rbind(df, row);
 		}
-	cnames = c("-OPTION-", "shortcode", paste0("ALT-", 1:(klen-1)) ); 	
+	cnames = c("-OPTION-", "ideal => shortcodes", paste0("ALT-", 1:(klen-1)) ); 	
 	colnames(df) = cnames;
 	# rownames(df) = rep("", n);
 		
@@ -377,16 +377,15 @@ IN = function(KEY, VALUE, mem.key = "-CURRENT_IN-")
  
 # this = function(...) { print(sys.call(1)); }
 #  .%THIS%.
-THIS = function(KEY, VALUE)
+.THIS. = function(KEY, VALUE) 
 	{
-
-	DEFAULT_FRAME 	= 2;	# parent.frame(n);
-	DEFAULT_CALL 	= 2;	# sys.call(n);
+ 	DEFAULT_FRAME 	= 1;	# parent.frame(n);
+	DEFAULT_CALL 	= 1;	# sys.call(n); 
 		
 	## KEY is the FRAME 
 	ct.KEY = check.type(KEY);
 	key = NULL;
-	if(is.null(key) && !ct.KEY)
+	if(is.null(key) && !ct.KEY) 
 		{
 		key = parent.frame(DEFAULT_FRAME);		
 		}
@@ -416,10 +415,11 @@ THIS = function(KEY, VALUE)
 	# val is call with parameters 
 	res = list("envir" = key, "call" = val);
 	
-	WHERE=parent.frame(2); # or WHERE = env?
+	WHERE=parent.frame(1); # or WHERE = env?
 	assign("THIS", res, envir=WHERE );
 	}
-"%THIS%" = THIS; 
+	
+"%THIS%" = .THIS.; 
  
  
  
@@ -432,8 +432,8 @@ dput.one = function(x, ...)
 	}
 
  
-TO = function() {}
-TO = function(WHAT, WHERE=parent.frame(2))
+.TO. = function() {}
+.TO. = function(WHAT, WHERE=parent.frame(2))
 	{
 cat("\n");
 print(environment());
@@ -450,7 +450,7 @@ print(parent.env(parent.env(environment())));
 	assign(key, val, envir=WHERE );
 	}
 	
-"%TO%" = TO;	
+"%TO%" = .TO.;	
 	
 	
 # x = 44;

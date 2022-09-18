@@ -238,6 +238,45 @@ str2symb = function(str="alex")
 	}
 
  
+ 
+
+fn.replaceParameters = function(fn, plist=list())
+	{
+	# what if other parameters (e.g., sys.call, not in dots)?
+	# pass them in lazily, fn.replaceParameters(fn, z=1, x=2)
+	# can I have both ?
+	params = plist;
+	all  = lang2str(fn);
+	if(length(plist) == 0) { return( all ); }
+
+	body = lang2str(body(fn));
+	head = set.diff(all,body);
+	
+	f 	 = as.list(formals(fn));
+	keys = names(f);
+	vals = as.character(f);	
+	
+	# which, match ?
+	pkeys = names(params);
+	pn = length(pkeys);
+	for(i in 1:pn)
+		{
+		pkey = pkeys[i];
+		idx = v.which(keys, pkey);
+		if(!is.null(idx)) 
+			{ 
+			vo 	= vals[idx];
+			k 	= keys[idx];
+			vr 	= params[[pkey]]; 
+			fi 	= paste0(k," = ",vo);
+			re 	= paste0(k," = ",vr);
+			head = str.replace(fi,re,head);
+			}
+		}	
+	c(head, body);
+	}
+
+
 # function.info("+")
 # THIS IS UNIVARIATE 
 # https://realpython.com/python-refactoring/
@@ -582,7 +621,7 @@ castStringAsFunction = function.fromString;
 
 # THIS IS MULTIVARIATE ... 
 # verify.in.pkg will attach the PACKAGES to do a DEEP search 
-functions.info = function(fn.str, ..., verify.in.pkg = TRUE)
+DFLKJLKDSJFLKSDJFLKJfunctions.info = function(fn.str, ..., verify.in.pkg = TRUE)
 	{
 	fn.str = dots.addTo(fn.str, ...);
 	

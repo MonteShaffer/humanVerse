@@ -1,18 +1,51 @@
-magicFunction = function(FUN.OBJ.OR.STR)
+magicFunction = function(KEY, to="character")
 	{
-	# do something here ...
-	FUN.AS.STR;
+	TO = prep.arg(to, n=4);
+	
+	key = NULL;
+	ct.KEY = check.type(KEY);
+	if(!ct.KEY || !is.character(KEY) )	
+		{ key = deparse(substitute(KEY)); }  # valid objects are stringed
+		
+	if(TO == "char")
+		{
+		if(is.null(key))  { return(KEY); }
+		if(!is.null(key)) { return(key); }
+		} 
+	
+	if(ct.KEY) { return(KEY); } # already an object ...
+	
+	# I have a string ... and need an object 
+	return( eval(parse(text = KEY)) );
+	
+	stop("how did I get here");
+	return(NULL);
 	}
+	
+	
 
-v.math = function(data=c("#abcdef","#123456"), FUN, param="hi", FUN.pre="hex2dec", FUN.post=dec2hex)
-	{
+v.mathWrap = function(vec=c("#abcdef","#123456"),  FUN.pre="hex2dec", FUN="mean", FUN.post="dec2hex")
+	{ 
+	.%THIS%. ;  minvisible(THIS); # this gives me sys.call and envir
+	
+	info = str.trim(str.replace(")","", str.explode(',' , lang2str( sys.call(1) ))));
+dput(info);
+	
 	# takes input [whether a str/obj] and returns a string.
-	fn.str = magicFunction(FUN);
-	fn.pre = magicFunction(FUN.pre);
-	fn.post = magicFunction(FUN.post);
+	fn.pre = magicFunction( eval(info[2]), "character");
+dput(fn.pre);
+	fn = magicFunction( eval(info[3]) , "character");
+dput(fn);	
+	fn.post = magicFunction( eval(info[4]), "character");
+dput(fn.post);
 
 	# get to the main event 
+	vec = do.call(fn.pre, list(vec));
+	vec = do.call(fn, list(vec));
+	vec = do.call(fn.post, list(vec));
+	vec;
 	}
+
 
 
 v.math = function(..., fn="sum", fn.pre="hex2dec", fn.post="dec2hex")
@@ -691,6 +724,12 @@ v.return = function(res)
 v.which = function(vec, what="", invert=FALSE)
 	{ 
 	idx = NULL;
+	if(is.null(what))
+		{
+		# lists can trap NULLS, vectors can't 
+		return(NULL);
+		}
+		
 	if(is.null(idx) && is.na(what))
 		{
 		idx = which(is.na(vec));
@@ -1185,331 +1224,6 @@ v.mode = function(vec, invert=FALSE)
 	if(invert) { IDX = 1:length(vec); idx = IDX[-c(idx)]; }
 	v.return(idx);
 	}
-
-fn.distance = function(method.key="euclidean");
-	{
-	ct.KEY = check.type(method.key);
-	if(!ct.KEY)	{ method.key = deparse(substitute(method.key)); }
-	
-	DISTANCE = list(
-		"euclidean" = function(a,b) { sqrt(sum((a - b)^2)); }, # norm-euclidean?
-		"manhattan" = function(a,b) { sum(abs(a - b)); },
-		"minkowski" = function(a,b,p) { (sum(abs(a - b)^p))^(1/p); },
-		"chebyshev" = function(a,b) { max(abs(a - b)); },
-		"min-chebyshev" = function(a,b) { min(abs(a - b)); },
-		"gower" = function(a,b) { (sum(abs(a - b)))/(length(a)); },
-		"canberra" = function(a,b) { (sum(abs(a - b)))/(abs(a)+abs(b)); },
-		"lorentzian" = function(a,b) { (sum(ln(1 + abs(a - b)))); }
-		);
-		
-		
-	if(is.null(method.key)) { return (DISTANCE); }
-	fn = DISTANCE[[method.key]]; 
-	if(is.null(fn)) { return (DISTANCE); }
-	fn;
-	}
-
-.distance = function(a, b, method="euclidean", p=2)
-	{
-	# a and b are rows where columns may have x,y,z or lat/lon/alt
-	
-	# This assumes the method variable has already been cleansed, 
-	# see v.dist or matrix.dist 
-	# 
-	fn = fn.distance(method);
-	
-	if(method %in% c("minkowski"))
-		{
-		fn(a,b, p=p);
-		} else { fn(a,b); }
-	}
-
-
-prep.distance = function(method)
-	{
-	IN.init();
-	key = NULL;
-	# add is.null(key) && 
-	if(is.null(key) && METHOD %IN% c("Euclidean (Pythagorean) Distance", "euclidean-distance", "eucl", "eucl-dist", "e", "pythagorean-distance", "pyth-dist", "pyth", "p"))
-		{ key = "euclidean"; }
-	if(is.null(key) && METHOD %IN% c("Manhattan Distance", "manhattan-distance", "manh", "manh-dist"))   
-		{ key = "manhattan"; }
-	if(is.null(key) && METHOD %IN% c("Minkowski Distance", "minkowski-distance", "mink", "mink-dist"))   
-		{ key = "minkowski"; }
-	if(is.null(key) && METHOD %IN% c("Chebyshev Distance {stats::dist('maximum');}", "chebyshev-distance", "cheb", "cheb-dist", "maxi-dist", "max-dist", "maximum"))    
-		{ key = "chebyshev"; }
-	if(is.null(key) && METHOD %IN% c("Minimum Chebyshev Distance", "minimum-chebyshev-distance", "mini-cheb", "min-cheb", "mini-cheb-dist", "min-cheb-dist"))  
-		{ key = "min-chebyshev"; }
-	
-	if(is.null(key) && METHOD %IN% c("Gower Distance", "gower-distance", "gowe", "gowe-dist"))  
-		{ key = "gower"; }
-	
-	if(is.null(key) && METHOD %IN% c("Canberra Distance", "canberra-distance", "canb", "canb-dist"))  
-		{ key = "canberra"; }
-	if(is.null(key) && METHOD %IN% c("Lorentzian Distance", "lorentzian-distance", "lore", "lore-dist"))   
-		{ key = "lorentzian"; }
-		
-		
-	# binary is for bits ... meaningless in general ...
-	# "Jaccard" may be useful for proportion matching ... 
-		
-	if(is.null(key)) { key = "--NULL--"; }
-	
-	df = IN.df();
-	IN.clear();
-	minvisible(df, print=FALSE);
-	key = property.set("IN", key, df);
-	key;
-
-	}
-
-v.dist = function(vec1, vec2, method="Euclidean", p=2, na.rm=TRUE, show.warning=na.rm)
-	{
-	# why call the function if you have na ... ?
-	vec1_ = stats.warningNA(vec1, show.warning=show.warning); 
-	vec2_ = stats.warningNA(vec2, show.warning=show.warning); 
-	if(length(vec1_) != length(vec2_)) { stop("vector lengths are unqueal!"); }
-
-	METHOD = prep.arg(method, n=3, keep="-");
-	KEY = prep.distance(METHOD);
-	if(KEY == "--NULL--")
-		{
-		df = property.get("IN", KEY);
-		msg = msg.badOption("method", method, METHOD);	
-		cat("\n\n"); minvisible( df, print=TRUE ); cat("\n\n"); 
-		IN.clear();	
-		cat.stop(msg);
-		}
-	
-	
-	return(.dist(vec1_,vec2_, method=as.character(KEY), p=p);
-	}
-
-matrix.dist = function(m, method="euclidean", p=2)
-	{
-	m = as.matrix(m);
-	# if(anyNA(m)) { stop("we have missing values!"; }
-	
-	METHOD = prep.arg(method, n=3, keep="-");
-	KEY = prep.distance(METHOD);
-	if(KEY == "--NULL--")
-		{
-		df = property.get("IN", KEY);
-		msg = msg.badOption("method", method, METHOD);	
-		cat("\n\n"); minvisible( df, print=TRUE ); cat("\n\n"); 
-		IN.clear();	
-		cat.stop(msg);
-		}
-	
-	fn = fn.distance(as.character(KEY));
-	
-	n = nrow(m);
-	m.names = rownames(m);
-	d = matrix(0, nrow=n, ncol=n, dimnames = list(m.names, m.names));
-	for(i in 1:n)
-		{
-		a = m[i, ];
-		for(j in i:n)
-			{			
-			b = m[j, ];
-			
-			if(method %in% c("minkowski"))
-				{
-				o = fn(a,b, p=p);
-				} else { o = fn(a,b); }
-				
-			d[i, j] = d[j, i] = o;
-			}
-		}
-	# s = 1-d;  # similarity is 1-distance
-	# d = property.set("similarity", d, s);
-	d;
-	}
-
-
-
-
-fn.norm = function(method.key="euclidean");
-	{
-	ct.KEY = check.type(method.key);
-	if(!ct.KEY)	{ method.key = deparse(substitute(method.key)); }
-	
-	NORM = list(
-		"sum" = function(x) { x/sum(x); },
-		"manhattan" = function(x) { x/sum(abs(x)); },  		# L1
-		"euclidean" = function(x,k=2) { xa = abs(x); xam = max(xa); norm = xam * ( (sum((xa / xam)^k))^(1/k) ); x/norm; },  	# L2+ (overflow prevention
-		"min" = function(x) { x/min(x); },
-		"max" = function(x) { x/max(x); },
-		"length" = function(x) { x/length(x); },
-		"divide" = function(x,f) { x/f; },
-		"multiply" = function(x,f) { x*f; },
-		"reverse" = function(x, lo=min(x), hi=max(x) ) { (hi + lo) - x; },
-		"min-max" = function(x) { lo=min(x); hi=max(x); d = (hi-lo); ( x - lo) / d; },
-		"custom-range" = function(x, from=(min(x), max(x)), to=c(-1,1) ) { to[1] + diff(to) * (x-from[1]) / diff(from); },		
-		"z-scores" = function(x) { (x-mean(x))/sd(x); },
-		"m-scores" = function(x) { m = stats.median(x); (x-m)/stats.MAD(x, m=m); }
-		);
-		
-	# if ALL, return the LIST ... NULL ... otherwise just the function ... 
-	# load function into MATRIX call, so it is just looping ... not having to check which method ...
-
-	if(is.null(method.key)) { return (NORM); }
-	fn = NORM[[method.key]]; 
-	if(is.null(fn)) { return (NORM); }
-	fn;
-	}
-
-
-.norm = function(vec, method="sum", ...)
-	{
-	fn = fn.norm(method);
-	
-	
-	
-	if(method %in% c("divide", "multiply"))
-		{
-		if( !exists("f", inherits = FALSE ) )			
-			{ 
-			f = 1;
-			cat.warning(msg.missingParam("f",1));			
-			}		
-		return( fn(x, f=f) );
-		}
-	
-	if(method %in% c("euclidean"))
-		{
-		# return( fn(x, k=k) );
-		return( fn(x, ...) );
-		}
-	if(method %in% c("divide", "multiply"))
-		{
-		# return( fn(x, f=f) );
-		return( fn(x, ...) );
-		}
-	if(method %in% c("reverse"))
-		{
-		# return( fn(x, lo=lo, hi=hi) );
-		return( fn(x, ...) );
-		}
-	if(method %in% c("custom-range"))
-		{
-		# return( fn(x, from=from, to=to) );
-		return( fn(x, ...) );
-		}
-	fn(x);	
-	}	
-	
-prep.norm = function(method)
-	{
-	IN.init();
-	key = NULL;
-	# add is.null(key) && 
-	if(is.null(key) && METHOD %IN% c("Sum", "sum"))
-		{ key = "sum"; }
-	if(is.null(key) && METHOD %IN% c("Minimum", "min"))
-		{ key = "min"; }
-	if(is.null(key) && METHOD %IN% c("Maximum", "max"))
-		{ key = "max"; }
-	if(is.null(key) && METHOD %IN% c("Length", "length", "len"))
-		{ key = "length"; }
-	if(is.null(key) && METHOD %IN% c("Reverse-code", "reverse", "rev-cod", "rev-sco", "rev-lik"))
-		{ key = "reverse"; }
-	# # # bounded between [0,1] # # # 
-	if(is.null(key) && METHOD %IN% c("Minimum-Maximum", "minimum-maximum", "min-max", "max-min"))
-		{ key = "min-max"; }
-	if(is.null(key) && METHOD %IN% c("Custom-Range", "custom-range", "cus-ran", "r", "ran", "c-r"))
-		{ key = "custom-range"; }
-	if(is.null(key) && METHOD %IN% c("zScores", "z-scores", "zsc", "z", "z-s", "z-sco", "mea-sca", "sca"))	
-		{ key = "z-scores"; }
-	if(is.null(key) && METHOD %IN% c("mScores", "m-scores", "msc", "m", "m-s", "m-sco", "med-sco", "med-sca"))
-		{ key = "m-scores"; }
-	if(is.null(key) && METHOD %IN% c("Divide", "divide", "div"))
-		{ key = "divide"; }
-	if(is.null(key) && METHOD %IN% c("Multiply", "multiply", "mul"))
-		{ key = "multiply"; }
-	if(is.null(key) && METHOD %IN% c("Euclidean", "euclidean", "euc"))
-		{ key = "euclidean"; }
-	if(is.null(key) && METHOD %IN% c("Manhattan", "manhattan", "man", "abs", "abs-sum", "sum-abs"))
-		{ key = "manhattan"; }
-		
-		
-	if(is.null(key)) { key = "--NULL--"; }
-	
-	df = IN.df();
-	IN.clear();
-	minvisible(df, print=FALSE);
-	key = property.set("IN", key, df);
-	key;
-	}
-	
-	
-
-v.norm = function(vec, method="sum", ..., force.abs=FALSE, na.rm=TRUE, show.warning=na.rm)
-	{
-	METHOD = prep.arg(method, n=3, keep="-");
-	KEY = prep.distance(METHOD);
-	if(KEY == "--NULL--")
-		{
-		df = property.get("IN", KEY);
-		msg = msg.badOption("method", method, METHOD);	
-		cat("\n\n"); minvisible( df, print=TRUE ); cat("\n\n"); 
-		IN.clear();	
-		cat.stop(msg);
-		}
-	
-	vec = stats.warningNA(vec, show.warning=show.warning); 
-	if(force.abs) { vec = abs(vec); }
-	
-	.norm(vec, method, ...);
-	
-	if(method %in% c("divide", "multiply"))
-		{
-		if( !exists("f", inherits = FALSE ) )			
-			{ 
-			f = 1;
-			cat.warning(msg.missingParam("f",1));			
-			}		
-		return( fn(x, f=f) );
-		}
-	if(method %in% c("reverse"))
-		{
-		# these have defaults ...
-		return( fn(x, lo=lo, hi=hi) );
-		}
-	if(method %in% c("custom-range"))
-		{
-		# these have defaults ...
-		return( fn(x, from=from, to=to) );
-		}
-	
-	if(METHOD %IN% c("Euclidean", "euc")) 			# Euclidian norm
-		{		
-		# over/under flow 
-		# https://stackoverflow.com/a/63763823/184614
-		k = NULL;
-		if(is.null(k) && !is.null(lower)) { k = lower[1]; }
-		if(is.null(k) && !is.null(upper)) { k = upper[1]; }
-		if(is.null(k)) { k = 2; } # traditional Euclidean 
-		
-		# x = c(-8e+299, -6e+299, 5e+299, -8e+298, -5e+299)
-		# norm(x, type='2')
-
-		v.abs = abs(vec); v.max.abs = max(v.abs);		 
-		norm = v.max.abs * ( (sum(( v.abs / v.max.abs )^k))^(1/k) );
-		return( vec / norm ); 		
-		}
-	# equivalently just do "sum" norm with force.abs = TRUE 
-	if(METHOD %IN% c("Manhattan", "man", "abs", "abs-sum", "sum-abs"))		# Manhattan norm
-		{		
-		return( vec / (abs(sum(vec))) ); 		
-		}
-		 
-	msg = msg.badOption("method", method, METHOD);	
-	cat("\n\n"); minvisible( IN.df(), print=TRUE ); cat("\n\n"); 
-	IN.clear();	
-	cat.stop(msg);
-	}
-	
 
 # e = yt - y.hat
 # xls.RMSE(e) ... xls.ME ... xls.MAD ... xls.MPE ... xls.MAPE 
