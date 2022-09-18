@@ -1223,7 +1223,7 @@ fn.distance = function(method.key="euclidean");
 	# load function into MATRIX call, so it is just looping ... not having to check which method ...
 
 	if(is.null(method.key)) { return (LIST); }
-	fn = DISTANCE[[method.key]];
+	fn = DISTANCE[[method.key]]; 
 	if(is.null(fn)) { return (LIST); }
 	fn;
 	}
@@ -1326,7 +1326,7 @@ matrix.dist = function(m, method="euclidean", p=2)
 		cat.stop(msg);
 		}
 	
-	fn = fn.distance(KEY);
+	fn = fn.distance(as.character(KEY));
 	
 	n = nrow(m);
 	m.names = rownames(m);
@@ -1348,13 +1348,24 @@ matrix.dist = function(m, method="euclidean", p=2)
 
 v.dist = function(vec1, vec2, method="Euclidean", p=2, na.rm=TRUE, show.warning=na.rm)
 	{
-	METHOD = prep.arg(method, n=3, keep="-"); 
 	# why call the function if you have na ... ?
 	vec1_ = stats.warningNA(vec1, show.warning=show.warning); 
 	vec2_ = stats.warningNA(vec2, show.warning=show.warning); 
 	if(length(vec1_) != length(vec2_)) { stop("vector lengths are unqueal!"); }
+
+	METHOD = prep.arg(method, n=3, keep="-");
+	KEY = prep.distance(METHOD);
+	if(KEY == "--NULL--")
+		{
+		df = property.get("IN", KEY);
+		msg = msg.badOption("method", method, METHOD);	
+		cat("\n\n"); minvisible( df, print=TRUE ); cat("\n\n"); 
+		IN.clear();	
+		cat.stop(msg);
+		}
 	
-	return(.dist(vec1_,vec2_, method=method, p=p);
+	
+	return(.dist(vec1_,vec2_, method=as.character(KEY), p=p);
 	}
 
 
