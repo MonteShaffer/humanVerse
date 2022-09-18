@@ -112,8 +112,8 @@ num.SIunits = function(which="regular")
 		
 	m = c(1, 2, 3, 6, 9, 12, 15, 18, 21, 24);
 	m = c(-1*m, 0, m);
-		my.names = c( c("deci", "centi", "milli", "micro", "nano", "pico", "femto", "atto", "zepto", "yocto"), c("~BASE~"), c("deka", "hecto", "kilo", "mega", "giga", "tera", "peta", "exa", "zetta", "yotta") ); 
-		my.single = c( c("d", "c", "m", "µ", "n", "p", "f", "a", "z", "y"), c("~"), c("da", "h", "k", "M", "G", "T", "P", "E", "Z", "Y") );
+		my.names = c( c("deci", "centi", "milli", "micro", "nano", "pico", "femto", "atto", "zepto", "yocto"), c(".BASE."), c("deka", "hecto", "kilo", "mega", "giga", "tera", "peta", "exa", "zetta", "yotta") ); 
+		my.single = c( c("d", "c", "m", "µ", "n", "p", "f", "a", "z", "y"), c("."), c("da", "h", "k", "M", "G", "T", "P", "E", "Z", "Y") );
 	mdf = as.data.frame(cbind(m, my.names, my.single));
 		mdf$m = as.integer(mdf$m);
 		# order by m (ASC) 
