@@ -413,14 +413,19 @@ IN = function(KEY, VALUE, mem.key = "-CURRENT_IN-")
 	# parse key/val ... get what we want 
 	# key is envir 
 	# val is call with parameters 
-	res = list("envir" = key, "call" = val);
-	
+	# 
+
+	fn = sys.calls()[[sys.nframe()-1]];  # close 
+	finfo = parse.syscall(fn);
+ 
+	res = list("envir" = key, "call" = val, "fn.info" = finfo);
+		
 	WHERE=parent.frame(1); # or WHERE = env?
 	assign("THIS", res, envir=WHERE );
 	}
 	
 "%THIS%" = .THIS.; 
- 
+  
  
  
  

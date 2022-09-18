@@ -23,20 +23,54 @@ magicFunction = function(KEY, to="character")
 	}
 	
 	
-
-v.mathWrap = function(vec=c("#abcdef","#123456"),  FUN.pre="hex2dec", FUN="mean", FUN.post="dec2hex")
-	{ 
-	.%THIS%. ;  minvisible(THIS); # this gives me sys.call and envir
+parse.syscall = function(syscall)
+	{
+	str = lang2str(syscall);
+	info = str.explode("(" , str);
+	fn = str.trim(info[1]);
+		f 	 = as.list(formals(fn));
+		keys = names(f);
+		vals = as.character(f);		
+		
+	# put everything back but the function call 
+	nstr = str.implode("(", info[-c(1)] );
+	nstr = str.replace(")", "", nstr);
+	ninfo = str.trim(str.explode("," , nstr));
 	
-	info = str.trim(str.replace(")","", str.explode(',' , lang2str( sys.call(1) ))));
-dput(info);
+	# missing = v.return(set.diff(keys, ninfo));
+	# I don't know what are missing, maybe howMany 
+	missing = length(keys) - length(ninfo);
+	
+	list(
+		"fn" = fn, 
+		"params" = ninfo, 
+		"missing" = missing, 
+		"formals" = list("keys" = keys, "vals"=vals)
+		);
+	}
+   
+v.mathWrap = function(vec,  FUN.pre, FUN, FUN.post)
+	{ 
+	.%THIS%. ;  minvisible(THIS, print=FALSE); # this gives me sys.call and envir
+	# fn = match.call()[[1]]; 
+	
+		
+	
+				# make this a generic message
+	if(THIS$fn.info$missing > 0) { print(str(THIS)); stop("looks like you have a [1] missing param in functon"); }
+	params = THIS$fn.info$params;
+
+
+dput(THIS$fn.info);
 	
 	# takes input [whether a str/obj] and returns a string.
-	fn.pre = magicFunction( eval(info[2]), "character");
-dput(fn.pre);
-	fn = magicFunction( eval(info[3]) , "character");
+	# at this point, it is a string ... don't need to call magicFunction
+	# 
+	fn.pre = magicFunction( (params[2]), "character");
+dput(fn.pre); 
+	fn = magicFunction( eval(params[3]) , "character");
 dput(fn);	
-	fn.post = magicFunction( eval(info[4]), "character");
+	fn.post = magicFunction( eval(params[4]), "character");
 dput(fn.post);
 
 	# get to the main event 
