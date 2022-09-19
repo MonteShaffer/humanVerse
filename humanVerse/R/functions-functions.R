@@ -77,6 +77,9 @@ debug = FALSE;
 f.methods = function.methods;
 
 
+
+
+
 # uses match.fun ... can't separate "by base"
 # function.findOnStack ... vs function.findInHelp
 function.find = function(..., character.only=FALSE)

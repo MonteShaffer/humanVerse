@@ -141,3 +141,42 @@ memory.append = function(key, MEMORY="BASE", value)
 	
 	
 
+
+
+
+minvisible.get = function(key="LAST")
+	{
+	memory.get(key, "-MINVISIBLE-");
+	}
+
+minvisible = function(x, key="LAST", display=TRUE)
+	{
+	memory.set(key, "-MINVISIBLE-", x);
+	# also store to ANS variable ... 
+	# I could do ANS = Ans = x;   ANS %GLOBAL%. ; Ans %GLOBAL%. ;
+	# ANS %GLOBAL% x;  # undefined ANS ... treated as "." (dot)
+	"ANS" %GLOBAL% x; 
+	"Ans" %GLOBAL% x; 
+	
+	
+	ct.DISPLAY = check.type(display);
+	if(!ct.DISPLAY || !is.character(display))	
+		{ 
+		display = deparse(substitute(display)); 
+		display = prep.arg(display, n=3);
+		}
+	# str may be object ... str may be a var in GLOBAL ... str="hello world";
+# dput(display);
+	has.displayed = NULL;
+	if(is.null(has.displayed) && display == "str") 
+		{ (has.displayed = print(str(x)) ); }
+	if(is.null(has.displayed) && display == TRUE) 
+		{ (has.displayed = print(x) ); }	
+
+	
+	invisible(x);	
+	}
+
+
+
+

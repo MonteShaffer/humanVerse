@@ -51,22 +51,19 @@ are.functions = function(..., suggestion=TRUE)
 # base::is.function only works on non-string?
 # exists is the reverse, only on a string, not a non-string 
 # overwriting/extending base::
-is.function = function(fn)
-	{
-debug = FALSE;
-dput(fn);
-	# is.function(match.fun("outer"))
-	if(is.character(fn)) 
-		{ 
-		x = suppressError( match.fun(fn), show.notice=debug, msg="debug is.function");
-		if(is.error(x)) { return(FALSE); }  # should be TRUE otherwise 
-		base::is.function(x);
-		} else { base::is.function(fn); }
-	}
-	
-#' @rdname function.exists
-#' @export
-function.exists = is.function;
+#> base::is.function(sum)
+#[1] TRUE
+#> base::is.function("sum")
+#[1] FALSE
+#> base::is.function(base::sum)
+#[1] TRUE
+#> base::is.function("base::sum")
+#[1] FALSE
+ 
+### let it be, no collision ... just use check.fn(..., 
+### check.fn = function(..., character.only = FALSE, check.match=TRUE)
+
+
 
 
 

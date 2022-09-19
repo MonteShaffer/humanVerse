@@ -585,65 +585,8 @@ charCode = function(svec)
 
 
 
-prep.eval = function(value)
-	{
-	nv = length(value);
-	if(is.character(value) && nv==1) 
-		{ 
-		value = paste0('"',value,'"'); 
-		} else { 
-				value = deparse(value);
-				}
-	value;
-	}
-
-eval.fromTemplate = function(TEMPLATE, key, value)
-	{
-	TEMPLATE = str.replace("{key}", key, TEMPLATE);
-	
-	value = prep.eval(value);
-	
-	# str.replace failed here trying to be smart ... force=1
-	TEMPLATE = gsub("{value}", value, TEMPLATE, fixed=TRUE);
-	
-	eval(parse(text=TEMPLATE));
-	}
 
 	
-
-
-minvisible.get = function(key="LAST")
-	{
-	memory.get(key, "-MINVISIBLE-");
-	}
-
-minvisible = function(x, key="LAST", display=TRUE)
-	{
-	memory.set(key, "-MINVISIBLE-", x);
-	# also store to ANS variable ... 
-	# I could do ANS = Ans = x;   ANS %GLOBAL%. ; Ans %GLOBAL%. ;
-	# ANS %GLOBAL% x;  # undefined ANS ... treated as "." (dot)
-	"ANS" %GLOBAL% x; 
-	"Ans" %GLOBAL% x; 
-	
-	
-	ct.DISPLAY = check.type(display);
-	if(!ct.DISPLAY || !is.character(display))	
-		{ 
-		display = deparse(substitute(display)); 
-		display = prep.arg(display, n=3);
-		}
-	# str may be object ... str may be a var in GLOBAL ... str="hello world";
-# dput(display);
-	has.displayed = NULL;
-	if(is.null(has.displayed) && display == "str") 
-		{ (has.displayed = print(str(x)) ); }
-	if(is.null(has.displayed) && display == TRUE) 
-		{ (has.displayed = print(x) ); }	
-
-	
-	invisible(x);	
-	}
 
 
 magicFunction = function(KEY, to="character")
@@ -664,9 +607,14 @@ magicFunction = function(KEY, to="character")
 	if(ct.KEY) { return(KEY); } # already an object ...
 	
 	# I have a string ... and need an object 
-	return( eval(parse(text = KEY)) );
+	# lets create a NULL one ...
+	# str = paste0(prep.evalKey(KEY), " = character(0); ");
+	# eval(parse(text = str))
+	 
+	# return( eval(parse(text = KEY)) );
 	
-	stop("how did I get here");
+	#stop("how did I get here");
+	# doesn't exist, so let's just return NULL 
 	return(NULL);
 	}
 	 
@@ -716,21 +664,6 @@ as.type = function(vals, types="character", ...)
 #' @export
 as.Type = as.type;
 
-
-
-
-check.type = function(...)
-	{
-debug = FALSE;
-	checktype = suppressError( typeof(...), 
-								show.notice=debug,
-								msg="debugging typeof check.type REGULAR" 
-							);
-	res = TRUE;
-	if(is.error(checktype)) { res = FALSE; }
-	res = property.set("typeof", res, checktype);
-	res;
-	}
 
 
 
