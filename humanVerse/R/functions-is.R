@@ -166,7 +166,9 @@ is.error = function(e, where="suppressError")
 # strV = "stringi", 
 is.library = function(..., suggestion=TRUE, character.only = FALSE)
 	{
-	pkgs = prep.dots(..., collapse=character.only, has.objects=!character.only, default="stringi");	
+	pkgs = prep.dots(..., collapse=character.only, has.objects=!character.only, default="stringi");
+	if(!character.only) { pkgs = as.character(pkgs); }
+	
 	n = length(pkgs);
 	res = logical(n);
 	for(i in 1:n)

@@ -3,43 +3,99 @@
 # str(dcf.get(tibble)); 
 dcf.get = function(..., return="list", character.only = FALSE)
 	{ 
+	RETURN = prep.arg(return, 1);
 debug = FALSE;
 	pkgs = prep.dots(..., collapse=character.only, has.objects=!character.only, default="stringi");
-dput(pkgs); stop("monte");
+	if(!character.only) { pkgs = as.character(pkgs); }
 
-	idx = is.library(pkgs, character.only = TRUE);
-	bad = v.return(pkgs[!idx]);
-		if(!is.null(bad)) { cat.warning("\n\n", "bad package names: maybe not installed", bad, "\n\n"); }
-	good = v.return(pkgs[idx]);
-		if(is.null(good)) { cat.stop("no good packages"); }
-dput(pkgs);
+	# if not pkg true name, character.only
+	idx = check.pkgs(pkgs, character.only = TRUE);
+		if(is.null(idx)) { cat.stop("no good packages"); }
+	good = pkgs[idx];
+dput(good);
 
-
-
-
-
-	# univariate, string or obj input
-	pkg = str.fromObjectName(...);
-	RETURN = prep.arg(return, 1);
-	pkg.ns = suppressError( getNamespace(pkg), show.notice=debug, msg="debug dcf.get ");
-	if(is.error(pkg.ns)) { return(NULL); }
-	# CACHING mechanism as JSON files
+	n = length(good);
+	badns = NULL;
+	res = list();
+	for(i in 1:n)
+		{
+		pkg = good[i];
+		pkg.ns = suppressError( getNamespace(pkg), show.notice=debug, msg="debug dcf.get ");
+		if(is.error(pkg.ns)) { badns = c(badns, pkg); next; }		
+		# CACHING mechanism as JSON files
 	
-	# get the data 
-	h = help.get(pkg); dcf = dcf.parse( h$info[[1]] );
-	if(RETURN == "j") { json = JSON.stringify(dcf); return(dcf); }
-	dcf;
+		# get the data 
+		h = help.get(pkg); dcf = dcf.parse( h$info[[1]] );
+		if(RETURN == "j") { json = JSON.stringify(dcf); return(dcf); }
+		dcf;
+		}
+		
+	list.return(res);
 	}
 
 
+check.ns = function(..., character.only=FALSE)
+	{
+	pkgs = prep.dots(..., collapse=character.only, has.objects=!character.only, default="stringi");
+	if(!character.only) { pkgs = as.character(pkgs); }
+debug = FALSE;
+	n = length(pkgs);
+	idx = logical(n); # FALSE by default 
+	for(i in 1:n)
+		{
+		pkg = pkgs[i];
+		pkg.ns = suppressError( getNamespace(pkg), 
+									show.notice=debug, 
+									msg="debug dcf.get "
+							);
+		if(!is.error(pkg.ns)) { idx[i] = TRUE; }	 
+		}
+	bad = v.return(pkgs[!idx]);
+		if(!is.null(bad)) { cat.warning("\n\n", "bad package names spaces: maybe not installed", bad, "\n\n"); }
+	idx;	
+	}
+
+
+# this works 
+# environmentName(getNamespace("stringi"))
 
 
 
+check.pkg = function(..., character.only=FALSE, name.space=TRUE)
+	{
+	pkgs = prep.dots(..., collapse=character.only, has.objects=!character.only, default="stringi");
+	if(!character.only) { pkgs = as.character(pkgs); }
+	
+	# if not pkg true name, character.only
+	idx = fidx = is.library(pkgs, character.only = TRUE);
+		# is.library alreayd has a warning ... 
+	bad = v.return(pkgs[!idx]);
+		if(!is.null(bad)) { cat.warning("\n\n", "bad package names: maybe not installed", bad, "\n\n"); }
+		
+	if(name.space)
+		{
+		idx2 = check.ns(pkgs, character.only = TRUE);
+		fidx = (idx & idx2);
+		}	
+		
+	v.return(fidx);
+	}
 
 # dcf.getKey(tibble, "Version");
 # dcf.getKey("tibble", "Version");
 dcf.getKey = function(..., key = "Version")
 	{
+	pkgs = prep.dots(..., collapse=character.only, has.objects=!character.only, default="stringi");
+	if(!character.only) { pkgs = as.character(pkgs); }
+	
+# TODO, update this ... allow multiple keys ... dataframe regarless
+# rows are pkgs, cols are keys ... 
+# easier way to get DESCRIPTION file 
+# maybe a wrapper function with a CHOICE ... 
+# help.get ... go to the folder, go to the web ... SO had another idea, I forget
+
+
+stop("monte: update this");
 	pkg = str.fromObjectName(...);
 	# key = tolower(key); # maybe do a pmatch?
 	# h = help.get(pkg); dcf = dcf.parse( h$info[[1]] ); 
