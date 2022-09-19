@@ -93,9 +93,9 @@ debug = FALSE;
 		{
 		obj = objs[i];
 		o.obj = suppressError( eval(parse(text = obj)), 
-									show.notice=debug, 
-									msg="debug check.obj ... eval "
-							);
+										show.notice=debug, 
+										msg="debug check.obj ... eval "
+								);
 		if(is.error(o.obj)) { next; }
 		idx[i] = TRUE;
 		}
