@@ -80,9 +80,8 @@ check.lang = function(str)
 	
 # was wrap.lang 
 prep.msg = function(...,  type="msg", out="paste0", sep=" ")
-	{
-	
-	str = dots.addTo(NULL, ...); 
+	{	
+	str = prep.dots(...);
 	str = check.ansi(str);
 	str = check.lang(str);
 		# append res = property.set("msg.type", res, "message or notice or warning 3 or error");

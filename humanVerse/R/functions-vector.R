@@ -1,66 +1,4 @@
-magicFunction = function(KEY, to="character")
-	{
-	TO = prep.arg(to, n=4);
-	
-	key = NULL;
-	ct.KEY = check.type(KEY);
-	if(!ct.KEY || !is.character(KEY) )	
-		{ key = deparse(substitute(KEY)); }  # valid objects are stringed
-		
-	if(TO == "char")
-		{
-		if(is.null(key))  { return(KEY); }
-		if(!is.null(key)) { return(key); }
-		} 
-	
-	if(ct.KEY) { return(KEY); } # already an object ...
-	
-	# I have a string ... and need an object 
-	return( eval(parse(text = KEY)) );
-	
-	stop("how did I get here");
-	return(NULL);
-	}
-	
-	
-parse.syscall = function(syscall)
-	{
-	str = lang2str(syscall);
-	info = str.explode("(" , str);
-	fn = str.trim(info[1]);
-		f 	 = as.list(formals(fn));
-		keys = names(f);
-		vals = as.character(f);		
-		
-	# put everything back but the function call 
-	nstr = str.implode("(", info[-c(1)] );
-	nstr = str.replace(")", "", nstr);
-	ninfo = check.list(str.explode('=', str.trim(str.explode("," , nstr))));
-	n = length(ninfo);
-	pkeys = str.replace('"', "", str.trim(list.getElements(ninfo, 1)));
-	pvals = str.trim(list.getElements(ninfo, 2));
-	params = list();
-	for(i in 1:n)
-		{
-		pval = pvals[i];
-		if(!is.na(pval))
-			{
-			params[[ pkeys[i] ]] = eval(parse(text=pval));
-			}
-		# params[[ pkeys[i] ]] = NA;  # you can't always trap NULL ... 
-		} 
-		
-	missing = length(keys) - length(pkeys);
-	
-	list(
-		"fn" = fn, 
-		"pkeys"  = pkeys,
-		"params" = params, 
-		"missing" = missing, 
-		"formals" = f
-		);
-	}
-   
+ 
 # v.chain(vec, hex2dec, mean, dec2hex, hex.prepend)
 v.chain = function(vec, ...)   
 	{ 
@@ -110,23 +48,61 @@ v.match = function(a, B.len, B.nam)
 
 
 # this is multivariate ... 
-v.types = function(vecs, ...)
+#v.types = function(vecs, ...)
+v.types = function(...) 
 	{
-	# vecs = dots.addTo(vecs, ...);
-	n = length(vecs);
+	# vecs = dots.addTo(vecs, ...);  # this should work ... 
+	vecs = prep.dots(..., collapse=FALSE);
+
+cat("\n\n\n");
+dput(vecs);
+cat("\n\n\n");
+
+	n = length(vecs);  # list of vectors with names 
 	res = character(n);
 	for(i in 1:n)
 		{
-		vec = vecs[i];
+		vec = vecs[[i]];
 		if(is.list(vec)) { vec = vecs[ , i]; } # dataframe
 		res[i] = v.type(vec);
 		}
+	names(res) = names(vecs);
 	return(res);	
 	}
 
 
 
 
+
+
+v.shortTypes = function(types, force.odd=TRUE)
+	{
+	n = length(types);
+	res = character(n);
+	for(i in 1:n)
+		{
+		type = types[i];
+		# SWITCH is ***NOT*** multivariate 
+		res[i] = switch(type,					  			
+							"character" = "<char>",
+							"factor"	= "<factor>",
+							"integer"	= "<int>",
+							"POSIXlt"	= "<POSIXlt>",
+							"POSIXct"	= "<POSIXct>",
+							"Date"		= "<Date>",
+							"function"	= "<function>",							
+				paste0("<",type,">")		# DEFAULT
+				);
+
+		if(force.odd)
+			{
+			rn = str.len(res[i]);
+			if(rn %% 2 == 0) { res[i] = str.replace("<"," <",res[i]); }
+			}
+		}
+	res;
+	}
+	
 
 
 # this is univariate
@@ -652,7 +628,8 @@ v.between = function(vec, lower, upper,
 							lower.equal = TRUE,
 							upper.equal = TRUE,
 							by = "value",
-							return = "vector")
+							return = "vector"							
+					)
 	{
 debug = FALSE;
 	# OPERATES on vec not IDX of vector ... 1:length(vec) to do index ... 
@@ -778,12 +755,13 @@ v.which = function(vec, what="", invert=FALSE)
 		idx = which(vec == what); 
 		}
 		
-	if(invert) { idx = v.invert(vec,idx); }
+	if(invert) { idx = v.invert(vec,idx, invert=invert); }
 	v.return(idx);
 	}
 
-v.invert = function(vec, idx)
+v.invert = function(vec, idx, invert=TRUE)
 	{
+	if(!invert) { v.return(idx); }
 	IDX = 1:length(vec); idx = IDX[-c(idx)];
 	v.return(idx);
 	}
@@ -796,278 +774,6 @@ v.remove = function(vec, what="", invert=FALSE)
 	}
 	 
 	 
-prep.distribution = function(METHOD)
-	{
-	IN.init();
-	key = NULL;
-	if(is.null(key) && METHOD %IN% c("Uniform Distribution", "unif", "unif-dist")) 
-		{ key = "unif"; }
-	if(is.null(key) && METHOD %IN% c("Normal Distribution",  "norm", "norm-dist")) 
-		{ key = "norm"; }
-	if(is.null(key) && METHOD %IN% c("t Distribution",  "t", "stud-t", "t-dist")) 
-		{ key = "t"; }
-	if(is.null(key) && METHOD %IN% c("F Distribution",  "f", "f-dist")) 
-		{ key = "f"; }
-	if(is.null(key) && METHOD %IN% c("Chi-Squared Distribution",  "chisq", "chi-squa", "chi-dist")) 
-		{ key = "chisq"; }
-	if(is.null(key) && METHOD %IN% c("Beta Distribution",  "beta", "beta-dist")) 
-		{ key = "beta"; }
-	if(is.null(key) && METHOD %IN% c("Gamma Distribution",  "gamma", "gamm", "gamm-dist")) 
-		{ key = "gamma"; }
-	if(is.null(key) && METHOD %IN% c("Cauchy Distribution",  "cauchy", "cauc", "cauc-dist")) 
-		{ key = "cauchy"; }
-	if(is.null(key) && METHOD %IN% c("Exponential Distribution",  "exp", "expo", "exp-dist", "expo-dist")) 
-		{ key = "exp"; }
-	if(is.null(key) && METHOD %IN% c("Binomial Distribution",  "binom", "bino", "bino-dist")) 
-		{ key = "binom"; }
-	if(is.null(key) && METHOD %IN% c("Negative-Binomial Distribution",  "nbinom", "nbin", "nbin-dist", "nega-bino-dist", "neg-bino", "neg-bin", "neg-bino-dist", "neg-bin-dist")) 
-		{ key = "nbinom"; }
-	if(is.null(key) && METHOD %IN% c("Poisson Distribution",  "pois", "pois-dist")) 
-		{ key = "pois"; }
-	if(is.null(key) && METHOD %IN% c("Log-Normal Distribution",  "lnorm", "lnor", "lnor-dist", "logo-norm", "logo-norm-dist", "log-", "log-norm", "log-norm-dist")) 
-		{ key = "lnorm"; }
-		
-	if(is.null(key) && METHOD %IN% c("Multinomial Distribution",  "multinom", "mult", "mult-dist", "mult-nom", "mult-nomi")) 
-		{ key = "multinom"; }
-	if(is.null(key) && METHOD %IN% c("Logistic Distribution",  "logis", "logi", "logi-dist")) 
-		{ key = "logis"; }
-		
-	if(is.null(key) && METHOD %IN% c("Weibull Distribution",  "weibull", "weib", "weib-dist")) 
-		{ key = "weibull"; }
-		
-	if(is.null(key) && METHOD %IN% c("Geometric Distribution",  "geom", "geom-dist")) 
-		{ key = "geom"; }
-	if(is.null(key) && METHOD %IN% c("HyperGeometric Distribution",  "hyper", "hype", "hype-dist","hype-geo", "hype-geom", "hype-geo-dist", "hype-geom-dist")) 
-		{ key = "hyper"; }
-		
-	if(is.null(key) && METHOD %IN% c("Signed Rank (Wilcoxon) Distribution",  "signrank", "sign", "sign-dist", "sign-rank", "sign-rank-dist")) 
-		{ key = "signrank"; }
-		
-	if(is.null(key) && METHOD %IN% c("Wilcoxon Rank Sum Distribution",  "wilcox", "wilc", "wilc-dist", "wilc-rank-dist", "wilc-rank-sum-dist", "wilc-sum-dist")) 
-		{ key = "wilcox"; }
-
-	## only has an rWishart function ...
-	if(is.null(key) && METHOD %IN% c("Wishart Distribution",  "Wishart", "wish", "wish-dist")) 
-		{ key = "Wishart"; }
-							
-
-	
-	if(is.null(key)) { key = "--NULL--"; }
-	
-	df = IN.df();
-	IN.clear();
-	minvisible(df, print=FALSE);
-	key = property.set("IN", key, df);
-	key;
-	}
-	
-	
-	
-# call-list ... do.call()
-prep.clist = function(clist, dots)
-	{
-	keys = names(dots);
-	vals = unname(dots);
-	nk = length(keys);
-	for(i in 1:nk)
-		{
-		key = keys[i]; val = unlist(vals[i]);  # vectored?
-		clist[[key]] = val;
-		}
-	clist;
-	}
-
-
-# complement of ERF 
-ERF.C = function(z, ...)
-	{
-	# pracma::erfc ... 2*pnorm(-sqrt(2)*x)
-	z = dots.addTo(z, ...);
-	1 - ERF(z);	
-	}
-	
-ERF = function(z, ...) 
-	{
-	z = dots.addTo(z, ...);
-	if(!is.complex(z)) 
-		{ 
-		z = math.cleanup(z);
-		# erf (−z) = −erf z 
-		# math.sign just calls cleanup ... 
-		erf = sign(x) * pchisq(2 * z^2, 1);
-		return(erf);
-		}
-	# if complex, where was that code ...
-	stop("TODO: complex, where was that code??? Taylor Series?");
-	}
-	
-ERF.inv = function(zinv, ...) 
-	{
-	# inverse in [-1,1] nicely
-	zinv = dots.addTo(zinv, ...);
-	if(!is.complex(zinv)) 
-		{ 
-		zinv = math.cleanup(zinv);
-		 
-		zinv.abs = abs(zinv);
-		
-		zinv = v.toNA(zinv, (zinv.abs > 1));
-		erfinv = sign(zinv) * sqrt(qchisq(zinv.abs, 1)/2);
-
-		return(erfinv);
-		}
-	# if complex, where was that code ...
-	# pracma::erfz?
-	stop("TODO: complex, where was that code??? Taylor Series?");
-	# extend the taylor series ... better precisions?  Adebo bug? what was it?
-	}
-
-
-
-# what is erfi?  imaginary but not complex?
-
-	
-ERF.fn = function() {}
-ERF.num = function() {} # numerical integration?
-
-
-
-
-PDF.inv = function() {} 
-PDF.fn = function() {}
-
-
-PDF = function(x, method="norm", ...)
-	{
-	# probability density function ... height at point x ... 
-	dots = match.call(expand.dots = FALSE)$...
-	clist = list(x=x); 
-	if(!is.null(dots)) 
-		{
-		dots = list(...);
-		clist = prep.clist(clist, dots);
-		}
-	ct.method = check.type(method);
-	if(!ct.method || !is.character(method)) 
-		{ method = deparse(substitute(method)); }
-	METHOD = prep.arg(method, n=4, keep="-");
-	# http://127.0.0.1:23214/library/stats/html/Distributions.html
-		
-	KEY = prep.distribution(METHOD);
-	if(KEY == "--NULL--")
-		{
-		df = property.get("IN", KEY);
-		msg = msg.badOption("method", method, METHOD);	
-		cat("\n\n"); minvisible( df, display=TRUE ); cat("\n\n"); 
-		IN.clear();	
-		cat.stop(msg);
-		}
-	fn.name = paste0("d", as.character(KEY));
-	
-	
-	res = do.call(fn.name, clist);	
-	res = property.set("params", res, clist);
-	res = property.set("fn.name", res, fn.name);
-	minvisible(res, print="str");
-	invisible(res);
-	}
-
-
-CDF.fn = function() {}
-
-CDF = function(q, method="norm", ...)
-	{
-	# cumulative distribution function ... cumulative area from -Inf to x 
-	dots = match.call(expand.dots = FALSE)$...
-	clist = list(q=q); 
-	if(!is.null(dots)) 
-		{
-		dots = list(...);
-		clist = prep.clist(clist, dots);
-		}
-	ct.method = check.type(method);
-	if(!ct.method || !is.character(method)) 
-		{ method = deparse(substitute(method)); }
-	METHOD = prep.arg(method, n=4, keep="-");
-	# http://127.0.0.1:23214/library/stats/html/Distributions.html
-		
-	KEY = prep.dist(METHOD);
-	if(KEY == "--NULL--")
-		{
-		df = property.get("IN", KEY);
-		msg = msg.badOption("method", method, METHOD);	
-		cat("\n\n"); minvisible( df, display=TRUE ); cat("\n\n"); 
-		IN.clear();	
-		cat.stop(msg);
-		}
-	fn.name = paste0("p", as.character(KEY));
-	
-	res = do.call(fn.name, clist);	
-	res = property.set("params", res, clist);
-	res = property.set("fn.name", res, fn.name);
-	minvisible(res, print="str");
-	invisible(res);
-	}
-	
-
-CDF.inv = function(p, method="norm", ...)
-	{
-	# inverse cumulative distribution function ...
-	#	cumulative area from -Inf to x 
-	# give me the area (a as probability [0,1]), I will give you the x value 
-	dots = match.call(expand.dots = FALSE)$...
-	clist = list(p=p); 
-	if(!is.null(dots)) 
-		{
-		dots = list(...); 
-		clist = prep.clist(clist, dots);
-		}
-	ct.method = check.type(method);
-	if(!ct.method || !is.character(method)) 
-		{ method = deparse(substitute(method)); }
-	
-	METHOD = prep.arg(method, n=4, keep="-");
-	# http://127.0.0.1:23214/library/stats/html/Distributions.html
-		
-	KEY = prep.dist(METHOD);
-	if(KEY == "--NULL--")
-		{
-		df = property.get("IN", KEY);
-		msg = msg.badOption("method", method, METHOD);	
-		cat("\n\n"); minvisible( df, display=TRUE ); cat("\n\n"); 
-		IN.clear();	
-		cat.stop(msg);
-		}
-	fn.name = paste0("q", as.character(KEY));
-	# https://www.stat.umn.edu/geyer/old/5101/rlook.html
-	
-	# dnorm is "mean" not "mu" ... how to trap this and deliver SMARTLY?
-	
-	res = do.call(fn.name, clist);	
-	res = property.set("params", res, clist);
-	res = property.set("fn.name", res, fn.name);
-	minvisible(res, print="str");
-	invisible(res);
-	}
-	
-
-
-CDF.between = function(p.lower, p.upper, method="norm", ...)
-	{
-	ct.method = check.type(method);
-	if(!ct.method || !is.character(method)) 
-		{ method = deparse(substitute(method)); }
-	
-	
-	lower = CDF(p.lower, method=method, ...);
-	upper = CDF(p.upper, method=method, ...);
-	
-	res = as.numeric(upper-lower);
-	
-	minvisible(res, print="str");
-	invisible(res);
-	}
-
 
 
 stats.test = function(X.stat, method="norm", ..., tail="both", alpha=0.05)
@@ -1178,46 +884,16 @@ v.fill = function(vec, to.length=5, with=NA)
 
 
 
-
-v.shortTypes = function(types, force.odd=TRUE)
+v.nearest = function(vec, what, howmany=1, invert=FALSE)
 	{
-	n = length(types);
-	res = character(n);
-	for(i in 1:n)
-		{
-		type = types[i];
-		# SWITCH is ***NOT*** multivariate 
-		res[i] = switch(type,					  			
-							"character" = "<char>",
-							"factor"	= "<factor>",
-							"integer"	= "<int>",
-							"POSIXlt"	= "<POSIXlt>",
-							"POSIXct"	= "<POSIXct>",
-							"Date"		= "<Date>",
-							"function"	= "<function>",							
-				paste0("<",type,">")		# DEFAULT
-				);
-
-		if(force.odd)
-			{
-			rn = str.len(res[i]);
-			if(rn %% 2 == 0) { res[i] = str.replace("<"," <",res[i]); }
-			}
-		}
-	res;
-	}
-	
-
-v.nearest = function(vec, what, howmany=1)
-	{
-	idx = v.nearestIDX(vec, what, howmany=howmany);
+	idx = v.nearestIDX(vec, what, howmany=howmany, invert=invert);
 	vec[ idx ];
 	}
 
 
 
 
-v.nearestIDX = function(vec, what, howmany=1)
+v.nearestIDX = function(vec, what, howmany=1, invert=FALSE)
 	{
 	vec.dev = abs(what-vec); 			# deviation
 	idx.min = stats.whichMin(vec.dev);	# minimum
@@ -1354,9 +1030,9 @@ v.stack = function(max.size=Inf,
 
 
 ## do push/pop with FIFO
-v.push = function(val, ..., key="-CURRENT_STACK-")
+v.push = function(..., key="-CURRENT_STACK-")
 	{
-	val = dots.addTo(val, ...);
+	val = prep.dots(...);
 	mem = memory.get(key, "STACK");
 	if(is.null(mem)) { stop("You need to configure stack with v.stack() first!"); }
 # dput(mem);	

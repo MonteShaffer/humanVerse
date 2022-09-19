@@ -263,6 +263,11 @@ list.getLengths = function(info)
 	}
 
 
+
+
+list.fill = function() {} 
+list.truncate = function() {}
+
 list.truncateLength = function(info, n)
 	{	 
 	dput(info);

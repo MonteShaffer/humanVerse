@@ -332,7 +332,7 @@ cutMe = function(x, qs, type=1, lower.equal=TRUE)
 #'
 #' @return
 #' @export
-cutN = function(x, ..., n=2)
+cutN = function(..., n=2)
 	{
 	more = unlist(list(...));
 	x = c(x, more);

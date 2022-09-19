@@ -9,12 +9,12 @@ is.Inf = is.infinite;
 is.formula = function() {}
 # is.model?
 
-is.prime = function(x, ..., optimus=FALSE)
+is.prime = function(..., optimus=FALSE)
 	{
 	# I could do bits.prime and do a "match" ...
 	# this is saying "include optimus in search"
 	# NA will be a problem 
-	x = dots.addTo(x, ...);
+	x = prep.dots(...);	
 	idx = 1; if(optimus) { idx = 2; }
 	factors = prime.factors(x, optimus=optimus);
 	nf = length(factors);
@@ -31,10 +31,11 @@ is.prime = function(x, ..., optimus=FALSE)
 
 
 
-are.functions = function(fnV = "sum", ..., suggestion=TRUE)
+# fnV = "sum",
+are.functions = function(..., suggestion=TRUE)
 	{
 	# if I make multivariate, must be string input ... 
-	fnV = dots.addTo(fnV, ...);
+	fnV = prep.dots(...);
 	n = length(fnV);
 	res = logical(n);
 	for(i in 1:n)
@@ -182,10 +183,11 @@ is.library = function(str = "stringi", suggestion=TRUE)
 	}
 
 
-are.libraries = function(strV = "stringi", ..., suggestion=TRUE)
+# strV = "stringi", 
+are.libraries = function(..., suggestion=TRUE)
 	{
 	# if I make multivariate, must be string input ... 
-	strV = dots.addTo(strV, ...);
+	strV = prep.dots(...);	
 	# make multivariate?
 	n = length(strV);
 	res = logical(n);
@@ -420,10 +422,10 @@ empty = is.empty;
 #' is.wholeNumber(rpois(5,1));
 #'
 is.wholeNumber = function() {}
-is.wholeNumber = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
+is.wholeNumber = function(..., tol = sqrt(.Machine$double.eps), part="Re")
   {
   # See ?is.integer
-  x = dots.addTo(x, ...);
+  x = prep.dots(...);
   x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
   abs(x - round(x)) < tol;
   }
@@ -444,9 +446,9 @@ is.wholeNumber = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
 #'
 #' @examples
 #'
-is.even = function(x, ..., part="Re")
+is.even = function(..., part="Re")
 	{
-	x = dots.addTo(x, ...);
+	x = prep.dots(...);
 	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
 	x = as.integer(x);  # this rounds numerics down ... complex internal is NOT integer
 	( (x %% 2) == 0 );  
@@ -469,9 +471,9 @@ is.even = function(x, ..., part="Re")
 #'
 #' @examples
 #'
-is.odd = function(x, ..., part="Re")
+is.odd = function(..., part="Re")
 	{
-	x = dots.addTo(x, ...);
+	x = prep.dots(...);
 	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
 	x = as.integer(x);  # this rounds numerics down ... complex internal is NOT integer
 	( (x %% 2) == 1 );  
@@ -495,9 +497,9 @@ is.odd = function(x, ..., part="Re")
 #' is.positive( c(-1*1:5,-sin(pi), 0,0, sin(pi), 1:5) );
 #'
 is.positive = function() {}
-is.positive = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
+is.positive = function(..., tol = sqrt(.Machine$double.eps), part="Re")
   {
-  x = dots.addTo(x, ...);
+  x = prep.dots(...);
 x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
   x > tol;
   }
@@ -520,9 +522,9 @@ x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
 #' is.negative( c(-1*1:5,-sin(pi), 0,0,0, sin(pi), 1:5, NA, NA) );
 #'
 is.negative = function() {}
-is.negative = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
+is.negative = function(..., tol = sqrt(.Machine$double.eps), part="Re")
 	{
-	x = dots.addTo(x, ...); 
+	x = prep.dots(...); 
 	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
 	x < ( -1 * tol );
 	}
@@ -546,9 +548,9 @@ is.negative = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
 #' is.zero( c(-1*1:5,-sin(pi), 0,0,0, sin(pi), 1:5, NA, NA) );
 #'
 is.zero = function(x) {}
-is.zero = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
+is.zero = function(..., tol = sqrt(.Machine$double.eps), part="Re")
 	{
-	x = dots.addTo(x, ...);
+	x = prep.dots(...);
 	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
 	
 	x.pos = x < tol;
@@ -623,9 +625,9 @@ is.le = function(x, y, tol = sqrt(.Machine$double.eps), part="Re")
 
 
 math.countSignChanges = function() {}
-math.countSignChanges = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
+math.countSignChanges = function(..., tol = sqrt(.Machine$double.eps), part="Re")
 	{
-	x = dots.addTo(x, ...);
+	x = prep.dots(...);
 	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
 	x = math.cleanup( x ); # if close to zero, do this before checking sign 
 	x.sign = sign(x);
@@ -636,7 +638,7 @@ math.countSignChanges = function(x, ..., tol = sqrt(.Machine$double.eps), part="
 
 math.sign = function() {}
 # lol in ?sign ... what is sign(sin(pi)) vs math.sign(sin(pi))
-math.sign = function(x, ..., 
+math.sign = function(..., 
 							return="integer",
 							zero="", neg="-", pos="+",
 							tol = sqrt(.Machine$double.eps), 
@@ -644,7 +646,7 @@ math.sign = function(x, ...,
 					)
 	{
 	r = functions.cleanupKey(return, 1);	
-	x = dots.addTo(x, ...);
+	x = prep.dots(...);
 	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
 	x = math.cleanup( x ); # if close to zero, do this before checking sign 
 	x.sign = sign(x);
@@ -657,7 +659,7 @@ math.sign = function(x, ...,
 	}
 	
 	
-is.wholeNumber = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
+is.wholeNumber = function(..., tol = sqrt(.Machine$double.eps), part="Re")
   {
   # See ?is.integer
   more = unlist(list(...)); x = c(x, more); 

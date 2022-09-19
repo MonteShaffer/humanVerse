@@ -66,9 +66,9 @@ SI.prepKey = function(key="micro")
 	
 # SI.convert(1:10, from="kilo", to="BASE", force.from=TRUE)
 # SI.convert(1:10, from=7, to="nano", force.from=TRUE)
-SI.convert = function(x, ..., from="micro", to="nano", force.from=FALSE, force.to=FALSE)
+SI.convert = function(..., from="micro", to="nano", force.from=FALSE, force.to=FALSE)
 	{
-	x = dots.addTo(x, ...);
+	x = prep.dots(...);
 	
 	info.f = SI.prepKey(from);  FROM.exp = info.f$SI.idx;  # -6
 		rownames(info.f) = "";
@@ -89,9 +89,9 @@ SI.convert = function(x, ..., from="micro", to="nano", force.from=FALSE, force.t
 	}
 
 
-units.convert = function(x, ..., from="in", to="ft", type="distance")
+units.convert = function(..., from="in", to="ft", type="distance")
 	{
-	x = dots.addTo(x, ...);
+	x = prep.dots(...);
 	# convert everthing to a STANDARD on first pass
 	FROM	= prep.arg(from, n=3, keep="-", case="lower");  
 	TO 		= prep.arg(to, 	 n=3, keep="-", case="lower");

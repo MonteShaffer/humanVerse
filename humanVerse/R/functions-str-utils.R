@@ -117,9 +117,9 @@ str.characterFrequency = function(str,
 #'
 #'	
 #------------------------------------------------#
-str.splitN = function(str, ..., n=2, insert.a.sep="`^`")
+str.splitN = function(..., n=2, insert.a.sep="`^`")
 	{
-	str = dots.addTo(str, ...);
+	str = prep.dots(...);
 	# we will INTERNALLY use insert.a.sep to SPLIT the string 
 	# THEREFORE, the string cannot contain it... maybe ^ or `^`
 	s.test = str.contains(insert.a.sep, str);
@@ -259,9 +259,9 @@ strtoupper = str.toupper;
 #'
 # ucfirst ...
 #------------------------------------------------#
-str.capitalizeFirst = function(str, ...) 
+str.capitalizeFirst = function(...) 
 	{
-	str = dots.addTo(str, ...);
+	str = prep.dots(...);
 	len.str = str.len(str);
 	first = charAt(str, 1);
 	first.uc = toupper(first);
@@ -280,9 +280,9 @@ ucfirst = str.capitalizeFirst;
 # Returns a string with the first character of each word in string capitalized, if that character is alphabetic.
 # str = c("monte says hi", " \t Alex \r \n says hello|world", " \t \f \v \r \r\n  \n alex | says \t\t hello|world\tnow");
 #------------------------------------------------#
-str.capitalizeWords = function(str, ..., sep.any=" \t\r\n\f\v") 
+str.capitalizeWords = function(..., sep.any=" \t\r\n\f\v") 
 	{
-	str = dots.addTo(str, ...);
+	str = prep.dots(...);
 	ostr = str;  # original, copy ... help with matching `sep.any` on reversal
 	seps = str.explode("", sep.any);
 	# " " must be first in seps ...
@@ -353,9 +353,9 @@ ucwords = str.capitalizeWords;
 #'
 #'
 #------------------------------------------------#
-str.stripTags = function(str, ...)
+str.stripTags = function(...)
 	{
-	str = dots.addTo(str, ...);
+	str = prep.dots(...);
 	return(gsub("<.*?>", "", str));
 	}
 	

@@ -4,12 +4,12 @@
 
 # https://cran.r-project.org/web/packages/pvaluefunctions/vignettes/pvaluefun.html
 # https://stackoverflow.com/questions/57231854/substitute-p-values-for-stars-in-data-frame-in-r
-stats.stars = function(pvals, ... , 
+stats.stars = function(... , 
 							cuts =c(0.001, 0.01, 0.05, 0.10, 1), 
 							stars=c("***", "**", "*", ".", "N.S.")
 						)
 	{ 
-	pvals = dots.addTo(pvals, ...);
+	pvals = prep.dots(...);
 	n = length(pvals);
 	nc = length(cuts);
 	ns = length(stars);
@@ -140,7 +140,7 @@ stats.warningNA = function(x, key="na", show.warning=TRUE)
 # analagous to COUNTIF ... 
 stats.countNA = function(x, ...)
 	{
-	x = dots.addTo(x, ...);
+	x = prep.dots(...);
 	sum(is.na(x));  # adding TRUEs as 1's in binary (0,1) sense 
 	}
 
@@ -160,9 +160,9 @@ stats.countNA = function(x, ...)
 #' @examples
 #' x = c(1, NA, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, NA);
 #' 
-stats.sum = function(x, ..., na.rm=TRUE, show.warning=na.rm)
+stats.sum = function(..., na.rm=TRUE, show.warning=na.rm)
 	{
-	x = dots.addTo(x, ...);
+	x = prep.dots(...);
 	xx = stats.warningNA(x, show.warning=show.warning);  
 	x_ = stats.whichX(x, xx, na.rm);
 	res = base::sum(x_, na.rm=na.rm)
@@ -193,9 +193,9 @@ stats.whichX = function(x, xx, test=TRUE)
 #' @examples
 #' x = c(1, NA, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, NA);
 #' 
-stats.median = function(x, ..., type=1, na.rm=TRUE, show.warning=na.rm, names=FALSE, digits=7)
+stats.median = function(..., type=1, na.rm=TRUE, show.warning=na.rm, names=FALSE, digits=7)
 	{
-	x = dots.addTo(x, ...);
+	x = prep.dots(...);
 	xx = stats.warningNA(x, show.warning=show.warning);
 	x_ = stats.whichX(x, xx, na.rm);
 	# how to pass q.args into quantile ... 
@@ -223,9 +223,9 @@ stats.median = function(x, ..., type=1, na.rm=TRUE, show.warning=na.rm, names=FA
 #' @examples
 #' x = c(1, NA, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, NA);
 #' 
-stats.quantile = function(x, ..., qs=c(0, 0.25,0.5,0.75, 1), type=1, na.rm=TRUE, names=FALSE, digits=7)
+stats.quantile = function(..., qs=c(0, 0.25,0.5,0.75, 1), type=1, na.rm=TRUE, names=FALSE, digits=7)
 	{
-	x = dots.addTo(x, ...);
+	x = prep.dots(...);
 	xx = stats.warningNA(x, show.warning=show.warning);
 	x_ = stats.whichX(x, xx, na.rm);
 	# allows the USER to throw an error on BELOW 
@@ -255,9 +255,9 @@ getQuantiles = stats.quantile;
 #' @examples
 #' x = c(1, NA, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, NA);
 #' 
-stats.mean = function(x, ..., na.rm=TRUE, is.member=FALSE, show.warning=na.rm, trim=0)
+stats.mean = function(..., na.rm=TRUE, is.member=FALSE, show.warning=na.rm, trim=0)
 	{
-	x = dots.addTo(x, ...);
+	x = prep.dots(...);
 	xx = stats.warningNA(x, show.warning=show.warning);
 	x_ = stats.whichX(x, xx, na.rm);
 	m = mean(x_, na.rm=na.rm, trim=trim);	
@@ -276,9 +276,9 @@ stats.mean = function(x, ..., na.rm=TRUE, is.member=FALSE, show.warning=na.rm, t
 doMean = stats.mean;
 
 
-stats.sd = function(x, ..., na.rm=TRUE, is.member=FALSE, show.warning=na.rm)
+stats.sd = function(..., na.rm=TRUE, is.member=FALSE, show.warning=na.rm)
 	{
-	x = dots.addTo(x, ...);
+	x = prep.dots(...);
 	xx = stats.warningNA(x, show.warning=show.warning);
 	x_ = stats.whichX(x, xx, na.rm);
 	if(!is.member) { sd(x_, na.rm=na.rm); }  # plain vanilla 
@@ -338,9 +338,9 @@ stats.sd = function(x, ..., na.rm=TRUE, is.member=FALSE, show.warning=na.rm)
 
 
 
-stats.geomean = function(x, ..., na.rm=TRUE, trim=0, show.warning=na.rm, zero.rm=TRUE, show.warning2=zero.rm)
+stats.geomean = function(..., na.rm=TRUE, trim=0, show.warning=na.rm, zero.rm=TRUE, show.warning2=zero.rm)
 	{
-	x = dots.addTo(x, ...);	
+	x = prep.dots(...);	
 	xx = stats.warningNA(x, show.warning=show.warning);
 	x_ = stats.whichX(x, xx, na.rm);
 	xxx = stats.warningNA(xx, key = "less-equal-zero", show.warning=show.warning2);
@@ -367,9 +367,9 @@ stats.geomean = function(x, ..., na.rm=TRUE, trim=0, show.warning=na.rm, zero.rm
 #' which.min( c(23, presidents[1:30], 23) );
 #' stats.whichMin( c(23, presidents[1:30], 23) );
 #'
-stats.whichMin = function(x, ..., na.rm=TRUE, show.warning=na.rm)
+stats.whichMin = function(..., na.rm=TRUE, show.warning=na.rm)
 	{
-	x = dots.addTo(x, ...);
+	x = prep.dots(...);
 	warning = stats.warningNA(x, show.warning=show.warning);
 	# behaves like which.min(x) but returns multiple
 	x.min = min( x, na.rm=na.rm ); 
@@ -397,9 +397,9 @@ whichMin = stats.whichMin;
 #' which.max( c(87, presidents[1:30], 87) );
 #' stats.whichMax( c(87, presidents[1:30], 87) );
 #'
-stats.whichMax = function(x, ..., na.rm=TRUE, show.warning=na.rm)
+stats.whichMax = function(..., na.rm=TRUE, show.warning=na.rm)
 	{
-	x = dots.addTo(x, ...);
+	x = prep.dots(...);
 	warning = stats.warningNA(x, show.warning=show.warning);
 	# behaves like which.max(x) but returns multiple
 	x.max = max( x, na.rm=na.rm ); 
@@ -434,9 +434,9 @@ whichMax = stats.whichMax;
 #' whichMinFrequency( c(1, 1:9, 9, 9) );
 #' stats.whichMinFrequency( c("monte", "says", "hi", "Alex", "likes", "and", "says", "hi", "monte") );
 #'
-stats.whichMinFrequency = function(x, ..., force.numeric=TRUE)
+stats.whichMinFrequency = function(..., force.numeric=TRUE)
 	{
-	x = dots.addTo(x, ...);
+	x = prep.dots(...);
 	stats.mode(x, force.numeric=force.numeric, do.min=TRUE);
 	}
 
@@ -463,9 +463,9 @@ whichMinFreq = stats.whichMinFrequency;
 #' stats.mode( c(1, 1:9, 9, 9) );
 #' stats.mode( c("monte", "says", "hi", "Alex", "likes", "and", "says", "hi", "monte") );
 #'
-stats.mode = function(x, ..., force.numeric=TRUE, do.min=FALSE)
+stats.mode = function(..., force.numeric=TRUE, do.min=FALSE)
 	{
-	x = dots.addTo(x, ...);
+	x = prep.dots(...);
 	# NA maybe the "mode"
 	# R is a programming language for statistical computing and graphics supported by the R Core Team and the R Foundation for Statistical Computing. Created by statisticians Ross Ihaka and Robert Gentleman, R is used among data miners, bioinformaticians and statisticians for data analysis and developing statistical software. (WIKIPEDIA.com).
 	# R is a free software environment for statistical computing and graphics. It compiles and runs on a wide variety of UNIX platforms, Windows and MacOS. (r-project.org) 
@@ -541,33 +541,33 @@ calculateZscores = stats.zScores;
 
 
 
-stats.MAD = function(x, ..., m=NULL, na.rm=TRUE, show.warning=na.rm)
+stats.MAD = function(..., m=NULL, na.rm=TRUE, show.warning=na.rm)
 	{ 
 	# median absolute deviation
-	x = dots.addTo(x, ...);
+	x = prep.dots(...);
 	warning = stats.warningNA(x, show.warning=show.warning);
 	if(is.null(m)) { m = stats.median(x); }
 	stats.median( abs( x - m ) );
 	}
 
 
-stats.min = function(x, ..., na.rm=TRUE, show.warning=na.rm)
+stats.min = function(..., na.rm=TRUE, show.warning=na.rm)
 	{
-	x = dots.addTo(x, ...);
+	x = prep.dots(...);
 	warning = stats.warningNA(x, show.warning=show.warning);
 	base::min(x, na.rm=na.rm);
 	}
 	
-stats.max = function(x, ..., na.rm=TRUE, show.warning=na.rm)
+stats.max = function(..., na.rm=TRUE, show.warning=na.rm)
 	{
-	x = dots.addTo(x, ...);
+	x = prep.dots(...);
 	warning = stats.warningNA(x, show.warning=show.warning);
 	base::max(x, na.rm=na.rm);
 	}	
 	
-stats.range = function(x, ..., na.rm=TRUE, show.warning=na.rm)
+stats.range = function(..., na.rm=TRUE, show.warning=na.rm)
 	{
-	x = dots.addTo(x, ...);
+	x = prep.dots(...);
 	warning = stats.warningNA(x, show.warning=show.warning);
 	base::diff( base::range(x, na.rm=na.rm) );
 	}
@@ -577,14 +577,14 @@ stats.range = function(x, ..., na.rm=TRUE, show.warning=na.rm)
 # x.info = stats.summary(x);
 # str(x.info);
 stats.summary = function() {}
-stats.summary = function(x, ..., type=1, sort.ASC = FALSE,
+stats.summary = function(..., type=1, sort.ASC = FALSE,
 								outlier.z = c(-3, 3), 
 								outlier.m = c(-3, 3),
 								outlier.IQR = c(1.5, 3),
 								sharpe.R = 0
 						)
 	{
-	x = dots.addTo(x, ...);
+	x = prep.dots(...);
 	res = list();
 	n = length(x);
 	xx = stats::na.omit(x);

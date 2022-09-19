@@ -2,9 +2,9 @@
 
 
 
-u.toNum = function(str = "U+22EF", ...)
+u.toNum = function(...)
 	{
-	str = dots.addTo(str, ...);
+	str = prep.dots(..., default="U+22EF");
 	uinfo = list.pair(str.explode("U+", str));
 	utf   = list.getElements(uinfo, 2);
 	as.integer(as.hexmode(utf));
@@ -12,9 +12,9 @@ u.toNum = function(str = "U+22EF", ...)
 	
 
 
-u.fromNum = function(num = 	128012, ..., collapse=FALSE)
+u.fromNum = function(..., collapse=FALSE)
 	{
-	num = dots.addTo(num, ...);
+	num = prep.dots(..., default=128012);
 	intToUtf8(num, multiple=!collapse);
 	}
 	
@@ -22,9 +22,9 @@ u.fromNum = function(num = 	128012, ..., collapse=FALSE)
 
 
 
-u.toSymbol = function(str = "U+22EF", ..., collapse=FALSE)
+u.toSymbol = function(..., collapse=FALSE)
 	{ 
-	str = dots.addTo(str, ...);
+	str = prep.dots(..., default="U+22EF");
 	num = u.toNum(str);
 	u.fromNum(num, collapse=collapse);
 	}

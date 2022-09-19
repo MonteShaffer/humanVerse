@@ -26,9 +26,9 @@ color.rand = color.random;
 
 
 # color.col2rgb("red","#FF9944",2,"#336699AA", alpha=TRUE);
-color.col2rgb = function(colors, ..., alpha=FALSE)
+color.col2rgb = function(..., alpha=FALSE)
 	{
-	colors = dots.addTo(colors, ...);
+	colors = prep.dots(...);
 	res = grDevices::col2rgb(colors, alpha=alpha); 
 	colnames(res) = colors;  # original, so inverse will know
 	res;
@@ -79,23 +79,23 @@ hexcolor.return = function(hexstr, case="upper", alpha.case="lower")
 	}
   
 # as.hexcolor = color.hex; 
-hex.prepend = function(hexstr, ..., prepend="#")
+hex.prepend = function(..., prepend="#")
 	{
-	hexstr = dots.addTo(hexstr, ...);
+	hexstr = prep.dots(...);
 	hexstr = str.replace(c("O","o"),"0", hexstr); # oh's not zeroes'
 	hexstr = cleanup.base(hexstr); 
 	paste0(prepend, hexstr);	
 	}
   
 color.hex = function() {}
-color.hex = function(hexstr, ..., 
+color.hex = function(..., 
 						alpha=FALSE,
 						three.to.six=TRUE,
 						prepend="#", 
 						case="upper"
 					)
 	{
-	hexstr = dots.addTo(hexstr, ...);
+	hexstr = prep.dots(...);
 	hexstr = str.replace(c("O","o"),"0", hexstr); # oh's not zeroes'
 	hexstr = cleanup.base(hexstr); 
 	if(three.to.six)  #   #F0C ==> FF00CC [old school]
@@ -534,9 +534,9 @@ keep.matrix = function(X, nrow=3, ...)
  
 
 
-color.convert = function(x, ..., from="hex", to="cmyk")
+color.convert = function(..., from="hex", to="cmyk")
 	{
-	x = dots.addTo(x, ...);
+	x = prep.dots(...);
 	# first to RGB everything ... 
 	FROM = prep.arg(from, n=3, case="upper");
 	TO = prep.arg(to, n=3, case="upper");
@@ -571,7 +571,7 @@ color.convert = function(x, ..., from="hex", to="cmyk")
 		# s = tolower(choices[j]); S = toupper(s);
 		# if(f != s)
 			# {
-			# row = '{f}2{s} = function(x, ...) { color.convert(x, ..., from="{F}", to="{S}"); }';
+			# row = '{f}2{s} = function(x, ...) { color.convert(..., from="{F}", to="{S}"); }';
 			
 			# row = str.replace(c("{f}", "{s}", "{F}", "{S}"), c(f,s,F,S), row);	
 
@@ -592,50 +592,50 @@ color.convert = function(x, ..., from="hex", to="cmyk")
 
 
 
-# color.convert = function(x, ..., from="hex", to="cmyk")
+# color.convert = function(..., from="hex", to="cmyk")
 
 
 
 
-rgb2hsl = function(x, ...) { color.convert(x, ..., from="RGB", to="HSL"); } 
+rgb2hsl = function(x, ...) { color.convert(..., from="RGB", to="HSL"); } 
 
-rgb2hsv = function(x, ...) { color.convert(x, ..., from="RGB", to="HSV"); } 
+rgb2hsv = function(x, ...) { color.convert(..., from="RGB", to="HSV"); } 
 
-rgb2hex = function(x, ...) { color.convert(x, ..., from="RGB", to="HEX"); } 
+rgb2hex = function(x, ...) { color.convert(..., from="RGB", to="HEX"); } 
 
-rgb2cmyk = function(x, ...) { color.convert(x, ..., from="RGB", to="CMYK"); } 
+rgb2cmyk = function(x, ...) { color.convert(..., from="RGB", to="CMYK"); } 
 
-hsl2rgb = function(x, ...) { color.convert(x, ..., from="HSL", to="RGB"); } 
+hsl2rgb = function(x, ...) { color.convert(..., from="HSL", to="RGB"); } 
 
-hsl2hsv = function(x, ...) { color.convert(x, ..., from="HSL", to="HSV"); } 
+hsl2hsv = function(x, ...) { color.convert(..., from="HSL", to="HSV"); } 
 
-hsl2hex = function(x, ...) { color.convert(x, ..., from="HSL", to="HEX"); } 
+hsl2hex = function(x, ...) { color.convert(..., from="HSL", to="HEX"); } 
 
-hsl2cmyk = function(x, ...) { color.convert(x, ..., from="HSL", to="CMYK"); } 
+hsl2cmyk = function(x, ...) { color.convert(..., from="HSL", to="CMYK"); } 
 
-hsv2rgb = function(x, ...) { color.convert(x, ..., from="HSV", to="RGB"); } 
+hsv2rgb = function(x, ...) { color.convert(..., from="HSV", to="RGB"); } 
 
-hsv2hsl = function(x, ...) { color.convert(x, ..., from="HSV", to="HSL"); } 
+hsv2hsl = function(x, ...) { color.convert(..., from="HSV", to="HSL"); } 
 
-hsv2hex = function(x, ...) { color.convert(x, ..., from="HSV", to="HEX"); } 
+hsv2hex = function(x, ...) { color.convert(..., from="HSV", to="HEX"); } 
 
-hsv2cmyk = function(x, ...) { color.convert(x, ..., from="HSV", to="CMYK"); } 
+hsv2cmyk = function(x, ...) { color.convert(..., from="HSV", to="CMYK"); } 
 
-hex2rgb = function(x, ...) { color.convert(x, ..., from="HEX", to="RGB"); } 
+hex2rgb = function(x, ...) { color.convert(..., from="HEX", to="RGB"); } 
 
-hex2hsl = function(x, ...) { color.convert(x, ..., from="HEX", to="HSL"); } 
+hex2hsl = function(x, ...) { color.convert(..., from="HEX", to="HSL"); } 
 
-hex2hsv = function(x, ...) { color.convert(x, ..., from="HEX", to="HSV"); } 
+hex2hsv = function(x, ...) { color.convert(..., from="HEX", to="HSV"); } 
 
-hex2cmyk = function(x, ...) { color.convert(x, ..., from="HEX", to="CMYK"); } 
+hex2cmyk = function(x, ...) { color.convert(..., from="HEX", to="CMYK"); } 
 
-cmyk2rgb = function(x, ...) { color.convert(x, ..., from="CMYK", to="RGB"); } 
+cmyk2rgb = function(x, ...) { color.convert(..., from="CMYK", to="RGB"); } 
 
-cmyk2hsl = function(x, ...) { color.convert(x, ..., from="CMYK", to="HSL"); } 
+cmyk2hsl = function(x, ...) { color.convert(..., from="CMYK", to="HSL"); } 
 
-cmyk2hsv = function(x, ...) { color.convert(x, ..., from="CMYK", to="HSV"); } 
+cmyk2hsv = function(x, ...) { color.convert(..., from="CMYK", to="HSV"); } 
 
-cmyk2hex = function(x, ...) { color.convert(x, ..., from="CMYK", to="HEX"); } 
+cmyk2hex = function(x, ...) { color.convert(..., from="CMYK", to="HEX"); } 
 
 
 

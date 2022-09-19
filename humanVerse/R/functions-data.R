@@ -44,7 +44,7 @@ FN.INTRO = c(	"name|data.load",
 # key, type, default value ... x = c(1,2,3) for a vector or simple dataframe, from dput ... , options, description ... 
 # autopopulate ... from formals ... function.info ... ABOVE function I create /** FN = [fn.name] DOCUMENTATION ... \n\n **/ ... if you call "rebuildFN(fn.name) or ALL ... it will create a COPY above any previous documentation, if it has changed ... store as string, compare to current documentation, if unchanged ... but this allows a SYSTEM version and a user version ... first version is USER ... second is SYSTEM, which gets overwritten /** USER FN = [fn.name] **/ vs /** -SYSTEM- FN = [fn.name] **/ ... just two copies ...
 
-# num.toFrac = function(x, ..., 
+# num.toFrac = function(..., 
 								# return = "last",
 								# max.depth = 12,  
 								# tol = sqrt(.Machine$double.eps) , 

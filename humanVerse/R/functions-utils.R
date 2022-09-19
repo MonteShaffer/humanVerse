@@ -50,68 +50,52 @@ nchars = nchar;
 ord = utf8ToInt;  # mb_ord ?
 chr = intToUtf8;
 
- 
-dots.addTo = function(key, ..., by="column")
+prep.dots = function(..., collapse=TRUE, default=NULL, by="column")
 	{
 	BY = prep.arg(by, n=3);
 	
-	a = is.atomic(key);  	# what type is the key ...
-	v = is.vector(key);		# maybe list append
-	l = is.list(key); 		# maybe cbind or rbind
-	m = is.matrix(key);
-	d = is.data.frame(key);
-	
-	if((a || v) && !m) 
-		{
-		more = unlist(list(...));
-		res = c(key, more);
-		return(res);
+	if(collapse) 
+		{ 
+		dots = unlist(list(...));
+		if(length(dots) == 0 && !is.null(default)) { dots = default; }
+		return( dots ); 
 		}
-	if(m || d)
+	
+	fn = sys.calls()[[sys.nframe()-1]];
+	# parent.call = sys.call(sys.nframe() - 1L);
+	
+dput(fn);
+	finfo = parse.syscall(fn);
+		
+	dots = list(...);
+	names(dots) = finfo$pkeys;
+	
+	# let's flatten to one set of lists 
+	res = list();
+	n = length(dots);
+	for(i in 1:n)
 		{
-		dm = dim(key);  # 3 x 1 ... match or transpose more 
-		mores = list(...);
-		n = length(mores);
-		if(n > 0)
+		dot = dots[[i]];
+		dname = paste0(finfo$pkeys[i],".",i); # keep unique ...
+		
+		# we are treating multi-dimension (matrix/df) as by.column 
+		if(is.dataframe(dot) || is.matrix(dot))
 			{
-			for(i in 1:n)
+			nd = dim(dot)[2];
+			for(j in 1:nd)
 				{
-				more = mores[[i]];
-				di = dim(more);
-				if(all.equal(di,dm))
-					{
-					# 3x1 and 3x1 ... 3x2 or 6x1
-					if(BY == "col") { key = cbind(key, more); }
-					if(BY == "row") { key = rbind(key, more); }
-					} else {
-							if(di[1] == dm[1])
-								{
-								# 3x2 and 3x1 ... rbind 
-								key = rbind(key, more);
-								}
-							if(di[2] == dm[2])
-								{
-								# 3x2 and 1x2 ... cbind  
-								key = cbind(key, more);
-								}							
-							}
+				dcol = dot[, j];
+				dcoln = colnames(dot)[j];
+				
+				ddname = paste0(dname,".",dcoln,".",j); # keep unique
+				
+				res[[ddname]] = dcol;
 				}
-			}
-		return(key);
+			} else { res[[dname]] = dot; }
 		}
-	
-cat("\n key \n");
-dput(key);
-cat("\n list(...) \n");
-dput(list(...));
-cat("\n unlist(list(...)) \n");
-dput(unlist(list(...)));
-stop("monte");		
+ 
+	res;
 	}
-
-#' @rdname dots.addToKey
-#' @export
-dots.addToKey = dots.addTo;
 
 
 # testit = function() { if(rand(0,1) == 1) {stop("ERROR");} else {return(1); }}
@@ -416,6 +400,7 @@ IN = function(KEY, VALUE, mem.key = "-CURRENT_IN-")
 	# 
 
 	fn = sys.calls()[[sys.nframe()-1]];  # close 
+	# parent.call = sys.call(sys.nframe() - 1L);  # equivalent?
 	finfo = parse.syscall(fn);
   
 	res = list("envir" = key, "call" = val, "fn.info" = finfo);
@@ -675,6 +660,70 @@ minvisible = function(x, key="LAST", display=TRUE)
 	invisible(x);	
 	}
 
+
+magicFunction = function(KEY, to="character")
+	{
+	TO = prep.arg(to, n=4);
+	
+	key = NULL;
+	ct.KEY = check.type(KEY);
+	if(!ct.KEY || !is.character(KEY) )	
+		{ key = deparse(substitute(KEY)); }  # valid objects are stringed
+		
+	if(TO == "char")
+		{
+		if(is.null(key))  { return(KEY); }
+		if(!is.null(key)) { return(key); }
+		} 
+	
+	if(ct.KEY) { return(KEY); } # already an object ...
+	
+	# I have a string ... and need an object 
+	return( eval(parse(text = KEY)) );
+	
+	stop("how did I get here");
+	return(NULL);
+	}
+	
+	
+parse.syscall = function(syscall)
+	{
+	str = lang2str(syscall);
+	info = str.explode("(" , str);
+	fn = str.trim(info[1]);
+		f 	 = as.list(formals(fn));
+		keys = names(f);
+		vals = as.character(f);		
+		
+	# put everything back but the function call 
+	nstr = str.implode("(", info[-c(1)] );
+	nstr = str.replace(")", "", nstr);
+	ninfo = check.list(str.explode('=', str.trim(str.explode("," , nstr))));
+	n = length(ninfo);
+	pkeys = str.replace('"', "", str.trim(list.getElements(ninfo, 1)));
+	pvals = str.trim(list.getElements(ninfo, 2));
+	params = list();
+	for(i in 1:n)
+		{
+		pval = pvals[i];
+		if(!is.na(pval))
+			{
+			params[[ pkeys[i] ]] = eval(parse(text=pval));
+			}
+		# params[[ pkeys[i] ]] = NA;  # you can't always trap NULL ... 
+		} 
+		
+	missing = length(keys) - length(pkeys); 
+	
+	list(
+		"fn" = fn, 
+		"pkeys"  = pkeys,
+		"params" = params, 
+		"missing" = missing, 
+		"formals" = f
+		);
+	}
+  
 
 # showMethods("coerce")
 # could I pass ... dots

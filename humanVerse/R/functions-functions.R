@@ -621,9 +621,9 @@ castStringAsFunction = function.fromString;
 
 # THIS IS MULTIVARIATE ... 
 # verify.in.pkg will attach the PACKAGES to do a DEEP search 
-DFLKJLKDSJFLKSDJFLKJfunctions.info = function(fn.str, ..., verify.in.pkg = TRUE)
+DFLKJLKDSJFLKSDJFLKJfunctions.info = function(..., verify.in.pkg = TRUE)
 	{
-	fn.str = dots.addTo(fn.str, ...);
+	fn.str = prep.dots(...);	
 	
 	str  = str.replace(c(":::","::","::"), ":", fn.str);
 	info = list.pair( str.explode(":", str) );
@@ -782,9 +782,9 @@ functions.listFromPackage = function(pkg = "stats")
 # https://stackoverflow.com/a/10553795/184614
 ## sos::findFn("is.function") 
 ## MULTIVARIATE, these are strings ... 
-function.findPackages = function(fns, ... ) 
+function.findPackages = function(... ) 
 	{
-	fns = dots.addTo(fns, ...);
+	fns = prep.dots(...);	
 	n = length(fns);
 	res = vector("list", n);
 	for(i in 1:n)

@@ -139,7 +139,7 @@ dms2dd = function(D, M, S)
 		
 	}
 	
-geo.convert = function(x, ..., from="", to="", model="WSG84")
+geo.convert = function(..., from="", to="", model="WSG84")
 	{
 	
 	

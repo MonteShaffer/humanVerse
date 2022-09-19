@@ -333,7 +333,7 @@ print(at);
 #' is.wholeNumber(rpois(5,1));
 #'
 # is.whole.number
-is.wholeNumber = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
+is.wholeNumber = function(..., tol = sqrt(.Machine$double.eps), part="Re")
   {
   # See ?is.integer
   more = unlist(list(...)); x = c(x, more); 
@@ -344,7 +344,7 @@ is.wholeNumber = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
 
 
 
-is.even = function(x, ..., part="Re")
+is.even = function(..., part="Re")
 	{
 	more = unlist(list(...)); x = c(x, more); 
 	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
@@ -353,7 +353,7 @@ is.even = function(x, ..., part="Re")
 	( (x %% 2) == 0 );  # this implies it is a whole number ... https://stackoverflow.com/questions/6102948/why-does-modulus-division-only-work-with-integers
 	}
 
-is.odd = function(x, ..., part="Re")
+is.odd = function(..., part="Re")
 	{
 	more = unlist(list(...)); x = c(x, more); 
 	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
@@ -379,7 +379,7 @@ is.odd = function(x, ..., part="Re")
 #' is.positive(-1);
 #' is.positive( c(-1*1:5,-sin(pi), 0,0, sin(pi), 1:5) );
 #'
-is.positive = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
+is.positive = function(..., tol = sqrt(.Machine$double.eps), part="Re")
   {
   more = unlist(list(...)); x = c(x, more);
   x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
@@ -401,7 +401,7 @@ is.positive = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
 #' is.negative(-1);
 #' is.negative( c(-1*1:5,-sin(pi), 0,0, sin(pi), 1:5, NA, NA) );
 #'
-is.negative = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
+is.negative = function(..., tol = sqrt(.Machine$double.eps), part="Re")
   {
   more = unlist(list(...)); x = c(x, more);
   x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
@@ -411,7 +411,7 @@ is.negative = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
 # x = c(NULL,-1*1:5,0+2i,1+2i,-1+2i,-sin(pi), 0,0, sin(pi), 0-2i,1-2i,-1-2i, 1:5, NA, NA, NULL, NA, NULL);
 # y = c( -1*1:5,0+2i,1+2i,-1+2i,-sin(pi), 0,0, sin(pi), 0-2i,1-2i,-1-2i, 1:5, NA, NA, NA);
 # is.zero( c(NULL, -1*1:5,0+2i,1+2i,-1+2i,-sin(pi), 0,0, sin(pi), 0-2i,1-2i,-1-2i, 1:5, NA, NA, NULL) );
-is.zero = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
+is.zero = function(..., tol = sqrt(.Machine$double.eps), part="Re")
 	{
 	more = unlist(list(...)); x = c(x, more);
 	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
@@ -1948,7 +1948,7 @@ is.empty = function(obj)
 #' is.wholeNumber(rnorm(5));
 #' is.wholeNumber(rpois(5,1));
 #'
-is.wholeNumber = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
+is.wholeNumber = function(..., tol = sqrt(.Machine$double.eps), part="Re")
   {
   # See ?is.integer
   more = unlist(list(...)); x = c(x, more); 
@@ -1972,7 +1972,7 @@ is.wholeNumber = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
 #'
 #' @examples
 #'
-is.even = function(x, ..., part="Re")
+is.even = function(..., part="Re")
 	{
 	more = unlist(list(...)); x = c(x, more); 
 	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
@@ -1994,7 +1994,7 @@ is.even = function(x, ..., part="Re")
 #'
 #' @examples
 #'
-is.odd = function(x, ..., part="Re")
+is.odd = function(..., part="Re")
 	{
 	more = unlist(list(...)); x = c(x, more); 
 	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
@@ -2019,7 +2019,7 @@ is.odd = function(x, ..., part="Re")
 #' is.positive(-1);
 #' is.positive( c(-1*1:5,-sin(pi), 0,0, sin(pi), 1:5) );
 #'
-is.positive = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
+is.positive = function(..., tol = sqrt(.Machine$double.eps), part="Re")
   {
   more = unlist(list(...)); x = c(x, more);
   x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
@@ -2043,7 +2043,7 @@ is.positive = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
 #' is.negative(-1);
 #' is.negative( c(-1*1:5,-sin(pi), 0,0,0, sin(pi), 1:5, NA, NA) );
 #'
-is.negative = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
+is.negative = function(..., tol = sqrt(.Machine$double.eps), part="Re")
   {
   more = unlist(list(...)); x = c(x, more);
   x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
@@ -2068,7 +2068,7 @@ is.negative = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
 #' is.zero(-1);
 #' is.zero( c(-1*1:5,-sin(pi), 0,0,0, sin(pi), 1:5, NA, NA) );
 #'
-is.zero = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
+is.zero = function(..., tol = sqrt(.Machine$double.eps), part="Re")
 	{
 	more = unlist(list(...)); x = c(x, more);
 	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }

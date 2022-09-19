@@ -208,6 +208,12 @@ dots.magic = function(dots)
 	
 	}
 
+df.empty = function(df)
+	{
+	# returns empty structure of existing dataframe 
+	df[FALSE, ];	
+	}
+
 df.row = function(..., use.names=FALSE)
 	{
 # dput( (list(...)) );   # list(structure(1663114668.6615, class = c("POSIXct", "POSIXt")), "set", "STACK", "alex")
@@ -347,7 +353,7 @@ df.fromList = function(myLists)
 	for(i in 1:n)
 		{
 		myList = myLists[[i]];
-		dif.n = max.n - length(myList);
+		dif.n = max.n - length(myList); 
 		myList = c(myList, rep(NA, dif.n));
 		df = cbind(df, myList);
 		}

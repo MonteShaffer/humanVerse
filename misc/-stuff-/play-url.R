@@ -372,3 +372,114 @@ is.validURL = function(urls, deep=FALSE)
 	}
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+dots.addTo = function(key, ..., by="column")
+	{
+	BY = prep.arg(by, n=3);
+
+# dput(deparse(substitute(key)));
+
+	a = is.atomic(key);  	# what type is the key ...
+	v = is.vector(key);		# maybe list append
+	l = is.list(key); 		# maybe cbind or rbind
+	m = is.matrix(key);
+	d = is.data.frame(key);
+	
+# cat("\n\n a: ", a, "\t v: ", v,  "\t l: ", l,  "\t m: ", m,  "\t d: ", d, "\n\n");	
+# dput(list(...));
+	# dots = as.list(...); 
+	dots = match.call(expand.dots = FALSE)$...
+# dput(dots);
+# print(str(key));
+# ct.KEY = check.type(key);
+# dput(ct.KEY);
+		names = as.character(dots);
+		
+	nd = length(dots);
+	ndlen = list.getLengths(dots);
+	ndmax = 0;
+	if(!is.null(ndlen)) { ndmax = max(ndlen); }
+	dnames = names(dots);
+	kname = names(key);
+	
+# cat("\n\n nd: ", nd, "\t ndlen: ", ndlen,  "\t ndmax: ", ndmax,  "\t dnames: ", dnames,  "\t kname: ", kname, "\n\n");	
+
+	if((a || v) && (ndmax > 1)) 
+		{
+		# make lists  
+		res = check.list(key);
+		names(res) = names(key);
+		for(i in 1:nd)
+			{
+			dot = dots[[i]];
+			dname = dnames[i];
+			res[[dname]] = dot;
+			}
+		return(res);
+		}
+		
+	if((a || v) && !m) 
+		{
+		more = unlist(dots);
+		res = c(key, more);
+		return(res);
+		}
+	if(m || d)
+		{
+		dm = dim(key);  # 3 x 1 ... match or transpose more 
+		if(nd > 0)
+			{
+			for(i in 1:nd)
+				{
+				dot = dots[[i]];
+				di = dim(dot);
+				if(all.equal(di,dm))
+					{
+					# 3x1 and 3x1 ... 3x2 or 6x1
+					if(BY == "col") { key = cbind(key, dot); }
+					if(BY == "row") { key = rbind(key, dot); }
+					} else {
+							if(di[1] == dm[1])
+								{
+								# 3x2 and 3x1 ... rbind 
+								key = rbind(key, dot);
+								}
+							if(di[2] == dm[2])
+								{
+								# 3x2 and 1x2 ... cbind  
+								key = cbind(key, dot);
+								}							
+							}
+				}
+			}
+		return(key);
+		}
+	
+cat("\n key \n");
+dput(key);
+cat("\n list(...) \n");
+dput(list(...));
+cat("\n unlist(list(...)) \n");
+dput(unlist(list(...)));
+stop("monte");		
+	}
+
+#' @rdname dots.addToKey
+#' @export
+dots.addToKey = dots.addTo;

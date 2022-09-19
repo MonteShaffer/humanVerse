@@ -27,7 +27,7 @@ check.hex = function(hexstr, ..., prepend="0x", case="upper")
 	
 	
 	
-# dec2hex = function(x, ..., to.length=to.length) { base.convert(x, ..., from="DEC", to="HEX", to.length=to.length); }
+# dec2hex = function(..., to.length=to.length) { base.convert(..., from="DEC", to="HEX", to.length=to.length); }
 
 
 

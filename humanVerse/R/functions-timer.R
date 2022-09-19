@@ -111,10 +111,10 @@ timer.init = function(purge.memory = FALSE,
 #' @export
 #'
 #' @examples
-timer.start = function(key="DEFAULT", ..., 
+timer.start = function(..., 
 							as.internal = FALSE)
 	{
-	keys = dots.addToKey(key, ...);
+	keys =  prep.dots(..., default="DEFAULT");
 	
 	TIMER = "timer"; if(as.internal) { TIMER = ".timer"; }
 	
@@ -151,10 +151,10 @@ cat("\n timer with key :: [",key,"] has started \n\n");
 #' 
 #' @examples	# marker is not multivariate ... 
 ## TODO:: can I shorten with `with`
-timer.stop = function(key="DEFAULT", ..., marker="STOP-{n}", 
+timer.stop = function(..., marker="STOP-{n}", 
 							as.internal = FALSE)
 	{
-	keys = dots.addToKey(key, ...);
+	keys =  prep.dots(..., default="DEFAULT");
 	
 	TIMER = "timer"; if(as.internal) { TIMER = ".timer"; }
 	
@@ -243,7 +243,8 @@ cat("\n timer with key :: [",key,"] has recorded *a* stop labeled [",mark,"] \n\
 #'
 #' @examples
 # format = [s]econds, [p]retty, [p]retty-[s]econds 
-timer.print = function(key="DEFAULT", ..., 
+# key="DEFAULT", 
+timer.print = function(..., 
 							format="seconds", 
 							units.name = "seconds",
 							units.factor = 1,
@@ -252,7 +253,7 @@ timer.print = function(key="DEFAULT", ...,
 							digits=2, 
 							as.internal = FALSE)
 	{
-	keys 	= dots.addToKey(key, ...);
+	keys 	= prep.dots(..., default="DEFAULT");
 	
 	TIMER 	= "timer"; if(as.internal) { TIMER = ".timer"; }
 	
@@ -319,17 +320,15 @@ cat("\n", " FORMA: ", forma, "\n\n");
 
  
  
-timer.printALL = function(key="---PRINT-EVERYTHING---", ..., format="pretty", 
+timer.printALL = function(..., format="pretty", 
 							units.name = "seconds",
 							units.factor = 1,
 							append.names=TRUE, 
 							digits=2, 
 							as.internal = FALSE)
 	{
-	if(key != "---PRINT-EVERYTHING---")
-		{
-		keys = dots.addToKey(key, ...);
-		} else { keys = NULL; }
+	keys =  prep.dots(..., default="---PRINT-EVERYTHING---");
+	if(keys == "---PRINT-EVERYTHING---") { keys = NULL; }
 	TIMER = "timer"; if(as.internal) { TIMER = ".timer"; }
 	
 	forma = prep.arg(format, 5, keep="-");
@@ -461,11 +460,11 @@ timer.formatPretty = function(vals, vkey="seconds", vfactor=1, digits=2)
 
 
 
-timer.clear = function(key="DEFAULT", ..., 
+timer.clear = function(..., 
 							notice=TRUE, 
 							as.internal = FALSE)
 	{
-	keys = dots.addToKey(key, ...);
+	keys = prep.dots(..., default="DEFAULT");
 	
 	TIMER = "timer"; if(as.internal) { TIMER = ".timer"; }
 	

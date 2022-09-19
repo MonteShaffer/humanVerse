@@ -1,15 +1,15 @@
 
-check.url = function(urls, ...)
+check.url = function(...)
 	{
-	urls = dots.addTo(urls, ...);
+	urls = prep.dots(...);
 	# https://mathiasbynens.be/demo/url-regex
 	# librarian:::is_valid_url
 	(grepl("(https?|ftp)://[^\\s/$.?#].[^\\s]*", urls));
 	}
 
-regex.url = function(urls, ...)
+regex.url = function(...)
 	{
-	urls = dots.addTo(urls, ...);
+	urls = prep.dots(...);
 	
 	# get values 
 	
@@ -24,9 +24,9 @@ regex.url = function(urls, ...)
 # as.POSIXct("2000-01-01") ... formal replace took tz, but didn't implement ... 
 
 
-check.date = function(strs, ...)
+check.date = function(...)
 	{
-	strs = dots.addTo(strs, ...);
+	strs = prep.dots(...);
 debug = FALSE;
 	n = length(strs);
 	res = logical(n);

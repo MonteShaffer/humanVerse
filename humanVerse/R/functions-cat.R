@@ -14,7 +14,7 @@ clear.warning = warning.clear;
 # https://stackoverflow.com/questions/9596918/r-warning-wrapper-raise-to-parent-function
 warning.cat = function(..., sep=" ")
 	{
-	str = dots.addTo(NULL, ...);
+	str = prep.dots(...);
 	res = paste0(str, collapse=sep);
 	
 	parent.call = sys.call(sys.nframe() - 1L);
@@ -27,7 +27,7 @@ cat.warning = warning.cat;
 
 stop.cat = function(..., sep=" ")
 	{
-	str = dots.addTo(NULL, ...); 
+	str = prep.dots(...);
 	res = paste0(str, collapse=sep);
 	
 	parent.call = sys.call(sys.nframe() - 1L);

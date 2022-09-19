@@ -118,7 +118,7 @@ color.init = function()
 # v.color("red", color.setOpacity("red", 0.5), "#FFFF00", "#FFFF0080" ...)
 
 
-color.nearestNameFromHEX = function(vecHEX, ..., nearest=1, name.search="base", method="manhatten, euclidean, cosine")
+color.nearestNameFromHEX = function(vecHE..., nearest=1, name.search="base", method="manhatten, euclidean, cosine")
 	{
 	# maybe do all three methods ... 
 	# if nearest = 1, a vector is returned 
@@ -159,9 +159,9 @@ colorname.fromHEX = function() {}
 colorname.nearestHEX = function() {} # not found in fromHEX 
 
 
-color.nameFromHEX = function(vecHEX, ..., name.search="base", force.match=FALSE)
+color.nameFromHEX = function(..., name.search="base", force.match=FALSE)
 	{
-	vecHEX = dots.addTo(vecHEX, ...);
+	vecHEX = prep.dots(...);
 	
 	}
 
@@ -173,9 +173,12 @@ color.nameFromHEX = function(vecHEX, ..., name.search="base", force.match=FALSE)
 #  "cincireds: oldcolors, newcolors"
 #  "cfalls:oldcolors", "newcolors"
 #  "arg:entina flag colors" 
-v.color = function(colvec, ..., names.search="base", alpha=TRUE)
+v.color = function(..., names.search="base", alpha=TRUE)
 	{  
-	colvec = dots.addTo(colvec, ...);
+	colvec = prep.dots(...);
+	
+	
+	# TEMP CODE 
 	hexVEC = colvec;
 	res = color.hex(hexVEC, alpha=alpha);
 	return(res);
@@ -201,13 +204,13 @@ v.color = function(colvec, ..., names.search="base", alpha=TRUE)
 
 
 # FUN="stats.mean"
-hexcolor.math = function(vecHEX, ..., FUN=NULL, alpha=TRUE, skip.checks=FALSE)
+hexcolor.math = function(..., FUN=NULL, alpha=TRUE, skip.checks=FALSE)
 	{
+	vecHEX = prep.dots(...);
 	if(!skip.checks)
 		{
 		# nested function can call a parent and have skip.checks=TRUE 
 		# if the check was already performed in the child 
-		vecHEX = dots.addTo(vecHEX, ...);	
 		vecHEX = v.color(vecHEX, alpha=alpha); # should be HEX, but now it is with ALPHA
 		}
 		
@@ -230,8 +233,9 @@ dput(fn);
 
 
 	
-hexcolor.gradient = function(vecHEX, ..., n=5, force.length=FALSE, alpha=FALSE, skip.checks=FALSE)
+hexcolor.gradient = function(..., n=5, force.length=FALSE, alpha=FALSE, skip.checks=FALSE)
 	{
+	vecHEX = prep.dots(...);
 	# with skip.checks, a parent/child may have not included alpha ...
 	# internally, v.color should include alpha=TRUE ...
 	# function needs to deal with that and strip if exists/necessary
@@ -240,7 +244,6 @@ hexcolor.gradient = function(vecHEX, ..., n=5, force.length=FALSE, alpha=FALSE, 
 		{
 		# nested function can call a parent and have skip.checks=TRUE 
 		# if the check was already performed in the child 
-		vecHEX = dots.addTo(vecHEX, ...);	
 		vecHEX = v.color(vecHEX, alpha=alpha); # should be HEX, but now it is with ALPHA
 		}
 	
@@ -308,13 +311,13 @@ hexcolor.wheelPlot = function()
 	}
 
 
-hexcolor.wheel = function(vecHEX, ..., steps=12, base.names=FALSE, alpha=FALSE, skip.checks=FALSE) 
+hexcolor.wheel = function(..., steps=12, base.names=FALSE, alpha=FALSE, skip.checks=FALSE) 
 	{
+	vecHEX = prep.dots(...);
 	if(!skip.checks)
 		{
 		# nested function can call a parent and have skip.checks=TRUE 
 		# if the check was already performed in the child 
-		vecHEX = dots.addTo(vecHEX, ...);	
 		vecHEX = v.color(vecHEX, alpha=alpha); # should be HEX, but now it is with ALPHA
 		}
 	# wheel steps must be MOD of 360 
@@ -363,13 +366,13 @@ hexcolor.wheel = function(vecHEX, ..., steps=12, base.names=FALSE, alpha=FALSE, 
 
 
 # get values ... NULL as FF (100) ... 
-hexcolor.getOpacity = function(vecHEX, ..., return="100", skip.checks=FALSE) 
+hexcolor.getOpacity = function(..., return="100", skip.checks=FALSE) 
 	{
+	vecHEX = prep.dots(...);
 	if(!skip.checks)
 		{
 		# nested function can call a parent and have skip.checks=TRUE 
 		# if the check was already performed in the child 
-		vecHEX = dots.addTo(vecHEX, ...);	
 		vecHEX = v.color(vecHEX); # should be HEX, but now it is with ALPHA
 		}
 	RETURN = prep.arg(return, n=3, case="upper");
@@ -388,13 +391,13 @@ hexcolor.getOpacity = function(vecHEX, ..., return="100", skip.checks=FALSE)
 
 
 # reset doesn't take old value ... if(!reset) ... compounding opacity
-hexcolor.setOpacity = function(vecHEX, ..., opacity=50, reset=TRUE, skip.checks=FALSE) 
+hexcolor.setOpacity = function(..., opacity=50, reset=TRUE, skip.checks=FALSE) 
 	{
+	vecHEX = prep.dots(...);
 	if(!skip.checks)
 		{
 		# nested function can call a parent and have skip.checks=TRUE 
 		# if the check was already performed in the child 
-		vecHEX = dots.addTo(vecHEX, ...);	
 		vecHEX = v.color(vecHEX); # should be HEX, but now it is with ALPHA
 		}
 	
@@ -425,13 +428,13 @@ hexcolor.setOpacity = function(vecHEX, ..., opacity=50, reset=TRUE, skip.checks=
 	
 	
 hexcolor.chromatics = function() {}
-hexcolor.chromatics = function(vecHEX, ..., n=12, light="#FFFFFF", dark="#000000", alpha=FALSE, natural.alpha=TRUE, skip.checks=FALSE) 
+hexcolor.chromatics = function(..., n=12, light="#FFFFFF", dark="#000000", alpha=FALSE, natural.alpha=TRUE, skip.checks=FALSE) 
 	{
+	vecHEX = prep.dots(...);
 	if(!skip.checks)
 		{
 		# nested function can call a parent and have skip.checks=TRUE 
 		# if the check was already performed in the child 
-		vecHEX = dots.addTo(vecHEX, ...);	
 		vecHEX = v.color(vecHEX, alpha=alpha); # should be HEX, but now it is with ALPHA
 		}
 	# this will return a list... intended to be univariate 
@@ -477,13 +480,13 @@ cat("\n length of chromatic: ", length(res[[i]]), " \n");
 
 
 # vecHEX = c("#FAFBFC", "#F3D1A8","#A0A3A9"); vecHEX; hexcolor.round(vecHEX);	
-hexcolor.round = function(vecHEX, ..., n=9, alpha=FALSE, skip.checks=FALSE)
+hexcolor.round = function(..., n=9, alpha=FALSE, skip.checks=FALSE)
 	{
+	vecHEX = prep.dots(...);
 	if(!skip.checks)
 		{
 		# nested function can call a parent and have skip.checks=TRUE 
 		# if the check was already performed in the child 
-		vecHEX = dots.addTo(vecHEX, ...);	
 		vecHEX = v.color(vecHEX, alpha=alpha); # should be HEX, but now it is with ALPHA
 		}
 	n = as.integer(n); if(n == 0) { n = 1; }
@@ -522,13 +525,13 @@ hexcolor.round = function(vecHEX, ..., n=9, alpha=FALSE, skip.checks=FALSE)
 
 
 # vecHEX = c("#F3D1A8","A0A3A9"); vecHEX; hexcolor.websafe(vecHEX);	
-hexcolor.websafe = function(vecHEX, ..., skip.checks=FALSE)
+hexcolor.websafe = function(..., skip.checks=FALSE)
 	{
+	vecHEX = prep.dots(...);
 	if(!skip.checks)
 		{
 		# nested function can call a parent and have skip.checks=TRUE 
 		# if the check was already performed in the child 
-		vecHEX = dots.addTo(vecHEX, ...);	
 		vecHEX = v.color(vecHEX); # should be HEX, but now it is with ALPHA
 		}
 	# F3D1A8 ==> 

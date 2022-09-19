@@ -137,12 +137,12 @@ num.constants = function(envir=parent.env(environment()))
 
 
 
-num.toScientific = function(x, ..., force.scale=0 )
+num.toScientific = function(..., force.scale=0 )
 	{
 	# follow same logic as toENG 
 	# maybe wrap ... INSIDE with force = 7 and override
 	# x.sci = format(x, scientific=TRUE, digits=signif.digits);
-	num.toEngineering(x, ..., force.scale=force.scale, show.what="exp", method="Scientific");
+	num.toEngineering(..., force.scale=force.scale, show.what="exp", method="Scientific");
 	}
 
 num.toSci = num.toScientific;
@@ -470,16 +470,16 @@ num.round = function(x, by=3, how="integer")
 
 
 
-int.toHexInt = function(x, ...)
+int.toHexInt = function(...)
 	{
-	x = dots.addTo(x, ...); 
+	x = prep.dots(...);	
 	x = as.integer(x);
 	as.hexmode(x);  # still integers but 'hexmode' int [1:100]
 	}
 	
-int.fromHexInt = function(hx, ...)
+int.fromHexInt = function(...)
 	{
-	hx = dots.addTo(hx, ...);
+	hx = prep.dots(...);	
 	as.integer(hx);
 	}
 
@@ -491,15 +491,15 @@ int.fromHexInt = function(hx, ...)
 
 
 num.toFrac = function() {}
-num.toFrac = function(x, ..., 
+num.toFrac = function(..., 
 								return = "last",
 								max.depth = 12,  
 								tol = sqrt(.Machine$double.eps) , 
 								part="Re"
 						)
 	{
-	r = prep.arg(return, 1);
-	x = dots.addTo(x, ...); 
+	RETURN = prep.arg(return, 1);
+	x = prep.dots(...);	
 	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
 	
 	CF = num.toCFrac(x, max.depth=max.depth, tol=tol, part=part);
@@ -573,7 +573,7 @@ num.toFrac = function(x, ...,
 		return(nr);
 		}
 		
-	if(r == "l" || r == "1") # confusion with "ell" vs "one"
+	if(RETURN == "l" || RETURN == "1") # confusion with "ell" vs "one"
 		{
 		cr = property.set("x", cr, x);
 		cr = property.set("error.percent", cr, ce);		
@@ -603,13 +603,13 @@ num.toFrac = function(x, ...,
 # I am getting 
 # 		3   7  15   1 292   1   1   1   2   1   3   1  14   3   3  23  NA
 num.toCFrac = function() {}
-num.toCFrac = function(x, ..., 
+num.toCFrac = function(..., 
 								max.depth = 12,  
 								tol = sqrt(.Machine$double.eps) , 
 								part="Re"
 						)
 	{
-	x = dots.addTo(x, ...); 
+	x = prep.dots(...);	
 	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
 	
 	n = length(x);
@@ -764,9 +764,9 @@ egy.lists = function()
 # PI == pi ... TRUE ??!>!?
 
 
-toFrac = function(x, ...,	max.depth=16, tol = sqrt(.Machine$double.eps) , part="Re", return="n/d")	# could return Euclidean nested
+toFrac = function(...,	max.depth=16, tol = sqrt(.Machine$double.eps) , part="Re", return="n/d")	# could return Euclidean nested
 	{	
-	x = dots.addTo(x, ...); 
+	x = prep.dots(...);	
 	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
 	n = length(x);
 	e = vector("list", n);

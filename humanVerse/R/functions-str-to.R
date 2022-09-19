@@ -31,10 +31,10 @@ str.fromInteger = function(intvec)
 	as.character(as.integer(intvec));
 	}
 
-
-str.toUTF = function(str = c("U+22EF"), ..., collapse=FALSE)
+# str = c("U+22EF"), 
+str.toUTF = function(..., collapse=FALSE)
 	{
-	str = dots.addTo(str, ...);
+	str = prep.dots(..., default=c("U+22EF"));
 	# maybe jsut stringi 
 	# str = c("U+22EF","0x03B2L", "\x22EF", "\u22ef")
 	# intToUtf8(0x03B2L)
@@ -54,9 +54,9 @@ str.fromUTF = function(utf, format="U+")
 #'
 #'
 #------------------------------------------------#
-str.toHEX = function(str, ...)
+str.toHEX = function(...)
 	{
-	str = dots.addTo(str, ...);
+	str = prep.dots(...);
 	n = length(str);
 	res = character(n);
 	for(i in 1:n)
@@ -73,9 +73,9 @@ str.toHEX = function(str, ...)
 #'
 #'
 #------------------------------------------------#
-str.fromHEX = function(hstr, ...)
+str.fromHEX = function(...)
 	{
-	hstr = dots.addTo(hstr, ...);
+	hstr = prep.dots(...);
 	n = length(hstr);
 	res = character(n);
 	for(i in 1:n)
@@ -136,9 +136,9 @@ str.fromCharacterVector = function(charslist, sep="")
 #'
 #'
 #------------------------------------------------#
-str.toBASE64 = function(str, ...)
+str.toBASE64 = function(...)
 	{
-	str = dots.addTo(str, ...);
+	str = prep.dots(...);
 	n = length(str);
 	res = character(n);
 	for(i in 1:n)
@@ -154,9 +154,9 @@ str.toBASE64 = function(str, ...)
 #'
 #'
 #------------------------------------------------#
-str.fromBASE64 = function(bstr, ...)
+str.fromBASE64 = function(...)
 	{
-	bstr = dots.addTo(bstr, ...);
+	bstr = prep.dots(...);
 	n = length(bstr);
 	res = character(n);
 	for(i in 1:n)

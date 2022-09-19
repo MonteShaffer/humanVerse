@@ -294,9 +294,9 @@ primes.get = function(n, first=TRUE, optimus=FALSE, method="base")
 #'
 #'
 # multivariate is currently a mess 
-prime.factors = function(x, ..., list.format="factors.{n}", optimus=FALSE)
+prime.factors = function(..., list.format="factors.{n}", optimus=FALSE)
 	{
-	x = dots.addTo(x, ...);
+	x = prep.dots(...);
 	nx = length(x);
 	
 	na.check = all(is.na(x));

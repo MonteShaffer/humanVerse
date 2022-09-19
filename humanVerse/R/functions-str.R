@@ -181,7 +181,7 @@ str.trim = function(str, side="both", method="stringi", pattern="", ...)
   # based on CALLER formals ...
   # assign back "side", method, pattern in order ... 
   # allow for dots to be ignored if looking for "both" ??? !!! ???
-  str = dots.addTo(str, ...);
+  # str = dots.addTo(str, ...);
 	# necessary overhead
 	s = prep.arg(side, 1);
 	m = prep.arg(method, 1);
@@ -216,6 +216,7 @@ str.trim = function(str, side="both", method="stringi", pattern="", ...)
 
 	
 	
+	# is this faster than base::trimws?
 	g = "\\s+";
 	if(pattern != "") { g = pattern; }
 	res = switch(s,

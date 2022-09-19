@@ -16,7 +16,7 @@ math.cleanup = function(x, tol = sqrt(.Machine$double.eps), ...)
 	xi = as.integer(x);
 	d = x - xi;
 	dz = is.zero(d, tol=tol, ...);
-	x[dz] = xi;
+	x[dz] = xi[dz];
 		
 	x;
 	}
@@ -52,9 +52,9 @@ math.cleanup = function(x, tol = sqrt(.Machine$double.eps), ...)
 
 
 # degree, radian, grad, arcmin, arcsec, turn
-angle.convert = function(x, ..., from="degrees", to="radians")
+angle.convert = function(..., from="degrees", to="radians")
 	{
-	x = dots.addTo(x, ...);
+	x = prep.dots(...);
 	# convert everthing to "degrees" on first pass
 	FROM = prep.arg(from, n=1, case="upper");
 	TO = prep.arg(to, n=1, case="upper");
@@ -173,36 +173,36 @@ gon2rad = function(Ag, ...) { angle.convert(Ag, ...,  from="G", to="R"); }
 
 
 ####################### REGULAR TRIG ###########################
-math.sin = function(x, ...)
+math.sin = function(...)
 	{
 	# maybe do better with fractional components
-	x = dots.addTo(x, ...);
-	math.cleanup( sin(x) );
+	x = prep.dots(...);
+	math.cleanup( sin(x) ); 
 	}
 	
-math.cos = function(x, ...)
+math.cos = function(...)
 	{
 	# maybe do better with fractional components
-	x = dots.addTo(x, ...);
+	x = prep.dots(...);
 	math.cleanup( cos(x) );
 	}
 	
-math.tan = function(x, ...)
+math.tan = function(...)
 	{
 	# maybe do better with fractional components
-	x = dots.addTo(x, ...);
+	x = prep.dots(...);
 	math.cleanup( tan(x) );
 	}
 
-cotan 		= function(x, ...) { 1/math.tan(x,...); }
-cosecant 	= function(x, ...) { 1/math.sin(x,...); } 	
-secant 		= function(x, ...) { 1/math.cos(x,...); } 
+cotan 		= function(...) { 1/math.tan(...); }
+cosecant 	= function(...) { 1/math.sin(...); } 	
+secant 		= function(...) { 1/math.cos(...); } 
 	
 	
-math.asin = function(x, ...)
+math.asin = function(...)
 	{
 	# maybe do better with fractional components
-	x = dots.addTo(x, ...);
+	x = prep.dots(...);
 	math.cleanup( asin(x) );
 	}
 
@@ -210,10 +210,10 @@ arcsin = function() {}
 arcsin = math.asin;	
 
 	
-math.acos = function(x, ...)
+math.acos = function(...)
 	{
 	# maybe do better with fractional components
-	x = dots.addTo(x, ...);
+	x = prep.dots(...);
 	math.cleanup( acos(x) );
 	}
 
@@ -222,10 +222,10 @@ arccos = math.acos;
 
 	
 	
-math.atan = function(x, ...)
+math.atan = function(...)
 	{
 	# maybe do better with fractional components
-	x = dots.addTo(x, ...);
+	x = prep.dots(...);
 	math.cleanup( atan(x) );
 	}
 
@@ -236,7 +236,6 @@ arctan = math.atan;
 # no atan2h?
 math.atan2 = function(y, x)
 	{
-	# x = dots.addTo(x, ...);
 	math.cleanup( atan(y, x) );
 	}
 
@@ -247,36 +246,32 @@ arctan2 = math.atan2;
 ####################### HYPERBOLIC TRIG ###########################
 
 
-math.sinh = function(x, ...)
+math.sinh = function(...)
 	{
-	# maybe do better with fractional components
-	x = dots.addTo(x, ...);
+	x = prep.dots(...);
 	math.cleanup( sinh(x) );
 	}
 	
-math.cosh = function(x, ...)
+math.cosh = function(...)
 	{
-	# maybe do better with fractional components
-	x = dots.addTo(x, ...);
+	x = prep.dots(...);
 	math.cleanup( cosh(x) );
 	}
 	
-math.tanh = function(x, ...)
+math.tanh = function(...)
 	{
-	# maybe do better with fractional components
-	x = dots.addTo(x, ...);
+	x = prep.dots(...);
 	math.cleanup( tanh(x) );
 	}
 
-cotanh 		= function(x, ...) { 1/math.tanh(x,...); }
-cosecanth 	= function(x, ...) { 1/math.sinh(x,...); } 	
-secanth 	= function(x, ...) { 1/math.cosh(x,...); } 
+cotanh 		= function(...) { 1/math.tanh(...); }
+cosecanth 	= function(...) { 1/math.sinh(...); } 	
+secanth 	= function(...) { 1/math.cosh(...); } 
 	
 	
-math.asinh = function(x, ...)
+math.asinh = function(...)
 	{
-	# maybe do better with fractional components
-	x = dots.addTo(x, ...);
+	x = prep.dots(...);
 	math.cleanup( asinh(x) );
 	}
 
@@ -284,10 +279,9 @@ arcsinh = function() {}
 arcsinh = math.asinh;	
 
 	
-math.acosh = function(x, ...)
+math.acosh = function(...)
 	{
-	# maybe do better with fractional components
-	x = dots.addTo(x, ...);
+	x = prep.dots(...);
 	math.cleanup( acosh(x) );
 	}
 
@@ -296,10 +290,9 @@ arccosh = math.acosh;
 
 	
 	
-math.atanh = function(x, ...)
+math.atanh = function(...)
 	{
-	# maybe do better with fractional components
-	x = dots.addTo(x, ...);
+	x = prep.dots(...);
 	math.cleanup( atanh(x) );
 	}
 

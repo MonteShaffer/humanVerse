@@ -33,9 +33,9 @@ temp.isNA = function(degX, Xunits="celsius")
 	}
 
 
-temp.convert = function(degX, ..., from="fahrenheit", to="celsius")
+temp.convert = function(..., from="fahrenheit", to="celsius")
 	{
-	degX = dots.addTo(degX, ...);
+	degX = prep.dots(...);
 	temp.constants();
 	# convert everthing to "celsius" on first pass
 	FROM = prep.arg(from, n=1, case="upper");  # good thing F doesn't mean FALSE anymore!?!
@@ -49,7 +49,7 @@ cat("\n START degX ... ", degX, "\n");
 					  "R"  	= (degX + ABS_ZERO_R - 32) * (5/9),				
 				degX											# DEFAULT
 				);
-cat("\n in degC ... ", degC, "\n");			
+cat("\n in degC ... ", "\n");			
 	# convert everything from "celsius" on second pass 	
 	degN = switch(TO,					  			
 					  "F" 	= 9/5 * degC + 32,
@@ -78,36 +78,36 @@ cat("\n in degN ... ", degN, "\n");
 # for(i in 1:12) 
 	# {
 	# mm = m4[i, ];
-	temp.c2f = 	function(degC) { temp.convert(degC, "C", "F"); }
+	temp.c2f = 	function(degC) { temp.convert("C", "F"); }
 	# row = paste0("temp.", tolower(mm[1]), "2", tolower(mm[2]), " = function(deg", toupper(mm[1]), ", ...) { temp.convert(deg", toupper(mm[1]), ", ...,  from=\"", toupper(mm[1]), "\", to=\"", toupper(mm[2]), "\"); } ");
 	# print.noquote(row);
 	# cat(row, "\n\n");
 	# }
 
 
-temp.f2c = function(degF, ...) { temp.convert(degF, ...,  from="F", to="C"); }   
+temp.f2c = function(...) { temp.convert(...,  from="F", to="C"); }   
 
-temp.f2k = function(degF, ...) { temp.convert(degF, ...,  from="F", to="K"); }  
+temp.f2k = function(...) { temp.convert(...,  from="F", to="K"); }  
 
-temp.f2r = function(degF, ...) { temp.convert(degF, ...,  from="F", to="R"); }  
+temp.f2r = function(...) { temp.convert(...,  from="F", to="R"); }  
 
-temp.c2k = function(degC, ...) { temp.convert(degC, ...,  from="C", to="K"); }  
+temp.c2k = function(...) { temp.convert(...,  from="C", to="K"); }  
 
-temp.c2r = function(degC, ...) { temp.convert(degC, ...,  from="C", to="R"); }  
+temp.c2r = function(...) { temp.convert(...,  from="C", to="R"); }  
 
-temp.c2f = function(degC, ...) { temp.convert(degC, ...,  from="C", to="F"); }  
+temp.c2f = function(...) { temp.convert(...,  from="C", to="F"); }  
 
-temp.k2r = function(degK, ...) { temp.convert(degK, ...,  from="K", to="R"); }  
+temp.k2r = function(...) { temp.convert(...,  from="K", to="R"); }  
 
-temp.k2f = function(degK, ...) { temp.convert(degK, ...,  from="K", to="F"); }  
+temp.k2f = function(...) { temp.convert(...,  from="K", to="F"); }  
 
-temp.k2c = function(degK, ...) { temp.convert(degK, ...,  from="K", to="C"); }  
+temp.k2c = function(...) { temp.convert(...,  from="K", to="C"); }  
 
-temp.r2f = function(degR, ...) { temp.convert(degR, ...,  from="R", to="F"); }  
+temp.r2f = function(...) { temp.convert(...,  from="R", to="F"); }  
 
-temp.r2c = function(degR, ...) { temp.convert(degR, ...,  from="R", to="C"); }  
+temp.r2c = function(...) { temp.convert(...,  from="R", to="C"); }  
 
-temp.r2k = function(degR, ...) { temp.convert(degR, ...,  from="R", to="K"); }  
+temp.r2k = function(...) { temp.convert(...,  from="R", to="K"); }  
 
 
 
