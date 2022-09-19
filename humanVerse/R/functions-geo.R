@@ -3,7 +3,7 @@
 	# what about FORCE / WORK ( Newton / Joule )???
 	# not now ... 
 	# unit.tests with other libraries???
-	
+	 
 	
 	# https://www.nist.gov/system/files/documents/2021/03/18/ansi-nist_archived_2010_geographic.pdf
 	# COORDINATES ... https://en.wikipedia.org/wiki/ISO_6709
@@ -129,7 +129,7 @@ geo.dist = function(lat, lon, model="WSG84")
 
 dd2dms = function()
 	{
-	//Input= xd(long) and yd(lat)
+#	//Input= xd(long) and yd(lat)
 	
 	}
 	

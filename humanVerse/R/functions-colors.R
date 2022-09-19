@@ -584,7 +584,7 @@ color.colorsInGradient = function(n, colvec=c("red","royalblue"), alpha=FALSE)
 	
 	# color is 0 to 255 for 3 values ... or collapse 
 	# 0, 
-	my.numbers = rand(2^1 - 1, (2^8)^3 - 1, n);
+#######	my.numbers = rand(2^1 - 1, (2^8)^3 - 1, n);
 	# dec2hex(0, to.length=6)
 	# 
 

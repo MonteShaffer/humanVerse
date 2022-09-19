@@ -5,7 +5,7 @@
 
 
 math.cleanup = function() {}
-math.cleanup = function(x, tol = sqrt(.Machine$double.eps), ...)
+math.cleanup = function(x, tol = sqrt(.Machine$double.eps), part="Re")
 	{
 	# maybe sqrt(3)/2 ... or FRAC/PI ... append as attribute?, go.deep=TRUE
 	# zeros 
@@ -15,9 +15,9 @@ math.cleanup = function(x, tol = sqrt(.Machine$double.eps), ...)
 	# difference is about zero ... 
 	xi = as.integer(x);
 	d = x - xi;
-	dz = is.zero(d, tol=tol, ...);
+dput(d);
+	dz = is.zero(d, tol=tol, part=part);
 	x[dz] = xi[dz];
-		
 	x;
 	}
 
@@ -109,17 +109,17 @@ angle.convert = function(..., from="degrees", to="radians")
 	# cat(row, "\n\n");
 	# }
 
-deg2rad = function(Ad, ...) { angle.convert(Ad, ...,  from="D", to="R"); }  
+deg2rad = function(...) { angle.convert(...,  from="D", to="R"); }  
 
-deg2gon = function(Ad, ...) { angle.convert(Ad, ...,  from="D", to="G"); }  
+deg2gon = function(...) { angle.convert(...,  from="D", to="G"); }  
 
-rad2gon = function(Ar, ...) { angle.convert(Ar, ...,  from="R", to="G"); }  
+rad2gon = function(...) { angle.convert(...,  from="R", to="G"); }  
 
-rad2deg = function(Ar, ...) { angle.convert(Ar, ...,  from="R", to="D"); }  
+rad2deg = function(...) { angle.convert(...,  from="R", to="D"); }  
 
-gon2deg = function(Ag, ...) { angle.convert(Ag, ...,  from="G", to="D"); }  
+gon2deg = function(...) { angle.convert(...,  from="G", to="D"); }  
 
-gon2rad = function(Ag, ...) { angle.convert(Ag, ...,  from="G", to="R"); }  
+gon2rad = function(...) { angle.convert(...,  from="G", to="R"); }  
 
 
 	
@@ -170,134 +170,6 @@ gon2rad = function(Ag, ...) { angle.convert(Ag, ...,  from="G", to="R"); }
 
 
 
-
-
-####################### REGULAR TRIG ###########################
-math.sin = function(...)
-	{
-	# maybe do better with fractional components
-	x = prep.dots(...);
-	math.cleanup( sin(x) ); 
-	}
-	
-math.cos = function(...)
-	{
-	# maybe do better with fractional components
-	x = prep.dots(...);
-	math.cleanup( cos(x) );
-	}
-	
-math.tan = function(...)
-	{
-	# maybe do better with fractional components
-	x = prep.dots(...);
-	math.cleanup( tan(x) );
-	}
-
-cotan 		= function(...) { 1/math.tan(...); }
-cosecant 	= function(...) { 1/math.sin(...); } 	
-secant 		= function(...) { 1/math.cos(...); } 
-	
-	
-math.asin = function(...)
-	{
-	# maybe do better with fractional components
-	x = prep.dots(...);
-	math.cleanup( asin(x) );
-	}
-
-arcsin = function() {}
-arcsin = math.asin;	
-
-	
-math.acos = function(...)
-	{
-	# maybe do better with fractional components
-	x = prep.dots(...);
-	math.cleanup( acos(x) );
-	}
-
-arccos = function() {}
-arccos = math.acos;
-
-	
-	
-math.atan = function(...)
-	{
-	# maybe do better with fractional components
-	x = prep.dots(...);
-	math.cleanup( atan(x) );
-	}
-
-arctan = function() {}
-arctan = math.atan;
-
-
-# no atan2h?
-math.atan2 = function(y, x)
-	{
-	math.cleanup( atan(y, x) );
-	}
-
-arctan2 = function() {}
-arctan2 = math.atan2;
-
-
-####################### HYPERBOLIC TRIG ###########################
-
-
-math.sinh = function(...)
-	{
-	x = prep.dots(...);
-	math.cleanup( sinh(x) );
-	}
-	
-math.cosh = function(...)
-	{
-	x = prep.dots(...);
-	math.cleanup( cosh(x) );
-	}
-	
-math.tanh = function(...)
-	{
-	x = prep.dots(...);
-	math.cleanup( tanh(x) );
-	}
-
-cotanh 		= function(...) { 1/math.tanh(...); }
-cosecanth 	= function(...) { 1/math.sinh(...); } 	
-secanth 	= function(...) { 1/math.cosh(...); } 
-	
-	
-math.asinh = function(...)
-	{
-	x = prep.dots(...);
-	math.cleanup( asinh(x) );
-	}
-
-arcsinh = function() {}
-arcsinh = math.asinh;	
-
-	
-math.acosh = function(...)
-	{
-	x = prep.dots(...);
-	math.cleanup( acosh(x) );
-	}
-
-arccosh = function() {}
-arccosh = math.acosh;
-
-	
-	
-math.atanh = function(...)
-	{
-	x = prep.dots(...);
-	math.cleanup( atanh(x) );
-	}
-
-arctanh = function() {}
-arctanh = math.atanh;
 
 
 

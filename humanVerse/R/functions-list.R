@@ -317,7 +317,7 @@ list.getElements = function(info, n=1)
 
 
 
-list.mapNtoOne(dict$search, variants, type);
+# list.mapNtoOne(dict$search, variants, type);
 
 list.mapNtoOne = function(info, keys, val)
 	{
