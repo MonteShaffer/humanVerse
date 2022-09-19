@@ -1,31 +1,5 @@
 
 
-.ADD. = function(a,b)
-	{ 
-	a = as.numeric(a); 
-	b = as.numeric(b);
-	na = length(a);
-	nb = length(b);
-	out = matrix(0, nrow=na, ncol=nb);
-	
-	if(na >= nb)
-		{
-		# vector by column
-		for(i in 1:nb)
-			{
-			out[,i] = a + b[i];
-			}
-		} else {
-				# vector by row
-				for(i in 1:na)
-					{
-					out[i,] = a[i] + b;
-					}
-				}
-	math.cleanup(out);
-	}
-	
-"%+%" = .ADD.;
 
 
 # dataframe(x, y) : could not find function "dataframe"
@@ -54,72 +28,77 @@ nchars = nchar;
 ord = utf8ToInt;  # mb_ord ?
 chr = intToUtf8;
 
-prep.dots = function(..., collapse=TRUE, default=NULL, by="column")
+prep.dots = function(..., 
+						collapse 	= TRUE, 
+						default 	= NULL, 
+						append.info = TRUE, 
+						has.objects = FALSE,
+						by="column"
+					)
 	{
-	BY = prep.arg(by, n=3);
-	
-	if(collapse) 
-		{ 
+	dots = NULL;
+	if(is.null(dots) && collapse) 
+		{ 		
 		dots = unlist(list(...));
 		if(length(dots) == 0 && !is.null(default)) { dots = default; }
 		return( dots ); 
 		}
-	
-	fn = sys.calls()[[sys.nframe()-1]];
-	# parent.call = sys.call(sys.nframe() - 1L);
-	
-dput(fn);
-	finfo = parse.syscall(fn);
-		
-	dots = list(...);
-	names(dots) = finfo$pkeys;
-	
-	# let's flatten to one set of lists 
-	res = list();
-	n = length(dots);
-	for(i in 1:n)
-		{
-		dot = dots[[i]];
-		dname = paste0(finfo$pkeys[i],".",i); # keep unique ...
-		
-		# we are treating multi-dimension (matrix/df) as by.column 
-		if(is.dataframe(dot) || is.matrix(dot))
-			{
-			nd = dim(dot)[2];
-			for(j in 1:nd)
-				{
-				dcol = dot[, j];
-				dcoln = colnames(dot)[j];
-				
-				ddname = paste0(dname,".",dcoln,".",j); # keep unique
-				
-				res[[ddname]] = dcol;
-				}
-			} else { res[[dname]] = dot; }
-		}
  
-	res;
-	}
-
-
-# testit = function() { if(rand(0,1) == 1) {stop("ERROR");} else {return(1); }}
-# x = suppressError(testit);
-# x = suppressError(testit(), show.notice=FALSE); str(x);
-# x = suppressError(testit(), msg="-HI-"); str(x); if(is.error(x)) { list.fromError(x); }
-suppressError = function(expression, show.notice = TRUE, msg = "")
-	{
-	if(show.notice)
+	BY = prep.arg(by, n=3);  # don't know if we still need this 
+		
+	## EQUIV:: # # parent.call = sys.call(sys.nframe() - 1L);
+	fn = sys.calls()[[sys.nframe()-1]]; 
+	finfo = parse.syscall(fn);
+	
+dput(finfo);
+stop("monte");	
+	if(is.null(dots) && has.objects) 
 		{
-		if(msg == "") 
-			{
-			msg = "\n\n tldr; \n\n\n\t R-dev believes this is poor programming practice to allow you to \n\t\t suppressError( so they have not included it in base R.  \n\t\t It is probably true, but 'git-r-done' first, and then \n\t\t figure out the minutia such as why this function is \n\t\t throwing an error.  That is why I have past such a \n\t\t VERBOSE message to you, dear reader. \n\n\t By altering this function [set msg to something else, not empty ''], \n\t\t you can reduce the length of this message.  \n\n\t Or you can set the flag show.notice=FALSE to prevent it from printing. \n\t\t  THIS my friends is how choice architecture works!  Cheers and Aloha! \n\n\n";
-			}
-		# cat(msg);
-		warning(msg, call. = FALSE, immediate. = TRUE);
+		dots = finfo$pkeys; # just strings 
 		}
-	try( expression , silent = TRUE);
-	}
+		
+dput(dots);
+stop("monte");
 
+	if(is.null(dots))
+		{
+		dots = list(...);
+		names(dots) = finfo$pkeys;
+
+		# let's flatten to one set of lists 
+		res = list();
+		n = length(dots);
+		for(i in 1:n)
+			{
+			dot = dots[[i]];
+			dname = paste0(finfo$pkeys[i],".",i); # keep unique ...
+			
+			# we are treating multi-dimension (matrix/df) as by.column 
+			if(is.dataframe(dot) || is.matrix(dot))
+				{
+				nd = dim(dot)[2];
+				for(j in 1:nd)
+					{
+					dcol = dot[, j];
+					dcoln = colnames(dot)[j];
+					
+					ddname = paste0(dname,".",dcoln,".",j); # keep unique
+					
+					res[[ddname]] = dcol;
+					}
+				} else { res[[dname]] = dot; }
+			}
+dput(dots);
+dput(res);
+		dots = res;
+		}
+
+
+	if(length(dots) == 0 && !is.null(default)) { dots = default; }
+	
+	if(append.info) { dots = property.set("fn.info", dots, finfo); } 	
+	dots;
+	}
 
 
 
@@ -182,11 +161,40 @@ access = function(str)
 
 
 
-allNA = function(vec)
+allNA = function(x)
 	{
-	n = length(vec);
-	nna = stats.countNA(vec);
-	(n == nna);
+	idx = v.which(x, NA);
+	if(is.null(idx)) { return(FALSE); }
+	return( length(idx) == length(x) );
+	}
+
+
+anyTRUE = function(x)
+	{
+	idx = v.which(x, TRUE);
+	if(is.null(idx)) { return(FALSE); }
+	return(TRUE);
+	}
+	
+allTRUE = function(x)
+	{
+	idx = v.which(x, TRUE);
+	if(is.null(idx)) { return(FALSE); }
+	return( length(idx) == length(x) );
+	}
+
+anyFALSE = function(x)
+	{
+	idx = v.which(x, FALSE);
+	if(is.null(idx)) { return(FALSE); }
+	return(TRUE);
+	}
+	
+allFALSE = function(x)
+	{
+	idx = v.which(x, FALSE);
+	if(is.null(idx)) { return(FALSE); }
+	return( length(idx) == length(x) );
 	}
 
 
@@ -211,6 +219,173 @@ gggassign = function(key, val)
 	assign(key, val, envir = .GlobalEnv);
 	return(invisible(NULL));
 	}
+	
+.GLOBAL. = function(KEY, VALUE)
+	{
+	ct.KEY = check.type(KEY);
+	ct.VAL = check.type(VALUE);
+	
+	# key %GLOBAL% .
+	# grab name/val from it 
+	if(ct.KEY && !ct.VAL)
+		{
+		val = KEY;
+		key = deparse(substitute(KEY));
+		return(gggassign(key,val));
+		}
+		
+	# . %GLOBAL% val
+	# grab name/val from it 
+	if(!ct.KEY && ct.VAL)
+		{
+		val = VALUE;
+		key = deparse(substitute(VALUE));
+		return(gggassign(key,val));
+		}
+		
+	# "key" %GLOBAL% val 
+	key = KEY;
+	# what if "key" is not a string yet?
+	if(!is.character(KEY)) { key = deparse(substitute(KEY)); }
+	gggassign(key,VALUE);	
+	}
+	
+"%GLOBAL%" = .GLOBAL.;
+
+
+
+  
+ 
+ 
+ 
+
+
+ 
+.TO. = function() {}
+.TO. = function(WHAT, WHERE=parent.frame(2))
+	{
+cat("\n");
+print(environment());
+print(parent.env(environment()));
+print(parent.env(parent.env(environment())));
+	#DEFAULT = parent.frame(1); # caller? parent
+	DEFAULT = parent.frame(2); # one above caller? grandparent
+	# allows x %TO% . 
+	ct.WHERE = check.type(WHERE);
+	if(!ct.WHERE) { WHERE = DEFAULT; }
+		
+	val = WHAT;
+	key = deparse(substitute(WHAT));		
+	assign(key, val, envir=WHERE );
+	}
+	
+"%TO%" = .TO.;	
+	
+	
+# x = 44;
+# y = function(envir = .GlobalEnv) { x=NULL; x %TO% envir; }
+# y();
+# x; 
+
+
+
+
+
+
+
+
+# this = function(...) { print(sys.call(1)); }
+#  .%THIS%.
+.THIS. = function() {}
+.THIS. = function(KEY, VALUE, WHERE = parent.frame(1) ) 
+	{
+ 	DEFAULT_FRAME 	= 1;	# parent.frame(n);
+	DEFAULT_CALL 	= 1;	# sys.call(n); 
+		
+	## KEY is the FRAME 
+	ct.KEY = check.type(KEY);
+	key = NULL;
+	if(is.null(key) && !ct.KEY) 
+		{
+		key = parent.frame(DEFAULT_FRAME);		
+		}
+	if(is.null(key) && is.environment(KEY))
+		{
+		key = KEY;
+		}
+	if(is.null(key) && is.numeric(KEY))
+		{		
+		key = parent.frame(KEY);
+		}
+
+	ct.VAL = check.type(VALUE);
+	## VALUE is the CALL
+	val = NULL;
+	if(is.null(val) && !ct.VAL)
+		{
+		val = sys.call(DEFAULT_CALL);		
+		}
+	if(is.null(val) && is.numeric(VALUE))
+		{		
+		val = sys.call(VALUE);
+		}
+
+	# parse key/val ... get what we want 
+	# key is envir 
+	# val is call with parameters 
+	# 
+
+	fn = sys.calls()[[sys.nframe()-1]];  # close 
+	# parent.call = sys.call(sys.nframe() - 1L);  # equivalent?
+	finfo = parse.syscall(fn);
+  
+	res = list("envir" = key, "call" = val, "fn.info" = finfo);
+		
+	# WHERE=parent.frame(1); # or WHERE = env?
+	assign("THIS", res, envir=WHERE );
+	}
+	
+"%THIS%" = .THIS.; 
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+.ADD. = function(a,b)
+	{ 
+	a = as.numeric(a); 
+	b = as.numeric(b);
+	na = length(a);
+	nb = length(b);
+	out = matrix(0, nrow=na, ncol=nb);
+	
+	if(na >= nb)
+		{
+		# vector by column
+		for(i in 1:nb)
+			{
+			out[,i] = a + b[i];
+			}
+		} else {
+				# vector by row
+				for(i in 1:na)
+					{
+					out[i,] = a[i] + b;
+					}
+				}
+	math.cleanup(out);
+	}
+	
+"%+%" = .ADD.;
 	
 	
 .PLUSPLUS. = function() {}
@@ -269,37 +444,19 @@ gggassign = function(key, val)
 	
 	
 	
-.GLOBAL. = function(KEY, VALUE)
-	{
-	ct.KEY = check.type(KEY);
-	ct.VAL = check.type(VALUE);
-	
-	# key %GLOBAL% .
-	# grab name/val from it 
-	if(ct.KEY && !ct.VAL)
-		{
-		val = KEY;
-		key = deparse(substitute(KEY));
-		return(gggassign(key,val));
-		}
-		
-	# . %GLOBAL% val
-	# grab name/val from it 
-	if(!ct.KEY && ct.VAL)
-		{
-		val = VALUE;
-		key = deparse(substitute(VALUE));
-		return(gggassign(key,val));
-		}
-		
-	# "key" %GLOBAL% val 
-	key = KEY;
-	# what if "key" is not a string yet?
-	if(!is.character(KEY)) { key = deparse(substitute(KEY)); }
-	gggassign(key,VALUE);	
-	}
-	
-"%GLOBAL%" = .GLOBAL.;
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -363,108 +520,6 @@ IN = function(KEY, VALUE, mem.key = "-CURRENT_IN-")
    
 "%IN%" = IN;
  
-# this = function(...) { print(sys.call(1)); }
-#  .%THIS%.
-.THIS. = function(KEY, VALUE) 
-	{
- 	DEFAULT_FRAME 	= 1;	# parent.frame(n);
-	DEFAULT_CALL 	= 1;	# sys.call(n); 
-		
-	## KEY is the FRAME 
-	ct.KEY = check.type(KEY);
-	key = NULL;
-	if(is.null(key) && !ct.KEY) 
-		{
-		key = parent.frame(DEFAULT_FRAME);		
-		}
-	if(is.null(key) && is.environment(KEY))
-		{
-		key = KEY;
-		}
-	if(is.null(key) && is.numeric(KEY))
-		{		
-		key = parent.frame(KEY);
-		}
-
-	ct.VAL = check.type(VALUE);
-	## VALUE is the CALL
-	val = NULL;
-	if(is.null(val) && !ct.VAL)
-		{
-		val = sys.call(DEFAULT_CALL);		
-		}
-	if(is.null(val) && is.numeric(VALUE))
-		{		
-		val = sys.call(VALUE);
-		}
-
-	# parse key/val ... get what we want 
-	# key is envir 
-	# val is call with parameters 
-	# 
-
-	fn = sys.calls()[[sys.nframe()-1]];  # close 
-	# parent.call = sys.call(sys.nframe() - 1L);  # equivalent?
-	finfo = parse.syscall(fn);
-  
-	res = list("envir" = key, "call" = val, "fn.info" = finfo);
-		
-	WHERE=parent.frame(1); # or WHERE = env?
-	assign("THIS", res, envir=WHERE );
-	}
-	
-"%THIS%" = .THIS.; 
-  
- 
- 
- 
-dput.one = function(x, ...)
-	{
-	str = capture.output(dput(x, ...));
-	cat("\n\n", str, "\n\n", sep = "");	
-	minvisible(str, print=FALSE);
-	}
-
- 
-.TO. = function() {}
-.TO. = function(WHAT, WHERE=parent.frame(2))
-	{
-cat("\n");
-print(environment());
-print(parent.env(environment()));
-print(parent.env(parent.env(environment())));
-	#DEFAULT = parent.frame(1); # caller? parent
-	DEFAULT = parent.frame(2); # one above caller? grandparent
-	# allows x %TO% . 
-	ct.WHERE = check.type(WHERE);
-	if(!ct.WHERE) { WHERE = DEFAULT; }
-		
-	val = WHAT;
-	key = deparse(substitute(WHAT));		
-	assign(key, val, envir=WHERE );
-	}
-	
-"%TO%" = .TO.;	
-	
-	
-# x = 44;
-# y = function(envir = .GlobalEnv) { x=NULL; x %TO% envir; }
-# y();
-# x; 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -688,19 +743,51 @@ magicFunction = function(KEY, to="character")
 	stop("how did I get here");
 	return(NULL);
 	}
-	
+	 
 	
 parse.syscall = function(syscall)
 	{
+	# none of these functions can have dots (...)  ::: prep.dots(...)
 	str = lang2str(syscall);
-	info = str.explode("(" , str);
-	fn = str.trim(info[1]);
+	info = strsplit(str, "(", fixed=TRUE)[[1]];
+	fn = trimws(info[1], which="both");	
 		f 	 = as.list(formals(fn));
 		keys = names(f);
 		vals = as.character(f);		
-		
+	
 	# put everything back but the function call 
 	nstr = str.implode("(", info[-c(1)] );
+	nstr = str.replace(")", "", nstr);
+	
+	ninfo = strsplit(nstr, ",", fixed=TRUE);
+	minfo = trimws( strsplit(ninfo[[1]], "=", fixed=TRUE), which="both");
+	
+	pkeys = str.replace('"', "", list.getElements(minfo, 1) );
+	pvals = list.getElements(minfo, 2);
+	
+	n = length(pkeys);
+	params = list();
+	for(i in 1:n)
+		{
+		pval = pvals[i];
+		if(!is.na(pval))
+			{
+			params[[ pkeys[i] ]] = eval(parse(text=pval));
+			} 
+		} 
+	 
+	# trimws collapses list, strsplit DOESN'T collapse list 
+	# ARGH!?DSM
+	# trimws(strsplit(ninfo, "=", fixed=TRUE), which="both");
+
+dput(nstr);
+print(str(minfo));
+cat("\n\n", " .... ", info[1] , "\n\n\n");
+print(str(ninfo));
+dput(fn);
+stop("monte");
+
+
 	nstr = str.replace(")", "", nstr);
 	ninfo = check.list(str.explode('=', str.trim(str.explode("," , nstr))));
 	n = length(ninfo);
@@ -712,7 +799,8 @@ parse.syscall = function(syscall)
 		pval = pvals[i];
 		if(!is.na(pval))
 			{
-			params[[ pkeys[i] ]] = eval(parse(text=pval));
+			# EVAL is dangerous at this moment  # eval(parse(text=pval));
+			params[[ pkeys[i] ]] = pval;
 			}
 		# params[[ pkeys[i] ]] = NA;  # you can't always trap NULL ... 
 		} 
@@ -842,3 +930,25 @@ strip_tags = strip.tags;
 
 
 
+
+dput.one = function(x, ...)
+	{
+	str = capture.output(dput(x, ...));
+	cat("\n\n", str, "\n\n", sep = "");	
+	minvisible(str, print=FALSE);
+	}
+	
+
+# if a matrix gets to length one in rows (or cols)???
+# for some reason R truncates it to a vector ... 
+keep.matrix = function(X, nrow=3, ...)
+	{
+		# unlist of matrix is by.col 
+	X.matrix = as.numeric( unlist( X ) );
+		# force input to [3 x n] matrix
+		# default is by.col 
+	X.matrix = matrix(X.matrix, nrow=nrow, ...); 
+	X.matrix;
+	}
+	
+	

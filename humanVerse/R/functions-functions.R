@@ -1,6 +1,13 @@
 
 
 
+params = function(...)
+	{
+	x = prep.dots(..., as="character");
+	
+	}
+
+
 # if NEW exists, it overrides the DEFAULT (cascade)
 map.args = function(DEFAULT, NEW)
 	{
@@ -74,9 +81,10 @@ prep.arg = function(key, n=1, keep="", case = "lower", extra = "")
 #dput(str);  
 		tmp = strsplit(str, keep, fixed=TRUE)[[1]];
 		res = paste0( substring(tmp, 1, n), collapse=keep);
-		return(res);
+		return(v.return(res));
 		}
-	substring(str, 1, n);
+	
+	v.return(substring(str, 1, n));
 	} 
 
 
@@ -211,7 +219,7 @@ function.sourceInfo = function(src.obj, to.rm=c("parseData"))
 		# as.character(val);
 		}
 	res;	
-	}
+	} 
 
 #base::str2lang; 
 	# str = "x + 2*y"; slang = str2lang(str); str2 = lang2str(slang); 

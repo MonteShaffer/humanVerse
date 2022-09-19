@@ -1,5 +1,12 @@
 
 
+
+
+
+
+
+
+
 help.viewPackage = function(...)
 	{
 	pkg = str.fromObjectName(...);

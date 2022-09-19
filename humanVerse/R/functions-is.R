@@ -160,48 +160,25 @@ is.error = function(e, where="suppressError")
 #' @export
 #'
 #' @examples
-is.library = function(str = "stringi", suggestion=TRUE)
-	{
-	checktype = check.type(str);
-	if(!checktype) { str = as.character(substitute(str)); }
-	res = isTRUE(requireNamespace( str , quietly = TRUE));
-	if(!res && suggestion)
-		{
-		pkg = paste0( "install.packages(\"",str,"\", dependencies=TRUE ); ")
-		msg = paste0("\n\n", str.commentWrapper("LIBRARY is not found!"), "\n\n",
-					"You could try installing the package: ", "\n\n",
-					str.commentWrapper( pkg, r.tag = "-", s.pad=15), "\n");
-		warning(msg);
-		# cat.me(msg, "warning"); 	# does color removal if in place
-									# <b><i><u><br>ight, <color fg= bg=>
-									# I think I wrote a downloader once, overwrite with this?
-									# RGUI windows?
-		
-		}	
-	names(res) = str; 
-	res;
-	}
+
 
 
 # strV = "stringi", 
-are.libraries = function(..., suggestion=TRUE)
+is.library = function(..., suggestion=TRUE, character.only = FALSE)
 	{
-	# if I make multivariate, must be string input ... 
-	strV = prep.dots(...);	
-	# make multivariate?
-	n = length(strV);
+	pkgs = prep.dots(..., collapse=character.only, has.objects=!character.only, default="stringi");	
+	n = length(pkgs);
 	res = logical(n);
 	for(i in 1:n)
 		{
-		str = strV[i];
-		# if(!is.character(str)) { str = as.character(substitute(str)); }
-		res[i] = isTRUE(requireNamespace( str , quietly = TRUE));
+		pkg = pkgs[i];
+		res[i] = isTRUE(requireNamespace( pkg , quietly = TRUE));
 		if(!res[i] && suggestion)
 			{
-			pkg = paste0( "install.packages(\"",str,"\", dependencies=TRUE ); ")
+			ipkg = paste0( "install.packages(\"",pkg,"\", dependencies=TRUE ); ")
 			msg = paste0("\n\n", str.commentWrapper("LIBRARY is not found!"), "\n\n",
 						"You could try installing the package: ", "\n\n",
-						str.commentWrapper( pkg, r.tag = "-", s.pad=15), "\n");
+						str.commentWrapper( ipkg, r.tag = "-", s.pad=15), "\n");
 			warning(msg);
 			# cat.me(msg, "warning"); 	# does color removal if in place
 										# <b><i><u><br>ight, <color fg= bg=>
@@ -210,7 +187,7 @@ are.libraries = function(..., suggestion=TRUE)
 			
 			}
 		}
-	names(res) = strV;
+	names(res) = pkgs;
 	res;
 	}
 

@@ -1,19 +1,33 @@
 
 # str(dcf.get("tibble"));
-# str(dcf.get(tibble));
-dcf.get = function(..., return="list")
-	{
+# str(dcf.get(tibble)); 
+dcf.get = function(..., return="list", character.only = FALSE)
+	{ 
 debug = FALSE;
+	pkgs = prep.dots(..., collapse=character.only, has.objects=!character.only, default="stringi");
+dput(pkgs); stop("monte");
+
+	idx = is.library(pkgs, character.only = TRUE);
+	bad = v.return(pkgs[!idx]);
+		if(!is.null(bad)) { cat.warning("\n\n", "bad package names: maybe not installed", bad, "\n\n"); }
+	good = v.return(pkgs[idx]);
+		if(is.null(good)) { cat.stop("no good packages"); }
+dput(pkgs);
+
+
+
+
+
 	# univariate, string or obj input
 	pkg = str.fromObjectName(...);
-	r = prep.arg(return, 1);
+	RETURN = prep.arg(return, 1);
 	pkg.ns = suppressError( getNamespace(pkg), show.notice=debug, msg="debug dcf.get ");
 	if(is.error(pkg.ns)) { return(NULL); }
 	# CACHING mechanism as JSON files
 	
 	# get the data 
 	h = help.get(pkg); dcf = dcf.parse( h$info[[1]] );
-	if(r == "j") { json = JSON.stringify(dcf); return(dcf); }
+	if(RETURN == "j") { json = JSON.stringify(dcf); return(dcf); }
 	dcf;
 	}
 
@@ -37,7 +51,7 @@ dcf.getKey = function(..., key = "Version")
 
 
 
-# first RUN was "tibble" 
+# first RUN was "tibble"  
 # pkgs = .packages(); np = length(pkgs); idx = sample(1:np, 1); pkg = pkgs[idx];  h = help.get(pkg); dcf = dcf.parse( h$info[[1]] ); str(dcf); print(pkg);
 	
 dcf.parse = function(dcfstr)

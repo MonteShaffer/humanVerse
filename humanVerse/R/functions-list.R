@@ -13,7 +13,6 @@ check.list = function(input)
 	res;
 	}
 
-list.prep = check.list;
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
@@ -36,9 +35,17 @@ list.return = function(res, unlist=FALSE)
 	}
 
 
-#' @rdname returnList
-#' @export
-returnList = list.return;
+list.removeFillFromEnd = function(info, fill="~")
+	{
+	n = length(info);  # assumes it is a list ... list IN/list OUT
+	nlen = list.getLengths(info);
+	vals = list.getElements(info, nlen);
+	nvals = str.end(vals, fill, trim=TRUE);
+	
+	ninfo = list.setElements(info, nlen, nvals);
+	ninfo;
+	}
+
 
 # functions.setDefaultValues(list.toString);
 # functions.setDefaultValues("list.toString");
@@ -306,15 +313,33 @@ list.getElements = function(info, n=1)
 	## sapply(info, "[[", n);  # this doesn't work with MISSING/NULL
 	## ... this would be nice ... info[[,2]] or info[[*2]]
 	res = NULL;
+	if(length(n) != n.info) { n = rep(n, length.out=n.info); }
 	for(i in 1:n.info)
 		{
-		res[i] = info[[i]][n];  # will put NA if missing here
+		res[i] = info[[i]][  n[i]  ];  # will put NA if missing here
 		}
 	res;
 	}
 
 
 
+list.setElements = function(info, n=1, vals=NULL)
+	{
+	n.info = length(info);
+	if(!is.list(info)) { return(info[n]); }
+	if(n.info == 0) { return(NULL); }
+	if(is.null(vals)) { return(NULL); }  # message, bad INPUT ??? 
+	## sapply(info, "[[", n);  # this doesn't work with MISSING/NULL
+	## ... this would be nice ... info[[,2]] or info[[*2]]
+	res = NULL;
+	if(length(n) != n.info) { n = rep(n, length.out=n.info); }
+	if(length(vals) != n.info) { vals = rep(vals, length.out=n.info); }
+	for(i in 1:n.info)
+		{
+		info[[i]][  n[i]  ] = vals[i];
+		}
+	info;
+	}
 
 
 # list.mapNtoOne(dict$search, variants, type);
@@ -362,113 +387,6 @@ list.fromError = function(e)
 
 
 
-
-
-
-
-# wrap into memory.get ???   STACK ... key ... could have multiple
-list.initStack = function(nmax)
-	{
-	my.stack = list();
-	for(idx in 1:nmax)
-		{
-		my.stack[[idx]] = list();
-		}
-	my.stack;	
-	}
-	
-	
-list.countStack = function(veclist, nmax=length(veclist))
-		{
-		i = 0;
-		for(j in 1:nmax)
-			{
-			n = length(veclist[[j]]);
-			if(n > 0) { i = 1 + i; }
-			}
-		i;
-		}
-		
-	
-# # https://stackoverflow.com/questions/28687806/a-better-way-to-push-and-pop-to-from-lists-in-r
-list.push = function() {}
-list.push = function(nlist, veclist=NULL, nmax=1+length(veclist), method="FIFO")
-  {
- # nc = list.countStack(veclist);  # if we init the stack with empty elements (good practice), this will NOT now work....
- # print(nc);
-  
- # if(nc >= nmax)
-
-	  if(method=="FIFO")
-		{
-		veclist = append(veclist, nlist);
-		} else { 
-				veclist = append(nlist, veclist);
-				}
-
-	# veclist[[nc + 1]] = nlist;  # replace first element or whichever is first empty
-	# veclist[[nmax - nc]] = nlist; # replace last element or whichever is last empty 
-
-			
-	
-	
-	n = length(veclist);
-	dropped = NULL;
-	if(n > nmax)
-		{
-		if(method=="FIFO")
-			{
-			dropped = veclist[[1]];  # QUEUING
-			veclist[[1]] = NULL;
-			
-			} else { 
-					dropped = veclist[[nmax]];
-					veclist[[nmax]] = NULL; # should only be one ...
-					}
-		}
-	# lists of numeric type auto-update indexing?
-	# veclist;
-	
-	details = list("veclist" = veclist, "dropped" = dropped, "nlist"=nlist, nmax=nmax, method=method);
-	# veclist = setAttribute("details", details, veclist);
-	
-	veclist = setAttribute("dropped", dropped, veclist);
-	veclist = setAttribute("stack-size", nmax, veclist);
-	veclist = setAttribute("method", method, veclist);
-	veclist;
-  }
-  
-  # mlist=list(); mlist[[1]] = "monte"; nlist = list(); nlist[[1]] = "alex";
-  # (mlist=list.push(nlist,mlist,nmax=4))
-  
-  # nlist = list(); nlist[[1]] = "alex"; vlist = list.initStack(5);
-  # nlist[[1]] = paste0("alex-", rand()); (vlist=list.push(nlist,vlist,nmax=5))
-  
-  
-list.pop = function() {}  
-list.pop = function(veclist, n=length(veclist), method="FIFO")
-	{
-	if(method=="FIFO")
-			{
-			popped = veclist[[1]];  # QUEUING
-			veclist[[1]] = NULL;
-			
-			} else { 
-					popped = veclist[[n]];
-					veclist[[n]] = NULL; # should only be one ... by default LAST one
-					}
-	
-	veclist = setAttribute("popped", popped, veclist);
-	veclist = setAttribute("method", method, veclist);
-	veclist;	
-	}
-	
-	
-  
-# popList = function(nlist, veclist, n=length(veclist))
-  {
-
-  }
 
 
 

@@ -202,35 +202,9 @@ v.color = function(..., names.search="base", alpha=TRUE)
 	
 
 
-
+# just use v.chain ... for hexcolor.math ... 
+# v.chain(vec, hex2dec, mean, dec2hex, hex.prepend)
 # FUN="stats.mean"
-hexcolor.math = function(..., FUN=NULL, alpha=TRUE, skip.checks=FALSE)
-	{
-	vecHEX = prep.dots(...);
-	if(!skip.checks)
-		{
-		# nested function can call a parent and have skip.checks=TRUE 
-		# if the check was already performed in the child 
-		vecHEX = v.color(vecHEX, alpha=alpha); # should be HEX, but now it is with ALPHA
-		}
-		
-	num = hex2dec(vecHEX);
-	TEMPLATE = paste0("res = ",FUN,"(num);"); 
-	info = eval(parse(text = TEMPLATE));
-	
-	TEMPLATE = paste0(FUN,"(num);");
-	res = eval(parse(text = TEMPLATE));
-	
-dput(FUN);
-	fn = as.character(substitute(FUN));
-dput(fn);
-	# eval.fromTemplate(TEMPLATE, key, value);
-	
-	dec2hex(sapply(hex2dec(c("#333333","#454545")), mean))
-
-	
-	}
-
 
 	
 hexcolor.gradient = function(..., n=5, force.length=FALSE, alpha=FALSE, skip.checks=FALSE)

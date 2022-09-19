@@ -102,3 +102,59 @@ v.truncate = function(vec, parent, by="value", invert=FALSE)
 	# res = set.diff(parent, vec);
 	v.return(res);
 	}
+
+
+
+
+
+# e = yt - y.hat
+# xls.RMSE(e) ... xls.ME ... xls.MAD ... xls.MPE ... xls.MAPE 
+# xls.RSQ ... xls.INTERSEPT ... xls.SLOPE ... 
+# rewrite TRENDLINE function ... trendline ... use only xls.COMMANDS 
+# transform the x, y to call SLOPE/INTERSEPT 
+# fn = B0 + B1x1 + B2x2
+# linear prob / logistic / 2-param Richards (floor=0, ceil=1) ... equivalent?
+# sigma() ... fitted() ... 
+# accuracy() ... forecast::forecast()
+# matching coefficient ... jaccards coefficient
+# misscaliffication aka error
+# sensitivity ... aka recall
+# 
+
+set.info = function(A, B)
+	{
+	all = c(A,B);
+	all.u = unique(all);
+	
+	A = c(1,1,3,4); # table(A);  FREQ ,,, 
+	B = c(5,3,3,1); # table(B);  FREQ ,,,
+	
+	# match is like which.min ... just returns the first element 
+	# set.info do everything ... dataframe ... duplicates yes or no version 
+	# 
+	
+	}
+	
+set.union = function(A, B, allow.duplicates=FALSE)
+	{
+	all = c(A,B);
+	
+	}
+	
+# R set theory is wrong ... based on unique indexes?
+# allow.duplicates=FALSE (replicate R behavior)
+# pair theory ... not useful in data 
+# https://www.youtube.com/watch?v=AAJB9l-HAZs
+# complemtn of A/B from universal 
+# x = 1,2,3 ... y = 3,1,3 ... 
+# union would be collection with matches removed as duplicates
+# unique or duplicates are not pair-matching ... bad design
+# we don't assume in set theory that members of x are UNIQUE, do we?
+# set.subtract (a from b)
+# str.subtract (a from b)
+# x = set* first 10 primes AND first 10 odd numbers ... duplicate entries
+# y = set* first 3 primes, 8th prime ... AND third/fifth odd number 
+# what does UNION imply?  INTERSECT, etc.  unique/duplicate seems wrong.
+
+	
+	

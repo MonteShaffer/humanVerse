@@ -176,7 +176,7 @@ str.toCase = str.case;
 #'
 #------------------------------------------------#
 str.trim = function(str, side="both", method="stringi", pattern="", ...)
-  {
+  { 
   # do something smart with dots.addTo ... 
   # based on CALLER formals ...
   # assign back "side", method, pattern in order ... 
@@ -267,44 +267,49 @@ str.explode = function(sep = " ", str = "hello friend", method="stringi")
 
 	hasResult = FALSE;
 
-	if(!hasResult && METHOD == "s" && is.library("stringi") )
+	if(!hasResult && METHOD == "s" && is.library("stringi") && sep != "" )
 		{
 		res = (stringi::stri_split_fixed(str, sep));
 		hasResult = TRUE;
 		}
 
-	if(!hasResult && METHOD == "c" && exists("cpp_explode"))
+	if(!hasResult && exists("cpp_explode"))
 		{
+		# must not have exported it ... 
 		res = ( cpp_explode(sep, str) );
 		hasResult = TRUE;
 		}
 	
-	if(!hasResult)  
+	if(!hasResult && sep=="")  
+		{
+		res = strsplit(str, sep, fixed=TRUE);
+		hasResult = TRUE;
+		}
+		
+	if(!hasResult)
+		{
+		end = str.end(str, sep);
+		if(allFALSE(end)) 
+			{ 
+			res = strsplit(str, sep, fixed=TRUE);
+			hasResult = TRUE;
+			}		
+		}
+		
+	if(!hasResult)	
 		{
 		# stringi works as expected, what about cpp?
 		# if "<i>humanVerse</i>" ... 
 			# "<i>" returns "" "humanVerse</i>"
 			# "</i>" returns "<i>humanVerse" without trailing "" 
 			# SO ... it's a feature ... 
+		# is separator at END? 
+		# good = !end; bad = end;
 			fill = "~"; if(sep == "~") { fill = "^"; }
-			flen = str.len(fill);
 			tmp = paste0(str,fill);
-		res = tres = strsplit(tmp, sep, fixed=TRUE);
-			nt = length(tres);
-			tlen = list.getLengths(tres);
-		for(i in 1:nt)
-			{
-			sidx = tlen[i];
-			element = tres[[i]][ sidx ];
-			slen = str.len(element);
-			
-			if(slen == flen) { element = ""; }
-			if(slen > flen)  { element = substring(element, 1, slen-flen); }
-			res[[i]][ sidx ] = element;
-			}
-			
-		# res = strsplit(str, sep, fixed=TRUE);
-		# res;
+		tres = strsplit(tmp, sep, fixed=TRUE);
+		tres = check.list(tres);		
+		res = list.removeFillFromEnd(tres, fill=fill);
 		}
 
 	# will be collapsed into CharacterVector if len == 1
@@ -333,11 +338,11 @@ str.split = str.explode;
 str.implode = function(sep=" ", str, method="base")
 	{
 	# necessary overhead
-	m = prep.arg(method, 1);
+	METHOD = prep.arg(method, 1);
 	# if(!is.list(str)) { tmp = str; str = list(); str[[1]] = tmp; }
 	str = check.list(str);  # maybe redundant of a check from another function
 
-	if(m == "c" && exists("cpp_implode"))
+	if(METHOD == "c" && exists("cpp_implode"))
 		{
 		res = ( cpp_implode(sep, str) );
 		return(res);
@@ -702,6 +707,21 @@ str.translate = function(str, to="latin-ascii")
 
 
 
+str.end = function(str, search="</i>", trim = FALSE )
+	{
+	strlen = str.len(str);
+	slen = str.len(search);
+		start = strlen - slen + 1;	idx = v.return(which(start < 1));
+		if(!is.null(idx)) { start[idx] = 1; }
+	sub = substring(str, start, strlen);	
+	res = (sub == search);
+	if(!trim) { return(res); }
+	rem = substring(str, 1, (start-1));  # TEST  ... str == paste0(rem,sub)
+	
+	nstr = str;
+	nstr[res] = rem[res];
+	nstr;
+	}
 
 # STRPOS() returns the index of the first occurence of its second argument (“needle”) in its first argument (“haystack”), or -1 if there are no occurrences.
 
@@ -744,3 +764,5 @@ str.pos = function(str, search, n=Inf, skip=0)
 		}
 	list.return(res);
 	}
+	
+strpos = str.pos;
