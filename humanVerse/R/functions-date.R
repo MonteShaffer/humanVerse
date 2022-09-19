@@ -1,4 +1,32 @@
 
+
+# as.POSIXct("2000-01-01") ... formal replace took tz, but didn't implement ... 
+
+
+check.date = function(...)
+	{
+	strs = prep.dots(...);
+debug = FALSE;
+	n = length(strs);
+	res = logical(n);
+	for(i in 1:n)
+		{
+		str = strs[i];
+		x = suppressError( as.POSIXct(str, tz="UTC"), 
+								show.notice=debug,
+								msg="debugging check.date" 
+							);
+		res[i] = !is.error(x);
+		}
+	res;
+	}
+
+
+
+
+
+
+
 # PI = 3.1415926535897932384626433;
 # PHI = (1 + sqrt(5) ) / 2 ;
 # E = exp(1);

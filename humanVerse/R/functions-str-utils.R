@@ -347,36 +347,6 @@ ucwords = str.capitalizeWords;
 
 
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-#'
-#' str.stripTags
-#'
-#'
-#------------------------------------------------#
-str.stripTags = function(...)
-	{
-	str = prep.dots(...);
-	return(gsub("<.*?>", "", str));
-	}
-	
-
-#++++++++++++++++++++++++#
-#'
-#' @rdname strip.tags
-#' @export
-strip.tags = str.stripTags;
-
-
-#++++++++++++++++++++++++#
-#'
-#' @rdname strip_tags
-#' @export
-strip_tags = str.stripTags;
-str.striptags = str.stripTags;
-
-
-
-
 str.replaceN = function(search, replace, subject, method="base", times=1)
 	{
 	res = subject;

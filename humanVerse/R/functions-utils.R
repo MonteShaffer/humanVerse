@@ -41,6 +41,10 @@ ceil = ceiling;
 # natural log as log ... log10 is other, AS-IS so no collision ... 
 ln = log; 
 
+e = E = exp(1);
+PI = 3.1415926535897932384626
+PHI = (1+sqrt(5))/2;
+
 axes = axis;
 
 #' @rdname nchars
@@ -769,6 +773,34 @@ as.type = function(vals, types="character", ...)
 #' @export
 as.Type = as.type;
 
+
+
+
+check.type = function(...)
+	{
+debug = FALSE;
+	checktype = suppressError( typeof(...), 
+								show.notice=debug,
+								msg="debugging typeof check.type REGULAR" 
+							);
+	res = TRUE;
+	if(is.error(checktype)) { res = FALSE; }
+	res = property.set("typeof", res, checktype);
+	res;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
 #' @rdname readChars
 #' @export
 readChars = readChar;
@@ -782,5 +814,31 @@ readChars = readChar;
 # https://stackoverflow.com/a/22556198/184614
 # https://stackoverflow.com/a/71453653/184614
 # The @export docstring informs Roxygen to to put the function name in the package NAMESPACE file
+
+
+
+
+
+
+
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#'
+#' strip.tags
+#'
+#'
+#------------------------------------------------#
+strip.tags = function(...)
+	{
+	str = prep.dots(...);
+	return(gsub("<.*?>", "", str));
+	}
+	
+	
+striptags = strip.tags;
+str.striptags = strip.tags;
+strip_tags = strip.tags;
+
 
 

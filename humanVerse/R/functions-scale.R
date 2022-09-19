@@ -1,12 +1,12 @@
 
 
-fn.norm = function(method="euclidean")
+fn.scale = function(method="euclidean")
 	{
 	ct.METHOD = check.type(method);
 	if(!ct.METHOD || !is.character(method))	
 		{ method = deparse(substitute(method)); }
 	
-	NORM = list(
+	SCALE = list(
 		"sum" = function(x) { x/sum(x); },
 		"manhattan" = function(x) { x/sum(abs(x)); },  		# L1
 		"euclidean" = function(x,k=2) { xa = abs(x); xam = max(xa); norm = xam * ( (sum((xa / xam)^k))^(1/k) ); x/norm; },  	# L2+ (overflow prevention
@@ -25,18 +25,18 @@ fn.norm = function(method="euclidean")
 	# if ALL, return the LIST ... NULL ... otherwise just the function ... 
 	# load function into MATRIX call, so it is just looping ... not having to check which method ...
 
-	if(is.null(method)) { return (NORM); }
-	fn = NORM[[method]]; 
-	if(is.null(fn)) { return (NORM); }
+	if(is.null(method)) { return (SCALE); }
+	fn = SCALE[[method]]; 
+	if(is.null(fn)) { return (SCALE); }
 	fn;
 	}
 
-.norm = function(vec, method="sum", ...)
+.scale = function(vec, method="sum", ...)
 	{
 	# no checks, this better be well-formatted 
-	fn = fn.norm(method); # get the appropriate function 	
+	fn = fn.scale(method); # get the appropriate function 	
 
-cat("\n .norm(vec, method=\"",method,"\", ...) \n\n", sep="");
+cat("\n .scale(vec, method=\"",method,"\", ...) \n\n", sep="");
 cat(fn.replaceParameters(fn, list(...) ), sep="\n"); 
 cat("\n\n");
 	
@@ -54,7 +54,7 @@ cat("\n\n");
 	fn(x, ...);	
 	}	
 	
-prep.norm = function(METHOD)
+prep.scale = function(METHOD)
 	{
 	IN.init();
 	key = NULL;
@@ -102,7 +102,7 @@ prep.norm = function(METHOD)
 	
 	
 
-v.norm = function(vec, method="sum", ..., force.abs=FALSE, na.rm=TRUE, show.warning=na.rm)
+v.scale = function(vec, method="sum", ..., force.abs=FALSE, na.rm=TRUE, show.warning=na.rm)
 	{ 
 	# this works naturally, AS-IS on vectors/matrices
 	if(is.dataframe(vec)) { vec = as.matrix(vec); }
@@ -112,7 +112,7 @@ v.norm = function(vec, method="sum", ..., force.abs=FALSE, na.rm=TRUE, show.warn
 		{ method = deparse(substitute(method)); }
 	
 	METHOD = prep.arg(method, n=3, keep="-");
-	KEY = prep.norm(METHOD);
+	KEY = prep.scale(METHOD);
 	if(KEY == "--NULL--")
 		{
 		df = property.get("IN", KEY);
@@ -125,6 +125,6 @@ v.norm = function(vec, method="sum", ..., force.abs=FALSE, na.rm=TRUE, show.warn
 	vec = stats.warningNA(vec, show.warning=show.warning); 
 	if(force.abs) { vec = abs(vec); }
 	
-	return( .norm(vec, as.character(KEY), ...) );
+	return( .scale(vec, as.character(KEY), ...) );
 	}
 	

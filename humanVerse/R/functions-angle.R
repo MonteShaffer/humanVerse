@@ -15,7 +15,6 @@ math.cleanup = function(x, tol = sqrt(.Machine$double.eps), part="Re")
 	# difference is about zero ... 
 	xi = as.integer(x);
 	d = x - xi;
-dput(d);
 	dz = is.zero(d, tol=tol, part=part);
 	x[dz] = xi[dz];
 	x;

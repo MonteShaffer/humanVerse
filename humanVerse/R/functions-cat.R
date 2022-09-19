@@ -11,11 +11,18 @@ warnings.clear = warning.clear;
 clear.warnings = warning.clear;
 clear.warning = warning.clear;
 
+
+
+
+
+
+
 # https://stackoverflow.com/questions/9596918/r-warning-wrapper-raise-to-parent-function
-warning.cat = function(..., sep=" ")
+cat.warning = function(..., sep=" ")
 	{
 	str = prep.dots(...);
 	res = paste0(str, collapse=sep);
+	res = cat.color(res);
 	
 	parent.call = sys.call(sys.nframe() - 1L);
 	res = paste("In", deparse(parent.call), ":", res);
@@ -23,31 +30,28 @@ warning.cat = function(..., sep=" ")
 	warning( res , call.=FALSE);	
 	}
 
-cat.warning = warning.cat;
 
-stop.cat = function(..., sep=" ")
+
+cat.stop = function(..., sep=" ")
 	{
 	str = prep.dots(...);
 	res = paste0(str, collapse=sep);
+	res = cat.color(res);
 	
 	parent.call = sys.call(sys.nframe() - 1L);
 	stop( paste("In", deparse(parent.call), ":", res) , call.=FALSE);	
 	}
 
-cat.stop = stop.cat;
-
-
-
-
-
 
 cat.norm = function(str, open=TRUE, set.as.wd = FALSE)
 	{
 	nstr = normalizePath(str);
+	# nstr = cat.color(nstr);
 	cat( nstr );
 	if(open) { utils::browseURL(nstr); }
 	if(set.as.wd) { setwd( nstr ); }
 	}
+
 
 
 
@@ -61,12 +65,11 @@ cat.init = function()
 	# use HTML-like tags ... 
 	# <esc custom="a" more="b"></esc>  # a generic ESC event 
 	# COLOR is attached to either <fg> or <bg>
-	
-	
-	
 	}
 
 
+msg.badLength = function() {} # this will stop 
+msg.unequalLength = function() {} # this will warn ...
 
 
 msg.badOption = function(KEY="method", 
@@ -105,3 +108,38 @@ msg.missingParam = function(PARAM="f", DEFAULT=1)
 					"\n\n"
 					);		
 		}
+
+
+
+
+
+
+
+cat.color = function(str, use.color.if.available=TRUE)
+	{
+	if(!use.color.if.available) { return ( strip.tags(str) ); }
+	
+	# is color available ??? ... has.ansi ... 
+	
+	
+	strip.tags(str);
+	}
+
+
+
+
+ 
+
+check.colorCapability = function()
+	{
+	
+# https://github.com/r-lib/testthat/blob/717b02164def5c1f027d3a20b889dae35428b6d7/R/colour-text.r
+
+	# term <- Sys.getenv()["TERM"]
+  # colour_terms <- c("xterm-color","xterm-256color", "screen", "screen-256color")
+
+  # if(rcmd_running() || !any(term %in% colour_terms, na.rm = TRUE)) {
+    # return(text)
+  # }
+	
+	}

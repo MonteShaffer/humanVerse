@@ -26,7 +26,7 @@ secant 		= function(...) { 1/math.cos(...); }
 	
 math.asin = function(...)
 	{
-	x = prep.dots(..., default=pi);
+	x = prep.dots(..., default=1);
 	math.cleanup( asin(x) );
 	}
 
@@ -36,8 +36,7 @@ arcsin = math.asin;
 	
 math.acos = function(...)
 	{
-	# maybe do better with fractional components
-	x = prep.dots(...);
+	x = prep.dots(..., default=1);
 	math.cleanup( acos(x) );
 	}
 
@@ -48,8 +47,7 @@ arccos = math.acos;
 	
 math.atan = function(...)
 	{
-	# maybe do better with fractional components
-	x = prep.dots(...);
+	x = prep.dots(..., default=1);
 	math.cleanup( atan(x) );
 	}
 
@@ -60,7 +58,7 @@ arctan = math.atan;
 # no atan2h?
 math.atan2 = function(y, x)
 	{
-	math.cleanup( atan(y, x) );
+	math.cleanup( atan2(y, x) );
 	}
 
 arctan2 = function() {}
@@ -72,19 +70,19 @@ arctan2 = math.atan2;
 
 math.sinh = function(...)
 	{
-	x = prep.dots(...);
+	x = prep.dots(..., default=1);
 	math.cleanup( sinh(x) );
 	}
 	
 math.cosh = function(...)
 	{
-	x = prep.dots(...);
+	x = prep.dots(..., default=1);
 	math.cleanup( cosh(x) );
 	}
 	
 math.tanh = function(...)
 	{
-	x = prep.dots(...);
+	x = prep.dots(..., default=1);
 	math.cleanup( tanh(x) );
 	}
 
@@ -95,7 +93,7 @@ secanth 	= function(...) { 1/math.cosh(...); }
 	
 math.asinh = function(...)
 	{
-	x = prep.dots(...);
+	x = prep.dots(..., default=1);
 	math.cleanup( asinh(x) );
 	}
 
@@ -105,7 +103,7 @@ arcsinh = math.asinh;
 	
 math.acosh = function(...)
 	{
-	x = prep.dots(...);
+	x = prep.dots(..., default=1);
 	math.cleanup( acosh(x) );
 	}
 
@@ -116,7 +114,7 @@ arccosh = math.acosh;
 	
 math.atanh = function(...)
 	{
-	x = prep.dots(...);
+	x = prep.dots(..., default=1);
 	math.cleanup( atanh(x) );
 	}
 

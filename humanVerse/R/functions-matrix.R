@@ -1,6 +1,14 @@
 
 
 
+check.ifConformable = function(x, y) {} # matrix?
+						
+
+
+
+
+
+
 matrix.repeat = function(m, times=12, by="row")
 	{
 	o = m;  

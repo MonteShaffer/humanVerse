@@ -1,6 +1,64 @@
 
 
 
+# this literally "pings" the url via `base::curlGetHeaders()`
+# if `base::url()` loads ...
+ping.url = function(urls, timeout=2, verify.certificate=FALSE,  ...)
+	{
+debug = FALSE;
+	n = length(urls);
+	res = logical(n);
+	for(i in 1:n)
+		{
+		url = urls[i];
+		conn = suppressError( url(url),
+							show.notice=debug, msg="debug url of url.testConnection" 
+							);
+		on.exit(close(conn));
+		if(is.error(conn)) { next; }
+
+		# actually ping it 
+		head = suppressError( base::curlGetHeaders(	url, 
+													timeout=timeout, 
+													verify=verify.certificate
+													),
+							show.notice=debug, msg="debug head of url.testConnection"
+							);
+		if(is.error(head)) { next; }
+		
+		res[i] = TRUE;
+		}
+	res;
+	}
+	
+#' @rdname url.testConnection
+#' @export
+url.testConnection = ping.url;
+
+
+
+
+regex.url = function(...)
+	{
+	urls = prep.dots(...);
+	
+	# get values 
+	
+	# get positions ??? 
+	
+	}
+
+
+check.url = function(...)
+	{
+	urls = prep.dots(...);
+	# https://mathiasbynens.be/demo/url-regex
+	# librarian:::is_valid_url
+	(grepl("(https?|ftp)://[^\\s/$.?#].[^\\s]*", urls));
+	}
+	
+
+
 URL_parts <- function(x) {
     m <- regexec("^(([^:]+)://)?([^:/]+)(:([0-9]+))?(/.*)", x)
     parts <- do.call(rbind,
