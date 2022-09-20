@@ -260,36 +260,20 @@ str_trim = str.trim;
 #' @examples
 #------------------------------------------------# 
 # BASE is broken ... 
-
-
-prep.strMethod = function(method="first", n=1, ... )
-	{
-	METHOD = prep.arg(method, n=n, ...);
-	nmethod = switch(METHOD,
-						"f" = "first",
-						"c" = "cpp",
-						"s" = "stringi",
-						"b" = "base",
-					"base"
-					);
-	nmethod;
-	}
-
-
 str.explode = function(sep = " ", str = "hello friend", method="first")
 	{
 	METHOD = prep.strMethod(method, n=1);
 
 	FNS = list(
-			"cpp" 		= function(sep,str) { cpp_explode(sep, str); } , 
-			"stringi" 	= function(sep,str) { stringi::stri_split_fixed(str, sep); } ,
-			"base" 		= function(sep,str) { strsplit_(str, sep, fixed=TRUE); }
+			"cpp" 		= function() { cpp_explode(sep, str); } , 
+			"stringi" 	= function() { stringi::stri_split_fixed(str, sep); } ,
+			"base" 		= function() { strsplit_(str, sep, fixed=TRUE); }
 			);
 			
-	if(METHOD != "f")
+	if(METHOD != "first")
 		{
 		# AS-IS, no checks 
-		return(  FNS[[METHOD]](sep,str); }
+		return(  list.return( FNS[[METHOD]]() ) );
 		}
 
 	# CASCADING, first-one to meet criteria 
@@ -298,43 +282,17 @@ str.explode = function(sep = " ", str = "hello friend", method="first")
 		{
 		# must not have exported it ... 
 		hasResult = TRUE;
-		res = FNS[["cpp"]](sep,str);
+		res = FNS[["cpp"]]();
 		}
 		
-	if(!hasResult && METHOD == "s" && is.library_("stringi") && sep != "" )
+	if(!hasResult && METHOD == "stringi" && is.library_("stringi") && sep != "" )
 		{
 		hasResult = TRUE;
-		res = FNS[["stringi"]](sep,str);		
+		res = FNS[["stringi"]]();		
 		}
 	if(!hasResult)
 		{
-		res = FNS[["base"]](sep,str);
-		}
-		
-		
-		end = str.end(sep, str);
-		if(allFALSE(end)) 
-			{ 
-			hasResult = TRUE;
-			res = strsplit(str, sep, fixed=TRUE);
-			}		
-		}
-		
-	if(!hasResult)	
-		{
-		hasResult = TRUE;
-		# stringi works as expected, what about cpp?
-		# if "<i>humanVerse</i>" ... 
-			# "<i>" returns "" "humanVerse</i>"
-			# "</i>" returns "<i>humanVerse" without trailing "" 
-			# SO ... it's a feature ... 
-		# is separator at END? 
-		# good = !end; bad = end;
-			fill = "~"; if(sep == "~") { fill = "^"; }
-			tmp = paste0(str,fill);
-		tres = strsplit(tmp, sep, fixed=TRUE);
-		tres = check.list(tres);		
-		res = list.removeFillFromEnd(tres, fill=fill);
+		res = FNS[["base"]]();
 		}
 
 	# will be collapsed into CharacterVector if len == 1
@@ -362,29 +320,43 @@ str.split = str.explode;
 #------------------------------------------------#
 str.implode = function(sep=" ", str, method="base")
 	{
-	# necessary overhead
-	METHOD = prep.arg(method, 1);
-	# if(!is.list(str)) { tmp = str; str = list(); str[[1]] = tmp; }
 	str = check.list(str);  # maybe redundant of a check from another function
 
-	hasResult = FALSE;
-	
-	if(!hasResult && exists("cpp_explode"))
+	METHOD = prep.strMethod(method, n=1);
+
+	FNS = list(
+			"cpp" 		= function() { cpp_implode(sep, str); } , 
+			"stringi" 	= function() { stop("stringi implemented?"); } ,
+			"base" 		= function() { strunsplit_(str, sep); }
+			);
+			
+	if(METHOD != "first")
 		{
-		hasResult = TRUE;
-		res = ( cpp_implode(sep, str) );
+		# AS-IS, no checks 
+		return(  FNS[[METHOD]]() );
 		}
 
-	if(!hasResult)
+	# CASCADING, first-one to meet criteria 
+	hasResult = FALSE;
+	if(!hasResult && exists("cpp_implode"))
+		{
+		# must not have exported it ... 
+		hasResult = TRUE;
+		res = FNS[["cpp"]]();
+		}
+		
+	if(!hasResult && METHOD == "stringi" && is.library_("stringi") && sep != "" )
 		{
 		hasResult = TRUE;
-		n = length(str);
-		res = character(n);
-		for(i in 1:n)
-			{
-			res[i] = paste0(str[[i]], collapse = sep);
-			}
+		res = FNS[["stringi"]]();		
 		}
+	if(!hasResult)
+		{
+		res = FNS[["base"]]();
+		}
+
+	# will be collapsed into CharacterVector if len == 1
+	# unnecessary (takes a list, returns a charVec)
 	res;
 	}
 
@@ -416,23 +388,40 @@ str.unsplit = str.implode;
 #------------------------------------------------#
 str.repeat = function(str, times=1, method="base")
 	{
-	m = prep.arg(method, 1);
+	METHOD = prep.strMethod(method, n=1);
 
-	hasResult = TRUE;
-	
-	if(m == "c" && exists("cpp_trim"))
+	FNS = list(
+			"cpp" 		= function() { cpp_str_repeat(str, times); } , 
+			"stringi" 	= function() { stop("stringi implemented?"); } ,
+			"base" 		= function() { strrep_(str, times); }
+			);
+			
+	if(METHOD != "first")
 		{
-		res = cpp_str_repeat(str, times);
-		return (res);
+		# AS-IS, no checks 
+		return(  list.return( FNS[[METHOD]]() ) );
 		}
 
-
-	n = length(str);
-	res = character(n);
-	for(i in 1:n)
+	# CASCADING, first-one to meet criteria 
+	hasResult = FALSE;
+	if(!hasResult && exists("cpp_str_repeat"))
 		{
-		res[i] = paste( rep(str, times), collapse="");
+		# must not have exported it ... 
+		hasResult = TRUE;
+		res = FNS[["cpp"]]();
 		}
+		
+	if(!hasResult && METHOD == "stringi" && is.library_("stringi"))
+		{
+		hasResult = TRUE;
+		res = FNS[["stringi"]]();		
+		}
+
+	if(!hasResult)
+		{
+		res = FNS[["base"]]();
+		}
+
 	res;
 	}
 
@@ -477,107 +466,44 @@ str.replace = function(search, replace, subject, method="base", force.case=0)
 	# 3 is 				1-n paired over each N 
 	# 4 is 				m=n over each N ... recycling (nonsensical)
 debug = FALSE;
-	m = prep.arg(method, 1);
 
-	if(m == "c" && exists("cpp_trim"))
+	METHOD = prep.strMethod(method, n=1);
+
+			# stringi::stri_replace_all_fixed
+			# doesn't seem to work correctly  ... 
+	FNS = list(
+			"cpp" 		= function() { cpp_str_replace(search, replace, subject); } , 
+			"stringi" 	= function() { stop("stringi implemented?"); } ,
+			"base" 		= function() { strreplace_(search, replace, subject); }
+			);
+			
+	if(METHOD != "first")
 		{
-		# need to update the code to MATCH the base code LOGIC below
-		res = cpp_str_replace(search, replace, subject);
-		return (res);
+		# AS-IS, no checks 
+		return(  list.return( FNS[[METHOD]]() ) );
 		}
 
-	# stringi::stri_replace_all_fixed
-	# doesn't seem to work correctly  ... 
-
- 
-
-	slen = length(search);
-	rlen = length(replace);
-	nlen = length(subject);
-
-	### CASE 1
-	if(slen == rlen)  ## pairwise over EACH subject
+	# CASCADING, first-one to meet criteria 
+	hasResult = FALSE;
+	if(!hasResult && exists("cpp_str_replace"))
 		{
-if(debug)
-	{
-cat("\n", "CASE 1", "\n");
-	}
-		res = character(nlen);
-		for(j in 1:nlen)
-			{
-			str = subject[j];
-			for(i in 1:slen)
-				{
-				str = gsub(search[i], replace[i], str, fixed=TRUE);
-				}	
-			res[j] = str;
-			}
-		return (res);
+		# must not have exported it ... 
+		hasResult = TRUE;
+		res = FNS[["cpp"]]();
+		}
+		
+	if(!hasResult && METHOD == "stringi" && is.library_("stringi"))
+		{
+		hasResult = TRUE;
+		res = FNS[["stringi"]]();		
 		}
 
-	### CASE 2
-	# str.replace(c("{monte}", "{for}"), "MONTE", c("Here is {monte} template", "Here is another {for} sure template {monte}!") );
-	if(rlen == 1)
+	if(!hasResult)
 		{
-if(debug)
-	{
-cat("\n", "CASE 2", "\n");
-	}
-		res = character(nlen);
-		for(j in 1:nlen)
-			{
-			str = subject[j];
-			for(i in 1:slen)
-				{
-				str = gsub(search[i], replace[1], str, fixed=TRUE);
-				}	
-			res[j] = str;
-			}
-		return (res);
+		res = FNS[["base"]]();
 		}
 
-	### CASE 3
-	# str.replace(c("{monte}"), c("MONTE","FOR"), c("Here is {monte} template", "Here is another {for} sure template {monte}!") );
-	if(slen == 1 && rlen > nlen)
-		{
-if(debug)
-	{
-cat("\n", "CASE 3", "\n");
-	}
-		res = character(rlen);
-		si = 1;
-		for(j in 1:rlen)
-			{
-			str = subject[si]; 
-			str = gsub(search[1], replace[j], str, fixed=TRUE);
-			res[j] = str;
-			si = 1 + si;  if(si > nlen) { si = 1; }  # loop over s, end, back to beginning
-			}
-		return (res);
-		}
-
-if(debug)
-	{
-cat("\n", "CASE 4", "\n");
-	}
-	# DEFAULT ... all replaces over all subjects
-	res = character(nlen);
-	for(j in 1:nlen)
-		{
-		str = subject[j];
-		mlen = max(rlen, slen);
-		si = ri = 1;
-		for(i in 1:mlen)
-			{
-			mysearch = search[si];
-			myreplace = replace[ri];
-			str = gsub(mysearch, myreplace, str, fixed=TRUE);
-			si = 1 + si;  if(si > slen) { si = 1; }  # loop over s, end, back to beginning
-			ri = 1 + ri;  if(ri > rlen) { ri = 1; }  # loop over s, end, back to beginning
-			}
-		res[j] = str;			
-		}
-	return(res);
+	res;
 	}
 
 

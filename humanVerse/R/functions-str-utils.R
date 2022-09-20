@@ -1061,3 +1061,162 @@ whatever I want except for single  .. # lksdjf lkj
 '}
 
 
+strreplace_ = function(search, replace, subject)
+	{
+debug = FALSE;
+	slen = length(search);
+	rlen = length(replace);
+	nlen = length(subject);
+
+	### CASE 1
+	if(slen == rlen)  ## pairwise over EACH subject
+		{
+if(debug)
+	{
+cat("\n", "CASE 1", "\n");
+	}
+		res = character(nlen);
+		for(j in 1:nlen)
+			{
+			str = subject[j];
+			for(i in 1:slen)
+				{
+				str = gsub(search[i], replace[i], str, fixed=TRUE);
+				}	
+			res[j] = str;
+			}
+		return (res);
+		}
+
+	### CASE 2
+	# str.replace(c("{monte}", "{for}"), "MONTE", c("Here is {monte} template", "Here is another {for} sure template {monte}!") );
+	if(rlen == 1)
+		{
+if(debug)
+	{
+cat("\n", "CASE 2", "\n");
+	}
+		res = character(nlen);
+		for(j in 1:nlen)
+			{
+			str = subject[j];
+			for(i in 1:slen)
+				{
+				str = gsub(search[i], replace[1], str, fixed=TRUE);
+				}	
+			res[j] = str;
+			}
+		return (res);
+		}
+
+	### CASE 3
+	# str.replace(c("{monte}"), c("MONTE","FOR"), c("Here is {monte} template", "Here is another {for} sure template {monte}!") );
+	if(slen == 1 && rlen > nlen)
+		{
+if(debug)
+	{
+cat("\n", "CASE 3", "\n");
+	}
+		res = character(rlen);
+		si = 1;
+		for(j in 1:rlen)
+			{
+			str = subject[si]; 
+			str = gsub(search[1], replace[j], str, fixed=TRUE);
+			res[j] = str;
+			si = 1 + si;  if(si > nlen) { si = 1; }  # loop over s, end, back to beginning
+			}
+		return (res);
+		}
+
+if(debug)
+	{
+cat("\n", "CASE 4", "\n");
+	}
+	# DEFAULT ... all replaces over all subjects
+	res = character(nlen);
+	for(j in 1:nlen)
+		{
+		str = subject[j];
+		mlen = max(rlen, slen);
+		si = ri = 1;
+		for(i in 1:mlen)
+			{
+			mysearch = search[si];
+			myreplace = replace[ri];
+			str = gsub(mysearch, myreplace, str, fixed=TRUE);
+			si = 1 + si;  if(si > slen) { si = 1; }  # loop over s, end, back to beginning
+			ri = 1 + ri;  if(ri > rlen) { ri = 1; }  # loop over s, end, back to beginning
+			}
+		res[j] = str;			
+		}
+	return(res);
+	
+	
+	}
+
+strrep_ = function(str, times=1)
+	{
+	n = length(str);
+	res = character(n);
+	for(i in 1:n)
+		{
+		res[i] = paste( rep(str, times), collapse="");
+		}
+	res;	
+	}
+
+strunsplit_ = function(str, sep)
+	{
+	n = length(str);
+	res = character(n);
+	for(i in 1:n)
+		{
+		res[i] = paste0(str[[i]], collapse = sep);
+		}
+	res;
+	}
+
+
+# hack base to deal with EOS issue 
+strsplit_ = function(str, sep, fixed=TRUE, ...)
+	{
+	hasResult = FALSE;
+
+	if(!hasResult && sep == "")  
+		{
+		hasResult = TRUE;
+		res = strsplit(str, sep, fixed=fixed, ...);
+		}
+
+	if(!hasResult)
+		{
+		end = str.end(sep, str);
+		if(allFALSE(end)) 
+			{ 
+			hasResult = TRUE;
+			res = strsplit(str, sep, fixed=fixed, ...);
+			}		
+		}
+	
+	if(!hasResult)	
+		{
+		hasResult = TRUE;
+		# stringi works as expected, what about cpp?
+		# if "<i>humanVerse</i>" ... 
+			# "<i>" returns "" "humanVerse</i>"
+			# "</i>" returns "<i>humanVerse" without trailing "" 
+			# SO ... it's a feature ... 
+		# is separator at END? 
+		# good = !end; bad = end;
+			fill = "~"; if(sep == "~") { fill = "^"; }
+			tmp = paste0(str,fill);
+		tres = strsplit(tmp, sep, fixed=TRUE);
+		tres = check.list(tres);		
+		res = list.removeFillFromEnd(tres, fill=fill);
+		}
+
+	res;
+	}
+
+

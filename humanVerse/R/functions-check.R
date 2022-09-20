@@ -127,4 +127,12 @@ debug = FALSE;
 
 
 
+check.string = function(thing)
+	{
+	ct.THING = check.type(thing);
+	if(!ct.THING || !is.character(thing) ) { thing = deparse(substitute(thing)); }
+	thing;
+	}
+
+
 

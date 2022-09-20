@@ -182,6 +182,37 @@ prep.dots = function(...,
 
 
 
+prep.strSide = function(side="both", n=1, ... , keys=c("l","r","b"))
+	{
+	side = check.string(side);
+		
+	SIDE = prep.arg(side, n=n, ...);
+	nside = NULL;
+	nside = switch(SIDE,
+						keys[1] = "left",
+						keys[2] = "right",
+						keys[3] = "both",
+					"both"
+					);
+	nside;
+	}
+	
+prep.strMethod = function(method="first", n=1, ... , keys=c("f","c","s","b") )
+	{
+	method = check.string(method);
+		
+	METHOD = prep.arg(method, n=n, ...);
+	nmethod = switch(METHOD,
+						keys[1] = "first",
+						keys[2] = "cpp",
+						keys[3] = "stringi",
+						keys[4] = "base",
+					"base"
+					);
+	nmethod;
+	}
+
+
 
 
 
