@@ -300,7 +300,8 @@ std::vector<std::string> s_explode(std::string sep, std::string s)
 				r.push_back(token);
 				s.erase(0, pos + sep.length());
 				}
-		if(s.size() > 0) { r.push_back(s);}
+		// if(s.size() > 0) { r.push_back(s);}
+		r.push_back(s);  // trailing ""
 	return r;
 	}
 

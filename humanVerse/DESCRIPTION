@@ -1,7 +1,7 @@
 Package: humanVerse
 Type: Package
 Title: Saving Human-Life Hours with "humanVerse" forms of R functions
-Version: 3.1415v001
+Version: 3.1415-001
 Authors@R: person( "Monte J. Shaffer", email = "monte.shaffer@gmail.com",
 	role = c("aut", "cre")	)
 Description: Making R more palatable and extensible.  With a "git r done" mentality, the objective is to maximize productivity while minimizing interruptivity through the extensibility of the *AMAZING WARP CORE* that is R.  Let's do more than "git back to base", let's evolve.  Remember how modern R 'felt' in 2004:  the ability to automate statistical analyses using custom functions, the ability to download packages automatically within RGUI, extensible base plotting features with color support, cutting-edge use of localhost CGI serving help pages, ... and so on ...  This *humanVerse* library (optionally paired with its cousins: *HVcpp* and [TBD: *HVc*]) aims to create an API layer of BASE-R to allow for a 'tidy-yet-modern' web-based application to be developed:  Sophia.  

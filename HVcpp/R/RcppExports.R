@@ -81,34 +81,6 @@ cpp_lcm <- function(x, y) {
     .Call(`_HVcpp_cpp_lcm`, x, y)
 }
 
-matrix_diagonal <- function(A) {
-    .Call(`_HVcpp_matrix_diagonal`, A)
-}
-
-matrix_rank <- function(A) {
-    .Call(`_HVcpp_matrix_rank`, A)
-}
-
-matrix_transpose <- function(A) {
-    .Call(`_HVcpp_matrix_transpose`, A)
-}
-
-matrix_multiplication <- function(A, B) {
-    .Call(`_HVcpp_matrix_multiplication`, A, B)
-}
-
-matrix_multiplication_map <- function(A, B) {
-    .Call(`_HVcpp_matrix_multiplication_map`, A, B)
-}
-
-matrix_rank_real <- function(M) {
-    .Call(`_HVcpp_matrix_rank_real`, M)
-}
-
-matrix_rank_complex <- function(Re, Im) {
-    .Call(`_HVcpp_matrix_rank_complex`, Re, Im)
-}
-
 #' Compute md5 of CharacterVector
 #'
 #' @param str CharacterVector of Strings

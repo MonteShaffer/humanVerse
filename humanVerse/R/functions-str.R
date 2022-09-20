@@ -260,44 +260,69 @@ str_trim = str.trim;
 #' @examples
 #------------------------------------------------# 
 # BASE is broken ... 
-str.explode = function(sep = " ", str = "hello friend", method="stringi")
+
+
+prep.strMethod = function(method="first", n=1, ... )
 	{
-	# necessary overhead
-	METHOD = prep.arg(method, 1);
+	METHOD = prep.arg(method, n=n, ...);
+	nmethod = switch(METHOD,
+						"f" = "first",
+						"c" = "cpp",
+						"s" = "stringi",
+						"b" = "base",
+					"base"
+					);
+	nmethod;
+	}
 
-	hasResult = FALSE;
 
-	if(!hasResult && METHOD == "s" && is.library_("stringi") && sep != "" )
+str.explode = function(sep = " ", str = "hello friend", method="first")
+	{
+	METHOD = prep.strMethod(method, n=1);
+
+	FNS = list(
+			"cpp" 		= function(sep,str) { cpp_explode(sep, str); } , 
+			"stringi" 	= function(sep,str) { stringi::stri_split_fixed(str, sep); } ,
+			"base" 		= function(sep,str) { strsplit_(str, sep, fixed=TRUE); }
+			);
+			
+	if(METHOD != "f")
 		{
-		res = (stringi::stri_split_fixed(str, sep));
-		hasResult = TRUE;
+		# AS-IS, no checks 
+		return(  FNS[[METHOD]](sep,str); }
 		}
 
+	# CASCADING, first-one to meet criteria 
+	hasResult = FALSE;
 	if(!hasResult && exists("cpp_explode"))
 		{
 		# must not have exported it ... 
-		res = ( cpp_explode(sep, str) );
 		hasResult = TRUE;
-		}
-	
-	if(!hasResult && sep=="")  
-		{
-		res = strsplit(str, sep, fixed=TRUE);
-		hasResult = TRUE;
+		res = FNS[["cpp"]](sep,str);
 		}
 		
+	if(!hasResult && METHOD == "s" && is.library_("stringi") && sep != "" )
+		{
+		hasResult = TRUE;
+		res = FNS[["stringi"]](sep,str);		
+		}
 	if(!hasResult)
 		{
-		end = str.end(str, sep);
+		res = FNS[["base"]](sep,str);
+		}
+		
+		
+		end = str.end(sep, str);
 		if(allFALSE(end)) 
 			{ 
-			res = strsplit(str, sep, fixed=TRUE);
 			hasResult = TRUE;
+			res = strsplit(str, sep, fixed=TRUE);
 			}		
 		}
 		
 	if(!hasResult)	
 		{
+		hasResult = TRUE;
 		# stringi works as expected, what about cpp?
 		# if "<i>humanVerse</i>" ... 
 			# "<i>" returns "" "humanVerse</i>"
@@ -313,7 +338,7 @@ str.explode = function(sep = " ", str = "hello friend", method="stringi")
 		}
 
 	# will be collapsed into CharacterVector if len == 1
-	list.return(res, unlist=FALSE);
+	list.return(res);
 	}
 
 #++++++++++++++++++++++++#
@@ -342,17 +367,23 @@ str.implode = function(sep=" ", str, method="base")
 	# if(!is.list(str)) { tmp = str; str = list(); str[[1]] = tmp; }
 	str = check.list(str);  # maybe redundant of a check from another function
 
-	if(METHOD == "c" && exists("cpp_implode"))
+	hasResult = FALSE;
+	
+	if(!hasResult && exists("cpp_explode"))
 		{
+		hasResult = TRUE;
 		res = ( cpp_implode(sep, str) );
-		return(res);
 		}
 
-	n = length(str);
-	res = character(n);
-	for(i in 1:n)
+	if(!hasResult)
 		{
-		res[i] = paste0(str[[i]], collapse = sep);
+		hasResult = TRUE;
+		n = length(str);
+		res = character(n);
+		for(i in 1:n)
+			{
+			res[i] = paste0(str[[i]], collapse = sep);
+			}
 		}
 	res;
 	}
@@ -387,6 +418,8 @@ str.repeat = function(str, times=1, method="base")
 	{
 	m = prep.arg(method, 1);
 
+	hasResult = TRUE;
+	
 	if(m == "c" && exists("cpp_trim"))
 		{
 		res = cpp_str_repeat(str, times);
@@ -707,7 +740,7 @@ str.translate = function(str, to="latin-ascii")
 
 
 
-str.end = function(str, search="</i>", trim = FALSE )
+str.end = function(search="</i>", str="<i>hello friend</i>", trim = FALSE )
 	{
 	strlen = str.len(str);
 	slen = str.len(search);
@@ -715,12 +748,15 @@ str.end = function(str, search="</i>", trim = FALSE )
 		if(!is.null(idx)) { start[idx] = 1; }
 	sub = substring(str, start, strlen);	
 	res = (sub == search);
-	if(!trim) { return(res); }
-	rem = substring(str, 1, (start-1));  # TEST  ... str == paste0(rem,sub)
 	
+	if(!trim) { return(res); }	
+	if(allFALSE(res)) { return(str); }
+	
+	rem = substring(str, 1, (start-1));  # TEST  ... str == paste0(rem,sub)
+		
 	nstr = str;
 	nstr[res] = rem[res];
-	nstr;
+	nstr;  
 	}
 
 # STRPOS() returns the index of the first occurence of its second argument (“needle”) in its first argument (“haystack”), or -1 if there are no occurrences.

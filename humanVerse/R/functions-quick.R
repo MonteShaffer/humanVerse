@@ -49,17 +49,29 @@ suppressWarning = suppressWarnings;
 
 # source( res$
 ## assuming res is alive from include.dir
-quick.source = function(key="pipple", res=NULL, verbose=FALSE)
+# get bytecode ... of fun... => name ?
+quick.source = function(..., character.only = FALSE, res=NULL, verbose=FALSE)
 	{
-	if(is.null(res)) { memory.init(); res = memory.get("alex", "SYSTEM"); }
-	sfile = paste0("functions-",key,".R");
-	idx = v.which(res$myfiles, sfile);
-cat("\n QUICK: ", sfile, " with idx: ", idx, "\n");
-	if(!is.null(idx))
+	fns = prep.dots(..., collapse=character.only, has.objects=!character.only);
+		minvisible(fns, display=none);
+	if(!character.only) { fns = as.character(fns); }
+# dput(fns);
+
+	if(is.null(res)) { res = memory.get("alex", "SYSTEM"); };
+	
+	for(key in fns)
 		{
-		source(res$myfullpaths[idx], verbose=verbose);
-		} else { stop("bad idx"); }
+		sfile = paste0("functions-",key,".R");
+		idx = v.which(res$myfiles, sfile);
+	cat("\n QUICK: ", sfile, " with idx: ", idx, "\n");
+		if(!is.null(idx))
+			{
+			source(res$myfullpaths[idx], verbose=verbose);
+			} else { stop("bad idx"); }
+		}
 	}
+	
+	
 
 # setwd("C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R")
 

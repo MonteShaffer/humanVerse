@@ -117,86 +117,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// matrix_diagonal
-SEXP matrix_diagonal(Eigen::MatrixXd A);
-RcppExport SEXP _HVcpp_matrix_diagonal(SEXP ASEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type A(ASEXP);
-    rcpp_result_gen = Rcpp::wrap(matrix_diagonal(A));
-    return rcpp_result_gen;
-END_RCPP
-}
-// matrix_rank
-SEXP matrix_rank(Eigen::MatrixXd A);
-RcppExport SEXP _HVcpp_matrix_rank(SEXP ASEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type A(ASEXP);
-    rcpp_result_gen = Rcpp::wrap(matrix_rank(A));
-    return rcpp_result_gen;
-END_RCPP
-}
-// matrix_transpose
-SEXP matrix_transpose(Eigen::MatrixXd A);
-RcppExport SEXP _HVcpp_matrix_transpose(SEXP ASEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type A(ASEXP);
-    rcpp_result_gen = Rcpp::wrap(matrix_transpose(A));
-    return rcpp_result_gen;
-END_RCPP
-}
-// matrix_multiplication
-SEXP matrix_multiplication(Eigen::MatrixXd A, Eigen::MatrixXd B);
-RcppExport SEXP _HVcpp_matrix_multiplication(SEXP ASEXP, SEXP BSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type A(ASEXP);
-    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type B(BSEXP);
-    rcpp_result_gen = Rcpp::wrap(matrix_multiplication(A, B));
-    return rcpp_result_gen;
-END_RCPP
-}
-// matrix_multiplication_map
-SEXP matrix_multiplication_map(const Eigen::Map<Eigen::MatrixXd> A, Eigen::Map<Eigen::MatrixXd> B);
-RcppExport SEXP _HVcpp_matrix_multiplication_map(SEXP ASEXP, SEXP BSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Eigen::Map<Eigen::MatrixXd> >::type A(ASEXP);
-    Rcpp::traits::input_parameter< Eigen::Map<Eigen::MatrixXd> >::type B(BSEXP);
-    rcpp_result_gen = Rcpp::wrap(matrix_multiplication_map(A, B));
-    return rcpp_result_gen;
-END_RCPP
-}
-// matrix_rank_real
-unsigned matrix_rank_real(const Eigen::MatrixXd& M);
-RcppExport SEXP _HVcpp_matrix_rank_real(SEXP MSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Eigen::MatrixXd& >::type M(MSEXP);
-    rcpp_result_gen = Rcpp::wrap(matrix_rank_real(M));
-    return rcpp_result_gen;
-END_RCPP
-}
-// matrix_rank_complex
-unsigned matrix_rank_complex(const Eigen::MatrixXd& Re, const Eigen::MatrixXd& Im);
-RcppExport SEXP _HVcpp_matrix_rank_complex(SEXP ReSEXP, SEXP ImSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Eigen::MatrixXd& >::type Re(ReSEXP);
-    Rcpp::traits::input_parameter< const Eigen::MatrixXd& >::type Im(ImSEXP);
-    rcpp_result_gen = Rcpp::wrap(matrix_rank_complex(Re, Im));
-    return rcpp_result_gen;
-END_RCPP
-}
 // cpp_md5
 CharacterVector cpp_md5(const std::vector<std::string> str, int times);
 RcppExport SEXP _HVcpp_cpp_md5(SEXP strSEXP, SEXP timesSEXP) {
@@ -497,13 +417,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_HVcpp_cpp_gcd_lcm", (DL_FUNC) &_HVcpp_cpp_gcd_lcm, 2},
     {"_HVcpp_cpp_gcd", (DL_FUNC) &_HVcpp_cpp_gcd, 2},
     {"_HVcpp_cpp_lcm", (DL_FUNC) &_HVcpp_cpp_lcm, 2},
-    {"_HVcpp_matrix_diagonal", (DL_FUNC) &_HVcpp_matrix_diagonal, 1},
-    {"_HVcpp_matrix_rank", (DL_FUNC) &_HVcpp_matrix_rank, 1},
-    {"_HVcpp_matrix_transpose", (DL_FUNC) &_HVcpp_matrix_transpose, 1},
-    {"_HVcpp_matrix_multiplication", (DL_FUNC) &_HVcpp_matrix_multiplication, 2},
-    {"_HVcpp_matrix_multiplication_map", (DL_FUNC) &_HVcpp_matrix_multiplication_map, 2},
-    {"_HVcpp_matrix_rank_real", (DL_FUNC) &_HVcpp_matrix_rank_real, 1},
-    {"_HVcpp_matrix_rank_complex", (DL_FUNC) &_HVcpp_matrix_rank_complex, 2},
     {"_HVcpp_cpp_md5", (DL_FUNC) &_HVcpp_cpp_md5, 2},
     {"_HVcpp_cpp_primes", (DL_FUNC) &_HVcpp_cpp_primes, 2},
     {"_HVcpp_cpp_sort_numeric_works", (DL_FUNC) &_HVcpp_cpp_sort_numeric_works, 2},

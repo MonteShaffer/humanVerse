@@ -807,3 +807,48 @@ str2symb = function(str="alex")
 	}
 
 
+
+
+
+
+# hack base to deal with EOS issue 
+strsplit_ = function(str, sep, fixed=TRUE, ...)
+	{
+	hasResult = FALSE;
+
+	if(!hasResult && sep == "")  
+		{
+		hasResult = TRUE;
+		res = strsplit(str, sep, fixed=fixed, ...);
+		}
+
+	if(!hasResult)
+		{
+		end = str.end(sep, str);
+		if(allFALSE(end)) 
+			{ 
+			hasResult = TRUE;
+			res = strsplit(str, sep, fixed=fixed, ...);
+			}		
+		}
+	
+	if(!hasResult)	
+		{
+		hasResult = TRUE;
+		# stringi works as expected, what about cpp?
+		# if "<i>humanVerse</i>" ... 
+			# "<i>" returns "" "humanVerse</i>"
+			# "</i>" returns "<i>humanVerse" without trailing "" 
+			# SO ... it's a feature ... 
+		# is separator at END? 
+		# good = !end; bad = end;
+			fill = "~"; if(sep == "~") { fill = "^"; }
+			tmp = paste0(str,fill);
+		tres = strsplit(tmp, sep, fixed=TRUE);
+		tres = check.list(tres);		
+		res = list.removeFillFromEnd(tres, fill=fill);
+		}
+
+	res;
+	}
+

@@ -40,7 +40,7 @@ list.removeFillFromEnd = function(info, fill="~")
 	n = length(info);  # assumes it is a list ... list IN/list OUT
 	nlen = list.getLengths(info);
 	vals = list.getElements(info, nlen);
-	nvals = str.end(vals, fill, trim=TRUE);
+	nvals = str.end(fill, vals, trim=TRUE);
 	
 	ninfo = list.setElements(info, nlen, nvals);
 	ninfo;

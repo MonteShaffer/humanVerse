@@ -5,21 +5,26 @@ parse.syscall = function(syscall)
 	{
 	# none of these functions can have dots (...)  ::: prep.dots(...)
 	str = lang2str(syscall);
-# dput(str);  # stop("monte");
+ dput(str);  # stop("monte");
 	info = strsplit(str, "(", fixed=TRUE)[[1]];
 	fn = trimws(info[1], which="both");			
 			
 	# put everything back but the function call 
 	nstr = str.implode("(", info[-c(1)] );
-	nstr = str.replace(")", "", nstr);
+	#nstr = str.replace(")", "", nstr);
+	nstr = str.end(")", nstr, trim=TRUE);
 	
 	ninfo = strsplit(nstr, ",", fixed=TRUE);
 	minfo = strsplit(ninfo[[1]], "=", fixed=TRUE);
 	
 	pkeys = str.replace('"', "", list.getElements(minfo, 1) );
 	pkeys = trimws(pkeys, which="both");
+	
 	pvals = list.getElements(minfo, 2);
-			
+	
+	
+
+	
 	f = as.list(formals(fn));
 	keys = names(f);
 	form = list();		# formals, nicely

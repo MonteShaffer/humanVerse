@@ -1,5 +1,5 @@
 // [[Rcpp::depends(RcppEigen)]]
-#include <RcppEigen.h>
+// #include <RcppEigen.h>
 
 
 
@@ -25,6 +25,8 @@ _Matrix_Type_ pseudoInverse(const _Matrix_Type_ &a, double epsilon = std::numeri
 // see EigenR.R file 
 // 
 
+
+/*
 // [[Rcpp::export]]
 SEXP matrix_diagonal(Eigen::MatrixXd A)
 	{
@@ -73,6 +75,7 @@ unsigned rank(const Eigen::Matrix<Number, Eigen::Dynamic, Eigen::Dynamic>& M)
 	return M.colPivHouseholderQr().rank();
 	}
 
+
 // [[Rcpp::export]]
 unsigned matrix_rank_real(const Eigen::MatrixXd& M) 
 	{
@@ -88,5 +91,5 @@ unsigned matrix_rank_complex(const Eigen::MatrixXd& Re,
 	const Eigen::MatrixXcd M = matricesToMatrixXcd(Re, Im);
 	return rank<std::complex<double>>(M);
 	}
-
+*/
 

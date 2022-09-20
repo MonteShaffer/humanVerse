@@ -2,7 +2,11 @@
 # v.chain(x, hex2dec, mean, dec2hex, hex.prepend, character.only=FALSE)
 v.chain = function(vec, ..., character.only = FALSE)
 	{ 
-	dots = prep.dots(..., collapse=character.only, has.objects=!character.only);
+	fns = minvisible( prep.dots(..., 
+						collapse=character.only, 
+						has.objects=!character.only
+						),
+					display=none);
 	if(!character.only) { fns = as.character(dots); }
 
 	# this gives me sys.call and envir ... and now the fn.name with params 

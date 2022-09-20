@@ -148,7 +148,7 @@ is.error = function(e, where="suppressError")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
-#' is.library
+#' is.library_
 #'
 #'
 #' @param str (what is the character string to be searched)
