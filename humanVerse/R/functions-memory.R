@@ -169,9 +169,14 @@ minvisible = function(x, key="LAST", display=TRUE)
 # dput(display);
 	has.displayed = NULL;
 	if(is.null(has.displayed) && display == "str") 
-		{ (has.displayed = print(str(x)) ); }
+		{ has.displayed = TRUE; print(str(x)); }
+	if(is.null(has.displayed) && display == "hea") 
+		{ has.displayed = TRUE; print(head(x)); }
+	if(is.null(has.displayed) && display == "pip") 
+		{ has.displayed = TRUE; print(pip(x)); } 
+		# maybe write a print.pip method 
 	if(is.null(has.displayed) && display == TRUE) 
-		{ (has.displayed = print(x) ); }	
+		{ has.displayed = TRUE; print(x); }
 
 	
 	invisible(x);	

@@ -1,24 +1,13 @@
 
-
+ 
 
 parse.syscall = function(syscall)
 	{
 	# none of these functions can have dots (...)  ::: prep.dots(...)
 	str = lang2str(syscall);
-# dput(str);
+dput(str);  stop("monte");
 	info = strsplit(str, "(", fixed=TRUE)[[1]];
-	fn = trimws(info[1], which="both");	
-		f 	 = as.list(formals(fn));
-		keys = names(f);
-		form = list();
-		nf = length(f);
-		for(i in 1:nf)
-			{
-			key = keys[i];
-			val = f[[key]];		ct.VAL = check.type(val);
-			if(!ct.VAL) { val = ""; }
-			form[[key]] = val;
-			}
+	fn = trimws(info[1], which="both");			
 			
 	# put everything back but the function call 
 	nstr = str.implode("(", info[-c(1)] );
@@ -30,20 +19,90 @@ parse.syscall = function(syscall)
 	pkeys = str.replace('"', "", list.getElements(minfo, 1) );
 	pkeys = trimws(pkeys, which="both");
 	pvals = list.getElements(minfo, 2);
-	
-	fkeys = NULL;  # final keys are not in parameters ...
+			
+			
+			
+			
+			
+	fkeys = NULL;  # final keys are not in parameters ... just dots 
 	n = length(pkeys);
+cat("\n", "pkeys: ", pkeys, "\t keys:", keys, "\n\n");
 	params = list();
-	for(i in 1:n)
+	map = list();
+	if(n > 0)
 		{
-		pval = pvals[i];
-		pkey = pkeys[i];
-		if(!is.na(pval))
+		has.dots = FALSE;
+		key = nkey = "-EMPDKJTY-";
+		kstart = knext = NULL;
+		for(i in 1:n)
 			{
-			params[[ pkey ]] = eval(parse(text=pval));
-			} else { fkeys = c(fkeys, pkey); }
-		} 
-	 
+			pkey = pkeys[i];
+			pval = pvals[i];
+print(map);
+cat("\n", "i ==> ", i, "\t\t", "pkey: ", pkey, "\t pval:", pval, "\t kstart:", as.character(kstart), "\t knext:", as.character(knext), "\t nkey:", nkey, "\t key:", key, "\n\n");			
+			if(is.null(knext)) { key = keys[i]; } else { key = keys[knext]; knext = 1 + knext; }
+cat("\n", "i ==> ", i, "\t\t", "pkey: ", pkey, "\t pval:", pval, "\t kstart:", as.character(kstart), "\t knext:", as.character(knext), "\t nkey:", nkey, "\t key:", key, "\n\n");
+			if(key == "...") { has.dots = TRUE; kstart = i;}
+			# if(key == nkey)  { cat("\n\n MONTE \n\n"); has.dots = FALSE; knext = i;}
+			
+			if(!is.null(knext)) { key = keys[kstart + 1]; }
+			# mapping keys to pkey/fkeys ...
+cat("\n", "i ==> ", i, "\t\t", "pkey: ", pkey, "\t pval:", pval, "\t kstart:", as.character(kstart), "\t knext:", as.character(knext), "\t nkey:", nkey, "\t key:", key, "\n\n");
+		
+
+			if(!has.dots) 
+				{ 
+				map[[key]] = pkey; 
+				}
+			
+			if(!is.na(pval))
+				{
+				params[[ pkey ]] = eval(parse(text=pval));
+				} else { 
+						if(has.dots)
+							{
+							fkeys = c(fkeys, pkey);
+							nkey = keys[kstart + 1]; 
+							if(is.na(nkey)) { nkey = "-EMPDKJTY-"; } else { knext = 1 + kstart; }
+							map[[key]] = fkeys;
+							}
+						
+						}
+			}
+		}		
+	
+
+
+
+	
+	f = as.list(formals(fn));
+	keys = names(f);
+	params = list();
+	map = list();		# f$param => user.entered
+	form = list();		# formals, nicely
+	nf = length(f);
+		dlen = length(fkeys);
+		dskip = 0;
+	for(i in 1:nf)
+		{
+		# defaults ... 
+		key = keys[i];
+		val = f[[key]];		ct.VAL = check.type(val);
+		if(!ct.VAL) { val = ""; }
+		form[[key]] = val;
+		
+		j = dskip + i;
+		pkey = pkeys[j];
+		pval = pvals[j];
+		map[[key]] = pkey;
+		if(!is.na(pval))
+				{
+				params[[ pkey ]] = eval(parse(text=pval));
+				} else { fkeys = c(fkeys, pkey); }
+		
+		
+		}
+	
 	# trimws collapses list, strsplit DOESN'T collapse list 
 	# ARGH!?DSM
 	# trimws(strsplit(ninfo, "=", fixed=TRUE), which="both");
@@ -102,25 +161,28 @@ prep.dots = function(...,
 		# let's flatten to one set of lists 
 		res = list();
 		n = length(dots);
-		for(i in 1:n)
+		if(n > 0)
 			{
-			dot = dots[[i]];
-			dname = paste0(finfo$dot.keys[i],".",i); # keep unique ...
-			
-			# we are treating multi-dimension (matrix/df) as by.column 
-			if(is.dataframe(dot) || is.matrix(dot))
+			for(i in 1:n)
 				{
-				nd = dim(dot)[2];
-				for(j in 1:nd)
+				dot = dots[[i]];
+				dname = paste0(finfo$dot.keys[i],".",i); # keep unique ...
+				
+				# we are treating multi-dimension (matrix/df) as by.column 
+				if(is.dataframe(dot) || is.matrix(dot))
 					{
-					dcol = dot[, j];
-					dcoln = colnames(dot)[j];
-					
-					ddname = paste0(dname,".",dcoln,".",j); # keep unique
-					
-					res[[ddname]] = dcol;
-					}
-				} else { res[[dname]] = dot; }
+					nd = dim(dot)[2];
+					for(j in 1:nd)
+						{
+						dcol = dot[, j];
+						dcoln = colnames(dot)[j];
+						
+						ddname = paste0(dname,".",dcoln,".",j); # keep unique
+						
+						res[[ddname]] = dcol;
+						}
+					} else { res[[dname]] = dot; }
+				}
 			}
 # dput(dots);
 # dput(res);

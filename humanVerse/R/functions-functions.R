@@ -1,5 +1,127 @@
 
 
+#' stepIntoFunction
+#'
+#' The idea is to call this function so you don't have to
+#' prepopulate default parameters.
+#'
+
+# pip.info = functions.stepInto(pip); 
+
+fn.stepInto = function(...)
+	{
+debug = FALSE;
+	fparams = function.info(...)$params;
+	if(is.null(fparams$keys)) { return(NULL); }
+	n = length(fparams$keys);
+	count = 0; unassigned = NULL;
+	fparams$inserted = ""
+	for(i in 1:n)
+		{
+		key = fparams$keys[i];
+		val = fparams$values[i];
+		typ = fparams$types[i];
+if(debug)
+	{
+cat("\n key ::: ", key, "\t typ ::: ", typ, "\t val ::: ", val, "\n\n");
+	}	
+		
+		if(key == "...") 
+			{ 
+			fparams$inserted[i] = "-UNASSIGNED-";
+			unassigned = c(unassigned, key);
+			next; 
+			}
+		
+		if(typ == "symbol")
+			{
+			fparams$inserted[i] = "-UNASSIGNED-";
+			unassigned = c(unassigned, key);
+			#### why ggget and setback ... just SKIP 
+			# glo = ggget(key, -1);  # TRAPS NULL in error
+			# if(!is.null(glo))
+				# {
+				# value = glo;
+				# key %GLOBAL% value;
+				# }
+			next;
+			}
+			
+		if(typ == "language") 
+			{ 
+			count = 1 + count;
+			value = eval(parse(text = val));
+			fparams$inserted[i] = list.toString(value);
+			key %GLOBAL% value;
+			next;
+			}
+			
+		if(typ != "NULL")
+			{
+			value = as.type(val, typ);
+			} else { value = val; }
+		count = 1 + count;
+		fparams$inserted[i] = list.toString(value);
+		key %GLOBAL% value;
+		}
+cat("\n \t ", count, " KEYS were assigned.  The following were *NOT* assigned: \n\n"); 
+cat( paste0("\n\t\t\t\t\t", 
+			paste0(unassigned, collapse="\n\n\t\t\t\t\t"), 
+			"\n\n")
+	);
+cat("\n\n");
+print(fparams);
+
+	invisible(fparams);
+	}
+
+
+function.stepInto = fn.stepInto;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
  
  
   
@@ -133,30 +255,7 @@ function.sourceInfo = function(src.obj, to.rm=c("parseData"))
 	res;	
 	} 
 
-#base::str2lang; 
-	# str = "x + 2*y"; slang = str2lang(str); str2 = lang2str(slang); 
-	# str; str2; identical(str, str2);
-lang2str = function(lang.obj) 
-	{
-	deparse(lang.obj); 		# eval(parse(text = lang.obj));
-	}
-	
-strlang.RFormat = function(str)
-	{
-	lang2str(str2lang(str))
-	}
-	
-# symbols ...  is.symbol 
-# ?is.symbol ... "mode"
-symb2str = function(symb) 
-	{
-	as.character(symb);
-	}
-str2symb = function(str="alex") 
-	{
-	as.symbol(str);
-	}
-
+ 
  
  
 
@@ -375,85 +474,6 @@ debug = FALSE;
 
 
 
-
-#' stepIntoFunction
-#'
-#' The idea is to call this function so you don't have to
-#' prepopulate default parameters.
-#'
-
-# pip.info = functions.stepInto(pip); 
-
-function.stepInto = function(...)
-	{
-debug = FALSE;
-	fparams = function.info(...)$params;
-	if(is.null(fparams$keys)) { return(NULL); }
-	n = length(fparams$keys);
-	count = 0; unassigned = NULL;
-	fparams$inserted = ""
-	for(i in 1:n)
-		{
-		key = fparams$keys[i];
-		val = fparams$values[i];
-		typ = fparams$types[i];
-if(debug)
-	{
-cat("\n key ::: ", key, "\t typ ::: ", typ, "\t val ::: ", val, "\n\n");
-	}	
-		
-		if(key == "...") 
-			{ 
-			fparams$inserted[i] = "-UNASSIGNED-";
-			unassigned = c(unassigned, key);
-			next; 
-			}
-		
-		if(typ == "symbol")
-			{
-			fparams$inserted[i] = "-UNASSIGNED-";
-			unassigned = c(unassigned, key);
-			#### why ggget and setback ... just SKIP 
-			# glo = ggget(key, -1);  # TRAPS NULL in error
-			# if(!is.null(glo))
-				# {
-				# value = glo;
-				# key %GLOBAL% value;
-				# }
-			next;
-			}
-			
-		if(typ == "language") 
-			{ 
-			count = 1 + count;
-			value = eval(parse(text = val));
-			fparams$inserted[i] = list.toString(value);
-			key %GLOBAL% value;
-			next;
-			}
-			
-		if(typ != "NULL")
-			{
-			value = as.type(val, typ);
-			} else { value = val; }
-		count = 1 + count;
-		fparams$inserted[i] = list.toString(value);
-		key %GLOBAL% value;
-		}
-cat("\n \t ", count, " KEYS were assigned.  The following were *NOT* assigned: \n\n"); 
-cat( paste0("\n\t\t\t\t\t", 
-			paste0(unassigned, collapse="\n\n\t\t\t\t\t"), 
-			"\n\n")
-	);
-cat("\n\n");
-print(fparams);
-
-	invisible(fparams);
-	}
-
-
-functions.stepInto = function.stepInto; 
-f.stepInto = function.stepInto; 
 
 
 

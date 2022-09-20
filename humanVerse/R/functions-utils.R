@@ -739,4 +739,33 @@ keep.matrix = function(X, nrow=3, ...)
 	X.matrix;
 	}
 	
+
+
+
+strlang.RFormat = function(str)
+	{
+	lang2str(str2lang(str));
+	}
 	
+	
+#base::str2lang; 
+	# str = "x + 2*y"; slang = str2lang(str); str2 = lang2str(slang); 
+	# str; str2; identical(str, str2);
+lang2str = function(lang.obj) 
+	{
+	deparse(lang.obj); 		# eval(parse(text = lang.obj));
+	}
+	
+	
+# symbols ...  is.symbol 
+# ?is.symbol ... "mode"
+symb2str = function(symb) 
+	{
+	as.character(symb);
+	}
+str2symb = function(str="alex") 
+	{
+	as.symbol(str);
+	}
+
+

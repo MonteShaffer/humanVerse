@@ -1,9 +1,14 @@
  
-# v.chain(vec, hex2dec, mean, dec2hex, hex.prepend)
-v.chain = function(vec, ...)   
+# v.chain(x, hex2dec, mean, dec2hex, hex.prepend)
+v.chain = function(vec, ..., character.only=FALSE)
 	{ 
+	fns = prep.dots(..., collapse=character.only, has.objects=!character.only);
+	if(!character.only) { fns = as.character(fns); }
+	
+dput(fns); stop("monte");	
+	
 	# this gives me sys.call and envir ... and now the fn.name with params 
-	.%THIS%. ;  minvisible(THIS, display=none); 
+	# .%THIS%. ;  minvisible(THIS, display=none); 
 	# fn = match.call()[[1]];  
 	
 	# make this a generic message
