@@ -91,19 +91,19 @@ str.len = function(str, method="stringi", locale="")
 
 # LOCALE is a TODO
 	# necessary overhead
-	m = prep.arg(method, 1);
+	METHOD = prep.arg(method, 1);
 
-	if(m == "s" && is.library("stringi") )
+	if(METHOD == "s" && is.library_("stringi") )
 		{		
 		return ( stringi::stri_length(str) );
 		}
 
-	if(m == "b")
+	if(METHOD == "b")
 		{
 		return( nchar( as.character(str), type="chars") );
 		}
 
-	if(m == "c" && exists("cpp_strlen"))
+	if(METHOD == "c" && exists("cpp_strlen"))
 		{
 		return( cpp_strlen(str) );
 		} 
@@ -183,15 +183,15 @@ str.trim = function(str, side="both", method="stringi", pattern="", ...)
   # allow for dots to be ignored if looking for "both" ??? !!! ???
   # str = dots.addTo(str, ...);
 	# necessary overhead
-	s = prep.arg(side, 1);
-	m = prep.arg(method, 1);
+	SIDE = prep.arg(side, 1);
+	METHOD = prep.arg(method, 1);
 	
 
-	if(m == "s" && is.library("stringi") )
+	if(METHOD == "s" && is.library_("stringi") )
 		{
 		p = "\\P{Wspace}";
 		if(pattern != "") { p = pattern; }
-		res = switch(s,
+		res = switch(SIDE,
 						  "l"	= stringi::stri_trim_left (str, p, ...),
 						  "r" 	= stringi::stri_trim_right(str, p, ...),
 						  "b"  	= stringi::stri_trim_both (str, p, ...),
@@ -200,12 +200,12 @@ str.trim = function(str, side="both", method="stringi", pattern="", ...)
 		return (res);
 		}
 
-	if(m == "c" && exists("cpp_trim"))
+	if(METHOD == "c" && exists("cpp_trim"))
 		{
 		# this is FIXED == TRUE ... I don't have REGEX built in
 		t = " \t\n\r\f\v";
 		if(pattern != "") { t = pattern; }
-		res = switch(s,
+		res = switch(SIDE,
 						  "l"  	= cpp_ltrim(str, t),
 						  "r" 	= cpp_rtrim(str, t),
 						  "b"  	= cpp_trim (str, t),
@@ -219,7 +219,7 @@ str.trim = function(str, side="both", method="stringi", pattern="", ...)
 	# is this faster than base::trimws?
 	g = "\\s+";
 	if(pattern != "") { g = pattern; }
-	res = switch(s,
+	res = switch(SIDE,
 						  "l" 	= gsub( paste0("^",g), "", str),
 						  "r" 	= gsub( paste0(g,"$"), "", str),
 						  "b"  	= gsub( paste0("^",g,"|",g,"$"), "", str),
@@ -267,7 +267,7 @@ str.explode = function(sep = " ", str = "hello friend", method="stringi")
 
 	hasResult = FALSE;
 
-	if(!hasResult && METHOD == "s" && is.library("stringi") && sep != "" )
+	if(!hasResult && METHOD == "s" && is.library_("stringi") && sep != "" )
 		{
 		res = (stringi::stri_split_fixed(str, sep));
 		hasResult = TRUE;
@@ -590,7 +590,7 @@ str.pad = function(str,
 	SIDE = prep.arg(side, n=1);
 	METHOD = prep.arg(method, n=1);
 
-	if(METHOD == "s" && is.library("stringi") )
+	if(METHOD == "s" && is.library_("stringi") )
 		{
 		res = switch(SIDE,
 						  "l"	= stringi::stri_pad_left (str, width=to.length, pad=padding),

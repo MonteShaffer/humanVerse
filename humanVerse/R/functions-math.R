@@ -19,6 +19,7 @@ cleanup.base = function(xstr)
 fromBase = function(..., base=10)
 	{
 	xstr = prep.dots(...);
+#dput(xstr);
 	xstr = cleanup.base(xstr);
 # dput(xstr);
 	b = check.base(base);
@@ -50,6 +51,7 @@ base.from = fromBase;
 toBase = function(..., base=10, to.length=NULL)
 	{
 	x = prep.dots(...);
+#dput(x);
 	b = check.base(base);
 	base.chars = c(as.character(0:9), LETTERS[1:22]);
 	N = length(x);
@@ -106,6 +108,7 @@ base.convert = function(..., from="binary", to="octal", to.length=NULL)
 					  "H"	= toBase(x, base=16, to.length=to.length),	# HEX					  
 				xINT		# DEFAULT DECIMAL (INT, BASE 10)
 				);
+#dput(xOUT);
 	xOUT;
 	}	
 

@@ -341,7 +341,7 @@ print(parent.env(parent.env(environment())));
 	if(ct.KEY && !ct.VAL)
 		{
 		val = KEY;
-		nval = 1+val;
+		nval = val + 1;
 		key = deparse(substitute(KEY));
 		# snails.x[n] %++%.
 		str = paste0(key, " = ", nval, ";");
@@ -354,7 +354,7 @@ print(parent.env(parent.env(environment())));
 	if(!ct.KEY && ct.VAL)
 		{
 		val = VALUE;
-		nval = 1+val;
+		nval = val + 1;
 		key = deparse(substitute(VALUE));
 		#  .%++% snails.x[n]
 		str = paste0(key, " = ", nval, ";");
@@ -372,6 +372,44 @@ print(parent.env(parent.env(environment())));
 	
 
 
+
+.MINUSMINUS. = function(KEY, VALUE, WHERE=parent.frame(1))
+	{
+	ct.KEY = check.type(KEY);
+	ct.VAL = check.type(VALUE);
+
+	# i %--% .
+	if(ct.KEY && !ct.VAL)
+		{
+		val = KEY;
+		nval = val - 1;
+		key = deparse(substitute(KEY));
+		# snails.x[n] %--%.
+		str = paste0(key, " = ", nval, ";");
+# dput(str);
+		eval(parse(text = str), envir=WHERE);
+		return(nval);
+		}
+		
+	# . %--% i
+	if(!ct.KEY && ct.VAL)
+		{
+		val = VALUE;
+		nval = val - 1;
+		key = deparse(substitute(VALUE));
+		#  .%--% snails.x[n]
+		str = paste0(key, " = ", nval, ";");
+# dput(str);
+		eval(parse(text = str), envir=WHERE);		
+		return(val);
+		}
+	
+	stop("how did you get here");
+	}
+
+"%--%" = .MINUSMINUS.;	
+	
+	
 
 
 

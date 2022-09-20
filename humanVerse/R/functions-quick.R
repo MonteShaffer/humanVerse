@@ -117,7 +117,7 @@ debug = FALSE;
 	}
 
 
-
+quick = quick.source;
 
 
 

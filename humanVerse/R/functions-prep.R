@@ -5,7 +5,7 @@ parse.syscall = function(syscall)
 	{
 	# none of these functions can have dots (...)  ::: prep.dots(...)
 	str = lang2str(syscall);
-dput(str);  stop("monte");
+# dput(str);  # stop("monte");
 	info = strsplit(str, "(", fixed=TRUE)[[1]];
 	fn = trimws(info[1], which="both");			
 			
@@ -20,103 +20,81 @@ dput(str);  stop("monte");
 	pkeys = trimws(pkeys, which="both");
 	pvals = list.getElements(minfo, 2);
 			
-			
-			
-			
-			
-	fkeys = NULL;  # final keys are not in parameters ... just dots 
-	n = length(pkeys);
-cat("\n", "pkeys: ", pkeys, "\t keys:", keys, "\n\n");
-	params = list();
-	map = list();
-	if(n > 0)
-		{
-		has.dots = FALSE;
-		key = nkey = "-EMPDKJTY-";
-		kstart = knext = NULL;
-		for(i in 1:n)
-			{
-			pkey = pkeys[i];
-			pval = pvals[i];
-print(map);
-cat("\n", "i ==> ", i, "\t\t", "pkey: ", pkey, "\t pval:", pval, "\t kstart:", as.character(kstart), "\t knext:", as.character(knext), "\t nkey:", nkey, "\t key:", key, "\n\n");			
-			if(is.null(knext)) { key = keys[i]; } else { key = keys[knext]; knext = 1 + knext; }
-cat("\n", "i ==> ", i, "\t\t", "pkey: ", pkey, "\t pval:", pval, "\t kstart:", as.character(kstart), "\t knext:", as.character(knext), "\t nkey:", nkey, "\t key:", key, "\n\n");
-			if(key == "...") { has.dots = TRUE; kstart = i;}
-			# if(key == nkey)  { cat("\n\n MONTE \n\n"); has.dots = FALSE; knext = i;}
-			
-			if(!is.null(knext)) { key = keys[kstart + 1]; }
-			# mapping keys to pkey/fkeys ...
-cat("\n", "i ==> ", i, "\t\t", "pkey: ", pkey, "\t pval:", pval, "\t kstart:", as.character(kstart), "\t knext:", as.character(knext), "\t nkey:", nkey, "\t key:", key, "\n\n");
+	f = as.list(formals(fn));
+	keys = names(f);
+	form = list();		# formals, nicely
+	params = list();	# parameters with values
+	map = list();		# map from paramName to symbol user inputed 
+	fkeys = NULL;		# above may be out of order ... 
+	n = length(keys);
+	pskip = 0;
+	for(i in 1:n)
+		{		
+		key = keys[i];
+		val = f[[key]];		ct.VAL = check.type(val);
+		if(!ct.VAL) { val = "--EMPTY--"; }
+		form[[key]] = val;
+		}
 		
 
-			if(!has.dots) 
-				{ 
-				map[[key]] = pkey; 
-				}
+	
+	withV = v.which(pvals, NA, invert=TRUE);
+
+# if(fn == "v.chain") { print(str(form)); print(withV); }
+	
+	for(i in 1:n)
+		{		
+		key = keys[i];
+		pidx = i + pskip;
+		pkey = fkeys = pkeys[pidx]; 
+		if(key != "...")
+			{
+			pval = pvals[pidx]; 
 			
+# if(fn == "v.chain") { cat("\n\n key: ", key, " \t pidx :", pidx, " \t pkey :", pkey, " \t pval :", pval, "\n\n"); 	}
+	
 			if(!is.na(pval))
 				{
 				params[[ pkey ]] = eval(parse(text=pval));
-				} else { 
-						if(has.dots)
-							{
-							fkeys = c(fkeys, pkey);
-							nkey = keys[kstart + 1]; 
-							if(is.na(nkey)) { nkey = "-EMPDKJTY-"; } else { knext = 1 + kstart; }
-							map[[key]] = fkeys;
-							}
-						
-						}
+				}
 			}
-		}		
-	
-
-
-
-	
-	f = as.list(formals(fn));
-	keys = names(f);
-	params = list();
-	map = list();		# f$param => user.entered
-	form = list();		# formals, nicely
-	nf = length(f);
-		dlen = length(fkeys);
-		dskip = 0;
-	for(i in 1:nf)
-		{
-		# defaults ... 
-		key = keys[i];
-		val = f[[key]];		ct.VAL = check.type(val);
-		if(!ct.VAL) { val = ""; }
-		form[[key]] = val;
-		
-		j = dskip + i;
-		pkey = pkeys[j];
-		pval = pvals[j];
-		map[[key]] = pkey;
-		if(!is.na(pval))
+		if(key == "...")
+			{			
+			nkey = keys[i+1]; if(is.na(nkey)) { nkey = "kdsfjklsdj093-"; }
+			if(nkey != pkey) { fkeys = pkey; } else { stop("bad keys"); }
+			np = length(pkeys); # maximum search 
+			j = pidx;
+			while(j <= np)
 				{
-				params[[ pkey ]] = eval(parse(text=pval));
-				} else { fkeys = c(fkeys, pkey); }
-		
-		
+				pskip %++%.
+				j = pidx = i + pskip;
+				pkey = pkeys[pidx];
+				if(!is.null(withV) && withV[1] == pidx) { pskip %--%. ; break; }
+				if(is.na(pkey)) { pskip %--%. ; break; }  # out pf pkeys ... 
+				if(nkey != pkey) { fkeys = c(fkeys, pkey); } else { pskip %--%. ; break; } 
+				}
+			}
+		map[[key]] = fkeys; 
 		}
-	
+
+#dput(map);
+
+	fkeys = NULL;
+	if(!is.null(map[["..."]])) { fkeys = map[["..."]]; }
 	# trimws collapses list, strsplit DOESN'T collapse list 
 	# ARGH!?DSM
 	# trimws(strsplit(ninfo, "=", fixed=TRUE), which="both");
-
-		
-	missing = length(keys) - length(pkeys); 
 	
-	list(
-		"fn" = fn, 
-		"dot.keys"  = fkeys,
-		"params" = params, 
-		"missing" = missing, 
-		"formals" = form
-		);
+	res = list(
+				"fn" = fn, 
+				"dot.keys"  = fkeys,
+				"params" = params, 
+				"map" = map, 
+				"formals" = form
+				);
+
+# if(fn == "v.chain") { print(str(res)); }
+	res;
 	}
   
   
@@ -142,9 +120,10 @@ prep.dots = function(...,
 	## EQUIV:: # # parent.call = sys.call(sys.nframe() - 1L);
 	fn = sys.calls()[[sys.nframe()-1]]; 
 	finfo = parse.syscall(fn);
-	
-# dput(finfo);
-# stop("monte");	
+
+#dput(fn);	
+#dput(finfo);
+#stop("monte");	
 	if(is.null(dots) && has.objects) 
 		{
 		dots = finfo$dot.keys; # just strings 
@@ -200,11 +179,6 @@ prep.dots = function(...,
 
 
 
-params = function(...)
-	{
-	x = prep.dots(..., as="character");
-	
-	}
 
 
 # if NEW exists, it overrides the DEFAULT (cascade)

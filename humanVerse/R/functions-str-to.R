@@ -220,8 +220,8 @@ str.toMD5 = function(str, times=1, method="digest", ...)
 		return(res);
 		}
 
-	is.digest = (m == "d" && is.library("digest") );
-	is.openssl = (m == "o" && is.library("openssl") );
+	is.digest = (m == "d" && is.library_("digest") );
+	is.openssl = (m == "o" && is.library_("openssl") );
 	# we have to use the SLOW base function
 	is.hack = (!is.digest && !is.openssl); 
 

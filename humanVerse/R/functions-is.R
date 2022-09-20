@@ -159,19 +159,25 @@ is.error = function(e, where="suppressError")
 #' @examples
 
 
+is.library_ = function(pkg)
+	{
+	isTRUE(requireNamespace( pkg , quietly = TRUE));	
+	}
+
 
 # strV = "stringi", 
 is.library = function(..., suggestion=TRUE, character.only = FALSE)
 	{
 	pkgs = prep.dots(..., collapse=character.only, has.objects=!character.only, default="stringi");
 	if(!character.only) { pkgs = as.character(pkgs); }
-	
+# dput(pkgs);
 	n = length(pkgs);
 	res = logical(n);
 	for(i in 1:n)
 		{
 		pkg = pkgs[i];
-		res[i] = isTRUE(requireNamespace( pkg , quietly = TRUE));
+		res[i] = is.library_(pkg);
+		
 		if(!res[i] && suggestion)
 			{
 			ipkg = paste0( "install.packages(\"",pkg,"\", dependencies=TRUE ); ")

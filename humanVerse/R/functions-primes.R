@@ -43,7 +43,7 @@ primes.bit = function(n, first=TRUE)
 	{
 # timer.start("bits"); x = prime.bits((1*1000)); length(x); max(x); timer.stop("bits");
 	# you could build a bits-table, and search primes within 
-	if(!is.library("bit")) { stop("requires library(bit); ... "); }
+	if(!is.library_("bit")) { stop("requires library(bit); ... "); }
 	gn = n; if(n > 10^6) { stop("such a large [n] may tax the system"); }
 	if(first) { gn = ceiling( n * log(n) + n * log(log(n)) ); }
 	gn.sqrt = ceiling( sqrt(gn) );
@@ -255,7 +255,7 @@ primes.get = function(n, first=TRUE, optimus=FALSE, method="base")
 		return(res);
 		}
 		
-	if(METHOD == "pr" && is.library("pracma"))
+	if(METHOD == "pr" && is.library_("pracma"))
 		{
 		gn = n;
 		# upper bound 
@@ -265,14 +265,14 @@ primes.get = function(n, first=TRUE, optimus=FALSE, method="base")
 		return(res);
 		}
 	
-	if(METHOD == "bi" && is.library("bit"))
+	if(METHOD == "bi" && is.library_("bit"))
 		{
 		res = primes.bit(n, first=first, optimus=optimus);
 		res = optimus.logic(res, n, first, optimus);
 		return(res);
 		}
 	
-	if(METHOD == "sf" && is.library("sfsmisc"))
+	if(METHOD == "sf" && is.library_("sfsmisc"))
 		{
 		gn = n;
 		# upper bound 

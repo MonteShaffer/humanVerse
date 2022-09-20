@@ -54,6 +54,7 @@ math.cleanup = function(x, tol = sqrt(.Machine$double.eps), part="Re")
 angle.convert = function(..., from="degrees", to="radians")
 	{
 	x = prep.dots(...);
+dput(x);
 	# convert everthing to "degrees" on first pass
 	FROM = prep.arg(from, n=1, case="upper");
 	TO = prep.arg(to, n=1, case="upper");
@@ -79,7 +80,7 @@ angle.convert = function(..., from="degrees", to="radians")
 					  "T"	= deg/360,	# turns 					  
 				deg											# DEFAULT
 				);
-	math.cleanup( res );
+	math.cleanup( out );
 	}
 
 

@@ -171,7 +171,7 @@ str.tolower = function(str, method="cpp", locale="en_US.UTF-8")
 	# necessary overhead
 	m = prep.arg(method, 1);
 
-	if(m == "s" && is.library("stringi") )
+	if(m == "s" && is.library_("stringi") )
 		{		
 		return ( stringi::stri_trans_tolower(str, locale) );
 		}
@@ -214,7 +214,7 @@ str.toupper = function(str, method="cpp", locale="en_US.UTF-8")
 	# necessary overhead
 	m = prep.arg(method, 1);
 
-	if(m == "s" && is.library("stringi") )
+	if(m == "s" && is.library_("stringi") )
 		{		
 		return ( stringi::stri_trans_toupper(str, locale) );
 		}
@@ -382,16 +382,37 @@ str.replaceFromList = function(mylist, mysubject, ...)
 
 
 
+# str = c("monte says hi", "alex you're awesome", "mama is amazing")
 
+str.letterShuffle = function(str, sep="")
+	{
+	info = check.list(str.explode(sep, str));
+	ni = length(info);
+	res = character(ni);
+	seeds = integer(ni);
+	for(i in 1:ni)
+		{
+		vs = v.shuffle(info[[i]]);
+		seeds[i] = property.get("seed", vs);		
+		res[i] = paste0(vs, collapse=sep);
+		}
+	res = property.set("seeds", res, seeds);
+	res;
+	}
+	
 str.wordShuffle = function(str, sep=" ")
 	{
 	info = check.list(str.explode(sep, str));
 	ni = length(info);
 	res = character(ni);
+	seeds = integer(ni);
 	for(i in 1:ni)
 		{
-		res[i] = paste0(v.shuffle(info[[i]]), collapse=sep);
+		vs = v.shuffle(info[[i]]);
+		seeds[i] = property.get("seed", vs);		
+		res[i] = paste0(vs, collapse=sep);
 		}
+	res = property.set("seeds", res, seeds);
 	res;
 	}
 
@@ -413,7 +434,7 @@ str.removeWhiteSpace = function( str, replace=" ", n = 2,
   METHOD = functions.cleanupKey(method, 1);
 	if(pre.trim) { str = str.trim(str, ...); }
 	# REQUIRES string?
-	if(METHOD == "s" && is.library("stringi"))
+	if(METHOD == "s" && is.library_("stringi"))
 		{
 		# p = "\\P{Wspace}";
 		# p <- c("\\w", "\\d", "\\s")

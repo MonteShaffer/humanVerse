@@ -1,26 +1,26 @@
  
-# v.chain(x, hex2dec, mean, dec2hex, hex.prepend)
-v.chain = function(vec, ..., character.only=FALSE)
+# v.chain(x, hex2dec, mean, dec2hex, hex.prepend, character.only=FALSE)
+v.chain = function(vec, ..., character.only = FALSE)
 	{ 
-	fns = prep.dots(..., collapse=character.only, has.objects=!character.only);
-	if(!character.only) { fns = as.character(fns); }
-	
-dput(fns); stop("monte");	
-	
+	dots = prep.dots(..., collapse=character.only, has.objects=!character.only);
+	if(!character.only) { fns = as.character(dots); }
+
 	# this gives me sys.call and envir ... and now the fn.name with params 
 	# .%THIS%. ;  minvisible(THIS, display=none); 
 	# fn = match.call()[[1]];  
 	
 	# make this a generic message
-	if(THIS$fn.info$missing > 0) { print(str(THIS)); stop("looks like you have a [1] missing param in functon"); }
-	pkeys = THIS$fn.info$pkeys;
-	np = length(pkeys);
-	if(np < 2) { stop("looks like there is nothing to do"); }
+	# # # if(THIS$fn.info$missing > 0) { print(str(THIS)); stop("looks like you have a [1] missing param in functon"); }
+	# # # pkeys = THIS$fn.info$pkeys;
+	# # # np = length(pkeys);
+	# # # if(np < 2) { stop("looks like there is nothing to do"); }
 
+	nf = length(fns);
+	if(nf < 1) { stop("missing params, nothing to do..."); }
 	# get to the main event 
-	for(i in 2:np)
+	for(i in 1:nf)
 		{
-		vec = do.call(pkeys[i], list(vec));
+		vec = do.call(fns[i], list(vec));
 		}
 	vec;
 	}
@@ -722,11 +722,11 @@ v.return = function(res)
 
 v.which = function(vec, what="", invert=FALSE)
 	{ 
-	idx = NULL;
+	idx = NULL; 
 	if(is.null(what))
 		{
 		# lists can trap NULLS, vectors can't 
-		return(NULL);
+		return( v.invert(vec, NULL, invert=invert) );
 		}
 		
 	if(is.null(idx) && is.na(what))
@@ -760,14 +760,17 @@ v.which = function(vec, what="", invert=FALSE)
 		idx = which(vec == what); 
 		}
 		
-	if(invert) { idx = v.invert(vec,idx, invert=invert); }
+	idx = v.invert(vec,idx, invert=invert);
+	
 	v.return(idx);
 	}
 
 v.invert = function(vec, idx, invert=TRUE)
 	{
-	if(!invert) { v.return(idx); }
-	IDX = 1:length(vec); idx = IDX[-c(idx)];
+	if(!invert) { return(v.return(idx)); }
+	IDX = 1:length(vec); 
+	if(is.null(idx)) { return(v.return(IDX)); }
+	idx = IDX[-c(idx)];
 	v.return(idx);
 	}
 
@@ -856,6 +859,7 @@ v.random = function(n=100, method="norm", ..., seed=NULL)
 # https://cplusplus.com/reference/vector/vector/
 # https://www.educba.com/c-plus-plus-shuffle/
 # Inf just MEANS "ALL OF THEM" in vec ... 
+v.shuffle = function() {}
 v.shuffle = function(vec, n=length(vec), seed=NULL) 
 	{
 	# shuffle implies no replacement ...  
