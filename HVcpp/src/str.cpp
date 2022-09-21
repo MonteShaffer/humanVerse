@@ -124,33 +124,66 @@ CharacterVector cpp_ltrim(const std::vector<std::string> str, std::string t = " 
 }
 
 
-//' String Trim
+//' String BothTrim
 //'
 //' @param s String to be trimmed
 //' @param t Trimming elements
 //' @return Updated String s, trimmed (both left and right)
 // [[Rcpp::export]]
-std::string s_trim(std::string s, std::string t = " \t\n\r\f\v")
+std::string s_btrim(std::string s, std::string t = " \t\n\r\f\v")
 	{
 	return s_ltrim(s_rtrim(s, t), t);
 	}
 	
+//' String Both Trim
+//'
+//' @param s String to be trimmed
+//' @param t Trimming elements
+//' @return Updated String s, trimmed (both left and right)
+// [[Rcpp::export]]
+CharacterVector cpp_btrim(const std::vector<std::string> str, std::string t = " \t\n\r\f\v")
+{
+	CharacterVector r{};
+	for (auto& element : str) 
+		{
+		std::string res = s_btrim(element, t);
+		r.push_back(res);
+		}
+	return r;
+}
+
+
+
+
 //' String Trim
 //'
 //' @param s String to be trimmed
 //' @param t Trimming elements
 //' @return Updated String s, trimmed (both left and right)
 // [[Rcpp::export]]
-CharacterVector cpp_trim(const std::vector<std::string> str, std::string t = " \t\n\r\f\v")
+std::string s_trim(std::string s, std::string side="both", std::string t = " \t\n\r\f\v")
+	{
+	if(side == "left") 	{ return s_ltrim(s,t); }
+	if(side == "right") { return s_rtrim(s,t); }
+	// default 
+	return s_btrim(s, t);
+	}
+	
+//' String  Trim
+//'
+//' @param s String to be trimmed
+//' @param t Trimming elements
+//' @return Updated String s, trimmed (both left and right)
+// [[Rcpp::export]]
+CharacterVector cpp_trim(const std::vector<std::string> str, std::string side="both", std::string t = " \t\n\r\f\v")
 {
-	CharacterVector r{};
-	for (auto& element : str) 
-		{
-		std::string res = s_trim(element, t);
-		r.push_back(res);
-		}
-	return r;
+	if(side == "left") 	{ return cpp_ltrim(str,t); }
+	if(side == "right") { return cpp_rtrim(str,t); }
+	// default
+	return cpp_btrim(str, t);
 }
+
+
 
 
 //' String to lower case

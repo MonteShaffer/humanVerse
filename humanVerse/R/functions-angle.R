@@ -5,15 +5,25 @@
 
 
 math.cleanup = function() {}
-math.cleanup = function(x, tol = sqrt(.Machine$double.eps), part="Re")
+math.cleanup = function(x, tol = sqrt(.Machine$double.eps), part="Re", method="round")
 	{
 	# maybe sqrt(3)/2 ... or FRAC/PI ... append as attribute?, go.deep=TRUE
 	# zeros 
 	# z = is.zero(x, tol=tol, ...); # Re / Im also possible.
 	# x[z] = 0;
 	
+	METHOD = prep.arg(method, n=1);
+	
 	# difference is about zero ... 
-	xi = as.integer(x);
+	xi = switch(METHOD,
+					"i" = as.integer(x),
+					"r" = round(x),
+					"c" = ceiling(x),
+					"f" = floor(x),
+				round(x)
+				);
+				
+	# xi = as.integer(x);
 	d = x - xi;
 	dz = is.zero(d, tol=tol, part=part);
 	x[dz] = xi[dz];
@@ -89,7 +99,7 @@ dput(x);
 
 ## DRG ... LOL
 # x = c("D", "R", "G");
-# xlon = c("deg", "rad", "gon");
+# xlon = c("deg", "rad", "gon"); 
 # m = e1071::permutations(3)[,1:2];
 # m2 =  matrix(x[m], ncol=2);
 # m3 = m2[!duplicated(m2), ];

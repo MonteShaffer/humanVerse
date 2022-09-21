@@ -30,9 +30,11 @@ list.return = function(res, unlist=FALSE)
 	{
 	nr = length(res);
 		if(nr == 0) { return (NULL); }
+	if(!is.list(res)) { return(res); } # it's a vector 
 		if(nr == 1) { return (res[[1]]); }
 	if(unlist) { unlist(res); } else { res; }
 	}
+
 
 
 list.removeFillFromEnd = function(info, fill="~")

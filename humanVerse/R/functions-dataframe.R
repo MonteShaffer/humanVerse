@@ -230,7 +230,11 @@ df.row = function(..., use.names=FALSE)
 		dots = match.call(expand.dots = FALSE)$...
 		names = as.character(dots);
 		colnames(df) = names;
-		}
+		} else {
+				names = paste0("V", 1:ncol(df)); # needs something to MATCH
+				colnames(df) = names;
+				}
+		
 	df;
 	}
 

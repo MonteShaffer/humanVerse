@@ -175,10 +175,12 @@ minvisible = function(x, key="LAST", display=TRUE)
 	if(is.null(has.displayed) && display == "pip") 
 		{ has.displayed = TRUE; print(pip(x)); } 
 		# maybe write a print.pip method 
+	if(is.null(has.displayed) && display == "print") 
+		{ has.displayed = TRUE; print(x); }
 	if(is.null(has.displayed) && display == TRUE) 
 		{ has.displayed = TRUE; print(x); }
 
-	
+	 
 	invisible(x);	
 	}
 

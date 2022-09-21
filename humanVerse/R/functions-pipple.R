@@ -306,6 +306,9 @@ pip = function(df,
 		col.sep.slen = str.len(col.sep);
 #dput(cwidth);
 #dput(rwidth);
+
+		# times symbol ... u.toSymbol("U+00D7")
+		
 		cstr = str.rep( row.sep, as.integer((cwidth-rwidth)/row.sep.slen) );
 		# one more ... sep.extra.len on RIGHT side
 		cstr = str.pad( cstr, (cwidth-rwidth)+(slen.mark + 1)+(2*sep.extra.len), row.sep, "BOTH");  

@@ -212,7 +212,7 @@ cat("\n timer with key :: [",key,"] has recorded *a* stop labeled [",mark,"] \n\
 ###############################################
 	memory.set(TIMER, "TIMERS", timer);
 ###############################################
-	minvisible(relative, display=FALSE); 
+	minvisible(relative[i], display=FALSE); 
 	}
 
 

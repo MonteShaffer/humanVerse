@@ -1,5 +1,10 @@
 
-
+u.num2str = function(..., to.length=4, pre="U+")
+	{
+	num = prep.dots(..., default=59912);
+	hex = toBase(num, base=16, to.length=to.length);
+	paste0(pre,hex, collapse="");
+	}
 
 
 u.toNum = function(...)

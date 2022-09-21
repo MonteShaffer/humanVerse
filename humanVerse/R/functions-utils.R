@@ -17,7 +17,23 @@ ln = log;
 
 e = E = exp(1);
 PI = 3.1415926535897932384626
+# works 
+# π = 3.1415926535897932384626
+
 PHI = (1+sqrt(5))/2;
+
+# define("FOO",     "something");
+# WRAP these in INIT so BUILD doesn't require global export of VARIABLE 
+ 
+
+
+# from javascript CONSTANTS 
+#  y = [Math.PI, Math.E, Math.LN10, Math.LN2, Math.LOG10E, Math.LOG2E, Math.SQRT2, Math.SQRT1_2]
+
+# [3.141592653589793, 2.718281828459045, 2.302585092994046, 0.6931471805599453, 0.4342944819032518, 1.4426950408889634, 1.4142135623730951, 0.7071067811865476]
+
+
+
 
 axes = axis;
 
@@ -145,6 +161,16 @@ gggassign = function(key, val)
 	assign(key, val, envir = .GlobalEnv);
 	return(invisible(NULL));
 	}
+	
+	
+# TODO
+# constants ... flood GLOBAL space or quietly 
+# how does pi work 
+define = function(KEY, VALUE) {}
+# http://127.0.0.1:11303/library/base/html/Constants.html
+## John Machin (ca 1706) computed pi to over 100 decimal places # [how many correct?]
+## using the Taylor series expansion of the second term of
+# pi - 4*(4*atan(1/5) - atan(1/239))
 	
 .GLOBAL. = function(KEY, VALUE)
 	{
@@ -806,49 +832,4 @@ str2symb = function(str="alex")
 	as.symbol(str);
 	}
 
-
-
-
-
-
-# hack base to deal with EOS issue 
-strsplit_ = function(str, sep, fixed=TRUE, ...)
-	{
-	hasResult = FALSE;
-
-	if(!hasResult && sep == "")  
-		{
-		hasResult = TRUE;
-		res = strsplit(str, sep, fixed=fixed, ...);
-		}
-
-	if(!hasResult)
-		{
-		end = str.end(sep, str);
-		if(allFALSE(end)) 
-			{ 
-			hasResult = TRUE;
-			res = strsplit(str, sep, fixed=fixed, ...);
-			}		
-		}
-	
-	if(!hasResult)	
-		{
-		hasResult = TRUE;
-		# stringi works as expected, what about cpp?
-		# if "<i>humanVerse</i>" ... 
-			# "<i>" returns "" "humanVerse</i>"
-			# "</i>" returns "<i>humanVerse" without trailing "" 
-			# SO ... it's a feature ... 
-		# is separator at END? 
-		# good = !end; bad = end;
-			fill = "~"; if(sep == "~") { fill = "^"; }
-			tmp = paste0(str,fill);
-		tres = strsplit(tmp, sep, fixed=TRUE);
-		tres = check.list(tres);		
-		res = list.removeFillFromEnd(tres, fill=fill);
-		}
-
-	res;
-	}
 

@@ -175,57 +175,57 @@ str.toCase = str.case;
 #' str.trim("\r\n    four   scores    and  seven      years   \t\t  ");
 #'
 #------------------------------------------------#
-str.trim = function(str, side="both", method="stringi", pattern="", ...)
-  { 
-  # do something smart with dots.addTo ... 
-  # based on CALLER formals ...
-  # assign back "side", method, pattern in order ... 
-  # allow for dots to be ignored if looking for "both" ??? !!! ???
-  # str = dots.addTo(str, ...);
-	# necessary overhead
-	SIDE = prep.arg(side, 1);
-	METHOD = prep.arg(method, 1);
+str.trim = function(str, side="both", method="first", pattern=NULL, ...)
+	{  
+	METHOD = prep.strMethod(method, n=1);
+	SIDE = prep.strSide(side, n=1);
 	
-
-	if(METHOD == "s" && is.library_("stringi") )
+	PATTERN = list(
+				"cpp" = " \t\n\r\f\v",
+				"stringi" = "\\P{Wspace}",
+				"base" = "\\s+",  # is this faster than base::trimws?
+				"trimws" = "[ \t\r\n]"
+				);
+				
+	p = pattern; if(is.null(p)) { p = PATTERN[[METHOD]]; }
+	
+	FNS = list(
+			"cpp" 		= function() { cpp_trim(str, SIDE, p); } , 
+			"stringi" 	= function() { stringi::stri_trim(str, SIDE, p); } ,
+			"base" 		= function() { strtrim_(str, SIDE, p); },
+			"trimws" 	= function() { trimws(str, SIDE, p); }
+			);
+	
+	if(METHOD != "first")
 		{
-		p = "\\P{Wspace}";
-		if(pattern != "") { p = pattern; }
-		res = switch(SIDE,
-						  "l"	= stringi::stri_trim_left (str, p, ...),
-						  "r" 	= stringi::stri_trim_right(str, p, ...),
-						  "b"  	= stringi::stri_trim_both (str, p, ...),
-					stringi::stri_trim_both(str, p, ...)
-					);
-		return (res);
+		# cat("\n as =- is \n");
+		# AS-IS, no checks 
+		return(  FNS[[METHOD]]() );
 		}
 
-	if(METHOD == "c" && exists("cpp_trim"))
+	# CASCADING, first-one to meet criteria 
+	hasResult = FALSE;
+	if(!hasResult && exists("cpp_trim"))
 		{
-		# this is FIXED == TRUE ... I don't have REGEX built in
-		t = " \t\n\r\f\v";
-		if(pattern != "") { t = pattern; }
-		res = switch(SIDE,
-						  "l"  	= cpp_ltrim(str, t),
-						  "r" 	= cpp_rtrim(str, t),
-						  "b"  	= cpp_trim (str, t),
-					cpp_trim(str, t)
-					);
-		return (res);
+		# cat("\n monte \n");
+		hasResult = TRUE;
+		if(is.null(p)) { p = PATTERN[["cpp"]]; }
+		res = FNS[["cpp"]]();
+		}
+		
+	if(!hasResult && is.library_("stringi"))
+		{
+		hasResult = TRUE;
+		if(is.null(p)) { p = PATTERN[["stringi"]]; }
+		res = FNS[["stringi"]]();		
+		}
+	if(!hasResult)
+		{
+		if(is.null(p)) { p = PATTERN[["base"]]; }
+		res = FNS[["base"]]();
 		}
 
-	
-	
-	# is this faster than base::trimws?
-	g = "\\s+";
-	if(pattern != "") { g = pattern; }
-	res = switch(SIDE,
-						  "l" 	= gsub( paste0("^",g), "", str),
-						  "r" 	= gsub( paste0(g,"$"), "", str),
-						  "b"  	= gsub( paste0("^",g,"|",g,"$"), "", str),
-                  gsub( paste0("^",g,"|",g,"$"), "", str)
-                  );
-    return (res);
+	res;
 	}
 
 #++++++++++++++++++++++++#
@@ -285,11 +285,12 @@ str.explode = function(sep = " ", str = "hello friend", method="first")
 		res = FNS[["cpp"]]();
 		}
 		
-	if(!hasResult && METHOD == "stringi" && is.library_("stringi") && sep != "" )
+	if(!hasResult && is.library_("stringi") && sep != "" )
 		{
 		hasResult = TRUE;
 		res = FNS[["stringi"]]();		
 		}
+		
 	if(!hasResult)
 		{
 		res = FNS[["base"]]();
@@ -345,11 +346,12 @@ str.implode = function(sep=" ", str, method="base")
 		res = FNS[["cpp"]]();
 		}
 		
-	if(!hasResult && METHOD == "stringi" && is.library_("stringi") && sep != "" )
-		{
-		hasResult = TRUE;
-		res = FNS[["stringi"]]();		
-		}
+	# if(!hasResult && is.library_("stringi"))
+		# {
+		# hasResult = TRUE;
+		# res = FNS[["stringi"]]();		
+		# }
+		
 	if(!hasResult)
 		{
 		res = FNS[["base"]]();
@@ -411,11 +413,11 @@ str.repeat = function(str, times=1, method="base")
 		res = FNS[["cpp"]]();
 		}
 		
-	if(!hasResult && METHOD == "stringi" && is.library_("stringi"))
-		{
-		hasResult = TRUE;
-		res = FNS[["stringi"]]();		
-		}
+	# if(!hasResult && is.library_("stringi"))
+		# {
+		# hasResult = TRUE;
+		# res = FNS[["stringi"]]();		
+		# }
 
 	if(!hasResult)
 		{
@@ -457,8 +459,11 @@ str.rep = str.repeat;
 	# maybe just make replace a list(replace) if not, then loop over it's length ... this is for EVAL to work ... 
 	# three sets of dots, how to know when next ... maybe a semicolon;
 	# search,search,search; replace,replace; subject,subject 
-str.replace = function(search, replace, subject, method="base", force.case=0)
+str.replace = function(search, replace, subject, method="first", force.case=0)
 	{
+	search = as.character(search);
+	replace = as.character(replace);
+	subject = as.character(subject);
 	# TODO ... add to CPP logic force.case = 0
 	# zero is auto, case 1, 2, 3, 4 are the choices below ...
 	# 1 is pairwise 	n-n over all N
@@ -492,11 +497,11 @@ debug = FALSE;
 		res = FNS[["cpp"]]();
 		}
 		
-	if(!hasResult && METHOD == "stringi" && is.library_("stringi"))
-		{
-		hasResult = TRUE;
-		res = FNS[["stringi"]]();		
-		}
+	# if(!hasResult && is.library_("stringi"))
+		# {
+		# hasResult = TRUE;
+		# res = FNS[["stringi"]]();		
+		# }
 
 	if(!hasResult)
 		{
@@ -540,52 +545,43 @@ str.pad = function(str,
 					padding		= "0", 
 					side		= "RIGHT",  # default is for NNN.dd00 decimal
 					  
-					method		= "stringi"
+					method		= "first"
 					)
 	{
-	# str = dots.addTo(str, ...);
-	str = as.character(str);
-	# necessary overhead
-	SIDE = prep.arg(side, n=1);
-	METHOD = prep.arg(method, n=1);
+	str = as.character(str);	
+	
+	METHOD = prep.strMethod(method, n=1);
+	SIDE = prep.strSide(side, n=1);
 
-	if(METHOD == "s" && is.library_("stringi") )
+	FNS = list(
+			"cpp" 		= function() { stop("not [cpp_str_pad] implementedn (yet?)") } , 
+			"stringi" 	= function() { stringi::stri_pad(str, to.length, SIDE, padding); } ,
+			"base" 		= function() { strpad_(str, to.length, padding, SIDE); }
+			);
+			
+	if(METHOD != "first")
 		{
-		res = switch(SIDE,
-						  "l"	= stringi::stri_pad_left (str, width=to.length, pad=padding),
-						  "r" 	= stringi::stri_pad_right (str, width=to.length, pad=padding),
-						  "b"  	= stringi::stri_pad_both (str, width=to.length, pad=padding),
-					stringi::stri_pad_both (str, width=to.length, pad=padding)
-					);
-		return (res);
+		# AS-IS, no checks 
+		return(  list.return( FNS[[METHOD]]() ) );
 		}
 
-	# METHOD == "base";  	# FALLBACK DEFAULT 
-	ns = str.len(str);
-	rs = to.length - ns;  	# how many pads per element 
-	n = length(str); 		# how many strings
-	res = character(n);
-	
-	for(i in 1:n)
+	# CASCADING, first-one to meet criteria 
+	hasResult = FALSE;
+	if(!hasResult && exists("cpp_str_pad"))
 		{
-		myr = rs[i];
-		pads = str.repeat(padding, myr); 
-		if(SIDE == "b")
-			{
-			myr_right	= ceiling(myr / 2);
-			pad_right	= str.repeat(padding, ( myr_right )	);
-			pad_left	= str.repeat(padding, ( myr - myr_right )	);
-			}
+		# must not have exported it ... 
+		hasResult = TRUE;
+		res = FNS[["cpp"]]();
+		}
 		
-		# if padding is multiple length, may be too long
-		res[i] = switch(SIDE,
-						  "l"	= paste0(paste( pads , collapse=""), str[i]),
-						  "r" 	= paste0(str[i], paste( pads , collapse="")),
-						  "b"  	= paste0(paste( pad_left , collapse=""), str[i], 
-											paste( pad_right , collapse="")),
-					paste0(paste( pad_left , collapse=""), str[i], 
-											paste( pad_right , collapse=""))
-					);
+	if(!hasResult && is.library_("stringi"))
+		{
+		hasResult = TRUE;
+		res = FNS[["stringi"]]();		
+		}
+	if(!hasResult)
+		{
+		res = FNS[["base"]]();
 		}
 
 	res;

@@ -20,6 +20,16 @@ seed.init = function(...)
 	}
 
 
+
+
+seed.create = function(key = "LAST-SEED", ...)
+	{
+	s = seed.init(...);
+	memory.set(key, "-SEED-", s);
+	s;
+	}
+
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' seed.get

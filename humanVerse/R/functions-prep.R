@@ -182,34 +182,43 @@ prep.dots = function(...,
 
 
 
-prep.strSide = function(side="both", n=1, ... , keys=c("l","r","b"))
+
+
+
+prep.switch = function(THING="both", keys=c("l","r","b"), vals=c("left", "right", "both"), default = "both")
 	{
-	side = check.string(side);
-		
-	SIDE = prep.arg(side, n=n, ...);
-	nside = NULL;
-	nside = switch(SIDE,
-						keys[1] = "left",
-						keys[2] = "right",
-						keys[3] = "both",
-					"both"
-					);
-	nside;
+	# THING has been cleansed as string already
+	newthing = NULL;
+	for(i in 1:n)
+		{
+		if(keys[i] == THING ) { newthing = vals[i]; break; }		
+		}
+	if(is.null(newthing)) { newthing = default; }
+	newthing;	
 	}
 	
-prep.strMethod = function(method="first", n=1, ... , keys=c("f","c","s","b") )
+	
+prep.strSide = function(side="both", n=1, ... , default="both", keys=NULL, vals=NULL)
 	{
-	method = check.string(method);
+	side = check.string(side);		
+	SIDE = prep.arg(side, n=n, ...);
 		
+	if(is.null(keys)) { keys = c("l","r","b"); }
+	if(is.null(vals)) { vals = c("left", "right", "both"); }
+	
+	prep.switch(SIDE, keys, vals, default);
+	}
+	
+prep.strMethod = function(method="first", n=1, ... , default="base", keys=NULL, vals=NULL)
+	{
+	method = check.string(method);		
 	METHOD = prep.arg(method, n=n, ...);
-	nmethod = switch(METHOD,
-						keys[1] = "first",
-						keys[2] = "cpp",
-						keys[3] = "stringi",
-						keys[4] = "base",
-					"base"
-					);
-	nmethod;
+
+	if(is.null(keys)) { keys = c("f","c","s","b", "t"); }
+	if(is.null(vals)) {	vals = c("first", "cpp", "stringi", "base", "trimws"); }
+
+	
+	prep.switch(METHOD, keys, vals, default);
 	}
 
 

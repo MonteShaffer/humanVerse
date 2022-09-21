@@ -361,7 +361,12 @@ std::ostream& operator<<(std::ostream& out, MD5 md5)
 
 //////////////////////////////
 
-std::string md5_(const std::string str)
+//' Compute md5 of single element 
+//'
+//' @param str Single String Element
+//' @return single MD5 (times = 1)
+// [[Rcpp::export]]
+std::string s_md5(const std::string str)
  {
  MD5 md5 = MD5(str);
  
@@ -393,7 +398,7 @@ CharacterVector cpp_md5(const std::vector<std::string> str, int times=1)
 			{
 			for(int i=1; i<= times; i++)
 				{
-				res = md5_(res);
+				res = s_md5(res);
 				}
 			}
 		r.push_back(res);

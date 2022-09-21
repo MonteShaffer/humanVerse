@@ -134,7 +134,14 @@ num.constants = function(envir=parent.env(environment()))
 	}
 
 
-
+num.commas = function(x, sep=",", width="individual")
+	{
+	# fixed ===> common 
+	# natural ===> individual
+	# "none" ???
+	# doesn't seem to do anything .... 
+	prettyNum(x, big.mark=sep, preserve.width=width);	
+	}
 
 
 num.toScientific = function(..., force.scale=0 )

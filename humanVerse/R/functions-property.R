@@ -1,5 +1,14 @@
 
 
+system.set_ = function(key, value=NULL)
+	{
+	key = check.string(key);
+	# everything's a string ...
+	str = paste0('Sys.setenv("',key[i],'" = "',value[idx.v],'")');
+				eval(parse(text=str));	
+	(Sys.getenv(key[i]));
+	}
+	
 system.set = function(key, value=NULL, as.null = FALSE) 
 	{
 	# you may actually want to pass the value NULL in the "setter" ???
@@ -140,6 +149,13 @@ system.restoreInitialState = function()
 #' @examples
 # .get has to be key first ... SYSTEM 
 # set key on obj with value 
+property.set_ = function(key, obj, value=NULL)
+	{
+	key = check.string(key);
+	attributes(obj)[[ key[1] ]] = value;
+	obj;	
+	}
+	
 property.set = function(key, obj, value=NULL,
 									as.null = FALSE,
 									recycle = FALSE
@@ -274,6 +290,13 @@ property.restoreInitialState = function()
 #' @export
 #'
 #' @examples
+option.set_ = function(key, value)
+	{
+	key = check.string(key);
+	TEMPLATE = "options({key} = {value});"; 
+	eval.fromTemplate(TEMPLATE, key, value);	
+	}
+	
 options.set = function(keys, values)
 	{
 	n = length(keys);
@@ -434,6 +457,14 @@ options.restoreInitialState = function()
 #'
 #' @examples
 # bazaar graphics::par opens a par window in RGui
+par.set_ = function(key, value)
+	{
+	key = check.string(key);
+	TEMPLATE = "graphics::par({key} = {value});"; 
+	eval.fromTemplate(TEMPLATE, key, value);	
+	}
+
+
 par.set = function(keys, values)
 	{
 	pnames = names( graphics::par(no.readonly = TRUE) );

@@ -1061,6 +1061,64 @@ whatever I want except for single  .. # lksdjf lkj
 '}
 
 
+		
+strtrim_ = function(str, side="both", pattern=NULL)
+	{
+	SIDE = prep.strSide(side, n=1);	
+	# is this faster than base::trimws? ... no collapsing?
+	g = "\\s+";
+	if(!is.null(pattern)) { g = pattern; }
+	res = switch(SIDE,
+						  "left" 	= gsub( paste0("^",g), "", str),
+						  "right" 	= gsub( paste0(g,"$"), "", str),
+						  "both"  	= gsub( paste0("^",g,"|",g,"$"), "", str),
+					gsub( paste0("^",g,"|",g,"$"), "", str)
+				);
+    res;
+	}
+	
+		
+strpad_ = function() {}
+strpad_ = function(str, 
+					to.length	= max(str.len(str)),
+					padding		= "0", 
+					side		= "right"  # default is for NNN.dd00 decimal
+					)
+	{
+	str = as.character(str);
+	SIDE = prep.strSide(side, n=1);
+	ns = str.len(str);
+	rs = to.length - ns;  	# how many pads per element 
+	n = length(str); 		# how many strings
+	res = character(n);
+	
+	for(i in 1:n)
+		{
+		myr = rs[i];
+		pads = str.repeat(padding, myr); 
+		if(SIDE == "both")
+			{
+			myr_right	= ceiling(myr / 2);
+			pad_right	= str.repeat(padding, ( myr_right )	);
+			pad_left	= str.repeat(padding, ( myr - myr_right )	);
+			}
+		
+		# if padding is multiple length, may be too long
+		res[i] = switch(SIDE,
+						  "left"	= paste0(paste( pads , collapse=""), str[i]),
+						  "right" 	= paste0(str[i], paste( pads , collapse="")),
+						  "both"  	= paste0(paste( pad_left , collapse=""), str[i], 
+											paste( pad_right , collapse="")),
+					paste0(paste( pad_left , collapse=""), str[i], 
+											paste( pad_right , collapse=""))
+					);
+					
+		}
+	res;
+	}
+
+
+
 strreplace_ = function(search, replace, subject)
 	{
 debug = FALSE;
