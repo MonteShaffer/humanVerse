@@ -149,14 +149,21 @@ v.toNA = function(vec, idx)
 	vec;	
 	}
 	
+v.toNaN = function(vec, idx)
+	{
+	vec[idx] = NaN;
+	vec;	
+	}
+	
 
 	
 # naTO, not NATO  
 
-v.TO = function(vec, what="NA", to="")
+v.TO = function(vec, what="NA", to="", invert=FALSE)
 	{
-	if(what == "NA" || is.na(what)) {	vec[is.na(vec)] = to; }
-	if(what == "Inf" || is.infinite(what)) { vec[is.infinite(vec)] = to; }
+	idx = v.which(vec, what, invert=invert);
+	if(is.null(idx)) { return(vec); }
+	vec[idx] = to;
 	vec;	
 	}
 	
@@ -733,10 +740,14 @@ v.which = function(vec, what="", invert=FALSE)
 		return( v.invert(vec, NULL, invert=invert) );
 		}
 		
-	if(is.null(idx) && is.na(what))
+	if(is.null(idx) && (is.na(what) || what == "NA"))
 		{
 		idx = which(is.na(vec));
 		}	
+	if(is.null(idx) && (is.infinite(what) || what == "Inf" || what == "-Inf"))
+		{
+		idx = which(is.infinite(vec));
+		}
 	# type = v.type(what);
 	if(is.null(idx) && is.logical(what))
 		{
@@ -774,8 +785,7 @@ v.invert = function(vec, idx, invert=TRUE)
 	if(!invert) { return(v.return(idx)); }
 	IDX = 1:length(vec); 
 	if(is.null(idx)) { return(v.return(IDX)); }
-	idx = IDX[-c(idx)];
-	v.return(idx);
+	v.return(IDX[-c(idx)]);
 	}
 
 v.remove = function(vec, what="", invert=FALSE)

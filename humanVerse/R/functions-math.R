@@ -15,29 +15,48 @@ cleanup.base = function(xstr)
 	xstr;
 	}
 
-# base2int to an INTEGER 
-base2int = function(..., base=16)
+
+.base2int = function(xstri, base=16)
 	{
-	xstr = prep.dots(...);
+	# univariate, no checks 
+	base.chars = c(as.character(0:9), LETTERS[1:22]);
+	
+	xstri = toupper(xstri);
+	xv = str.explode("",xstri);
+	idx = set.match(xv, base.chars) - 1;
+	n = length(xv);
+	p = base^((n-1):0);
+	
+	sum( idx * p ); 	
+	}
+	
+	
+# fromBase 
+# base2int to an INTEGER 
+base2int = function(..., base=16, method="first")
+	{
+	xstr = prep.dots(..., default=c("0", "abc", "EA08", "c8008c", "abbacdc", "7FFFFFFF") );
 #dput(xstr);
 	xstr = cleanup.base(xstr);
-# dput(xstr);
 	b = check.base(base);
-	# lower case, I guess 
-	base.chars = c(as.character(0:9), LETTERS[1:22]);
-	# base.keys = 1:length(base.chars);
-	# base.list = list.create(base.chars, base.keys);
+	
+	METHOD = prep.arg(method, n=1);
+			keys = c("c","b"); vals = c("cpp", "base");	default = "first";	
+	METHOD = prep.switch(METHOD, keys, vals, default);
+		
+		
+	if((METHOD == "cpp" || METHOD == "first") && exists("cpp_base2int")) 
+			{ 
+			res = cpp_base2int(xstr,b);
+			return( v.return(res) );
+			}
 	
 	N = length(xstr);
 	res = integer(N);
 	
 	for(i in 1:N)
-		{
-		xstri = toupper(xstr[i]);
-		xv = str.explode("",xstri);
-		idx = set.match(xv, base.chars);
-		n = length(xv);
-		res[i] = sum( idx * b^((n-1):0) );
+		{ 
+		res[i] = .base2int(xstr[i], b);
 		}
 	res;	
 	}
@@ -45,29 +64,48 @@ base2int = function(..., base=16)
 base.from = base2int;	 
 	
 
+
+
+
+.int2base = function(num, base=16)
+	{
+	# univariate, no checks 
+	base.chars = c(as.character(0:9), LETTERS[1:22]);	
+	r = ""; if(num == 0) { return("0"); }
+	while(num > 0) 
+		{
+		m = num %% base;
+		r = paste0(base.chars[m + 1], r);
+		num =  as.integer(num/base);
+		}
+	r;
+	}
+
+
+# toBase
 # an INTEGER to a base as a string 
 # cpp_int2base(cpp_base2int(c("abc", "def"))) ... in primes.cpp for now ...  
-int2base = function(..., base=16, to.length=NULL)
+int2base = function(..., base=16, to.length=NULL, method="first")
 	{
-	x = prep.dots(...);
+	x = prep.dots(..., default = c(0, 2748, 59912, 13107340, 180071644,  2^31 - 1) );
 #dput(x);
 	b = check.base(base);
-	base.chars = c(as.character(0:9), LETTERS[1:22]);
+	
+	METHOD = prep.arg(method, n=1);
+			keys = c("c","b"); vals = c("cpp", "base");	default = "first";	
+	METHOD = prep.switch(METHOD, keys, vals, default);
+		
+	if((METHOD == "cpp" || METHOD == "first") && exists("cpp_int2base")) 
+			{ 
+			res = cpp_int2base(x,b);
+			return( v.return(v.toNA(res, (res==""))) );
+			}
+			
 	N = length(x);
 	res = character(N);
 	for(i in 1:N)
-		{
-		num = x[i];	
-		r = "";
-		
-		while(num > 0)
-			{
-			m = num %% base;
-			r = paste0(base.chars[m + 1], r);
-			num =  as.integer(num/base);
-			}
-			
-		res[i] = r;		
+		{			
+		res[i] = .int2base(x[i], base);	
 		}
 	# str.pad("LEFT");
 	if(!is.null(to.length)) { res = str.pad(res, to.length, "0", "LEFT"); }

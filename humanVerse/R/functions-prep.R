@@ -189,6 +189,7 @@ prep.switch = function(THING="both", keys=c("l","r","b"), vals=c("left", "right"
 	{
 	# THING has been cleansed as string already
 	newthing = NULL;
+	n = length(keys);  # these need to be equal length .... 
 	for(i in 1:n)
 		{
 		if(keys[i] == THING ) { newthing = vals[i]; break; }		

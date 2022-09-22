@@ -180,7 +180,7 @@ JSON.stringify = function(obj, digits=16, prettify=FALSE, indent=5)
 
 
 
-JSON = function(x, )
+JSON = function(x)
 	{
 	.NULL. = "U+EA08";  # PUA (59912)
 	# var rx_one = /^[\],:{}\s]*$/;
@@ -252,7 +252,7 @@ cat(res);
 		}
 		
 		
-	quote = function quote(string) 
+	quote = function(string) 
 	{
 
 # // If the string contains no control characters, no quote characters, and no
@@ -261,15 +261,15 @@ cat(res);
 # // sequences.
 # https://community.adobe.com/t5/illustrator-discussions/strange-amp-annoying-json-behavior-in-extendscript/td-p/11964686
 
-        rx_escapable.lastIndex = 0;
-        return rx_escapable.test(string)
-            ? "\"" + string.replace(rx_escapable, function (a) {
-                var c = meta[a];
-                return typeof c === "string"
-                    ? c
-                    : "\\u" + ("0000" + a.charCodeAt(0).toString(16)).slice(-4);
-            }) + "\""
-            : "\"" + string + "\"";
+        # rx_escapable.lastIndex = 0;
+        # return rx_escapable.test(string)
+            # ? "\"" + string.replace(rx_escapable, function (a) {
+                # var c = meta[a];
+                # return typeof c === "string"
+                    # ? c
+                    # : "\\u" + ("0000" + a.charCodeAt(0).toString(16)).slice(-4);
+            # }) + "\""
+            # : "\"" + string + "\"";
     }
 
 	

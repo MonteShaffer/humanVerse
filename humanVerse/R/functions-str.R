@@ -263,7 +263,7 @@ str_trim = str.trim;
 str.explode = function(sep = " ", str = "hello friend", method="first")
 	{
 	METHOD = prep.strMethod(method, n=1);
-
+ 
 	FNS = list(
 			"cpp" 		= function() { cpp_explode(sep, str); } , 
 			"stringi" 	= function() { stringi::stri_split_fixed(str, sep); } ,
