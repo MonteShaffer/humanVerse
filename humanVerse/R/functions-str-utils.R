@@ -120,22 +120,96 @@ str.characterFrequency = function(str,
 str.splitN = function(..., n=2, insert.a.sep="`c80^08c`", from.end=TRUE)
 	{
 	str = prep.dots(...);
+	
 	# we will INTERNALLY use insert.a.sep to SPLIT the string 
 	# THEREFORE, the string cannot contain it... maybe ^ or `^`
 	s.test = str.contains(insert.a.sep, str);
 	if( sum( s.test ) > 0) 
 		{ 
-		all = paste0(str, collapse="\n"); 
-		all.f = str.characterFrequency(all);
-		print(all.f);
+		# all = paste0(str, collapse="\n"); 
+		# all.f = str.characterFrequency(all);
+		# print(all.f);
 		stop("Your str has the [insert.a.sep] in it, maybe try a different one");
 		}
-	# https://stackoverflow.com/a/26497699/184614
-	# https://stackoverflow.com/a/24900744/184614
-	# split a string into disjoint substrings of length [n] = 2
+	
+	pattern = paste0("(.{", n, "})");
+	
+	if(!from.end)
+		{
+		s.str = gsub(pattern, paste0("\\1", insert.a.sep), str);
+		res = str.explode(insert.a.sep, s.str);	
+		res = list.return(res);
+		return(res);
+		}
+		
+	# we have to go from right/left (hex/binary padding) ... 
+	# rev(str) ... do the above, rev(str) again ...
+	
+	slen = strlen(str);
+	s = check.list(str.explode("", str));
+	ns = length(s);
+	res = vector("list", ns);
+	for(i in 1:ns)
+		{
+		si = s[[i]];
+		
+		str_rev <- function(x) intToUtf8(rev(utf8ToInt(x))) 
+		
+		revString = function(string, index = 1:nchar(string)){
+  paste(rev(unlist(strsplit(string, NULL)))[index], collapse = "")
+}
+		
+		sir = paste0( rev(si), collapse="");		
+		s.str = gsub(pattern, paste0("\\1", insert.a.sep), sir);		
+		r = str.explode(insert.a.sep, s.str);
+		ri = str.explode("", paste0(r, collapse=""));
+		
+		# if (!require("BiocManager", quietly = TRUE)) install.packages("BiocManager")
+		# BiocManager::install("Biostrings")
+
+		
+		r = list.return(r);
+		
+		
+		res[[i]] = si;
+		}
+	
 	pattern = paste0("(.{", n, "})");
 	s.str = gsub(pattern, paste0("\\1", insert.a.sep), str);
 	str.explode(insert.a.sep, s.str);	
+	
+	
+	
+	# https://stackoverflow.com/a/26497699/184614
+	# https://stackoverflow.com/a/24900744/184614
+	
+	slen = strlen(str);
+	s = check.list(str.explode("", str));
+	ns = length(s);
+	res = vector("list", ns);
+	for(i in 1:ns)
+		{
+		si = s[[i]];
+		res[[i]] = si;
+		}
+	
+	pattern = paste0("(.{", n, "})");
+	s.str = gsub(pattern, paste0("\\1", insert.a.sep), str);
+	str.explode(insert.a.sep, s.str);	
+	
+	seth2 <- function(x) {
+  strsplit(gsub("(.{2})", "\\1 ", x), " ")[[1]]
+}
+
+	seth <- function(x) {
+  strsplit(gsub("([[:alnum:]]{2})", "\\1 ", x), " ")[[1]]
+}
+
+	list.return(res);
+	
+	sst <- strsplit(x, "")[[1]]
+  paste0(sst[c(TRUE, FALSE)], sst[c(FALSE, TRUE)])
+	
 	
 	
 	sst <- strsplit(x, "")[[1]]
