@@ -41,25 +41,39 @@ u.pad8 = function(...)
 	fns[[1]] = function(x) { paste0("0", x); }
 	fns[[2]] = function(x) 
 					{
-					x = str.splitN(x, n=6, from="end");
-					x1 = str.splitN( str.letterReverse(x), n=6 );
-					x2 = paste0(str.letterReverse(x1), collapse=" ");
-					x3 = str.split(" ",str.wordReverse(x2));
-					paste0("110",x3[1], "10",x3[2]);
+					x = check.list(str.splitN(x, n=6, from="end"));
+					nx = length(x);
+					res = character(nx);
+					for(i in 1:nx)
+						{
+						x_ = x[[i]];
+						res[i] = paste0("110",x_[1], "10",x_[2]);
+						}
+					res;					
 					}
 	fns[[3]] = function(x) 
 					{
-					x1 = str.splitN( str.letterReverse(x), n=6 );
-					x2 = paste0(str.letterReverse(x1), collapse=" ");
-					x3 = str.split(" ",str.wordReverse(x2));
-					paste0("1110",x3[1], "10",x3[2], "10",x3[3]);
+					x = check.list(str.splitN(x, n=6, from="end"));
+					nx = length(x);
+					res = character(nx);
+					for(i in 1:nx)
+						{
+						x_ = x[[i]];
+						res[i] = paste0("1110",x_[1], "10",x_[2], "10",x_[3]);
+						}
+					res;					
 					}
 	fns[[4]] = function(x) 
 					{
-					x1 = str.splitN( str.letterReverse(x), n=6 );
-					x2 = paste0(str.letterReverse(x1), collapse=" ");
-					x3 = str.split(" ",str.wordReverse(x2));
-					paste0("11110",x3[1], "10",x3[2], "10",x3[3], "10",x3[4]);
+					x = check.list(str.splitN(x, n=6, from="end"));
+					nx = length(x);
+					res = character(nx);
+					for(i in 1:nx)
+						{
+						x_ = x[[i]];
+						res[i] = paste0("11110",x_[1], "10",x_[2], "10",x_[3], "10",x_[4]);
+						}
+					res;
 					}
 	
 	bu = b;	
@@ -76,6 +90,11 @@ u.pad8 = function(...)
 	hex = bin2hex(bu);	
 	list("binary.codepoint" = b, "binary.utf8" = bu, "hex.utf8" = hex);
 	}
+	
+# work on converters ... COMPARE to wikipedia below 
+#  x = u.pad8()
+# str.splitN(x$binary.codepoint, n=4)
+
 
 u.int2bin8 = function(...)
 	{

@@ -15,7 +15,7 @@ cleanup.base = function(xstr)
 	xstr;
 	}
 
-
+# fromBase to an INTEGER 
 fromBase = function(..., base=10)
 	{
 	xstr = prep.dots(...);
@@ -24,7 +24,7 @@ fromBase = function(..., base=10)
 # dput(xstr);
 	b = check.base(base);
 	# lower case, I guess 
-	base.chars = c(as.character(0:9), letters[1:22]);
+	base.chars = c(as.character(0:9), LETTERS[1:22]);
 	
 	N = length(xstr);
 	res = integer(N);
@@ -49,12 +49,14 @@ fromBase = function(..., base=10)
 base.from = fromBase;	 
 	
 
+# an INTEGER to a base as a string 
+# cpp_int2base(cpp_base2int(c("abc", "def"))) ... in primes.cpp for now ... 
 toBase = function(..., base=10, to.length=NULL)
 	{
 	x = prep.dots(...);
 #dput(x);
 	b = check.base(base);
-	base.chars = c(as.character(0:9), letters[1:22]);
+	base.chars = c(as.character(0:9), LETTERS[1:22]);
 	N = length(x);
 	res = character(N);
 	for(i in 1:N)
@@ -62,7 +64,14 @@ toBase = function(..., base=10, to.length=NULL)
 		xi 	= x[i];
 		n	= ceiling(log(xi, b));
 		vec = NULL;
-		val = xi
+		val = xi;
+		
+		## C++ 
+		# while(num > 0)
+		# {
+		# res = d[num % base] + res;
+		# num /= base;
+		# }
       
 		while(n >= 0)
 			{
@@ -104,9 +113,9 @@ base.convert = function(..., from="binary", to="octal", to.length=NULL)
 				as.integer(x)	# DEFAULT # DECIMAL (INT, BASE 10)
 				);
 	xOUT = switch(TO,					  			
-					  "B" 	= toBase(x, base=2, to.length=to.length), 	# BINARY
-					  "O"  	= toBase(x, base=8, to.length=to.length),		# OCT
-					  "H"	= toBase(x, base=16, to.length=to.length),	# HEX					  
+					  "B" 	= toBase(xINT, base=2, to.length=to.length), 	# BINARY
+					  "O"  	= toBase(xINT, base=8, to.length=to.length),		# OCT
+					  "H"	= toBase(xINT, base=16, to.length=to.length),	# HEX					  
 				xINT		# DEFAULT DECIMAL (INT, BASE 10)
 				);
 #dput(xOUT);

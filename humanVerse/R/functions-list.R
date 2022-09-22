@@ -320,14 +320,14 @@ list.getElements = function(info, n=1)
 		{
 		res[i] = info[[i]][  n[i]  ];  # will put NA if missing here
 		}
-	res;
+	res; 
 	}
 
 
 
 list.setElements = function(info, n=1, vals=NULL)
 	{
-	n.info = length(info);
+	n.info = length(info); 
 	if(!is.list(info)) { return(info[n]); }
 	if(n.info == 0) { return(NULL); }
 	if(is.null(vals)) { return(NULL); }  # message, bad INPUT ??? 
