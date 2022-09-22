@@ -2,12 +2,13 @@
 ### THIS IS MULTIVARIATE ... user has to KNOW which function to call
 base64.encode = function(objlist, method="JSON", ...)
 	{
+	objlist = check.list(objlist);
 	# seems to convert to LIST automatically if input is vector ...
 	n = length(objlist); 
 	res = character(n);
 	for(i in 1:n)
 		{
-		res[i] = base64.enc(objlist[[i]]);
+		res[i] = base64.enc(objlist[[i]], method=method, ...);
 		}
 	res;
 	}
@@ -19,44 +20,71 @@ base64.decode = function(b64.vec, method="JSON", ...)
 	res = list();
 	for(i in 1:n)
 		{
-		res[[i]] = base64.dec(b64.vec[i]);
+		res[[i]] = base64.dec(b64.vec[i], method=method, ...);
 		}
 	list.return(res);  # collapse on n=1
 	}
 
 
 
-
+.serialize = function(obj)
+	{
+	serialize(obj, NULL);
+	}
 
 
 ## THIS IS UNIVARIATE
-base64.enc = function(obj, method="JSON", ...)
+base64.enc = function(obj, method="serialize")
 	{	
 	# necessary overhead
-	m = prep.arg(method, 1); 
-	if(m == "j") { obj.str = JSON.stringify(obj, ...); }
-	if(m == "s") { obj.str = serialize(obj, NULL, ascii=TRUE, ...); }
-	obj.raw = charToRaw(obj.str);
+	METHOD = prep.arg(method, 1); 
+	obj.raw = NULL;
+	if(is.null(obj.raw) && METHOD == "j") 
+		{ 
+		obj.str = JSON.stringify(obj); 
+		obj.raw = charToRaw(obj.str); 
+		}
+	if(is.null(obj.raw)) 
+		{ 
+		obj.raw = .serialize(obj); 
+		}	
 	b64.enc(obj.raw);
 	}
 
  
 ## THIS IS UNIVARIATE
-base64.dec = function(b64.str, method="JSON", ...)
+base64.dec = function(b64.str, method="serialize", ...)
 	{
 	# necessary overhead
-	m = prep.arg(method, 1);
+	METHOD = prep.arg(method, 1);
 	obj.raw = b64.dec(b64.str);
-	obj.str = rawToChar(obj.raw);
-	if(m == "j") { obj = JSON.parse(obj.str); } ## no ... on this function
-	if(m == "s") { obj = unserialize(obj.raw); }
+	
+	obj = NULL;
+	
+	if(is.null(obj.raw) && METHOD == "j") 
+		{  
+		obj.str = rawToChar(obj.raw);
+		obj = JSON.parse(obj.str); 
+		} ## no ... on this function
+	if(is.null(obj)) 
+		{ 
+		obj = .unserialize(obj.raw); 
+		}	
 	obj;
 	}
 
 
+.serialize = function(obj)
+	{
+	obj.raw = serialize(obj, NULL);
+	obj.raw;
+	}
 
-
-
+.unserialize = function(obj.raw)
+	{
+	obj = unserialize(obj.raw);
+	obj;
+	}
 
 
 

@@ -83,17 +83,28 @@ NumericVector cpp_base2int(const std::vector<std::string> str, int base=16)
 //' @param base INTEGER of base (2,32)
 //' @return string of integer in the new base 
 // [[Rcpp::export]]
-std::string s_base2base(std::string s, int from=16, int to=16)
+// https://codescracker.com/cpp/program/cpp-program-convert-octal-to-binary.htm
+std::string s_base2base(std::string s, int from=16, int to=2)
 	{
-	// no stoi 
+	// from (2,32) ... to (2,32)
 	std::string d = "0123456789ABCDEFGHIJKLMNOPQRSTUV";
 	
 	std::string res;
-	if(num == 0) { return "0"; }
-	while(num > 0)
-		{
-		res = d[num % base] + res;
-		num /= base;
-		}
+	
+	// do something here ... 
+	
 	return res;
 	}
+
+
+
+CharacterVector cpp_base2base(const std::vector<std::string> str, int from=16, int to=2)
+{
+	CharacterVector r{};
+	for (auto& element : str) 
+		{
+		std::string res = s_base2base(element, from, to);
+		r.push_back(res);
+		}
+	return r;
+}

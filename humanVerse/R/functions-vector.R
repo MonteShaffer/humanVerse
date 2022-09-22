@@ -143,7 +143,7 @@ v.type = function(vec)
 
 
 # toNA ... assigns elements as NA 
-v.toNA = function(vec, idx)
+v.toNA = function(vec, idx) 
 	{
 	vec[idx] = NA;
 	vec;	

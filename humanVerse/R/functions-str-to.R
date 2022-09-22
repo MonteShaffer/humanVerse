@@ -82,7 +82,7 @@ str.fromHEX = function(...)
 		{
 		tt  = str.splitN(hstr[i], n=2);
 		ttx = paste0("0x",tt);
-		ttr = as.raw( hexdec(ttx) );		
+		ttr = as.raw( int.convert(ttx, from="hex", to="dec") );		
 		res[i] = rawToChar(ttr);
 		}
 	res;
