@@ -111,20 +111,44 @@ std::string foo( "blabla" ) ;
 		 std::copy( foo.begin(), foo.end(), res.begin() ) ;
 		 return res ;
 */	 
+
+// serializeToRaw ... https://github.com/eddelbuettel/rcppredis/blob/master/src/Redis.cpp
+// unserializeFromRaw(res);
+// https://github.com/eddelbuettel/rapiserialize/tree/master/inst/include
+// 
 	 
-// [[Rcpp::export]]
+// [[Rcpp::export]] 
 std::string s_b64_enc_raw(const RawVector& raw)
 {
-	std::string res = s_b64_enc(raw.c_str(), raw.size());
+	std::string res = s_b64_enc(raw, raw.size());
 	return res;
 }
 
 // [[Rcpp::export]]
 RawVector s_b64_dec_raw(const std::string& str64)
 {
-	std::string res = s_b64_dec(str.c_str(), str.size());
+	std::string res = s_b64_dec(str64.c_str(), str64.size());
 	RawVector raw( res.size() ) ;
 	std::copy( res.begin(), res.end(), raw.begin() ) ;
 	return raw ;
 }
+
+
+// [[Rcpp::export]]
+RawVector say_hello()
+{
+	std::string res = "hello friend";
+	RawVector raw( res.size() ) ;
+	std::copy( res.begin(), res.end(), raw.begin() ) ;
+	return raw ;
+}
+
+// https://stackoverflow.com/questions/8421250/convert-rcppcharactervector-to-stdstring
+// [[Rcpp::export]]
+std::string print_hello(const RawVector& raw)
+{	
+	std::string res = Rcpp::as<std::string>(raw);
+	return res ;
+}
+
 
