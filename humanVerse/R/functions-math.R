@@ -16,7 +16,7 @@ cleanup.base = function(xstr)
 	}
 
 # fromBase to an INTEGER 
-fromBase = function(..., base=10)
+fromBase = function(..., base=16)
 	{
 	xstr = prep.dots(...);
 #dput(xstr);
@@ -50,8 +50,8 @@ base.from = fromBase;
 	
 
 # an INTEGER to a base as a string 
-# cpp_int2base(cpp_base2int(c("abc", "def"))) ... in primes.cpp for now ... 
-toBase = function(..., base=10, to.length=NULL)
+# cpp_int2base(cpp_base2int(c("abc", "def"))) ... in primes.cpp for now ...  
+toBase = function(..., base=16, to.length=NULL)
 	{
 	x = prep.dots(...);
 #dput(x);
@@ -61,10 +61,15 @@ toBase = function(..., base=10, to.length=NULL)
 	res = character(N);
 	for(i in 1:N)
 		{
+		
+		
+		
 		xi 	= x[i];
 		n	= ceiling(log(xi, b));
 		vec = NULL;
 		val = xi;
+		
+		
 		
 		## C++ 
 		# while(num > 0)
