@@ -27,7 +27,7 @@ u.pad8 = function(...)
 	x = prep.dots(... , default=c(36, 163, 2361, 8364, 54620, 66376) );
 	
 	# https://en.wikipedia.org/wiki/UTF-8#Encoding
-	b = toBase(x, base=2);
+	b = int2base(x, base=2);
 	
 	pads = c(7, 11, 16, 21);
 	idxs = list(
@@ -99,7 +99,7 @@ u.pad8 = function(...)
 u.int2bin8 = function(...)
 	{
 	x = prep.dots(... , default=c(36, 163, 2361, 8364, 54620, 66376) );
-	b = toBase(x, base=2);
+	b = int2base(x, base=2);
 	
 	x = c(127, 2047, 65535, 1114111);
 	# strlen(b) ... 7, 11, 16, 21 
@@ -115,12 +115,12 @@ u.plus2int = function(...)
 	x = prep.dots(... , default=c("U+0024", "U+00A3", "U+0939", "U+20AC", "U+D55C", "U+10348") );
 	uinfo = list.pair(str.explode("U+", toupper(x))); 
 	utf   = list.getElements(uinfo, 2); 
-	fromBase(utf, base=16);
+	base2int(utf, base=16);
 	}
 	
 # u = c("U+0024", "U+00A3", "U+0939", "U+20AC", "U+D55C", "U+10348");
 # i = u.plus2int();
-# b = toBase(i, base=2);
+# b = int2base(i, base=2);
 
 
 
@@ -132,7 +132,7 @@ dput(x);
 	FROM = prep.arg(from, n=2, case="upper", keep="-");
 	TO = prep.arg(to, n=2, case="upper", keep="-");
 	uint = switch(FROM,					  			
-					  "U+"	= {uinfo = list.pair(str.explode("U+", x)); utf   = list.getElements(uinfo, 2); fromBase(utf, base=16);},
+					  "U+"	= {uinfo = list.pair(str.explode("U+", x)); utf   = list.getElements(uinfo, 2); base2int(utf, base=16);},
 					  "\\U"	= utf8ToInt(x),	
 					  "\\X"	= utf8ToInt(x),	  # charCode (iconv) ?
 					  
@@ -144,7 +144,7 @@ dput(x);
 # > strlen(euro)  # 1 
 # 010 0100 ... # 8364
 # €	U+20AC	0010 0000 1010 1100	    11100010 10000010 10101100	E2 82 AC
-# > toBase(8364, base=2, to.length=16);  # lenght depends ...
+# > int2base(8364, base=2, to.length=16);  # lenght depends ...
 # [1] "10000010101100" ... "0010000010101100"
 # bin = "0010000010101100";  bin-code vs bin-utf ...  
 # tmp = str.splitN(bin, n=6); # from end ...
@@ -177,14 +177,14 @@ u.fromEscape = function(...)
 u.num2str = function(..., to.length=4, pre="U+")
 	{
 	num = prep.dots(..., default=59912);
-	hex = toBase(num, base=16, to.length=to.length);
+	hex = int2base(num, base=16, to.length=to.length);
 	paste0(pre,hex, collapse=""); 
 	}
 	
 u.toEscape = function()
 	{
 	a.int = charCodeAt(a, 1);
-		a.hex = toBase(a.int, base=16, to.length=4);
+		a.hex = int2base(a.int, base=16, to.length=4);
 		res = paste0("\"", "\\u" , a.hex , "\"");	
 		
 	
@@ -197,8 +197,8 @@ u.toNum = function(..., pre="U+")
 	str = prep.dots(..., default="U+22EF");
 	uinfo = list.pair(str.explode(pre, str));
 	utf   = list.getElements(uinfo, 2);
-	# as.integer(as.hexmode(utf));  # should I just do toBase ?
-	fromBase(utf, base=16);
+	# as.integer(as.hexmode(utf));  # should I just do int2base ?
+	base2int(utf, base=16);
 	}
 	
 

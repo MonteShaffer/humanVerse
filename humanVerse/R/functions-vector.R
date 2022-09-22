@@ -884,7 +884,11 @@ v.sample = function(vec, size, replace=FALSE, prob=NULL, seed=NULL, append=TRUE)
 
 
 
-
+v.trim = function(vec, what="", side="both")
+	{
+	# remove as many empty "" what from beginning or end ... 
+	
+	}
 
 v.fill = function(vec, to.length=5, with=NA)
 	{

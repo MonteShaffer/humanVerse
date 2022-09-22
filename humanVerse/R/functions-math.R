@@ -15,8 +15,8 @@ cleanup.base = function(xstr)
 	xstr;
 	}
 
-# fromBase to an INTEGER 
-fromBase = function(..., base=16)
+# base2int to an INTEGER 
+base2int = function(..., base=16)
 	{
 	xstr = prep.dots(...);
 #dput(xstr);
@@ -25,33 +25,29 @@ fromBase = function(..., base=16)
 	b = check.base(base);
 	# lower case, I guess 
 	base.chars = c(as.character(0:9), LETTERS[1:22]);
+	# base.keys = 1:length(base.chars);
+	# base.list = list.create(base.chars, base.keys);
 	
 	N = length(xstr);
 	res = integer(N);
+	
 	for(i in 1:N)
 		{
 		xstri = toupper(xstr[i]);
-		n = str.len(xstri);
-		re = 0; power = 0;
-		for(j in n:1)
-			{
-			xj = charAt(xstri,j);
-			xn = which(base.chars == xj) - 1;			
-			add = xn * b^power;
-			re = re + add;
-			power = 1 + power;
-			}
-		res[i] = re;
+		xv = str.explode("",xstri);
+		idx = set.match(xv, base.chars);
+		n = length(xv);
+		res[i] = sum( idx * b^((n-1):0) );
 		}
 	res;	
 	}
 	
-base.from = fromBase;	 
+base.from = base2int;	 
 	
 
 # an INTEGER to a base as a string 
 # cpp_int2base(cpp_base2int(c("abc", "def"))) ... in primes.cpp for now ...  
-toBase = function(..., base=16, to.length=NULL)
+int2base = function(..., base=16, to.length=NULL)
 	{
 	x = prep.dots(...);
 #dput(x);
@@ -61,48 +57,24 @@ toBase = function(..., base=16, to.length=NULL)
 	res = character(N);
 	for(i in 1:N)
 		{
+		num = x[i];	
+		r = "";
 		
-		
-		
-		xi 	= x[i];
-		n	= ceiling(log(xi, b));
-		vec = NULL;
-		val = xi;
-		
-		
-		
-		## C++ 
-		# while(num > 0)
-		# {
-		# res = d[num % base] + res;
-		# num /= base;
-		# }
-      
-		while(n >= 0)
+		while(num > 0)
 			{
-			rem = val %/% b^n;
-			val = val - rem * b^n;
-			vec = c(vec, rem);
-			n   = n - 1;
+			m = num %% base;
+			r = paste0(base.chars[m + 1], r);
+			num =  as.integer(num/base);
 			}
-		
-		if(!is.null(vec))
-			{
-			# truncate leading zeros ...
-			while(vec[1] == 0 & length(vec) > 1)
-				{
-				vec = vec[-1];
-				}
-			} else { vec = 0; }
-		# zero offset
-		res[i] = paste0(base.chars[vec+1], collapse="");		
+			
+		res[i] = r;		
 		}
 	# str.pad("LEFT");
 	if(!is.null(to.length)) { res = str.pad(res, to.length, "0", "LEFT"); }
 	res;
 	}
 
-base.to = toBase;
+base.to = int2base;
 
 base.convert = function(..., from="binary", to="octal", to.length=NULL)
 	{
@@ -112,15 +84,15 @@ base.convert = function(..., from="binary", to="octal", to.length=NULL)
 	TO = prep.arg(to, n=1, case="upper");
 	 
 	xINT = switch(FROM,					  			
-					  "B" 	= fromBase(x, base=2), 	# BINARY
-					  "O"  	= fromBase(x, base=8),	# OCT
-					  "H"	= fromBase(x, base=16),	# HEX					  
+					  "B" 	= base2int(x, base=2), 	# BINARY
+					  "O"  	= base2int(x, base=8),	# OCT
+					  "H"	= base2int(x, base=16),	# HEX					  
 				as.integer(x)	# DEFAULT # DECIMAL (INT, BASE 10)
 				);
 	xOUT = switch(TO,					  			
-					  "B" 	= toBase(xINT, base=2, to.length=to.length), 	# BINARY
-					  "O"  	= toBase(xINT, base=8, to.length=to.length),		# OCT
-					  "H"	= toBase(xINT, base=16, to.length=to.length),	# HEX					  
+					  "B" 	= int2base(xINT, base=2, to.length=to.length), 	# BINARY
+					  "O"  	= int2base(xINT, base=8, to.length=to.length),		# OCT
+					  "H"	= int2base(xINT, base=16, to.length=to.length),	# HEX					  
 				xINT		# DEFAULT DECIMAL (INT, BASE 10)
 				);
 #dput(xOUT);

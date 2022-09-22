@@ -132,11 +132,11 @@ str.fromCharacterVector = function(charslist, sep="")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
-#' str.toBASE64
+#' str.int2base64
 #'
 #'
 #------------------------------------------------#
-str.toBASE64 = function(...)
+str.int2base64 = function(...)
 	{
 	str = prep.dots(...);
 	n = length(str);
@@ -150,11 +150,11 @@ str.toBASE64 = function(...)
 	
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
-#' str.fromBASE64
+#' str.base2int64
 #'
 #'
 #------------------------------------------------#
-str.fromBASE64 = function(...)
+str.base2int64 = function(...)
 	{
 	bstr = prep.dots(...);
 	n = length(bstr);
@@ -269,7 +269,7 @@ str.uniqid = function(prefix = "", sep=".")
 			sep,
 			str.pad(fdiff, 6),
 			sep,
-			tolower(toBase(r, base=16, to.length=5)),
+			tolower(int2base(r, base=16, to.length=5)),
 			sep=""
 			);	
 	}

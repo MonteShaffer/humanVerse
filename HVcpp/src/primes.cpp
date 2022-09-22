@@ -84,7 +84,7 @@ NumericVector cpp_primes(long long int n, bool first=false) {
 // [[Rcpp::export]]
 std::string s_int2base(long long int num, int base=16)
 	{
-	std::string d = "0123456789ABCDEFHIJKLMNOPQRSTUV";
+	std::string d = "0123456789ABCDEFGHIJKLMNOPQRSTUV";
 	std::string res;
 	while(num > 0)
 		{

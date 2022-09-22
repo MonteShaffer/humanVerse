@@ -245,7 +245,7 @@ JSON = function(x, )
 		# "\\u" + ("0000" + a.charCodeAt(0).toString(16)).slice(-4)
 		# "\u001F" ... '\\u001f'
 		a.int = charCodeAt(a, 1);
-		a.hex = toBase(a.int, base=16, to.length=4);
+		a.hex = int2base(a.int, base=16, to.length=4);
 		res = paste0("\"", "\\u" , a.hex , "\"");	
 cat(res);
 		res;
