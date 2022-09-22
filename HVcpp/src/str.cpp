@@ -3,6 +3,10 @@
 #include <unicode/unistr.h>
 #include <unicode/ustream.h>
 #include <unicode/locid.h>
+#include <string>
+#include <algorithm> 
+#include <iostream>
+#include <vector>
 
 #include <Rcpp.h>
 using namespace Rcpp;
@@ -10,6 +14,35 @@ using namespace Rcpp;
 
 
 
+
+//' Reverse a String s
+//'
+//' @param String to 'repeat'
+//' @return updated String reversed	
+// [[Rcpp::export]]
+std::string s_str_reverse(std::string s)
+	{
+	// https://stackoverflow.com/a/46690125/184614
+	std::reverse(s.begin(), s.end());
+	return s;
+	}
+	
+
+//' Reverse a String s
+//'
+//' @param String to 'repeat'
+//' @return updated String reversed	
+// [[Rcpp::export]]
+CharacterVector cpp_str_reverse(const std::vector<std::string> str)
+{
+	CharacterVector r{};
+	for (auto& element : str) 
+		{
+		std::string res = s_str_reverse(element);
+		r.push_back(res);
+		}
+	return r;
+}
 
 
 

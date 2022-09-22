@@ -464,9 +464,9 @@ num.round = function(x, by=3, how="integer")
 	# "r"ound, "i"nteger, "c"eiling, "f"loor
 	h = prep.arg(how, n=1);
 	res = switch(h,
-					"c" = ceiling(n/by) * by,
-					"f" = floor(n/by) * by,
-					"r" = round(n/by) * by,
+					"c" = ceiling(x/by) * by,
+					"f" = floor(x/by) * by,
+					"r" = round(x/by) * by,
 				as.integer(x-(x %% by))
 				);
 	res;

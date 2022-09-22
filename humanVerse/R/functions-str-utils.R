@@ -117,10 +117,10 @@ str.characterFrequency = function(str,
 #'
 #'	
 #------------------------------------------------# 
-str.splitN = function(..., n=2, insert.a.sep="`c80^08c`", from.end=TRUE)
+str.splitN = function(..., n=2, insert.a.sep="`c80^08c`", from="end")
 	{
 	str = prep.dots(...);
-	
+	FROM = prep.arg(from, n=3);
 	# we will INTERNALLY use insert.a.sep to SPLIT the string 
 	# THEREFORE, the string cannot contain it... maybe ^ or `^`
 	s.test = str.contains(insert.a.sep, str);
@@ -132,90 +132,39 @@ str.splitN = function(..., n=2, insert.a.sep="`c80^08c`", from.end=TRUE)
 		stop("Your str has the [insert.a.sep] in it, maybe try a different one");
 		}
 	
+	# str = c("monte says hi", "alex you're awesome", "mama is amazing")
+	
+	slen = str.len(str);
+	if(FROM == "end")
+		{
+		# make certain it has even groups ...
+		nlen = num.round(slen, by=n, how="ceiling");
+		str = str.pad(str, nlen, side="LEFT");
+		}
+	
 	pattern = paste0("(.{", n, "})");
 	
-	if(!from.end)
-		{
-		s.str = gsub(pattern, paste0("\\1", insert.a.sep), str);
-		res = str.explode(insert.a.sep, s.str);	
-		res = list.return(res);
-		return(res);
-		}
-		
+	s.str = gsub(pattern, paste0("\\1", insert.a.sep), str);
+	s.str = str.end(insert.a.sep, s.str, trim=TRUE);
+	
 	# we have to go from right/left (hex/binary padding) ... 
 	# rev(str) ... do the above, rev(str) again ...
 	
-	slen = strlen(str);
-	s = check.list(str.explode("", str));
-	ns = length(s);
-	res = vector("list", ns);
-	for(i in 1:ns)
+	res = check.list(str.explode(insert.a.sep, s.str));
+	if(FROM == "end")
 		{
-		si = s[[i]];
-		
-		str_rev <- function(x) intToUtf8(rev(utf8ToInt(x))) 
-		
-		revString = function(string, index = 1:nchar(string)){
-  paste(rev(unlist(strsplit(string, NULL)))[index], collapse = "")
-}
-		
-		sir = paste0( rev(si), collapse="");		
-		s.str = gsub(pattern, paste0("\\1", insert.a.sep), sir);		
-		r = str.explode(insert.a.sep, s.str);
-		ri = str.explode("", paste0(r, collapse=""));
-		
-		# if (!require("BiocManager", quietly = TRUE)) install.packages("BiocManager")
-		# BiocManager::install("Biostrings")
-
-		
-		r = list.return(r);
-		
-		
-		res[[i]] = si;
+		# truncate the padding placed at beginning ...
+		rem = 1 + nlen - slen; 
+		first = list.getElements(res, 1);
+		first = substring(first, rem, n);
+		res = list.setElements(res, 1, first);
 		}
-	
-	pattern = paste0("(.{", n, "})");
-	s.str = gsub(pattern, paste0("\\1", insert.a.sep), str);
-	str.explode(insert.a.sep, s.str);	
-	
-	
 	
 	# https://stackoverflow.com/a/26497699/184614
 	# https://stackoverflow.com/a/24900744/184614
 	
-	slen = strlen(str);
-	s = check.list(str.explode("", str));
-	ns = length(s);
-	res = vector("list", ns);
-	for(i in 1:ns)
-		{
-		si = s[[i]];
-		res[[i]] = si;
-		}
-	
-	pattern = paste0("(.{", n, "})");
-	s.str = gsub(pattern, paste0("\\1", insert.a.sep), str);
-	str.explode(insert.a.sep, s.str);	
-	
-	seth2 <- function(x) {
-  strsplit(gsub("(.{2})", "\\1 ", x), " ")[[1]]
-}
-
-	seth <- function(x) {
-  strsplit(gsub("([[:alnum:]]{2})", "\\1 ", x), " ")[[1]]
-}
-
 	list.return(res);
-	
-	sst <- strsplit(x, "")[[1]]
-  paste0(sst[c(TRUE, FALSE)], sst[c(FALSE, TRUE)])
-	
-	
-	
-	sst <- strsplit(x, "")[[1]]
-  paste0(sst[c(TRUE, FALSE)], sst[c(FALSE, TRUE)])
 	}
-	
 
 
 
@@ -463,25 +412,23 @@ str.replaceFromList = function(mylist, mysubject, ...)
  
 
 # str = c("monte says hi", "alex you're awesome", "mama is amazing")
-str.letterReverse = function(str, sep="")
+str.letterReverse = function(strs)
 	{
-	strs = check.list(str);  # multivariate 
-	n = length(strs);
-	out = list("vector", n);
-	for(i in 1:n)
+	strs = check.list(strs);
+	ni = length(strs);
+	res = vector("list", ni);
+	for(j in 1:ni)
 		{
-		str = strs[[i]];
-		info = check.list(str.explode(sep, str));
-		nj = length(info);
-		res = character(nj);
-		for(j in 1:nj)
+		str = strs[j];
+		n = length(str);
+		out = character(n);
+		for(i in 1:n)
 			{
-			vr = rev(info[[j]]);	
-			res[j] = paste0(vr, collapse=sep);
+			out[i] = int.u8(rev(u8.int(str[i])));
 			}
-		out[[i]] = res;
+		res[[j]] = out;
 		}
-	list.return(out);
+	list.return(res);
 	}
 
 # maybe speed up  

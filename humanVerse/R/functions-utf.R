@@ -1,4 +1,13 @@
 
+
+
+
+int.u8 = intToUtf8;
+u8.int = utf8ToInt;
+
+
+# int.u8(rev(u8.int("monte jasen shaffer")))
+
 # U+0000 ==> U+007F  (0,127)	... 1 byte, 8 bits         
 #                    	... 0xxxxxxx
 # U+0080 ==> U+07FF  (128,2047)	... 2 bytes, 16 bits		
@@ -32,6 +41,7 @@ u.pad8 = function(...)
 	fns[[1]] = function(x) { paste0("0", x); }
 	fns[[2]] = function(x) 
 					{
+					x = str.splitN(x, n=6, from="end");
 					x1 = str.splitN( str.letterReverse(x), n=6 );
 					x2 = paste0(str.letterReverse(x1), collapse=" ");
 					x3 = str.split(" ",str.wordReverse(x2));
