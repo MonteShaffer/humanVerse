@@ -1,5 +1,27 @@
 
 
+# https://stackoverflow.com/a/43775302/184614
+# You may remove any 1+ non-ASCII symbols with a [^ -~]+ regex:
+#> gsub("[^ -~]+", "", "I mean totally \xed\xa0\xbd\xed\xb8\x8a")
+
+# https://stackoverflow.com/a/32175520/184614
+# I would strongly recommend only using \u, as it's much less error-prone.
+# \x consumes 1-4 characters, so long as they're hex digits - whereas \u must always be followed by 4 hex digits.  
+
+regex.replace = function(string, regex, FN.elem)
+	{
+	# for each element of the "match", call the function 'FN.elem'
+	
+	
+	
+	}
+
+regex.test = function(search.term, regex)
+	{
+	# multivariate true or false?
+	
+	}
+
 # str contains the wildcard operator `*` [map any chars] or `?` [map single char]
 # it wraps around START / END, options to edit
 # it will build a 

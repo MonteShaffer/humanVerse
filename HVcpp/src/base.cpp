@@ -73,3 +73,27 @@ NumericVector cpp_base2int(const std::vector<std::string> str, int base=16)
 		}
 	return r;	
 	}
+	
+	
+	
+
+//' Convert an integer to a string of base 
+//'
+//' @param num INTEGER to be converted
+//' @param base INTEGER of base (2,32)
+//' @return string of integer in the new base 
+// [[Rcpp::export]]
+std::string s_base2base(std::string s, int from=16, int to=16)
+	{
+	// no stoi 
+	std::string d = "0123456789ABCDEFGHIJKLMNOPQRSTUV";
+	
+	std::string res;
+	if(num == 0) { return "0"; }
+	while(num > 0)
+		{
+		res = d[num % base] + res;
+		num /= base;
+		}
+	return res;
+	}

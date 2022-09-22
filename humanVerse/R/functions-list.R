@@ -345,7 +345,14 @@ list.setElements = function(info, n=1, vals=NULL)
 
 
 # list.mapNtoOne(dict$search, variants, type);
-
+# a simple paired list 
+list.mapInvert = function(info)
+	{
+	keys = names(info);
+	vals = unname(unlist(info));
+	list.create(vals, keys);	
+	}
+	
 list.mapNtoOne = function(info, keys, val)
 	{
 	# inverted from val=>keys ... keys => val (for index lookup)

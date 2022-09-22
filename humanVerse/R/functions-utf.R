@@ -21,7 +21,6 @@ u.int2bin16 = function() {}
 u.int2bin32 = function() {}
 
 
-
 u.pad8 = function(...)
 	{
 	x = prep.dots(... , default=c(36, 163, 2361, 8364, 54620, 66376) );
@@ -38,40 +37,40 @@ u.pad8 = function(...)
 				);
 				
 	fns = list();
-	fns[[1]] = function(x) { paste0("0", x); }
-	fns[[2]] = function(x) 
+	fns[[1]] = function(y) { paste0("0", y); }
+	fns[[2]] = function(y) 
 					{
-					x = check.list(str.splitN(x, n=6, from="end"));
-					nx = length(x);
-					res = character(nx);
-					for(i in 1:nx)
+					y = check.list(str.splitN(y, n=6, from="end"));
+					ny = length(y);
+					res = character(ny);
+					for(i in 1:ny)
 						{
-						x_ = x[[i]];
-						res[i] = paste0("110",x_[1], "10",x_[2]);
+						y_ = y[[i]];
+						res[i] = paste0("110",y_[1], "10",y_[2]);
 						}
 					res;					
 					}
-	fns[[3]] = function(x) 
+	fns[[3]] = function(y) 
 					{
-					x = check.list(str.splitN(x, n=6, from="end"));
-					nx = length(x);
-					res = character(nx);
-					for(i in 1:nx)
+					y = check.list(str.splitN(y, n=6, from="end"));
+					ny = length(y);
+					res = character(ny);
+					for(i in 1:ny)
 						{
-						x_ = x[[i]];
-						res[i] = paste0("1110",x_[1], "10",x_[2], "10",x_[3]);
+						y_ = y[[i]];
+						res[i] = paste0("1110",y_[1], "10",y_[2], "10",y_[3]);
 						}
 					res;					
 					}
-	fns[[4]] = function(x) 
+	fns[[4]] = function(y) 
 					{
-					x = check.list(str.splitN(x, n=6, from="end"));
-					nx = length(x);
-					res = character(nx);
-					for(i in 1:nx)
+					y = check.list(str.splitN(y, n=6, from="end"));
+					ny = length(y);
+					res = character(ny);
+					for(i in 1:ny)
 						{
-						x_ = x[[i]];
-						res[i] = paste0("11110",x_[1], "10",x_[2], "10",x_[3], "10",x_[4]);
+						y_ = y[[i]];
+						res[i] = paste0("11110",y_[1], "10",y_[2], "10",y_[3], "10",y_[4]);
 						}
 					res;
 					}
@@ -92,23 +91,10 @@ u.pad8 = function(...)
 	}
 	
 # work on converters ... COMPARE to wikipedia below 
+# https://en.wikipedia.org/wiki/UTF-8#Encoding
 #  x = u.pad8()
 # str.splitN(x$binary.codepoint, n=4)
 
-
-u.int2bin8 = function(...)
-	{
-	x = prep.dots(... , default=c(36, 163, 2361, 8364, 54620, 66376) );
-	b = int2base(x, base=2);
-	
-	x = c(127, 2047, 65535, 1114111);
-	# strlen(b) ... 7, 11, 16, 21 
-	
-	
-
-	
-	
-	}
 
 u.plus2int = function(...)
 	{

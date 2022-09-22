@@ -182,7 +182,10 @@ JSON.stringify = function(obj, digits=16, prettify=FALSE, indent=5)
 
 JSON = function(x)
 	{
-	.NULL. = "U+EA08";  # PUA (59912)
+	.Inf_ = "U+E007";  # PUA (57351)
+	.Inf  = "U+E008";  # PUA (57352)
+	.NULL = "U+EA08";  # PUA (59912)
+	
 	# var rx_one = /^[\],:{}\s]*$/;
 	# var rx_two = /\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g;
 	# var rx_three = /"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g;
@@ -226,16 +229,17 @@ JSON = function(x)
 		
 	gap = NULL;
     indent = NULL;
-    meta = NULL;
- # meta = {    // table of character substitutions
-		# "\b": "\\b",
-		# "\t": "\\t",
-		# "\n": "\\n",
-		# "\f": "\\f",
-		# "\r": "\\r",
-		# "\"": "\\\"",
-		# "\\": "\\\\"
-	# }
+
+	# // table of character substitutions
+	meta = list(
+				 "\b" = "\\b",
+				 "\t" = "\\t",
+				 "\n" = "\\n",
+				 "\f" = "\\f",
+				 "\r" = "\\r",
+				 "\"" = "\\\"",
+				 "\\" = "\\\\"
+				);
     rep = NULL;
 
  
@@ -261,6 +265,7 @@ cat(res);
 # // sequences.
 # https://community.adobe.com/t5/illustrator-discussions/strange-amp-annoying-json-behavior-in-extendscript/td-p/11964686
 
+		# /[\\"\u0000-\u001f\u007f-\u009f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
         # rx_escapable.lastIndex = 0;
         # return rx_escapable.test(string)
             # ? "\"" + string.replace(rx_escapable, function (a) {

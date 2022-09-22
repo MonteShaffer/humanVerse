@@ -209,6 +209,8 @@ prep.strSide = function(side="both", n=1, ... , default="both", keys=NULL, vals=
 	
 	prep.switch(SIDE, keys, vals, default);
 	}
+
+
 	
 prep.strMethod = function(method="first", n=1, ... , default="base", keys=NULL, vals=NULL)
 	{
