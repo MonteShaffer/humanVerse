@@ -22,9 +22,9 @@ seed.init = function(...)
 
 
 
-seed.create = function(key = "LAST-SEED", ...)
+seed.create = function(n=1, key = "LAST-SEED", ...)
 	{
-	s = seed.init(...);
+	s = rand(n=n, ...);
 	memory.set(key, "-SEED-", s);
 	s;
 	}

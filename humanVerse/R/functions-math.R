@@ -23,7 +23,8 @@ fromBase = function(..., base=10)
 	xstr = cleanup.base(xstr);
 # dput(xstr);
 	b = check.base(base);
-	base.chars = c(as.character(0:9), LETTERS[1:22]);
+	# lower case, I guess 
+	base.chars = c(as.character(0:9), letters[1:22]);
 	
 	N = length(xstr);
 	res = integer(N);
@@ -45,7 +46,7 @@ fromBase = function(..., base=10)
 	res;	
 	}
 	
-base.from = fromBase;	
+base.from = fromBase;	 
 	
 
 toBase = function(..., base=10, to.length=NULL)
@@ -53,7 +54,7 @@ toBase = function(..., base=10, to.length=NULL)
 	x = prep.dots(...);
 #dput(x);
 	b = check.base(base);
-	base.chars = c(as.character(0:9), LETTERS[1:22]);
+	base.chars = c(as.character(0:9), letters[1:22]);
 	N = length(x);
 	res = character(N);
 	for(i in 1:N)

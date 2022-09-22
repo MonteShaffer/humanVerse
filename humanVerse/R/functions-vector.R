@@ -864,21 +864,21 @@ v.random = function(n=100, method="norm", ..., seed=NULL)
 # https://www.educba.com/c-plus-plus-shuffle/
 # Inf just MEANS "ALL OF THEM" in vec ... 
 v.shuffle = function() {}
-v.shuffle = function(vec, n=length(vec), seed=NULL) 
+v.shuffle = function(vec, n=length(vec), seed=NULL, append=TRUE) 
 	{
 	# shuffle implies no replacement ...  
 	nv = length(vec); if(n > nv) { n = nv; } 
 	s = seed.set(seed);	
-	res = sample(vec, n);
-	res = property.set("seed", res, as.integer(s));
+	res = sample(vec, n);  
+	if(append) { res = property.set("seed", res, as.integer(s)); }
 	res;
 	}
 
-v.sample = function(vec, size, replace=FALSE, prob=NULL, seed=NULL) 
+v.sample = function(vec, size, replace=FALSE, prob=NULL, seed=NULL, append=TRUE) 
 	{
 	s = seed.set(seed); 
 	res = sample(vec, size, replace=replace, prob=prob);
-	res = property.set("seed", res, as.integer(s));
+	if(append) { res = property.set("seed", res, as.integer(s)); }
 	res;
 	}
 

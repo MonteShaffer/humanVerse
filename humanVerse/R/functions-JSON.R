@@ -177,3 +177,100 @@ JSON.stringify = function(obj, digits=16, prettify=FALSE, indent=5)
 	}
 
 
+
+
+
+JSON = function(x, )
+	{
+	.NULL. = "U+EA08";  # PUA (59912)
+	# var rx_one = /^[\],:{}\s]*$/;
+	# var rx_two = /\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g;
+	# var rx_three = /"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g;
+	# var rx_four = /(?:^|:|,)(?:\s*\[)+/g;
+	# var rx_escapable = /[\\"\u0000-\u001f\u007f-\u009f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
+	# var rx_dangerous = /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
+	
+
+	f = function(n) 
+		{
+		# this is for dates 
+        # // Format integers to have at least two digits.
+		n = as.character(n);
+		if(strlen(n) < 2) { paste0("0",n); }
+        n;
+		}
+		
+	date.toJSON = function(el)
+		{
+		if(!is.finite(el)) { return(.NULL.); }  # NULL 
+		# format  2000-12-31T22:03:44Z ... UTC 
+		# as.Date or as.posix
+		}
+	
+	boolean.toJSON = function(el)
+		{
+		# these could be vectors in R?
+		if(el) { return("true"); }
+		"false";
+		}
+		
+	number.toJSON = function(el)
+		{
+		el = check.math(el, method = "integer");
+		}
+	
+	string.toJSON = function(el)
+		{
+		as.character(el);  # nothing to do here ...
+		}
+		
+	gap = NULL;
+    indent = NULL;
+    meta = NULL;
+ # meta = {    // table of character substitutions
+		# "\b": "\\b",
+		# "\t": "\\t",
+		# "\n": "\\n",
+		# "\f": "\\f",
+		# "\r": "\\r",
+		# "\"": "\\\"",
+		# "\\": "\\\\"
+	# }
+    rep = NULL;
+
+ 
+
+	quote.utf = function(a) 
+		{
+		# "\\u" + ("0000" + a.charCodeAt(0).toString(16)).slice(-4)
+		# "\u001F" ... '\\u001f'
+		a.int = charCodeAt(a, 1);
+		a.hex = toBase(a.int, base=16, to.length=4);
+		res = paste0("\"", "\\u" , a.hex , "\"");	
+cat(res);
+		res;
+		}
+		
+		
+	quote = function quote(string) 
+	{
+
+# // If the string contains no control characters, no quote characters, and no
+# // backslash characters, then we can safely slap some quotes around it.
+# // Otherwise we must also replace the offending characters with safe escape
+# // sequences.
+# https://community.adobe.com/t5/illustrator-discussions/strange-amp-annoying-json-behavior-in-extendscript/td-p/11964686
+
+        rx_escapable.lastIndex = 0;
+        return rx_escapable.test(string)
+            ? "\"" + string.replace(rx_escapable, function (a) {
+                var c = meta[a];
+                return typeof c === "string"
+                    ? c
+                    : "\\u" + ("0000" + a.charCodeAt(0).toString(16)).slice(-4);
+            }) + "\""
+            : "\"" + string + "\"";
+    }
+
+	
+	}

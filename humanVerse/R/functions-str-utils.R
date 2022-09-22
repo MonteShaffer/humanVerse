@@ -116,8 +116,8 @@ str.characterFrequency = function(str,
 #' str.splitN
 #'
 #'	
-#------------------------------------------------#
-str.splitN = function(..., n=2, insert.a.sep="`^`")
+#------------------------------------------------# 
+str.splitN = function(..., n=2, insert.a.sep="`c80^08c`", from.end=TRUE)
 	{
 	str = prep.dots(...);
 	# we will INTERNALLY use insert.a.sep to SPLIT the string 
@@ -131,10 +131,15 @@ str.splitN = function(..., n=2, insert.a.sep="`^`")
 		stop("Your str has the [insert.a.sep] in it, maybe try a different one");
 		}
 	# https://stackoverflow.com/a/26497699/184614
+	# https://stackoverflow.com/a/24900744/184614
 	# split a string into disjoint substrings of length [n] = 2
 	pattern = paste0("(.{", n, "})");
 	s.str = gsub(pattern, paste0("\\1", insert.a.sep), str);
 	str.explode(insert.a.sep, s.str);	
+	
+	
+	sst <- strsplit(x, "")[[1]]
+  paste0(sst[c(TRUE, FALSE)], sst[c(FALSE, TRUE)])
 	}
 	
 
@@ -380,40 +385,101 @@ str.replaceFromList = function(mylist, mysubject, ...)
 	str.replace( names(mylist), mylist, mysubject);
 	}
 
-
+ 
+ 
 
 # str = c("monte says hi", "alex you're awesome", "mama is amazing")
+str.letterReverse = function(str, sep="")
+	{
+	strs = check.list(str);  # multivariate 
+	n = length(strs);
+	out = list("vector", n);
+	for(i in 1:n)
+		{
+		str = strs[[i]];
+		info = check.list(str.explode(sep, str));
+		nj = length(info);
+		res = character(nj);
+		for(j in 1:nj)
+			{
+			vr = rev(info[[j]]);	
+			res[j] = paste0(vr, collapse=sep);
+			}
+		out[[i]] = res;
+		}
+	list.return(out);
+	}
+
+# maybe speed up  
+# https://www.r-bloggers.com/2019/05/four-ways-to-reverse-a-string-in-r/
+# str = c("monte says hi", "alex you're awesome", "mama is amazing")
+str.wordReverse = function(str, sep=" ")
+	{
+	strs = check.list(str);  # multivariate 
+	n = length(strs);
+	out = list("vector", n);
+	for(i in 1:n)
+		{
+		str = strs[[i]];
+		info = check.list(str.explode(sep, str));
+		nj = length(info);
+		res = character(nj);
+		for(j in 1:nj)
+			{
+			vr = rev(info[[j]]);	
+			res[j] = paste0(vr, collapse=sep);
+			}
+		out[[i]] = res;
+		}
+	list.return(out);
+	}
+	
+	
 
 str.letterShuffle = function(str, sep="")
 	{
-	info = check.list(str.explode(sep, str));
-	ni = length(info);
-	res = character(ni);
-	seeds = integer(ni);
-	for(i in 1:ni)
+	strs = check.list(str);  # multivariate 
+	n = length(strs);
+	out = list("vector", n);
+	for(i in 1:n)
 		{
-		vs = v.shuffle(info[[i]]);
-		seeds[i] = property.get("seed", vs);		
-		res[i] = paste0(vs, collapse=sep);
+		str = strs[[i]];
+		info = check.list(str.explode(sep, str));
+		nj = length(info);
+		res = character(nj);
+		seeds = seed.create(nj);
+		for(j in 1:nj)
+			{
+			vs = v.shuffle(info[[j]], seed=seeds[j], append=FALSE);	
+			res[j] = paste0(vs, collapse=sep);
+			}
+		res = property.set("seeds", res, seeds);
+		out[[i]] = res;
 		}
-	res = property.set("seeds", res, seeds);
-	res;
+	list.return(out);
 	}
 	
 str.wordShuffle = function(str, sep=" ")
 	{
-	info = check.list(str.explode(sep, str));
-	ni = length(info);
-	res = character(ni);
-	seeds = integer(ni);
-	for(i in 1:ni)
-		{
-		vs = v.shuffle(info[[i]]);
-		seeds[i] = property.get("seed", vs);		
-		res[i] = paste0(vs, collapse=sep);
+	strs = check.list(str);  # multivariate 
+	n = length(strs);
+	out = list("vector", n);
+	for(i in 1:n)
+		{ 
+		str = strs[[i]];
+		info = check.list(str.explode(sep, str));
+		nj = length(info);
+		res = character(nj);
+		seeds = seed.create(nj);
+		for(j in 1:nj)
+			{
+			vs = v.shuffle(info[[j]], seed=seeds[j], append=FALSE);	
+			res[j] = paste0(vs, collapse=sep);
+			}
+		res = property.set("seeds", res, seeds);
+		out[[i]] = res;
 		}
-	res = property.set("seeds", res, seeds);
-	res;
+	list.return(out);
 	}
 
 
