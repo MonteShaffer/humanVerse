@@ -7,9 +7,17 @@ pkg.help = function()
 	}
 	
 	
+pkg.version = function(..., character.only=FALSE)
+	{
+	pkgs = prep.dots(..., collapse=character.only, has.objects=!character.only, default="Rcpp");
+	if(!character.only) { pkgs = as.character(pkgs); }
+	packageVersion(pkgs);
+	}
+
+
 pkg.install = function(..., character.only=FALSE)
 	{
-	pkgs = prep.dots(..., collapse=character.only, has.objects=!character.only, default="stringi");
+	pkgs = prep.dots(..., collapse=character.only, has.objects=!character.only, default="Rcpp");
 	if(!character.only) { pkgs = as.character(pkgs); }
 
 	# I lost the DOTS, this is default 

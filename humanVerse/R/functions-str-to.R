@@ -548,8 +548,8 @@ str.fromRaw = function(raw)
 		res = character(n);
 		for(i in 1:n)
 			{
-			res[i] = rawToChar(raw[[i]]);
-			}
+			res[i] = rawToChar(raw[[i]]);  # this will fail on obj with NULL 
+			}		# as.character(as.raw(1:10)) fives me something, but how to revere that ?
 		res;
 		} else { rawToChar(raw); }
 	}
