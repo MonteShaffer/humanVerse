@@ -126,13 +126,6 @@ num.SIunits = function(which="regular")
 	return(mdf);
 	}
 
-num.constants = function() {} 
-num.constants = function(envir=parent.env(environment()))
-	{
-	mdf = num.SIunits("regular");  # with caching mechanism ... 
-	assign("SI_PREFIX", mdf, envir=envir);	
-	}
-
 
 num.commas = function(x, sep=",", width="individual")
 	{
@@ -306,7 +299,10 @@ num.toEngineering = function(x,
 	METHOD = prep.arg(method, n=1, case="upper");
 cat("\n SHOW_WHAT ", SHOW_WHAT, "\n");
 cat("\n METHOD ", METHOD, "\n");  # [E]ngineering or [S]cientific
-	num.constants();
+	
+	if(is.undefined(SI_PREFIX)) { constants.default(); }
+	
+	# num.constants();
 # dput(SI_PREFIX); 
 	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
 	

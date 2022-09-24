@@ -56,11 +56,10 @@ js.b64 = function(input, method="encode")
 	i = 0;	
 	 
 	# this is univariate function	
-	base64KeyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-		
+	if(is.undefined(B64)) { constants.default(); }
+	
 	encode = function() 
-		{
-		base64.vec		 = str.explode("", base64KeyStr);	
+		{	
 		input.charCodes	 = charCode(input); 
 		n = str.len(input); 
 		
@@ -89,10 +88,10 @@ js.b64 = function(input, method="encode")
 					}
 
 			output = paste0(output, 
-							base64.vec[enc1+1],	# zero indexed 
-							base64.vec[enc2+1],
-							base64.vec[enc3+1],
-							base64.vec[enc4+1]
+							B64v[enc1+1],	# zero indexed 
+							B64v[enc2+1],
+							B64v[enc3+1],
+							B64v[enc4+1]
 							);
 			}
 		return(output);
@@ -107,15 +106,14 @@ js.b64 = function(input, method="encode")
 		input = gsub("[^a-zA-Z0-9/+=]", "", input);	
 		n = str.len(input); 
 		
-		input.vec		 = str.explode("", input);	
-		base64.vec		 = str.explode("", base64KeyStr);
+		input.vec		 = str.explode("", input);
 		
 		while (i < n)
 			{
-			enc1 = v.which(base64.vec, input.vec[ i %++%. ])-1; # zero-indexed
-			enc2 = v.which(base64.vec, input.vec[ i %++%. ])-1;
-			enc3 = v.which(base64.vec, input.vec[ i %++%. ])-1;
-			enc4 = v.which(base64.vec, input.vec[ i %++%. ])-1;
+			enc1 = v.which(B64v, input.vec[ i %++%. ])-1; # zero-indexed
+			enc2 = v.which(B64v, input.vec[ i %++%. ])-1;
+			enc3 = v.which(B64v, input.vec[ i %++%. ])-1;
+			enc4 = v.which(B64v, input.vec[ i %++%. ])-1;
 
 					# (enc1 << 2) | (enc2 >> 4);
 			chr1 = bitwOr( bitShiftL(enc1,2), bitShiftR(enc2,4) );				
@@ -124,6 +122,7 @@ js.b64 = function(input, method="encode")
 					# ((enc3 & 3) << 6) | enc4;
 			chr3 = bitwOr( bitShiftL(bitwAnd(enc3,3),6), (enc4) );
 					
+			# can I trap String.fromCharCode 0 to AA==	... \x00 NULL ???	
 			output = paste0(output, String.fromCharCode(chr1));
 			if (enc3 != 64) 
 				{
