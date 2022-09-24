@@ -112,7 +112,7 @@ timer.init = function(purge.memory = FALSE,
 #'
 #' @examples
 timer.start = function(..., 
-							as.internal = FALSE)
+							as.internal = FALSE, verbose=FALSE)
 	{
 	keys =  prep.dots(..., default="DEFAULT");
 	
@@ -130,7 +130,10 @@ timer.start = function(...,
 		{
 		timer[[key]]$start = now;  
 		}
+if(verbose)
+	{
 cat("\n timer with key :: [",key,"] has started \n\n");
+	}
 ###############################################
 	memory.set(TIMER, "TIMERS", timer);
 ###############################################
@@ -152,7 +155,7 @@ cat("\n timer with key :: [",key,"] has started \n\n");
 #' @examples	# marker is not multivariate ... 
 ## TODO:: can I shorten with `with`
 timer.stop = function(..., marker="STOP-{n}", 
-							as.internal = FALSE)
+							as.internal = FALSE, verbose=FALSE)
 	{
 	keys =  prep.dots(..., default="DEFAULT");
 	
@@ -206,8 +209,12 @@ timer.stop = function(..., marker="STOP-{n}",
 		
 		res[[i]] = timer.formatPrettyUnits(relative[i], "seconds");
 # cat("\n", "KEY: [",key,"]", "\t\t", "RELATIVE TIME AT [",mark,"] \t ", res[[i]], "\n");
-		
+	
+if(verbose)
+	{	
 cat("\n timer with key :: [",key,"] has recorded *a* stop labeled [",mark,"] \n\t\t\t at absolute time: [",diff,"] \t which is \n\t\t\t at relative time:: [",relative[i],"] \t *to the previous stop* \n\n");  
+	}
+	
 		}
 ###############################################
 	memory.set(TIMER, "TIMERS", timer);
@@ -254,7 +261,7 @@ timer.print = function(...,
 							as.internal = FALSE)
 	{
 	keys 	= prep.dots(..., default="DEFAULT");
-	
+debug = FALSE;
 	TIMER 	= "timer"; if(as.internal) { TIMER = ".timer"; }
 	
 	forma 	= prep.arg(format, 1, keep="-");
@@ -288,8 +295,10 @@ timer.print = function(...,
 		vfactor = as.numeric(units.factor);
 		vals = as.numeric(seconds) * vfactor;
 		vals = property.set("time.is", vals, { if(tim == "rel") { "relative" } else { "absolute" } });
-
-cat("\n", " FORMA: ", forma, "\n\n");		
+if(debug)
+	{
+cat("\n", " FORMA: ", forma, "\n\n");
+	}
 		# wrap into SWITCH?
 		row = switch(forma,
 						  "s"  	= vals,   			# [s]econds 

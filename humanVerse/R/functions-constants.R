@@ -54,6 +54,7 @@ constants.default = function(default.numbers = TRUE, namespace="humanVerse", whi
 	B64 		= "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 	BXXv 		= c(as.character(0:9), LETTERS[1:22]);
 	
+
 	STRINGS = list(
 					B64			= B64,
 					B64v 		= str.explode("", B64), 

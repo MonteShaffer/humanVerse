@@ -1,28 +1,18 @@
 
-	
-temp.constants = function() {}
-temp.constants = function(envir=parent.env(environment()))
-	{
-	ABS_ZERO_F = -459.67;
-	ABS_ZERO_C = -273.15; 
-	ABS_ZERO_K = 0;
-	ABS_ZERO_R = -459.67; 
-	
-	C_FREEZING = 0.01;
-	C_BOILING = 99.9839;
-	C_MAGIC = 4;  # 4 degrees C, 40 degrees F ... water magic (ice floats)
-	
-	assign("ABS_ZERO_F", ABS_ZERO_F, envir=envir);
-	assign("ABS_ZERO_C", ABS_ZERO_C, envir=envir);
-	assign("ABS_ZERO_K", ABS_ZERO_K, envir=envir);
-	assign("ABS_ZERO_R", ABS_ZERO_R, envir=envir);	
-	}
 
+temp.init = function()
+	{
+	if(is.undefined(ABS_ZERO_F)) { constants.default(); }
+	# can we get this check to happen here, so we don't have to constantly check?
+	
+	
+	}
 	
 temp.isNA = function(degX, Xunits="celsius")
 	{
 	X = prep.arg(Xunits, n=1, case="upper");
-	temp.constants();
+	temp.init();
+	# temp.constants();
 		Xconstant.str = paste0("ABS_ZERO_",X);
 		Xconstant = eval(parse(text = Xconstant.str));
 #		dput(Xconstant);
@@ -36,7 +26,8 @@ temp.isNA = function(degX, Xunits="celsius")
 temp.convert = function(..., from="fahrenheit", to="celsius")
 	{
 	degX = prep.dots(...);
-	temp.constants();
+	# temp.constants();
+	temp.init();
 	# convert everthing to "celsius" on first pass
 	FROM = prep.arg(from, n=1, case="upper");  # good thing F doesn't mean FALSE anymore!?!
 	TO = prep.arg(to, n=1, case="upper");
