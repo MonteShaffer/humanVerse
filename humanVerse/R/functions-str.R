@@ -75,8 +75,10 @@ str.between = function(str, keys=c("__B64_", "_B64__"))
 #'
 #'
 #------------------------------------------------#
-str.len = function(str, method="stringi", locale="")
+str.len = function(str, method="first", locale="")
   {
+	# LOCALE is a TODO
+
 	# if list 
 	if(is.list(str)) 
 		{ 
@@ -88,28 +90,44 @@ str.len = function(str, method="stringi", locale="")
 			}
 		return( list.return(res) );
 		}
+		
+	str = as.character(str);	
+		
+	METHOD = prep.strMethod(method, n=1);
 
-# LOCALE is a TODO
-	# necessary overhead
-	METHOD = prep.arg(method, 1);
-
-	if(METHOD == "s" && is.library_("stringi") )
-		{		
-		return ( stringi::stri_length(str) );
+	FNS = list(
+			"cpp" 		= function() { cpp_strlen(str); } , 
+			"stringi" 	= function() { stringi::stri_length(str); } ,
+			"base" 		= function() { nchar( str, type="chars"); }
+			);
+			
+	if(METHOD != "first")
+		{
+		# AS-IS, no checks 
+		return(  list.return( FNS[[METHOD]]() ) );
 		}
 
-	if(METHOD == "b")
+	# CASCADING, first-one to meet criteria 
+	hasResult = FALSE;
+	if(!hasResult && exists("cpp_strlen"))
 		{
-		return( nchar( as.character(str), type="chars") );
+		# must not have exported it ... 
+		hasResult = TRUE;
+		res = FNS[["cpp"]]();
+		}
+		
+	# if(!hasResult && is.library_("stringi"))
+		# {
+		# hasResult = TRUE;
+		# res = FNS[["stringi"]]();		
+		# }
+
+	if(!hasResult)
+		{
+		res = FNS[["base"]]();
 		}
 
-	if(METHOD == "c" && exists("cpp_strlen"))
-		{
-		return( cpp_strlen(str) );
-		} 
-
-
-	nchar( as.character(str), type="chars");
+	res;
 	}
 
 

@@ -17,11 +17,23 @@
 
 ## u.parse("Fa\xe7ade") ... 
 
-
+# unicode problem 
+# https://developer.mozilla.org/en-US/docs/Glossary/Base64
+# this code is the same as btoa and atob 
 # http://c.mshaffer.com/js/monte/base64.js
 # c2003? /* BASE 64 encode / decode */
 # a = js.b64("Façade", "encode");	bb = js.b64(a, "decode");
 # b = js.b64("RmHnYWRl", "decode");	aa = js.b64(b, "encode");
+# function utf8_to_b64(str) {
+  # return window.btoa(unescape(encodeURIComponent(str)));
+# }
+
+# function b64_to_utf8(str) {
+  # return decodeURIComponent(escape(window.atob(str)));
+# }
+# THE ABOVE is what my C++ code is doing?
+
+
 js.b64 = function(input, method="encode")
 	{
 	output = "";

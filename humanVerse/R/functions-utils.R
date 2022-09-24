@@ -647,10 +647,97 @@ charCode = function(s)
 
 
 
+# a = .serialize(iris); b = 
+
+# x = as.raw(1:10); y = raw.toString(x); 
+# z = raw.fromString(y); identical(x,z);
+
+# x = as.raw(1:10); y = raw.toString(x, collapse=NULL);
+# z = raw.fromString(y, splitN=FALSE); identical(x,z);
+
+# a = .serialize(iris); b = raw.toString(a);  strlen(b);
+# c = cpp_base64_enc(b); strlen(c);
+# d = cpp_base64_dec(c); e = raw.fromString(d); f = .unserialize(e);
+# identical(f, iris);
+
+
+# > hexstr = "ABCDEF"
+# > h = bin(hexstr, n=3)
+# [1] "ABC" "DEF"
+# > 16*16*16  ... 4096
+# > 64*64     ... 4096
+
+#  H = "0123456789ABCDEF"
+#  Hv = str.explode("", H)
+#  B = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+#  Bv = str.explode("", B)
+
+# https://en.wikipedia.org/wiki/Base64
+# 
+
+
+bout = character();
+for(i in 1:64)
+	{
+	bi = Bv[i];
+	for(j in 1:64)
+		{
+		bj = Bv[j]
+		bout = c(bout, paste0(bi,bj, collapse=""));
+		}
+	}
+
+mapHB64 = list("hex" = out, "base64" = bout);
+
+
+# every 3H is 2B ... what's the map ...  # every 24 bits ...
+df = NULL;
+n = 0;
+b1 = b2 = 1;
+B1 = B2 = "A";   
+out = character();
+for(i in 1:16)
+	{
+	n %++%.
+	hi = Hv[i];
+	for(j in 1:16)
+		{
+		n %++%.
+		hj = Hv[j];
+		for(k in 1:16)
+			{
+			n %++%.
+			hk = Hv[k]
+			
+			out = c(out, paste0(hi,hj,hk, collapse=""));
+			
+			}
+		}
+	}
 
 
 
 
+# https://stackoverflow.com/questions/23190056/hex-to-base64-converter-for-javascript
+# function hexToBase64(hexStr) {
+ # let base64 = "";
+ # for(let i = 0; i < hexStr.length; i++) {
+   # base64 += !(i - 1 & 1) ? String.fromCharCode(parseInt(hexStr.substring(i - 1, i + 1), 16)) : ""
+ # }
+ # return btoa(base64);
+# }
+
+raw.toString = function(raw, collapse="")
+	{
+	paste0(as.character(raw), collapse=collapse);
+	}
+	
+raw.fromString = function(str, splitN=TRUE)
+	{
+	if(splitN) { str = bin(str, n=2); }
+	# https://stackoverflow.com/a/11617990/184614
+	as.raw ( as.hexmode ( str ) )
+	}
 
 
 
