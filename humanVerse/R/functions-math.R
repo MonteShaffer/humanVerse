@@ -165,6 +165,7 @@ strint = function(num = 5*10^222)
 
 .int2base = function(num, base=16)
 	{
+	if(length(num) != 1) { stop("This is univariate, num should be one number"); }
 	# univariate, no checks 
 	base.chars = c(as.character(0:9), LETTERS[1:22]);	
 	r = ""; if(num == 0) { return("0"); }
@@ -234,7 +235,7 @@ int.convert = function(..., from="binary", to="octal", to.length=NULL)
 	xOUT;
 	}	
 
-convertBase = base.convert;
+# convertBase = base.convert; 
 
 
 
@@ -277,6 +278,26 @@ lookupHEXB64 = list.create( mapHB64$hex, mapHB64$base64 );
 lookupB64HEX = list.create( mapHB64$base64, mapHB64$hex );
 
 
+
+
+base2base = function(basestring, from=13, to=17)
+	{
+	
+	
+	}
+	
+	
+base.toB64 = function(basestring, from=16)
+	{
+	
+	}
+	
+base.fromB64 = function(B64string, to=16)
+	{
+	
+	}
+	
+	
 
 
 # this works for "bin" and "hex" only ... 

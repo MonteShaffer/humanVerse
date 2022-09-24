@@ -240,7 +240,7 @@ bitShiftR = function(x, bits, unsigned=FALSE)
 # bit.shift.left
 bitShiftL = function(x, bits, unsigned=FALSE)
   {
-  if(!is.na(x) & (!is.negative(x) | unsigned));
+  if(!is.na(x) & (!is.negative(x) | unsigned))
     {
     tmp = suppressWarnings( bitwShiftL(x,bits) );                # <<<
     if(is.na(tmp)) { tmp = -2^31; }  # 0x80 << 24

@@ -695,6 +695,7 @@ base64.toHEX = function(b64str)
 	res = "";
 	for(i in 1:nb)
 		{
+		# would blocks of similar with "set.match" be faster?
 		res = paste0(res, lookupB64HEX[[ b[i] ]], collapse="");
 		}
 	res;
