@@ -1,4 +1,104 @@
 
+# obj = 1:10 
+
+RHON.isKey = function(obj, key="dataframe")
+	{
+	# if typeof picks it up, **NOT** a key 
+	if(key == "vector")
+		{
+		if(is.vector(obj)) { return("vector"); } else { return(NULL); }		
+		}
+	if(key == "atomic")
+		{
+		if(is.atomic(obj)) { return("atomic"); } else { return(NULL); }		
+		}
+	if(key == "dataframe")
+		{
+		if(is.dataframe(obj)) { return("dataframe"); } else { return(NULL); }		
+		}
+	if(key == "matrix")
+		{
+		if(is.matrix(obj)) { return("matrix"); } else { return(NULL); }		
+		}
+	if(key == "Inf" || key == "infinite")
+		{
+		if(is.infinite(obj)) { return("infinite"); } else { return(NULL); }		
+		}
+	if(key == "NA")
+		{
+		if(is.na(obj)) { return("NA"); } else { return(NULL); }		
+		}
+	if(key %in% c("NAN", "NaN", "nan"))
+		{
+		if(is.nan(obj)) { return("NaN"); } else { return(NULL); }		
+		}
+	
+	
+	}
+
+RHON.is = function(obj, keys=c("atomic", "vector", "dataframe", "matrix", "na", "NaN", "Inf", "function", "primitive")
+	{
+	# THESE ARE not typeof?
+	# keys 
+	res = NULL;
+	for(key in keys)
+		{
+		res = c(res, RHON.isKey(obj, key);
+		}
+	res;	
+	}
+
+
+
+RHON.fn = function(obj)
+	{
+	# cleanup the function for transport 
+	# stringify, one line ... R2_lang on it ...
+	
+	
+	}
+
+RHON.describe = function(obj, name=NULL)
+	{
+	# name is the name of the obj in its recursive context 
+	# if(is.null(name))) { name = deparse(substitute(obj)); }
+	ct.OBJ = check.type(obj);
+	
+	# nested lists are a bitch, recursive 
+	omode = mode(obj);
+	osource = NULL;			# WHERE did it come from (pkg, fn, line no, WEB)
+							# if NOT NULL 'name' it came from parent (so skip)
+	osymbol = NULL;			# pass in dots, deparse to get key ... CHECK.TYPE
+	otype = typeof(obj);  	# integer, double, 
+							# function (is closure)
+							# environment 
+							# symbol 
+							# dataframe (is list)
+							# raw is typeof ... 
+							# NA (is logical)
+	olen  = length(obj);	# iris is length 5 (columsn), 5 vectors in list
+	oclasses = class(obj);	# multivariate 
+	oises   = RHON.is(obj);
+	onames = names(obj);  # this is colnames   # if NULL, exclude downstream
+	rnames = rownames(obj); 
+	rdim = dim(obj);  # usefully for multidimensinally arrays
+	oattr = attributes(obj);  # less names?
+	
+	# attributes(iris) ... names, row.names, class="data.frame"
+	omethods = methods(obj);  # could be a function 
+							# THROWS error, have to trap .getMethods (functions already)
+	
+	# attributes maybe recursive ... 
+	# listnames = names(list);
+	# listkeys = 1:length(list);
+	# merge these ... that's how it works ... no name is still an index ... named can still be referenced by index ....
+	
+	
+	
+	# trap NULL in list, or assign to NA 
+	
+	
+	}
 
 
 # let's compare rjson to jsonlite 
@@ -173,6 +273,7 @@ JSON.stringify = function(obj, digits=16, prettify=FALSE, indent=5)
 		j2 = jsonlite::prettify(j1, indent=indent);
 		return (j2);
 		}
+cat("\n\n");
 	return (j1);
 	}
 

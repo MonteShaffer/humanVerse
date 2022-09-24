@@ -1,4 +1,178 @@
 
+
+# gsub("[a-zA-Z0-9/+=]", "", str, invert=TRUE)
+# Error in gsub("[a-zA-Z0-9/+=]", "", str, invert = TRUE) : 
+# unused argument (invert = TRUE)
+
+
+
+
+
+
+## this is too complicated, make it SIMPLE
+## // maybe port http://c.mshaffer.com/js/monte/base64.js
+## originally it was STRING <==> B64STRING
+## we need JSON for STRING <==> OBJECT 
+## keep them separate ....
+
+## u.parse("Fa\xe7ade") ... 
+
+
+# c2003? /* BASE 64 encode / decode */
+
+js.b64 = function(input, method="encode")
+	{
+	base64KeyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+
+	output = "";
+	chr1 = chr2 = chr3 = "";
+	enc1 = enc2 = enc3 = enc4 = "";
+	i = 0;
+	n = length(input);
+	
+	# this is univariate function		
+	input.charCodes = .charCode(input); 
+	
+	encode = function() 
+		{
+		while (i < n)
+			{				# this worked without zero index ... increment THEN
+			chr1 = charCodeAt(input, i %++%.);  
+			chr2 = charCodeAt(input, i %++%.);
+			chr3 = charCodeAt(input, i %++%.);
+					
+					# chr1 >> 2;
+			enc1 = bitShiftR(chr1,2); 
+					# ((chr1 & 3) << 4) | (chr2 >> 4);
+			enc2 = bitwOr( bitShiftL(bitwAnd(chr1,3),4), bitShiftR(chr2,4) );			
+					# ((chr2 & 15) << 2) | (chr3 >> 6);
+			enc3 = bitwOr( bitShiftL(bitwAnd(chr2,15),2), bitShiftR(chr3,6) );
+					# chr3 & 63;
+			enc4 = bitwAnd(chr3,63);
+
+			# is.na or is.nan?
+			if (is.na(chr2) || is.nan(chr2)) 
+				{
+				enc3 = enc4 = 64;
+				} else if (is.na(chr3) || is.nan(chr3)) 
+					{
+					enc4 = 64;
+					}
+
+			output = paste0(output, 
+							charAt(base64KeyStr,enc1+1),  # zero indexed 
+							charAt(base64KeyStr,enc2+1),
+							charAt(base64KeyStr,enc3+1),
+							charAt(base64KeyStr,enc4+1)
+							);
+			}
+		return(output);
+		}
+
+
+
+
+
+	### main 
+	METHOD = prep.arg(method, n=1);
+	if(METHOD == "e") { return( encode() ); } else { return( decode() ); }
+
+
+	decode = function() 
+		{
+		base64KeyStrV = str.explode("", base64KeyStr);
+		
+		#// remove all characters that are not A-Z, a-z, 0-9, +, /, or =
+		#input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+		input = gsub("[^a-zA-Z0-9/+=]", "", input);  
+		# maybe throw down warning (trim first, then warn)
+
+
+		 do {
+		 
+		 
+				enc1 = indexOf(base64KeyStrV, charAt(input, i %++%.));
+				enc2 = indexOf(base64KeyStrV, charAt(input, i %++%.));
+				enc3 = indexOf(base64KeyStrV, charAt(input, i %++%.));
+				enc4 = indexOf(base64KeyStrV, charAt(input, i %++%.));
+
+				chr1 = (enc1 << 2) | (enc2 >> 4);
+				chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+				chr3 = ((enc3 & 3) << 6) | enc4;
+
+				output = output + String.fromCharCode(chr1);
+
+				if (enc3 != 64) {
+					 output = output + String.fromCharCode(chr2);
+				}
+				if (enc4 != 64) {
+					 output = output + String.fromCharCode(chr3);
+				}
+		 } while (i < input.length);
+
+		 return output;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ### THIS IS MULTIVARIATE ... user has to KNOW which function to call
 base64.encode = function(objlist, method="JSON", ...)
 	{

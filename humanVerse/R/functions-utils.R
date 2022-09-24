@@ -562,6 +562,11 @@ charAt = function(str="Welcome to the humanVerse",idx=21)
   {
   substr(str,idx,idx);  # or substring?
   }
+  
+indexOf = function(str, what)
+	{
+	v.which(str.explode("",str), what);	
+	}
 
 #' lastChar
 #'

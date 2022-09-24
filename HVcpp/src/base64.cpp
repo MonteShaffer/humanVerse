@@ -3,20 +3,32 @@
 #include <cmath>
 #include <iostream>
 #include <string>
-#include <fstream>
 #include "RApiSerializeAPI.h"
+
+// found it, but it headers are not found ...
+#include <glib-2.0**> 
+
+
+#include <fstream>
 // https://github.com/opencv/opencv/blob/4.x/include/opencv2/opencv.hpp
 // https://deepayan.github.io/rip/opencv-intro.html
+// https://cran.r-project.org/web/packages/Rcpp/vignettes/Rcpp-FAQ.pdf
+/* NOT FOUND ARG !!JKLJ$) */
 
-#include <opencv2/opencv.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/core/core.hpp>
-#include <opencv2/core/version.hpp>
+/* /// found in Rtools
+#include <opencv4/opencv2/opencv.hpp>
+#include <opencv4/opencv2/imgproc/imgproc.hpp>
+#include <opencv4/opencv2/core/core.hpp>
+#include <opencv4/opencv2/core/version.hpp>
+#include <opencv4/opencv2/opencv_modules.hpp>
+*/
+
+using namespace cv;
+*/
 
 // https://www.cryptopp.com/wiki/Base64Encoder
 
 using namespace Rcpp;
-using namespace cv;
 
 // https://lists.r-forge.r-project.org/pipermail/rcpp-devel/2010-October/001179.html
 
@@ -103,6 +115,15 @@ const std::string b64_dec_(const void* data, const size_t &len)
 	return result;
 }
 
+
+
+
+// maybe port http://c.mshaffer.com/js/monte/base64.js
+// then it will be equivalent ...
+// b64_enc_js_ ... maybe this is my internal R-base version ...
+
+
+
 // https://dirk.eddelbuettel.com/code/rcpp/Rcpp-sugar.pdf
 // https://rcpp-devel.r-forge.r-project.narkive.com/joEUKvxE/convert-to-unsigned-char-variable
 // > demangle( "RawVector::stored_type" )
@@ -112,6 +133,7 @@ std::string s_b64_enc_str(const std::string str)
 {
 	return b64_enc_(str.c_str(), str.size());
 }
+
 
 // [[Rcpp::export]]
 CharacterVector cpp_b64_enc_str(const std::vector<std::string> str)
@@ -213,42 +235,68 @@ List cpp_b64_dec_raw(const std::vector<std::string> str64)
 
 // https://stackoverflow.com/questions/10167534/how-to-find-out-what-type-of-a-mat-object-is-with-mattype-in-opencv
 // https://docs.opencv.org/3.4/d4/da8/group__imgcodecs.html#ga461f9ac09887e47797a54567df3b8b63
+/*
 // [[Rcpp::export]] 
-std::string s_b64_enc_img(std::string filename, std::string imgtype=".png", bool append=true)
+std::string s_b64_enc_img(std::string filename, std::string imgtype="png", bool append=true)
 {
 	Mat img = cv::imread(filename, 0); // it doesn't know the type?
 	vector<uchar> buf;
-	cv::imencode(imgtype, img, buf);
+	cv::imencode( ("."+imgtype), img, buf);  // jpeg vs jpg ?
 	
 	std::string imgstr;
 	auto imgstr = reinterpret_cast<const unsigned char*>(buf.data());
 	
 	std::string res = b64_enc_(imgstr, buf.size());
-	if(append) { res = "data:image/jpeg;base64," + res; }
+	if(append) { res = "data:image/" + imgtype + ";base64," + res; }
 	return res;
 }
+*/
 
+// https://png-pixel.com/
 // https://stackoverflow.com/a/56973683/184614
+// s_b64_enc_file("c:/_git_/transparent.gif")
+// s_b64_enc_file("c:/_git_/transparent.png")
 // [[Rcpp::export]] 
 std::string s_b64_enc_file(std::string filename)
 {
 	std::string line;
-	ifstream input(filename, ios::in | ios::binary);
-	std::output;
+	std::ifstream input(filename, std::ios::in | std::ios::binary);
+	std::string output;
 	
 	if (input.is_open()) 
 		{
 		while (getline(input, line)) 
 			{
-			string encoded = b64_enc_(reinterpret_cast<const unsigned char*>(line.c_str()), line.length());
+			std::string encoded = b64_enc_(reinterpret_cast<const unsigned char*>(line.c_str()), line.length());
 
-			output << encoded;
+			// output << encoded;
+			output += encoded;
 			}
 		input.close();
 		}
 		
 	return output;
 }
+
+/* 
+TODO ... dec_file ... enc/dec_img (dataURI)
+
+
+		enc/dec obj (iris) ... multivariate ...
+*/
+
+// COMPILES, doesn't work ... ANOTHER day ...
+// s_b64_enc_obj(iris);
+// [[Rcpp::export]] 
+std::string s_b64_enc_obj(SEXP s)
+{
+	// Rcpp::RawVector raw = (TYPEOF(s) == RAWSXP) ? s : serializeToRaw(s);
+	Rcpp::RawVector raw = serializeToRaw(s);
+	std::string res = s_b64_enc_raw(raw);
+	return res;
+}
+
+
 
 
 /* Multivariate LISTS of RawVector, CharVector of others */

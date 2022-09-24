@@ -1,5 +1,23 @@
 
+# > s_b64_enc_str("Façade")
+# [1] "RmHDp2FkZQ=="
+# > s_b64_dec_str( s_b64_enc_str("Façade") )
+# [1] "Façade"
+# > s_b64_dec_str ('RmHnYWRl')
+# [1] "Fa\xe7ade"
 
+# the \xe is from my online javascript b-encode ...
+# a u.parse("Fa\xe7ade") should work ...
+
+# RmHnYWRl
+# RmHDp2FkZQ==
+# one is shorter, just CHARS ... javascript ...
+### JAVASCRIPT is doing something under the hood to auto-parse the string
+# 'Façade'
+# base64_encode(str)
+# 'RmHnYWRl'
+# base64_decode(base64_encode(str))
+# 'Façade'
 
 
 int.u8 = intToUtf8;
