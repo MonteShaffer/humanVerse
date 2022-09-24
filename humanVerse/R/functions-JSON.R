@@ -36,14 +36,14 @@ RHON.isKey = function(obj, key="dataframe")
 	
 	}
 
-RHON.is = function(obj, keys=c("atomic", "vector", "dataframe", "matrix", "na", "NaN", "Inf", "function", "primitive")
+RHON.is = function(obj, keys=c("atomic", "vector", "dataframe", "matrix", "na", "NaN", "Inf", "function", "primitive"))
 	{
 	# THESE ARE not typeof?
 	# keys 
 	res = NULL;
 	for(key in keys)
 		{
-		res = c(res, RHON.isKey(obj, key);
+		res = c(res, RHON.isKey(obj, key));
 		}
 	res;	
 	}

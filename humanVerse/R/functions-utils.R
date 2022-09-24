@@ -635,7 +635,9 @@ charCodeAt = function(str,idx)
 #'
 String.fromCharCode = function(n)
 	{
-	chr(n);	
+	# 0 is AA== in base64 ??? # null not allowed?
+	# ifelse({n == 0}, { '\x00'; }, { chr(n); });
+	chr(n);
 	}
 
 
@@ -661,11 +663,64 @@ charCode = function(s)
 # identical(f, iris);
 
 
-# > hexstr = "ABCDEF"
-# > h = bin(hexstr, n=3)
+
+
+
+
+# > hexstr = "ABCDEF"; # 03984092384092830948"
+# > h = bin(toupper(hexstr), n=3)
 # [1] "ABC" "DEF"
 # > 16*16*16  ... 4096
 # > 64*64     ... 4096
+
+# a = base64.fromHEX(hexstr);
+# b = base64.toHEX(a);
+
+base64.fromHEX = function(hexstr)
+	{
+	h = bin(toupper(hexstr), n=3);	
+	nh = length(h);
+	res = "";
+	for(i in 1:nh)
+		{
+		res = paste0(res, lookupHEXB64[[ h[i] ]], collapse="");
+		}
+	res;
+	}
+
+base64.toHEX = function(b64str)
+	{
+	b = bin(b64str, n=2);
+	nb = length(b);
+	res = "";
+	for(i in 1:nb)
+		{
+		res = paste0(res, lookupB64HEX[[ b[i] ]], collapse="");
+		}
+	res;
+	}
+	
+ 
+hexToBase64 = function(hexStr) 
+	{
+	base64 = "";
+	nh = str.len(hexStr);
+	for(i in 0:(nh-1))
+		{
+		if(i %% 2 == 1)
+			{
+			h = as.integer(as.hexmode(substring(hexStr, i, i+1)));
+			s = String.fromCharCode(h);
+			# if(s == "") { s = ".NULL"; } # null not allowed ... \x00
+			base64 = paste0(base64, s);
+			}
+		}
+	# I would have to hack .NULL in the function after ... 
+	# benchmarks would be interesting ... 
+	return(js.b64(base64));
+	}
+
+	
 
 #  H = "0123456789ABCDEF"
 #  Hv = str.explode("", H)
@@ -674,47 +729,6 @@ charCode = function(s)
 
 # https://en.wikipedia.org/wiki/Base64
 # 
-
-
-bout = character();
-for(i in 1:64)
-	{
-	bi = Bv[i];
-	for(j in 1:64)
-		{
-		bj = Bv[j]
-		bout = c(bout, paste0(bi,bj, collapse=""));
-		}
-	}
-
-mapHB64 = list("hex" = out, "base64" = bout);
-
-
-# every 3H is 2B ... what's the map ...  # every 24 bits ...
-df = NULL;
-n = 0;
-b1 = b2 = 1;
-B1 = B2 = "A";   
-out = character();
-for(i in 1:16)
-	{
-	n %++%.
-	hi = Hv[i];
-	for(j in 1:16)
-		{
-		n %++%.
-		hj = Hv[j];
-		for(k in 1:16)
-			{
-			n %++%.
-			hk = Hv[k]
-			
-			out = c(out, paste0(hi,hj,hk, collapse=""));
-			
-			}
-		}
-	}
-
 
 
 

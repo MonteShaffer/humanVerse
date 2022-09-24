@@ -40,7 +40,7 @@ bit.RShift = function(x, bits=1, method="cpp", unsigned=FALSE)
 
 		
 	res = bitwShiftR(x,bits);
-		x.w = (!is.negative(x) | unsigned);
+		x.w = (!is.na(x) & (!is.negative(x) | unsigned));
 		x.idx = which(x.w == FALSE);
 	res[ x.idx ] = -bitwShiftR(-x[x.idx],bits) - 1;
 	res;
@@ -95,8 +95,8 @@ bit.LShift = function(x, bits=1, method="cpp", unsigned=FALSE)
 		} 
 
 		
-	res = bitwShiftL(x,bits);
-		x.w = (!is.negative(x) | unsigned);
+	res = bitwShiftL(x,bits);  # this is multivariate 
+		x.w = (!is.na(x) & (!is.negative(x) | unsigned));
 		x.idx = which(x.w == FALSE);
 	res[ x.idx ] = -bitwShiftL(-x[x.idx],bits);
 	res;
@@ -214,7 +214,8 @@ dec2bin = function(decnum)
 # bit.shift.right
 bitShiftR = function(x, bits, unsigned=FALSE)
   {
-  if(!is.negative(x) | unsigned) { return( bitwShiftR(x,bits) ); }
+  # this is NOT multivariate at the moment ... 
+  if(!is.na(x) & (!is.negative(x) | unsigned)) { return( bitwShiftR(x,bits) ); }
   -bitwShiftR(-x,bits) - 1; #  - 1;                  # >>>
   # https://stackoverflow.com/questions/64839024/using-r-how-to-do-bitwise-shifting-for-signed-negative-integers
   # maybe ... Rshift <- function(val, nbits) floor(val/2^nbits)
@@ -239,7 +240,7 @@ bitShiftR = function(x, bits, unsigned=FALSE)
 # bit.shift.left
 bitShiftL = function(x, bits, unsigned=FALSE)
   {
-  if(!is.negative(x) | unsigned)
+  if(!is.na(x) & (!is.negative(x) | unsigned));
     {
     tmp = suppressWarnings( bitwShiftL(x,bits) );                # <<<
     if(is.na(tmp)) { tmp = -2^31; }  # 0x80 << 24

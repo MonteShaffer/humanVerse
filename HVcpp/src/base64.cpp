@@ -108,7 +108,7 @@ CharacterVector cpp_base64_enc(const std::vector<std::string> str)
 }
 
 
-
+ 
 // [[Rcpp::export]]
 std::string s_base64_dec(const std::string str64)
 {

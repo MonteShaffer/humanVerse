@@ -3,7 +3,7 @@
 #include <cmath>
 using namespace Rcpp;
 
-
+// built-in function seems to allow a, b to both be multivariate, some sort of recycling?
 long long b_RShift(long long a, int b) 
 	{ 
 	return a >> b;

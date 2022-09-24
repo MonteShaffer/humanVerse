@@ -31,8 +31,22 @@
 # function b64_to_utf8(str) {
   # return decodeURIComponent(escape(window.atob(str)));
 # }
+# http://127.0.0.1:10983/library/utils/html/URLencode.html
 # THE ABOVE is what my C++ code is doing?
 
+# encodeURI(value)
+
+# encodeURIComponent(value)
+
+# decodeURI(value)
+
+# decodeURIComponent(value)
+
+
+# > cpp_b64_enc(b)
+# [1] "RmHDp2FkZQ=="
+# utf8_to_b64(str);
+# 'RmHDp2FkZQ=='
 
 js.b64 = function(input, method="encode")
 	{

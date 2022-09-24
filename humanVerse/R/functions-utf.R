@@ -1,4 +1,19 @@
 
+
+u.parse = function(str = "Fa\xe7ade")
+	{
+	s = enc2utf8(str);
+	
+	
+	}
+
+# js.b64("Fa\xe7ade")
+
+# > d = "Fa\xe7ade"
+# > enc2utf8(d)
+# [1] "Fa<e7>ade"
+
+
 # > s_b64_enc_str("Façade")
 # [1] "RmHDp2FkZQ=="
 # > s_b64_dec_str( s_b64_enc_str("Façade") )
