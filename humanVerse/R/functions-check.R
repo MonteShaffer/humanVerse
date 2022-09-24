@@ -122,7 +122,7 @@ debug = FALSE;
 	res = TRUE;
 	if(is.error(checktype)) { res = FALSE; }
 	res = property.set("typeof", res, checktype);
-	res;
+	res; 
 	}
 
 

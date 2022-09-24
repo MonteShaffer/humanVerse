@@ -41,8 +41,9 @@ axes = axis;
 #' @export
 nchars = nchar;
 
-ord = utf8ToInt;  # mb_ord ?
-chr = intToUtf8;
+.ord = utf8ToInt;  # mb_ord ?
+.chr = intToUtf8;
+
 
 
 
@@ -554,7 +555,7 @@ IN = function(KEY, VALUE, mem.key = "-CURRENT_IN-")
 #' @examples
 #'
 #' charAt("Alex", 2);
-#' charAt(c("Hello","there","Alex"), 2);
+#' charAt(c("Hello","there","Alex"), 2); 
 #' charAt("Alex", 8);
 #' charAt("Alexander", 8);
 #'
@@ -563,8 +564,9 @@ charAt = function(str="Welcome to the humanVerse",idx=21)
   substr(str,idx,idx);  # or substring?
   }
   
-indexOf = function(str, what)
+indexOf = function(vec, what, explode=FALSE, zero.idx=TRUE)
 	{
+	if(explode) { vec = str.explode("", vec); } # it's just characters 
 	v.which(str.explode("",str), what);	
 	}
 
@@ -627,20 +629,20 @@ charCodeAt = function(str,idx)
 #'
 #' @examples
 #'
-#' s = "Alexander"; svec = strsplit(s,"",fixed=TRUE)[[1]];
+#' s = c("Alexander", "Jay"); 
+#' ## svec = strsplit(s,"",fixed=TRUE)[[1]];
 #' charCode(svec);
 #'
-charCode = function(svec)
-  {
-  #v1 = iconv( svec, from="ASCII", to="unicodeFFFE", toRaw=TRUE);
-	v1 = iconv( svec, from="UTF-8", to="unicodeFFFE", toRaw=TRUE);
-	v2 = as.integer( unlist(v1) )
-	v2[v2 > 0];
+String.fromCharCode = function(n)
+	{
+	chr(n);	
+	}
 
-	# https://coolbutuseless.github.io/2021/12/04/base64-encoding/decoding-in-plain-r/
 
-	#unname(vapply(as.character(svec), utf8ToInt, integer(1)))
-  }
+charCode = function(s)
+	{
+	ord(s);
+	}
 	
 
 
