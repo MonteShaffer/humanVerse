@@ -615,8 +615,10 @@ str.trimFromAny = function(str, search="#me", side="both", ...)
 #'
 #------------------------------------------------#
 str.trimFromFixed = function() {}
-str.trimFromFixed = function(str, trim="#", side="both", ...)
+str.trimFromFixed = function(str, trim="#", side="both" )
 	{
+	# multiple see trimFromAny 
+	# if there are a contiguous group "00001000" ... "0"
 	s = prep.arg(side, 1);
 	len.str = str.len(str);
 	n.str = length(str);

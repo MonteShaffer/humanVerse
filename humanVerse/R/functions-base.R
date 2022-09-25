@@ -206,11 +206,12 @@ base2base = function(basestring, from=13, to=17)
 # base.convert = function(..., from="binary", to="hex", decimal.numeric=TRUE)
 
 
-.baseTrim = function(x, base=16)
+.baseTrim = function(x)
 	{
+	# 
 	# maybe do something smart with base ... bin ( repeat myself ?)
 	# convolutins is BAD ...  
-	y = str.trimFromFixed(x, "0", "LEFT");
+	y = str.trimFromAny(x, "0", "LEFT");
 	y[y==""] = "0";
 	y;	
 	}
@@ -225,7 +226,7 @@ base2base = function(basestring, from=13, to=17)
 # FROM = 16; TO = 64; a = int2base(0:(FROM*FROM), base=FROM);
 # b = .base2bin(a, FROM);	c = .bin2base(b, TO);
 # d = .base2bin(c, TO); 	e = .bin2base(d, FROM);
-# identical(a,e);
+# identical(a,e); 
 
 	# this is limited by the ^power operator ... 
 	# let's do it by singletons ...
@@ -233,9 +234,6 @@ base2base = function(basestring, from=13, to=17)
 ## STOPPING POINT, MAYBE WORKING 
 .base2bin = function(x, FROM=5, left.trim=TRUE) 
 	{
-	# we don't want to left.trim if we are reversing ... 
-	# we don't have to "repad" ... later 
-	
 	num.init();  # verify CONSTANTS are available ...
 	# assume I have a vec x 
 	n = length(x);
@@ -261,7 +259,7 @@ base2base = function(basestring, from=13, to=17)
 			idx = set.match(xiv, mapFROM);
 			res[i] = paste0(mapTO[idx], collapse="");
 			}
-		if(left.trim) { res = .baseTrim(res, b_); }
+		if(left.trim) { res = .baseTrim(res); }
 		return(res);			
 		} else {
 				# THIS is NOT WORKING, carryover issues TODO
@@ -286,7 +284,7 @@ base2base = function(basestring, from=13, to=17)
 					idx = set.match(xiv, mapFROM);
 					res[i] = paste0(mapTO[idx], collapse="");
 					}
-				if(left.trim) { res = .baseTrim(res, b_); }
+				if(left.trim) { res = .baseTrim(res); }
 		
 				return(res);
 				}
@@ -324,13 +322,13 @@ base2base = function(basestring, from=13, to=17)
 			idx = set.match(yiv, mapFROM);
 			res[i] = paste0(mapTO[idx], collapse="");
 			}
-		if(left.trim) { res = .baseTrim(res, b_); }
+		if(left.trim) { res = .baseTrim(res); }
 		
 		return(res);			
 		} else {
 				# THIS is NOT WORKING, carryover issues TODO
 				stop("non trivial with partial bits, TODO");
-				if(left.trim) { res = .baseTrim(res, b_); }
+				if(left.trim) { res = .baseTrim(res); }
 		
 				}
 	

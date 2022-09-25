@@ -809,7 +809,7 @@ v.remove = function(vec, what="", invert=FALSE)
 	 
 
 
- 
+  
 	 
 v.random = function(n=100, method="norm", ..., seed=NULL)
 	{

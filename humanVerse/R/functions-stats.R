@@ -803,7 +803,7 @@ stats.summary = function(..., type=1, sort.ASC = FALSE,
 
 
 
- 
+  
 myfive = function(..., na.rm=TRUE, show.warning=na.rm)
 	{
 	x = prep.dots(...);

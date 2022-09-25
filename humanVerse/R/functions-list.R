@@ -379,26 +379,19 @@ list.setByIDX = function(info, idx, vals=NULL)
 list.flatten = function(info)
 	{
 	n = length(info);
-	res = vector("list", n);
+	xlen = list.getLengths(info);
+	res = list();
+	idx = 1;
 	for(i in 1:n)
 		{
 		xlist = info[[i]];
-		m = length(xlist);
-		xlen = list.getLengths(info);
+		if(xlen[i] == 1) { res[[idx]] = rlist; idx %++%.; next; }
 		
-		xres = list();  # technically I could do a product sum ... m*xlen
-		idx = 1;
-		for(j in 1:m)
+		for(j in 1:xlen[i])
 			{
-			rlist = xlist[[j]];
-			if(xlen[j] == 1) { xres[[idx]] = rlist; idx %++%.; next; }
-			for(k in 1:xlen[j])
-				{
-				xres[[idx]] = rlist[k]; 
-				idx %++%.;
-				}
+			res[[idx]] = info[[i]][j]; 
+			idx %++%.;
 			}
-		res[[i]] = xres;
 		}	
 	list.return(res);
 	}

@@ -1,6 +1,6 @@
 
 ## display microbenchmark results
-##    mb.res = microbenchmark::microbenchmark(); 
+##    mb.res = microbenchmark::microbenchmark();  
 ggg.mb = function(mb.res, show="milliseconds", plot=TRUE, caching=TRUE)
 	{
 	# maybe write my own ... see Dirk's 

@@ -141,7 +141,7 @@ allFALSE = function(x)
 	}
 
 # any/all ... NULL ? (on list) ... 
-#         ... Inf ... infinite 
+#         ... Inf ... infinite  
 
 
 

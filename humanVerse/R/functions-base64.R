@@ -68,7 +68,7 @@ js.b64 = function(input, method="encode")
 			chr1 = input.charCodes[ i %++%. ];	
 			chr2 = input.charCodes[ i %++%. ];	
 			chr3 = input.charCodes[ i %++%. ];	
-				
+				 
 					# chr1 >> 2;
 					# CREATE "%>>%" function ... "%+=" ... "%|%" .. "%&%"
 			enc1 = bitShiftR(chr1,2); 

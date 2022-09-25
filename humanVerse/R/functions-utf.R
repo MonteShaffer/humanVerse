@@ -59,7 +59,7 @@ u.pad8 = function(...)
 	x = prep.dots(... , default=c(36, 163, 2361, 8364, 54620, 66376) );
 	
 	# https://en.wikipedia.org/wiki/UTF-8#Encoding
-	b = int2base(x, base=2);
+	b = int2base(x, base=2); 
 	
 	pads = c(7, 11, 16, 21);
 	idxs = list(
