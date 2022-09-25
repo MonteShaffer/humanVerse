@@ -3,31 +3,6 @@
 # source("https://raw.githubusercontent.com/MonteShaffer/humanVerse/main/humanVerse/inst/R/functions-md5_.R");
 # source( system.file() );
 # system.file("inst/R/functions-md5_.R", package = "humanVerse", lib.loc = NULL, mustWork = FALSE)
-##################################################
-#'
-#' md5_out_
-#'
-#' @param xb Vector of 4 integer keys
-#'
-#' @return md5 output of those integer keys
-#' @export
-#'
-#' @examples
-#' md5_out_();
-md5_out_ = function(xb = c(-1652748130, -2101990601, 891148395, -702962622))
-	{
-	hex = "0123456789abcdef";
-	o = "";
-	for(i in 0:15)
-		{
-		idx = 1 + bitwAnd( bitwShiftR( xb[ (bitwShiftR(i,2) + 1)] ,	((i%%4)*8+4)), 0xF);
-			o = paste0(o, charAt(hex,idx) );
-		idx = 1 + bitwAnd( bitwShiftR( xb[ (bitwShiftR(i,2) + 1)] ,	((i%%4)*8)), 0xF);
-			o = paste0(o, charAt(hex,idx) );
-		}
-	attributes(o)[["xb"]] = xb;
-	o;
-	}
 
 
 
@@ -51,6 +26,88 @@ md5_ = function(s)
 	# http://md5.mshaffer.com/				 ... circa 2005 ???
 	# http://md5.mshaffer.com/md5.js
 	# https://tools.ietf.org/html/rfc1321 ... ported from c -> javascript -> R
+	
+	
+	
+	
+	is.negative = function(a, tol = sqrt(.Machine$double.eps))
+		{
+		a < ( -1 * tol );
+		}
+	bitShiftR = function(x, bits, unsigned=FALSE)
+		{
+		# # https://stackoverflow.com/questions/64839024/using-r-how-to-do-bitwise-shifting-for-signed-negative-integers
+		if(!is.negative(x) | unsigned) { return( bitwShiftR(x,bits) ); }
+		-bitwShiftR(-x,bits) - 1; 
+		}
+		
+		
+	bitShiftL = function(x, bits, unsigned=FALSE)
+		{
+		if(!is.negative(x) | unsigned)
+			{
+			tmp = suppressWarnings( bitwShiftL(x,bits) );				
+			if(is.na(tmp)) { tmp = -2^31; }	# 0x80 << 24
+			return( tmp );
+			}
+		tmp = suppressWarnings( -bitwShiftL(-x,bits) ); 
+		if(is.na(tmp))
+			{
+			tmp = 2^31;
+			if(is.negative(x)) { tmp = -1 * tmp; }
+			}
+		tmp;
+		}
+
+
+	bitOr = function(a, b)
+		{
+		if(!is.negative(a) && ( b <= -1 * 2^31) )
+			{
+			return (a + b);
+			}
+		if(!is.negative(b) && ( a <= -1 * 2^31) )
+			{
+			return (a + b);
+			}
+		bitwOr(a,b);
+		}
+
+	charAt = function(str,idx)
+		{
+		substr(str,idx,idx);
+		}
+
+	lastChar = function(str)
+		{
+		s.len = strlen(str);
+		charAt(str, s.len);
+		}
+
+	charCodeAt = function(str,idx)
+		{
+		charCode ( charAt(str,idx) ); 
+		}
+
+	charCode = function(s)
+		{
+		utf8ToInt(s);
+		}
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 	s = s[1]; # this is not vectorized ... very slow
 	w = 8 * nchar( as.character(s), type="chars");
@@ -121,70 +178,7 @@ md5_ = function(s)
 		}
 		
 		
-	is.negative = function(a, tol = sqrt(.Machine$double.eps))
-		{
-		x < ( -1 * tol );
-		}
-	bitShiftR = function(x, bits, unsigned=FALSE)
-		{
-		# # https://stackoverflow.com/questions/64839024/using-r-how-to-do-bitwise-shifting-for-signed-negative-integers
-		if(!is.negative(x) | unsigned) { return( bitwShiftR(x,bits) ); }
-		-bitwShiftR(-x,bits) - 1; 
-		}
-		
-		
-	bitShiftL = function(x, bits, unsigned=FALSE)
-		{
-		if(!is.negative(x) | unsigned)
-			{
-			tmp = suppressWarnings( bitwShiftL(x,bits) );				
-			if(is.na(tmp)) { tmp = -2^31; }	# 0x80 << 24
-			return( tmp );
-			}
-		tmp = suppressWarnings( -bitwShiftL(-x,bits) ); 
-		if(is.na(tmp))
-			{
-			tmp = 2^31;
-			if(is.negative(x)) { tmp = -1 * tmp; }
-			}
-		tmp;
-		}
-
-
-	bitOr = function(a, b)
-		{
-		if(!is.negative(a) && ( b <= -1 * 2^31) )
-			{
-			return (a + b);
-			}
-		if(!is.negative(b) && ( a <= -1 * 2^31) )
-			{
-			return (a + b);
-			}
-		bitwOr(a,b);
-		}
-
-	charAt = function(str,idx)
-		{
-		substr(str,idx,idx);
-		}
-
-	lastChar = function(str)
-		{
-		s.len = strlen(str);
-		charAt(str, s.len);
-		}
-
-	charCodeAt = function(str,idx)
-		{
-		charCode ( charAt(str,idx) ); 
-		}
-
-	charCode = function(s)
-		{
-		utf8ToInt(s);
-		}
-
+	
 
 
 
@@ -300,187 +294,3 @@ md5_ = function(s)
 	attributes(o)[["xb"]] = xb;
 	o;
 	}
-
-
-is.negative = function(x, ..., tol = sqrt(.Machine$double.eps), part="Re")
-	{
-	more = unlist(list(...)); x = c(x, more);
-	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
-	x < ( -1 * tol );
-	}
-
-
-
-#' bitShiftR
-#'
-#' This updates the built-in functions to allow for negative integers.
-#' Used for manual '.md5' computation, and has some issues.
-#' Maybe R::CRAN will fix this someday in the base?
-#'
-#' @param x integer
-#' @param bits bits
-#' @param unsigned is it signed or not
-#'
-#' @return new integer
-#' @export
-#'
-#' @examples
-#' bitShiftR(1732584193, 16);		# 26437
-#' bitShiftR(-1732584193, 16);		# -26438
-# bit.shift.right
-bitShiftR = function(x, bits, unsigned=FALSE)
-	{
-	if(!is.negative(x) | unsigned) { return( bitwShiftR(x,bits) ); }
-	-bitwShiftR(-x,bits) - 1; #	- 1;									# >>>
-	# https://stackoverflow.com/questions/64839024/using-r-how-to-do-bitwise-shifting-for-signed-negative-integers
-	# maybe ... Rshift <- function(val, nbits) floor(val/2^nbits)
-	}
-
-#' bitShiftL
-#'
-#' This updates the built-in functions to allow for negative integers.
-#' Used for manual '.md5' computation, and has some issues.
-#' Maybe R::CRAN will fix this someday in the base?
-#'
-#' @param x integer
-#' @param bits bits
-#' @param unsigned is it signed or not
-#'
-#' @return new integer
-#' @export
-#'
-#' @examples
-#' bitShiftL(1732, 16);
-#' bitShiftL(-1732, 16);
-# bit.shift.left
-bitShiftL = function(x, bits, unsigned=FALSE)
-	{
-	if(!is.negative(x) | unsigned)
-		{
-		tmp = suppressWarnings( bitwShiftL(x,bits) );								# <<<
-		if(is.na(tmp)) { tmp = -2^31; }	# 0x80 << 24
-		return( tmp );
-		}
-	tmp = suppressWarnings( -bitwShiftL(-x,bits) ); # - 1;									# <<<
-	if(is.na(tmp))
-		{
-		tmp = 2^31;
-		if(is.negative(x)) { tmp = -1 * tmp; }
-		}
-	tmp;
-	}
-
-
-bitOr = function(a, b)
-	{
-	if(!is.negative(a) && ( b <= -1 * 2^31) )
-		{
-		return (a + b);
-		}
-	if(!is.negative(b) && ( a <= -1 * 2^31) )
-		{
-		return (a + b);
-		}
-	bitwOr(a,b);
-	}
-
-
-
-
-
-
-#' charAt
-#'
-#' Get the character of a string at position [idx]
-#'
-#' @param str String
-#' @param idx position to get character
-#'
-#' @return single character
-#' @export
-#'
-#' @examples
-#'
-#' charAt("Alex", 2);
-#' charAt(c("Hello","there","Alex"), 2);
-#' charAt("Alex", 8);
-#' charAt("Alexander", 8);
-#'
-charAt = function(str,idx)
-	{
-	substr(str,idx,idx);
-	}
-
-#' lastChar
-#'
-#' Get the last character of a string
-#'
-#' @param str String
-#' @param trim should the string be trimmed first
-#'
-#' @return single character
-#' @export
-#'
-#' @examples
-#'
-#' lastChar("Alex");
-#' lastChar(c("Hello","there","Alex"));
-#' lastChar("Sasha");
-#' lastChar("Alexander");
-#'
-lastChar = function(str, trim=TRUE)
-	{
-	# this also works:: ... # .substr(str, -1)
-	if(trim){ str = trimMe(str); }
-	s.len = strlen(str);
-	charAt(str, s.len);
-	}
-
-
-#' charCodeAt
-#'
-#' Get the ASCII character code of a string at position [idx]
-#'
-#' @param str String
-#' @param idx position to get character
-#'
-#' @return
-#' @export
-#'
-#' @examples
-#'
-#' charCodeAt("Alex", 2);
-#' charCodeAt(c("Hello","there","Alex"), 2);
-#' charCodeAt("Alex", 8);
-#' charCodeAt("Alexander", 8);
-#'
-charCodeAt = function(str,idx)
-	{
-	charCode ( charAt(str,idx) ); #	as.numeric( iconv( charAt(str,idx), from="ASCII", to="unicodeFFFE", toRaw=TRUE)[[1]][2] );
-	}
-
-
-#' charCode
-#'
-#' @param svec A vector of characters
-#'
-#' @return ASCII character code for each character
-#' @export
-#'
-#' @examples
-#'
-#' s = "Alexander"; svec = strsplit(s,"",fixed=TRUE)[[1]];
-#' charCode(svec);
-#'
-charCode = function(svec)
-	{
-	# s = "monte";
-	# svec = strsplit(s,"",fixed=TRUE)[[1]];
-	r = c();
-	for(s in svec)
-		{
-		r = c(r, as.numeric( iconv( s, from="ASCII", to="unicodeFFFE", toRaw=TRUE)[[1]][2] ) );
-		}
-	r;
-	}
-
