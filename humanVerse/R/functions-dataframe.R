@@ -218,10 +218,14 @@ df.row = function(..., use.names=FALSE)
 	{
 # dput( (list(...)) );   # list(structure(1663114668.6615, class = c("POSIXct", "POSIXt")), "set", "STACK", "alex")
 # x = df.row(c(1,2,3,4)); y = df.row(1,2,3,4); identical(x,y);
- 
+  
 	xlist = list(...);	names = NULL;
+# dput(xlist);    
 	if(length(xlist) == 1)
 		{
+		xlist = list.flatten(xlist); 
+		
+		# if length 1 FINE, otherwise, its a vector that needs to be flattened into separate elements ...
 		df = dataframe(t(unlist(xlist)));  # a vector of the same type 		
 		} else { df = dataframe(xlist); }
 

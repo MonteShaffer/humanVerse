@@ -1,4 +1,134 @@
 
+## display microbenchmark results
+##    mb.res = microbenchmark::microbenchmark(); 
+ggg.mb = function(mb.res, show="milliseconds", plot=TRUE, caching=TRUE)
+	{
+	# maybe write my own ... see Dirk's 
+	# Rput.OUT ?? 
+	# on.exit(return WHAT YOU HAVE) ... 
+	# warmpu ... why ... 
+	# are time units absolute ? ... format to milliseconds ... 
+	# let's scale to the number of runs ... e.g., 1000 
+	# times=1000
+	# ntests = length(mb.names);
+	# nall = length(mb.res$time);
+	# time is always in nano ... divide by 1000000 ... get to millis
+	mb.res$time = mb.res$time / 1000 / 1000;
+	# I report millis per single unit  
+	SHOW = prep.arg(show, n=3);
+	mb.res$time = switch(SHOW,
+							"mil" = mb.res$time,
+							"mic" = mb.res$time*1000,
+							"nan" = mb.res$time*1000*1000,
+							"sec" = mb.res$time/1000,
+							"min" = mb.res$time/1000/60,
+							"hou" = mb.res$time/1000/60/60,
+							"day" = mb.res$time/1000/60/60/24,
+						 mb.res$time
+						 );
+	PSHOW = switch(SHOW,
+							"mil" = "milliseconds (ms)",
+							"mic" = "microseconds (µs)",
+							"nan" = "nanoseconds (ns)",
+							"sec" = "seconds",
+							"min" = "minutes",
+							"hou" = "hours",
+							"day" = "days",
+						 "milliseconds (ms)"
+						 );
+	mb.names = levels(mb.res$expr);	
+	
+	mb.md5 = str.toMD5( JSON.stringify( list("data" = mb.res$time, "names" = mb.names, "pshow" = PSHOW, "show" = SHOW) ) );
+	
+dput(PSHOW);
+dput(SHOW);
+dput(mb.md5);
+
+	if(caching) 
+		{ 
+		out = memory.get(mb.md5, "-CACHE-"); 
+		if(!is.null(out))
+			{
+			time.is = paste0("[",PSHOW, "] per call");
+cat("\n\n time.is ... ", time.is, "\n\n");
+			return( minvisible(out, display="print") );			
+			}
+		}
+	
+	
+	
+	out = NULL;
+	
+	A.name 		= mb.names[1];
+	A 			= subset(mb.res, expr==A.name)$time;
+	#A.info 		= stats.summary(A / length(A));  # expensive with z-scores 
+	A.info		= myfive(A/length(A));
+
+	# We BENCHMARK to the first element examined ...
+	# maybe TODO ... allow BENCHMARK to the fastest ...
+	# row = df.row(1,A.name,A.info$Ns[1],A.info$Ns[4], A.info$median, A.info$Ns[7], A.info$Ns[10], 0, 1, use.names=FALSE); 
+	row = df.row(1, A.name, A.info, 0, 1, use.names=FALSE); 
+	
+	out = rbind(out, row);
+
+	n.names = length(mb.names);
+	if(n.names > 1)
+		{
+		for(i in 2:n.names)
+			{
+			B.name 		= mb.names[i];
+			B 			= subset(mb.res, expr==B.name)$time;
+			# B.info 		= stats.summary(B / length(B) );  # expensive with z-scores 
+			B.info		= myfive(B/length(B));
+				
+			B.eff 		= round(100* (A.info[3]-B.info[3])/A.info[3] , 2);
+			
+			B.factor 	= round(B.info[3]/A.info[3] , 5);
+
+			# row = df.row(i,B.name,B.info$Ns[1],B.info$Ns[4], B.info$median, B.info$Ns[7], B.info$Ns[10], B.eff, B.factor, use.names=FALSE); 
+			
+			row = df.row(1, B.name, B.info, 0, 1, use.names=FALSE); 
+
+			
+			out = rbind(out, row);
+			}
+		}
+	rownames(out) = out$V1;
+	colnames(out) = c("idx", "expression", "min", "lower-trecile", "median", "upper-trecile", "max", "relative.efficiency", "relative.factor");
+	
+	out$Rank = rank(out$median, ties="first");
+	out = df.sortBy(out, "Rank"); 
+	
+	time.is = paste0("[",PSHOW, "] per call");
+cat("\n\n time.is ... ", time.is, "\n\n");
+	out = property.set("time.is", out, time.is);
+	
+	# caching at the time level ... new time interval, new cache 
+	if(caching) { memory.set(mb.md5, "-CACHE-", out); }
+	# maybe also log the md5 somewhere ...
+	
+	minvisible(out, display="print");
+	}
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 bm.prep = function(dlist)
 	{
 	n = length(dlist);

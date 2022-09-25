@@ -799,3 +799,38 @@ stats.summary = function(..., type=1, sort.ASC = FALSE,
 ## list(500) is no, vector("list", 500) is yes ...
 ## n.dim(X) and n.length(X) ... deal with issues of dim not found 
 ## maybe a function '`count`' ... sizeof => size 
+
+
+
+
+ 
+myfive = function(..., na.rm=TRUE, show.warning=na.rm)
+	{
+	x = prep.dots(...);
+	xx = stats.warningNA(x, show.warning=show.warning);
+	x_ = stats.whichX(x, xx, na.rm);
+	res = stats::quantile(x_, prob=c(0/3, 1/3, 1/2, 2/3, 3/3), type=1);			
+	names(res) = c("0/3 [min]", "1/3 [lower-trecile]", 
+					"1/2 [median]", "2/3 [upper-trecile]", "3/3 [max]");
+	res;
+	}
+ 
+
+
+stats.test = function(X.stat, method="norm", ..., tail="both", alpha=0.05)
+	{
+	# for given X.stat and alpha ... compute X.crit and pvalue 
+	# based on a distribution with its needed parameters 
+	# tail = "both", "lower", "upper" ... what to do with alpha 
+	
+	ct.method = check.type(method);
+	if(!ct.method || !is.character(method)) 
+		{ method = deparse(substitute(method)); }
+	
+	# just call the generic function PDF/CDF/inverseCDF to solve the problem 
+	# here you would do the appropriate 1-p if necessary 
+	# should I add the multivariate chi-square to these ...
+	# I have a p and a q?
+	
+	}
+	

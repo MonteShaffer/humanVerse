@@ -206,18 +206,44 @@ base2base = function(basestring, from=13, to=17)
 # base.convert = function(..., from="binary", to="hex", decimal.numeric=TRUE)
 
 
+.baseTrim = function(x, base=16)
+	{
+	# maybe do something smart with base ... bin ( repeat myself ?)
+	# convolutins is BAD ...  
+	y = str.trimFromFixed(x, "0", "LEFT");
+	y[y==""] = "0";
+	y;	
+	}
+
+
+# FROM = 16; TO = 32; a = int2base(0:(FROM*FROM), base=FROM);
+# b = .base2bin(a, FROM);	c = .bin2base(b, TO);
+# d = .base2bin(c, TO); 	e = .bin2base(d, FROM);
+# identical(a,e);
+
+
+# FROM = 16; TO = 64; a = int2base(0:(FROM*FROM), base=FROM);
+# b = .base2bin(a, FROM);	c = .bin2base(b, TO);
+# d = .base2bin(c, TO); 	e = .bin2base(d, FROM);
+# identical(a,e);
+
 	# this is limited by the ^power operator ... 
 	# let's do it by singletons ...
 # x = int2base(0:(FROM*FROM), base=FROM)
 ## STOPPING POINT, MAYBE WORKING 
-.base2bin = function(x, FROM=5) 
+.base2bin = function(x, FROM=5, left.trim=TRUE) 
 	{
+	# we don't want to left.trim if we are reversing ... 
+	# we don't have to "repad" ... later 
+	
 	num.init();  # verify CONSTANTS are available ...
 	# assume I have a vec x 
 	n = length(x);
 	res = character(n);
+	
 
 	mapFROM = BXXv[1:FROM];
+	if(FROM == 64) { mapFROM = B64v; }
 	
 	b = log(FROM, 2);  # are we in a base-2 subset 
 	b_ = as.integer(b);
@@ -235,17 +261,24 @@ base2base = function(basestring, from=13, to=17)
 			idx = set.match(xiv, mapFROM);
 			res[i] = paste0(mapTO[idx], collapse="");
 			}
+		if(left.trim) { res = .baseTrim(res, b_); }
 		return(res);			
 		} else {
+				# THIS is NOT WORKING, carryover issues TODO
 				mapTO.lower = bin(Bits64[1:FROM], n=b_);
 				mapTO.upper = bin(Bits64[1:FROM], n=bn);
 				slen = list.getLengths(mapTO.lower);
 				# should exist here 
 				# may be a few ... 
+				# logic = v.test(slen, 1, invert=TRUE); 
 				idx = v.which(slen, 1, invert=TRUE); 
-				vals  = list.getIDX(mapTO.upper, idx); # maybe a list 
-				mapTO = list.setIDX(mapTO.lower, idx, vals);
+				
+				map.was = list.getByIDX(mapTO.lower, idx);
+				map.is  = list.getByIDX(mapTO.upper, idx); # maybe a list    
+				mapTO = list.setByIDX(mapTO.lower, idx, vals);
 				# mapTO[[idx]] = mapTO.upper[[idx]]
+				# if idx is BOOLEAN, above would work, NOT!
+				# mapTO[[logic]] = mapTO.upper[[logic]];
 				for(i in 1:n)
 					{
 					xi = x[i];
@@ -253,15 +286,55 @@ base2base = function(basestring, from=13, to=17)
 					idx = set.match(xiv, mapFROM);
 					res[i] = paste0(mapTO[idx], collapse="");
 					}
+				if(left.trim) { res = .baseTrim(res, b_); }
+		
 				return(res);
 				}
 	}
 
 
-.bin2base = function(y, TO=16) 
+.bin2base = function(y, TO=16, left.trim=TRUE) 
 	{
+	# in general, we want to trim 
+	# should be simple enough if 2^n form 
+	num.init();  # verify CONSTANTS are available ...
+	# assume I have a vec x 
+	n = length(y);
+	res = character(n);
+
+	mapTO = BXXv[1:TO];
+	if(TO == 64) { mapTO = B64v; }
+	 
+	b = log(TO, 2);  # are we in a base-2 subset 
+	b_ = as.integer(b);
+	bn = NULL;
+	if(b != b_) { bn = 1 + b_; }
 	
-	}
+	if(is.null(bn))
+		{
+		# we are living in a base-2 world ... easy as PIE ... PROTO-INDO-EURO
+		mapFROM = unlist( bin(Bits64[1:TO], n=b_) );
+		
+		for(i in 1:n)
+			{
+			yi = y[i];
+				# this needs to be another b_ ... 
+				# log(FROM, 2)
+			yiv = bin(yi, n=b_);		
+			idx = set.match(yiv, mapFROM);
+			res[i] = paste0(mapTO[idx], collapse="");
+			}
+		if(left.trim) { res = .baseTrim(res, b_); }
+		
+		return(res);			
+		} else {
+				# THIS is NOT WORKING, carryover issues TODO
+				stop("non trivial with partial bits, TODO");
+				if(left.trim) { res = .baseTrim(res, b_); }
+		
+				}
+	
+	} 
 
 base.convert = function(..., from=5, to=16, decimal.numeric=TRUE)
 	{

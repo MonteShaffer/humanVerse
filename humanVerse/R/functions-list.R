@@ -342,9 +342,9 @@ list.setElements = function(info, n=1, vals=NULL)
 		}
 	info;
 	}
+   
 
-
-list.getIDX = function(info, idx, unused=NULL)
+list.getByIDX = function(info, idx, unused=NULL)
 	{
 	n.info = length(info); 
 	if(!is.list(info)) { return(info[idx]); }
@@ -358,7 +358,7 @@ list.getIDX = function(info, idx, unused=NULL)
 	res;  # vector only 
 	}
 	
-list.setIDX = function(info, idx, vals=NULL)
+list.setByIDX = function(info, idx, vals=NULL)
 	{
 	n.info = length(info); 
 	if(!is.list(info)) { return(info[idx]); }
@@ -373,6 +373,35 @@ list.setIDX = function(info, idx, vals=NULL)
 	info;
 	}
 
+
+# info = list(1, "alex", c(`0/3 [min]` = 0.1, `1/3 [lower-trecile]` = 0.4, `1/2 [median]` = 0.5, `2/3 [upper-trecile]` = 0.7, `3/3 [max]` = 1 ), 0, 1);
+
+list.flatten = function(info)
+	{
+	n = length(info);
+	res = vector("list", n);
+	for(i in 1:n)
+		{
+		xlist = info[[i]];
+		m = length(xlist);
+		xlen = list.getLengths(info);
+		
+		xres = list();  # technically I could do a product sum ... m*xlen
+		idx = 1;
+		for(j in 1:m)
+			{
+			rlist = xlist[[j]];
+			if(xlen[j] == 1) { xres[[idx]] = rlist; idx %++%.; next; }
+			for(k in 1:xlen[j])
+				{
+				xres[[idx]] = rlist[k]; 
+				idx %++%.;
+				}
+			}
+		res[[i]] = xres;
+		}	
+	list.return(res);
+	}
 
 # list.mapNtoOne(dict$search, variants, type);
 # a simple paired list 

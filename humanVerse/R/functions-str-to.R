@@ -278,19 +278,8 @@ str.uniqid = function(prefix = "", sep=".")
 	
 	
 
-myfive = function(..., na.rm=TRUE, show.warning=na.rm)
-	{
-	x = prep.dots(...);
-	xx = stats.warningNA(x, show.warning=show.warning);
-	x_ = stats.whichX(x, xx, na.rm);
-	res = stats::quantile(x_, prob=c(0/3, 1/3, 1/2, 2/3, 3/3), type=1);			
-	names(res) = c("0/3 [min]", "1/3 [lower-trecile]", 
-					"1/2 [median]", "2/3 [upper-trecile]", "3/3 [max]");
-	res;
-	}
-
-
-ggg.benchmark = function(mb.res, show="milliseconds", plot=TRUE, caching=TRUE)
+ 
+ggg.mb = function(mb.res, show="milliseconds", plot=TRUE, caching=TRUE)
 	{
 	# maybe write my own ... see Dirk's 
 	# Rput.OUT ?? 
@@ -350,12 +339,13 @@ cat("\n\n time.is ... ", time.is, "\n\n");
 	
 	A.name 		= mb.names[1];
 	A 			= subset(mb.res, expr==A.name)$time;
-	A.info 		= stats.summary(A / length(A));  # expensive with z-scores 
-	
+	#A.info 		= stats.summary(A / length(A));  # expensive with z-scores 
+	A.info		= myfive(A/length(A));
 
 	# We BENCHMARK to the first element examined ...
 	# maybe TODO ... allow BENCHMARK to the fastest ...
-	row = df.row(1,A.name,A.info$Ns[1],A.info$Ns[4], A.info$median, A.info$Ns[7], A.info$Ns[10], 0, 1, use.names=FALSE); 
+	# row = df.row(1,A.name,A.info$Ns[1],A.info$Ns[4], A.info$median, A.info$Ns[7], A.info$Ns[10], 0, 1, use.names=FALSE); 
+	row = df.row(1, A.name, A.info, 0, 1, use.names=FALSE); 
 	
 	out = rbind(out, row);
 
@@ -366,13 +356,17 @@ cat("\n\n time.is ... ", time.is, "\n\n");
 			{
 			B.name 		= mb.names[i];
 			B 			= subset(mb.res, expr==B.name)$time;
-			B.info 		= stats.summary(B / length(B) );  # expensive with z-scores 
+			# B.info 		= stats.summary(B / length(B) );  # expensive with z-scores 
+			B.info		= myfive(B/length(B));
 				
-			B.eff 		= round(100* (A.info$median-B.info$median)/A.info$median , 2);
+			B.eff 		= round(100* (A.info[3]-B.info[3])/A.info[3] , 2);
 			
-			B.factor 	= round(B.info$median/A.info$median , 5);
+			B.factor 	= round(B.info[3]/A.info[3] , 5);
 
-			row = df.row(i,B.name,B.info$Ns[1],B.info$Ns[4], B.info$median, B.info$Ns[7], B.info$Ns[10], B.eff, B.factor, use.names=FALSE);
+			# row = df.row(i,B.name,B.info$Ns[1],B.info$Ns[4], B.info$median, B.info$Ns[7], B.info$Ns[10], B.eff, B.factor, use.names=FALSE); 
+			
+			row = df.row(1, B.name, B.info, 0, 1, use.names=FALSE); 
+
 			
 			out = rbind(out, row);
 			}

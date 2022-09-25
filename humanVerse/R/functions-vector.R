@@ -730,54 +730,65 @@ v.return = function(res)
 	res;	
 	}
 
-
-v.which = function(vec, what="", invert=FALSE)
-	{ 
-	idx = NULL; 
+v.test = function(vec, what="", invert=FALSE)
+	{
+	# v.test returns BOOLEAN (TRUE/FALSE) of length(vec)
+	
+	logic = NULL; 
 	if(is.null(what))
 		{
 		# lists can trap NULLS, vectors can't 
-		return( v.invert(vec, NULL, invert=invert) );
+		# if vec is length of one, this tests is.null(vec)
+		logic = is.null(vec);
 		}
 		
-	if(is.null(idx) && (is.na(what) || what == "NA"))
+	if(is.null(logic) && (is.na(what) || what == "NA"))
 		{
-		idx = which(is.na(vec));
+		logic = is.na(vec);
 		}	
-	if(is.null(idx) && (is.infinite(what) || what == "Inf" || what == "-Inf"))
+	if(is.null(logic) && (is.infinite(what) || what == "Inf" || what == "-Inf"))
 		{
-		idx = which(is.infinite(vec));
+		logic = is.infinite(vec);
 		}
 	# type = v.type(what);
-	if(is.null(idx) && is.logical(what))
+	if(is.null(logic) && is.logical(what))
 		{
 		if(length(what) == 1)
 			{
 			if(is.logical(vec))
 				{
-				idx = which(vec == what);
-				} else { if(what) { idx = 1; } }  # vec is of length one ... TRUE
+				logic = (vec == what);
+				} else { if(what) { logic = TRUE; } }  # vec is of length one ... TRUE
 			} else {
 					if(length(what) == length(vec))
 						{
 						# if you have FALSE, !FALSE to get TRUE on what   
-						idx = which(what == TRUE);	
+						logic = (vec == what);
 						}
 					}
 		}
-	if(is.null(idx) && is.character(what))
+	if(is.null(logic) && is.character(what))
 		{
-		idx = which(vec == what);
+		logic = (vec == what);
 		}
 	## DEFAULT
-	if(is.null(idx))
+	if(is.null(logic))
 		{
-		idx = which(vec == what); 
+		logic = (vec == what); 
 		}
-		
-	idx = v.invert(vec,idx, invert=invert);
 	
-	v.return(idx);
+	if(invert) { logic = !logic; }
+	logic;	
+	}
+	
+
+v.which = function(vec, what="", invert=FALSE)
+	{
+	# v.which returns idxs of v.test ... 
+	idx = NULL; 
+	logic = v.test(vec, what, invert=invert);
+	idx = which(logic);	
+	v.return(idx);  
 	}
 
 v.invert = function(vec, idx, invert=TRUE)
@@ -798,22 +809,7 @@ v.remove = function(vec, what="", invert=FALSE)
 	 
 
 
-stats.test = function(X.stat, method="norm", ..., tail="both", alpha=0.05)
-	{
-	# for given X.stat and alpha ... compute X.crit and pvalue 
-	# based on a distribution with its needed parameters 
-	# tail = "both", "lower", "upper" ... what to do with alpha 
-	
-	ct.method = check.type(method);
-	if(!ct.method || !is.character(method)) 
-		{ method = deparse(substitute(method)); }
-	
-	# just call the generic function PDF/CDF/inverseCDF to solve the problem 
-	# here you would do the appropriate 1-p if necessary 
-	# should I add the multivariate chi-square to these ...
-	# I have a p and a q?
-	
-	}
+ 
 	 
 v.random = function(n=100, method="norm", ..., seed=NULL)
 	{

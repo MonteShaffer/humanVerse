@@ -140,6 +140,8 @@ allFALSE = function(x)
 	return( length(idx) == length(x) );
 	}
 
+# any/all ... NULL ? (on list) ... 
+#         ... Inf ... infinite 
 
 
 
