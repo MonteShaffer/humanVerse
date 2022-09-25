@@ -1,5 +1,28 @@
 
 
+
+
+ 
+.serialize = function(obj)
+	{
+	# may want to add "wrapper" features later 
+	serialize(obj, NULL);
+	}
+
+
+
+.unserialize = function(obj.raw)
+	{
+	# may want to add "wrapper" features later 
+	obj = unserialize(obj.raw);
+	obj;
+	}
+
+
+
+
+
+
 obj.whatis = function(obj)
 	{
 	ty.obj = typeof(obj);

@@ -344,6 +344,36 @@ list.setElements = function(info, n=1, vals=NULL)
 	}
 
 
+list.getIDX = function(info, idx, unused=NULL)
+	{
+	n.info = length(info); 
+	if(!is.list(info)) { return(info[idx]); }
+	if(n.info == 0) { return(NULL); }
+	
+	res = NULL;
+	for(i in idx)
+		{
+		res = c(res, info[[i]]);
+		}
+	res;  # vector only 
+	}
+	
+list.setIDX = function(info, idx, vals=NULL)
+	{
+	n.info = length(info); 
+	if(!is.list(info)) { return(info[idx]); }
+	if(n.info == 0) { return(NULL); }
+	if(is.null(vals)) { return(NULL); }  # message, bad INPUT ??? 
+
+	j = 1;
+	for(i in idx)
+		{
+		info[[i]] = vals[j];  j %++%. 
+		}
+	info;
+	}
+
+
 # list.mapNtoOne(dict$search, variants, type);
 # a simple paired list 
 list.mapInvert = function(info)

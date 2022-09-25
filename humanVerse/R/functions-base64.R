@@ -48,7 +48,7 @@
 # utf8_to_b64(str);
 # 'RmHDp2FkZQ=='
 
-js.b64 = function(input, method="encode")
+js.b64 = function(input, method="encode") 
 	{
 	output = "";
 	chr1 = chr2 = chr3 = "";
@@ -144,6 +144,20 @@ js.b64 = function(input, method="encode")
 
 
 
+# obj convert is another THING ...
+
+
+	
+base.toB64 = function(basestring, from=16)
+	{
+	
+	}
+	
+base.fromB64 = function(B64string, to=16)
+	{
+	
+	}
+	
 
 
 
@@ -228,13 +242,6 @@ base64.decode = function(b64.vec, method="JSON", ...)
 	}
 
 
-
-.serialize = function(obj)
-	{
-	serialize(obj, NULL);
-	}
-
-
 ## THIS IS UNIVARIATE
 base64.enc = function(obj, method="serialize")
 	{	
@@ -275,18 +282,6 @@ base64.dec = function(b64.str, method="serialize", ...)
 	obj;
 	}
 
-
-.serialize = function(obj)
-	{
-	obj.raw = serialize(obj, NULL);
-	obj.raw;
-	}
-
-.unserialize = function(obj.raw)
-	{
-	obj = unserialize(obj.raw);
-	obj;
-	}
 
 
 

@@ -40,9 +40,14 @@ nPr = function(n, r, replace=FALSE)
 "%npr%" = "%nPr%" = nPr;
 
 
+ 
 
-
-
+num.init = function()
+	{
+	if(is.undefined(SI_PREFIX)) { constants.default(); }
+	
+	
+	}
 
 
 # takes num/den 
@@ -299,8 +304,9 @@ num.toEngineering = function(x,
 	METHOD = prep.arg(method, n=1, case="upper");
 cat("\n SHOW_WHAT ", SHOW_WHAT, "\n");
 cat("\n METHOD ", METHOD, "\n");  # [E]ngineering or [S]cientific
-	
-	if(is.undefined(SI_PREFIX)) { constants.default(); }
+	# maybe put this in num.init()
+	num.init();
+	#if(is.undefined(SI_PREFIX)) { constants.default(); }
 	
 	# num.constants();
 # dput(SI_PREFIX); 
