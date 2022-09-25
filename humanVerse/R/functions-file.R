@@ -178,8 +178,8 @@ fopen = function(filename, mode="rb", use.include.path = FALSE, ... )
 	# maybe do smart filename if use.include.path 
 	if(!file.exists(filename)) { return(FALSE); }
 	fp = file( description=filename, open=mode, ...);
-	return(fp);
-	}
+	return(fp); 
+	} 
 	
 
 #' @rdname file.open

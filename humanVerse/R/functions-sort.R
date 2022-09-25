@@ -1,5 +1,9 @@
 
 
+# store the original idx and sort, store the new idx as well 
+# memoery.sort 
+m.sort = function() {}
+
 
 # v.sort(sample(1:6), "BUBBLE");
 

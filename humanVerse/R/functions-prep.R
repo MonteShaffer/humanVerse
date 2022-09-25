@@ -83,7 +83,7 @@ parse.syscall = function(syscall)
 		}
 
 #dput(map);
-
+ 
 	fkeys = NULL;
 	if(!is.null(map[["..."]])) { fkeys = map[["..."]]; }
 	# trimws collapses list, strsplit DOESN'T collapse list 
@@ -223,10 +223,21 @@ prep.strMethod = function(method="first", n=1, ... , default="base", keys=NULL, 
 	
 	prep.switch(METHOD, keys, vals, default);
 	}
+	
+	
+	
 
+prep.primeMethod = function(method="first", n=1, ... , default="base", keys=NULL, vals=NULL)
+	{
+	method = check.string(method);		
+	METHOD = prep.arg(method, n=n, ...);
 
+	if(is.null(keys)) { keys = c("f","c","p","b", "s", "h"); }
+	if(is.null(vals)) {	vals = c("first", "cpp", "pracma", "bit", "sfsmisc", "hack"); }
 
-
+	
+	prep.switch(METHOD, keys, vals, default);
+	}
 
 
 # if NEW exists, it overrides the DEFAULT (cascade)
@@ -243,6 +254,9 @@ map.args = function(DEFAULT, NEW)
 		}
 	DEFAULT;  # updated 
 	}
+
+
+
 
 
 
@@ -309,14 +323,26 @@ prep.arg = function(key, n=1, keep="", case = "lower", extra = "")
 	} 
 
 
-arg.prep = prep.arg; 
 
-#' @rdname functions.cleanupKey
-#' @export
-functions.cleanupKey = prep.arg;
-functions.cleanKey = prep.arg;
 
-#' @rdname functions.cleanUpKey
-#' @export
-functions.cleanUpKey = prep.arg;
 
+
+prep.evalKey = function(key)
+	{
+	key = str.replace('"', "", key);
+	key;	
+	}
+	
+	
+
+prep.evalValue = function(value)
+	{
+	nv = length(value);
+	if(is.character(value) && nv==1) 
+		{ 
+		value = paste0('"',value,'"'); 
+		} else { 
+				value = deparse(value);
+				}
+	value;
+	}

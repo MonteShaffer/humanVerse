@@ -1,4 +1,36 @@
 
+check.ifConformable = function(x, y) {} # matrix?
+
+check.square = function(x)
+	{
+	( nrow(x) == ncol(x) );
+	}
+	
+check.rank = function(x)
+	{
+	# get dim 
+	# get rank 
+	# check "full rank"
+	
+	}
+
+
+check.list = function(input)
+	{
+	# we may have only a vector, not a list 
+	if(is.list(input)) { return(input); }
+		res = list(); 
+		res[[1]] = input;
+	res;
+	}
+	
+check.base = function(base = 10)
+	{
+	base = as.integer(base);
+	if(base == 64) { return(base); }  # base64 will work as string/int
+	if(base > 36 || base < 2) { stop("'base' must be between 2 and 36."); }
+	base; 
+	}
 
 
 
@@ -78,8 +110,6 @@ debug = FALSE;
 	idx;
 	}
 
-function.exists = check.fn;
-fn.exists = check.fn;
 
 check.obj = function(..., character.only = FALSE)
 	{
@@ -102,8 +132,6 @@ debug = FALSE;
 	idx;
 	}
 	
-	
-obj.exists = check.obj;
 
 
 ## REWRITE 
@@ -134,6 +162,57 @@ check.string = function(thing)
 		{ thing = deparse(substitute(thing)); }
 	thing;
 	}
+
+
+
+
+
+check.isCompatibleLength = function() {}
+check.isCompatibleLength = function(x, y, 
+									method="equal",  # "1-1-equal"
+									action="warning", 
+									msg = " obj1 [x] and obj2 [y] are incompatible lengths, you may get spurious results."
+								)
+	{
+	METHOD = prep.arg(method, 3, keep="-");
+	acti = prep.arg(action, 4);
+	xlen = length(x);
+	ylen = length(y);
+	b = (ylen == xlen);  
+		if(METHOD == "equ") { return(b); }
+		
+	xone = (xlen == 1);
+	yone = (ylen == 1);	
+		if( (METHOD == "11e" || METHOD == "1,1") && (xone || yone) )
+			{
+			return(TRUE);
+			}
+			
+	if(acti == "warn") { warning(msg); }
+	if(acti == "stop") { stop(msg); }
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

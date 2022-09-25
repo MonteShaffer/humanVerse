@@ -68,6 +68,9 @@ color.import = function(listname="wsu",
  
 ## vapply(vecHEX, mean)
 
+
+
+## color.addLIST ... 
 color.init = function()
 	{
 	

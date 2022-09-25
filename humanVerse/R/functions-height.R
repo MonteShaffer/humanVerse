@@ -55,6 +55,10 @@ convert.height = function(..., from="ft-in", to="cm", ft.string = TRUE, ft.digit
 	}
 
 
+
+
+	
+	
 height.ft2m  = function(...) { convert.height(..., from="ft-in", to="m"); }
 height.ft2cm = function(...) { convert.height(..., from="ft-in", to="cm"); }
 height.ft2mm = function(...) { convert.height(..., from="ft-in", to="mm"); }

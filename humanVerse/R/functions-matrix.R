@@ -1,8 +1,8 @@
 
 
 
-check.ifConformable = function(x, y) {} # matrix?
-						
+# would be nice if I could wrap EIGEN around several functions ... 
+# show convergence using matrixPower(dissertation) ... demo 						
 
 
 

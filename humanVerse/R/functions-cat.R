@@ -68,50 +68,6 @@ cat.init = function()
 	}
 
 
-msg.badLength = function() {} # this will stop 
-msg.unequalLength = function() {} # this will warn ...
-
-
-msg.badOption = function(KEY="method", 
-								OPTION="Original-Entry", 
-								SHORTCODE="ori-ent")
-		{
-		prep.msg("\n\n\t",
-					"It appears that you entered an INCORRECT",
-					"<v>[</v>", KEY, "<v>]</v>", 
-					"\n\n\t",
-					"You entered: ", "<v>[</v>", OPTION, "<v>]</v>",
-					"\n\n\t\t",
-					"which was 'short-coded' to: ", "<v>[</v>", SHORTCODE, "<v>].</v>",
-					"\n\n",
-					"Please try again.",
-					"\n\n",					
-					"Above is a list of options with allowed 'shortcodes'.",
-					"\n\n",
-					"Which can be retrieved as a dataframe using ",
-					"<v>* ANS *</v> ", 
-					"\n\n"
-					);		
-		}
-	
-	
-
-msg.missingParam = function(PARAM="f", DEFAULT=1)
-		{
-		prep.msg("\n\n\t",
-					"It appears that you are missing a PARAMETER",
-					"<v>[</v>", PARAM, "<v>]</v>", 
-					"\n\n\t",
-					"Assigning to DEFAULT value ", "<v>[</v>", DEFAULT, "<v>]</v>",
-					"\n\n\t\t",
-					"The result may not be what you intended.  You may want to try again.",
-					"\n\n"
-					);		
-		}
-
-
-
-
 
 
 

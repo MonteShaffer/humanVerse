@@ -1,7 +1,5 @@
 
-is.dataframe = is.data.frame;
 
-is.Inf = is.infinite;
 
 
 
@@ -88,7 +86,6 @@ is.POSIXct = function(x)	{ inherits(x, "POSIXct"); }
 
 is.Date = function(x)		{ inherits(x, "Date"); }
 
-is.boolean = is.bool = is.logical;
 # is.name EQUIVALENT to is.symbol
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -113,18 +110,6 @@ is.substring = function(needle, haystack)
 
 
 
-
-#' @rdname is.dir
-#' @export
-is.dir = function() {}
-is.dir = dir.exists;
-
-#' @rdname is.file
-#' @export
-is.file = function() {}
-is.file = file.exists;
-
-
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
 #' is.windows
@@ -138,8 +123,6 @@ is.file = file.exists;
 is.windows = function()
 	{
 	str.contains("win", tolower(.Platform[["OS.type"]]) );
-	# .isWindows() ... from library(digest)
-	# ??? ... from library(???)
 	}
 
 
@@ -214,27 +197,11 @@ is.library = function(..., suggestion=TRUE, character.only = FALSE)
 
 
 
-#' @rdname str_contains
-#' @export
-str_contains = is.substring;
-
-#' @rdname str.contains
-#' @export
-str.contains = is.substring;
 
 
 
 
 
-### THESE FUNCTIONS SEEM TO BE "mono-nuclear"
-#' @rdname is.true
-#' @export
-is.true = isTRUE;
-
-
-#' @rdname is.false
-#' @export
-is.false = isFALSE;
 
 
 
@@ -445,7 +412,7 @@ is.wholeNumber = function(..., tol = sqrt(.Machine$double.eps), part="Re")
 #'
 is.even = function(..., part="Re")
 	{
-	x = prep.dots(...);
+	x = prep.dots(..., default = c(-1*1:5,-sin(pi), 0,0,0, sin(pi), 1:5, NA, NA));
 	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
 	x = as.integer(x);  # this rounds numerics down ... complex internal is NOT integer
 	( (x %% 2) == 0 );  
@@ -470,7 +437,7 @@ is.even = function(..., part="Re")
 #'
 is.odd = function(..., part="Re")
 	{
-	x = prep.dots(...);
+	x = prep.dots(..., default = c(-1*1:5,-sin(pi), 0,0,0, sin(pi), 1:5, NA, NA));
 	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
 	x = as.integer(x);  # this rounds numerics down ... complex internal is NOT integer
 	( (x %% 2) == 1 );  
@@ -496,7 +463,7 @@ is.odd = function(..., part="Re")
 is.positive = function() {}
 is.positive = function(..., tol = sqrt(.Machine$double.eps), part="Re")
   {
-  x = prep.dots(...);
+  x = prep.dots(..., default = c(-1*1:5,-sin(pi), 0,0,0, sin(pi), 1:5, NA, NA));
 x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
   x > tol;
   }
@@ -521,7 +488,7 @@ x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
 is.negative = function() {}
 is.negative = function(..., tol = sqrt(.Machine$double.eps), part="Re")
 	{
-	x = prep.dots(...); 
+	x = prep.dots(..., default = c(-1*1:5,-sin(pi), 0,0,0, sin(pi), 1:5, NA, NA)); 
 	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
 	x < ( -1 * tol );
 	}
@@ -547,7 +514,7 @@ is.negative = function(..., tol = sqrt(.Machine$double.eps), part="Re")
 is.zero = function(x) {}
 is.zero = function(..., tol = sqrt(.Machine$double.eps), part="Re")
 	{
-	x = prep.dots(...);
+	x = prep.dots(..., default = c(-1*1:5,-sin(pi), 0,0,0, sin(pi), 1:5, NA, NA));
 	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
 	
 	x.pos = x < tol;
@@ -572,7 +539,7 @@ is.equal = function(x, y, tol = sqrt(.Machine$double.eps), part="Re")
 
 #' @rdname %`~=`%
 #' @export
-"%~=%" = "%eq%" = is.equal;
+
 
 # x `~>=` y 
 is.ge = function() {}
@@ -585,7 +552,7 @@ is.ge = function(x, y, tol = sqrt(.Machine$double.eps), part="Re")
 	is.positive(d, tol=tol, part=part);
 	}
 
-"%~>%" = "%ge%" = is.ge;
+
 
 # x `~<=` y 
 is.le = function(x) {}
@@ -597,8 +564,6 @@ is.le = function(x, y, tol = sqrt(.Machine$double.eps), part="Re")
 	d = x - y; 
 	is.negative(d, tol=tol, part=part);
 	}
-	
-"%~<%" = "%le%" = is.le;
 
 
 
@@ -655,7 +620,7 @@ math.sign = function(...,
 	res;
 	}
 	
-	
+is.wholeNumber = function() {}
 is.wholeNumber = function(..., tol = sqrt(.Machine$double.eps), part="Re")
   {
   # See ?is.integer

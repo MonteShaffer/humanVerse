@@ -1,24 +1,5 @@
 
 
-prep.evalKey = function(key)
-	{
-	key = str.replace('"', "", key);
-	key;	
-	}
-	
-	
-
-prep.evalValue = function(value)
-	{
-	nv = length(value);
-	if(is.character(value) && nv==1) 
-		{ 
-		value = paste0('"',value,'"'); 
-		} else { 
-				value = deparse(value);
-				}
-	value;
-	}
 
 eval.fromTemplate = function(TEMPLATE, key, value)
 	{

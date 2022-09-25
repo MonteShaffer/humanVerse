@@ -116,4 +116,8 @@ strint = function(num = 5*10^222)
 	r;
 	}
 
- 
+## online mathematica has "... more digits ... " option ...
+## would be useful ... and have a map to the ois collection / lookup 
+## download / parse / store a database 
+## do it monthly ?
+## 

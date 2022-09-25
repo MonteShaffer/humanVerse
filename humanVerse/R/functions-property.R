@@ -94,7 +94,7 @@ system.getALL = function()
 	return(res);
 	}
 	
-system.run = function() {} # maybe a wrapper for system() and system()
+system.run = function() {} # maybe a wrapper for system() and system2()
 
 system.saveState = function(key="DEFAULT")
 	{
@@ -191,10 +191,6 @@ property.set = function(key, obj, value=NULL,
 	}
 	
  
-
-#' @rdname setAttribute
-#' @export
-setAttribute = property.set;
 
 
 

@@ -132,39 +132,7 @@ gon2deg = function(...) { angle.convert(...,  from="G", to="D"); }
 gon2rad = function(...) { angle.convert(...,  from="G", to="R"); }  
 
 
-	
-"%deg%" = function(deg, to="R") 
-	{ 
-	# default is to="R"
-	# traps the single dot (.) as option 
-	if(!check.type(to)) { to="R"; } 
-	if(is.na(to) || is.null(to)) { to = "R"; }
-	angle.convert(deg, from="D", to=to); 
-	}
 
-"%rad%" = function(rad, to="D") 
-	{ 
-	# default is to="D"
-	# traps the single dot (.) as option 
-	if(!check.type(to)) { to="D"; } 
-	if(is.na(to) || is.null(to)) { to = "D"; }
-	angle.convert(rad, from="R", to=to); 
-	}	
-	
-
-"%gon%" = function(gon, to="D") 
-	{ 
-	# default is to="D"
-	# traps the single dot (.) as option 
-	if(!check.type(to)) { to="D"; } 
-	if(is.na(to) || is.null(to)) { to = "D"; }
-	angle.convert(gon, from="G", to=to); 
-	}
-
-
-# 30  %deg%. 
-# pi  %rad%.  # dot means default... or you could put pi %rad% "G"
-# 100 %gon%. 
 
 
 

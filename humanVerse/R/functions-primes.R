@@ -190,8 +190,9 @@ primes.pracma = function(n, first=TRUE)
 #' x = primes.inRange(2015, 2525); length(x);	
 primes.inRange = function(xmin, xmax, ...)
 	{
+	# ideal method for inRange would be primes.bit (load large set)
 	# primes.default function would be nice, still would have to compare
-	if( !exists("method", inherits = FALSE ) ) { method	= "base"; }
+	if( !exists("method", inherits = FALSE ) ) { method	= "first"; }
 	p = primes.get(xmax, first=FALSE, method=method);
 	
 	p = p[(p >= xmin)];
@@ -229,8 +230,9 @@ primes.inRange = function(xmin, xmax, ...)
 #' # NOT RUN # x = primes.get(100, method="base"); 
 #' # NOT RUN # y = primes.get(100, method="pracma");	stopifnot(identical(x,y));
 #' # NOT RUN # z = primes.get(100, method="sfsmisc");	stopifnot(identical(x,z));
-primes.get = function(n, first=TRUE, optimus=FALSE, method="base")
+primes.get = function(n, first=TRUE, optimus=FALSE, method="first")
 	{
+	# update method to ="first" 
 	if(!is.integer(n)) { n = as.integer(n); }
 	n = n[1]; # just the first element, if a vector 
 	if(n < 1) { return(NULL); }
@@ -239,53 +241,55 @@ primes.get = function(n, first=TRUE, optimus=FALSE, method="base")
 	if(optimus  && n == 1) { return( 1 ); }
 	if(!optimus && n == 1) { return( NULL ); }
 	p = primes.pracma(10);
-	
+	###############  MANUAL HACK on FIRST FEW ELEMENTS ###############
 	if(!first && optimus  && n <= 9) { return( c(1, p[p<=(n-1)]) ); }
 	if(!first && !optimus && n <= 9) { return(      p[p<=n]  ); }
 	
 	if(first && optimus  && n <= 9) { return( c(1, p[1:(n-1)]) ); }
 	if(first && !optimus && n <= 9) { return(      p[1:n] ); }
 		
-	METHOD = prep.arg(method, 2);
 		
-	if(METHOD == "cp" && exists("cpp_primes"))
+	METHOD = prep.primeMethod(method, n=1);
+
+	FNS = list(
+			"cpp" 		= function() { cpp_primes(n, first); } ,
+			"bit" 		= function() { primes.bit(n, first=first, optimus=optimus); },
+			"hack" 		= function() { primes.pracma(n, first); },
+			"pracma" 	= function() { pracma::primes(gn); } ,
+			"sfsmisc" 	= function() { sfsmisc::primes(gn); }			
+			);
+			
+			
+	if(METHOD != "first")
 		{
-		res = cpp_primes(n, first);	
+		# AS-IS, no checks 
+		res = FNS[[METHOD]]();
 		res = optimus.logic(res, n, first, optimus);
-		return(res);
+		return(res);		
+		}
+
+	# CASCADING, first-one to meet criteria 
+	hasResult = FALSE;
+	if(!hasResult && exists("cpp_primes"))
+		{
+		# must not have exported it ... 
+		hasResult = TRUE;
+		res = FNS[["cpp"]]();
 		}
 		
-	if(METHOD == "pr" && is.library_("pracma"))
+	if(!hasResult && is.library_("bit"))
 		{
-		gn = n;
-		# upper bound 
-		if(first) { gn = ceiling( n * log(n) + n * log(log(n)) ); }		
-		res = pracma::primes(gn);
-		res = optimus.logic(res, n, first, optimus);
-		return(res);
+		hasResult = TRUE;
+		res = FNS[["bit"]]();		
 		}
-	
-	if(METHOD == "bi" && is.library_("bit"))
+	# the others are slower, they can be benchmarked ... 	
+	if(!hasResult)
 		{
-		res = primes.bit(n, first=first, optimus=optimus);
-		res = optimus.logic(res, n, first, optimus);
-		return(res);
+		hasResult = TRUE;
+		res = FNS[["hack"]]();		
 		}
-	
-	if(METHOD == "sf" && is.library_("sfsmisc"))
-		{
-		gn = n;
-		# upper bound 
-		if(first) { gn = ceiling( n * log(n) + n * log(log(n)) ); }		
-		res = sfsmisc::primes(gn);
-		res = optimus.logic(res, n, first, optimus);
-		return(res);
-		}
-	
-	
-	res = primes.pracma(n, first=first);
 	res = optimus.logic(res, n, first, optimus);
-	return(res);
+	return(res);		
 	}
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#

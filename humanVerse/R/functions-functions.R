@@ -76,7 +76,6 @@ print(fparams);
 	}
 
 
-function.stepInto = fn.stepInto;
 
 
 
@@ -126,7 +125,7 @@ function.stepInto = fn.stepInto;
  
   
 
-function.arguments = function(return="dots", truncate=NULL)
+fn.args = function(return="dots", truncate=NULL)
 	{ 
 	pf = parent.frame(1);
 	fn = as.character(sys.call(1L)[[1L]]);
@@ -166,11 +165,10 @@ function.arguments = function(return="dots", truncate=NULL)
 	}
 	
 	
-f.arguments = f.args = function.arguments;	
 
 
  
-function.methods = function(..., character.only=FALSE)
+fn.methods = function(..., character.only=FALSE)
 	{
 	fns = prep.dots(..., collapse=character.only, has.objects=!character.only, default="trimws");
 	if(!character.only) { fns = as.character(fns); }
@@ -196,7 +194,7 @@ debug = FALSE;
 	fn.obj;  
 	}
 
-f.methods = function.methods;
+
 
 
 
@@ -204,7 +202,7 @@ f.methods = function.methods;
 
 # uses match.fun ... can't separate "by base"
 # function.findOnStack ... vs function.findInHelp
-function.find = function(..., character.only=FALSE)
+fn.find = function(..., character.only=FALSE)
 	{
 	# if from top level, ... works as expected
 	# if calling from another function, specify character.only=TRUE 
@@ -235,11 +233,11 @@ as_fun = function(x) {
 	fn.obj;
 	}
 
-f.find = function.find;
 
 
-function.sourceInfo = function() {}
-function.sourceInfo = function(src.obj, to.rm=c("parseData"))
+
+fn.sourceInfo = function() {}
+fn.sourceInfo = function(src.obj, to.rm=c("parseData"))
 	{  
 	keys = names(src.obj);
 	res = NULL;
@@ -299,7 +297,7 @@ fn.replaceParameters = function(fn, plist=list())
 # function.info("+")
 # THIS IS UNIVARIATE 
 # https://realpython.com/python-refactoring/
-function.info = function(..., character.only=FALSE)
+fn.info = function(..., character.only=FALSE)
 	{
 	if(character.only) 
 		{ 
@@ -436,7 +434,7 @@ xample = function () {}
 
 # pkg = "stats"
 # this is univariate, allows the pkg.str or pkg.obj 
-functions.inPackage = function(..., character.only=FALSE, auto.attach=TRUE)
+fn.inPackage = function(..., character.only=FALSE, auto.attach=TRUE)
 	{
 	if(character.only) 
 		{ 
@@ -486,7 +484,6 @@ debug = FALSE;
 
 
 
-
 #' castStringAsFunction
 #'
 #' @param fstr The RHS (right hand side) of a function in string form.
@@ -503,8 +500,8 @@ debug = FALSE;
 #' myFunction;
 #' myFunction(x);
 #'
-function.fromString = function() {}
-function.fromString = function(fstr, ..., envir = parent.frame() )
+fn.fromString = function() {}
+fn.fromString = function(fstr, ..., envir = parent.frame() )
 	{
 	# https://stackoverflow.com/questions/66266860/
 	dots			= match.call(expand.dots = FALSE)$... ;
@@ -518,8 +515,6 @@ function.fromString = function(fstr, ..., envir = parent.frame() )
 	f;
 	}
 
-
-castStringAsFunction = function.fromString;
 
 
 

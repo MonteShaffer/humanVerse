@@ -4,14 +4,7 @@
 
 
 
-check.list = function(input)
-	{
-	# we may have only a vector, not a list 
-	if(is.list(input)) { return(input); }
-		res = list(); 
-		res[[1]] = input;
-	res;
-	}
+
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -131,7 +124,7 @@ list.collapse = function(res)
 	# if I have attributes, they get lost on unlist ... but names get dubplicated ... 
 	if(is.list(res))
 		{
-		getInfo = function(re)
+		getInfo = function(re, tol = sqrt(.Machine$double.eps))
 			{
 			prop.re = property.getALL(re); # may have key/pairs			
 			prop.names = names(prop.re);

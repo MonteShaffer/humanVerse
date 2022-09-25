@@ -15,33 +15,6 @@ gcd.lcm = function(x,y)
 
 
 
-# 4 nCr 2 ... choose vs lchoose ?
-# ?utils::combn  ?choose 
-# library(combinat); library(gtools);
-# choose(4, 2) ... with replacement 
-# make %nCr% and %nPr% functions ... 
-# https://davetang.org/muse/2013/09/09/combinations-and-permutations-in-r/
-# https://www.calculatorsoup.com/calculators/discretemathematics/permutationsreplacement.php
-nCr = function(n, r, replace=FALSE) 
-	{ 
-	# same function (FALSE, with n+r-1)
-	if(replace) { return( nCr( (n+r-1), r, replace=FALSE ) ); } 
-	factorial(n) / ( factorial(r) * factorial(n-r) ); 
-	}
-"%ncr%" = "%nCr%" = nCr;
-
-"%!%" = function(n, r=NULL) { factorial(n); }
-
-nPr = function(n, r, replace=FALSE) 
-	{ 
-	if(replace) { return( n^r ); }
-	factorial(n) / factorial(n-r); 
-	}
-"%npr%" = "%nPr%" = nPr;
-
-
- 
-
 num.init = function()
 	{
 	if(is.undefined(SI_PREFIX)) { constants.default(); }
@@ -50,28 +23,7 @@ num.init = function()
 	}
 
 
-# takes num/den 
-num.den = function(num, den, expand=TRUE) 
-			{ 
-			if(!expand) { return (num/den); }
-			nn = length(num);
-			nd = length(den);			
-			# normal recycling
-			if(nn == 1 || nd == 1) { return (num/den); }
-			
-			# 0:10 %frac% 1:100
-			# this is expand == TRUE
-			# I want 0...10 / 1:100 ... all of them ...
-			# 0:10/1 THEN 0:10/2 THEN 0:10/3 ...
-			res = NULL;
-			for(i in 1:nd)					# could have done nn 
-				{
-				res = c(res, num / den[i]); # could have done num[i]
-				}
-			res;
-			}
 
-"%frac%" = num.den;
  
  
 # units: "m"eters, "g"ram, "s"econd, "a"mpere, "k"elvin, "mol"e, "c"an"d"ela
@@ -150,10 +102,8 @@ num.toScientific = function(..., force.scale=0 )
 	num.toEngineering(..., force.scale=force.scale, show.what="exp", method="Scientific");
 	}
 
-num.toSci = num.toScientific;
-num.toSCI = num.toScientific;
 
-"%SCI%" = function(x, r=NULL) { num.toScientific(x); }
+
 
 
 
@@ -176,8 +126,7 @@ options(op);
 	num.toFixed(x, total.width = maxlen, part=part);	
 	}
 	
-num.toNat = num.toNatural;
-num.toNAT = num.toNatural;
+
 
 
 # maybe if part=NULL, we check if is.complex and call twice
@@ -235,10 +184,6 @@ options(op);
 	paste0(numb, ".", frac);
 	} 
 
-num.toFix = num.toFixed;
-num.toFIX = num.toFixed;
-
-"%FIX%" = function(x, r=NULL) { num.toFixed(x); }
 
 
 
@@ -450,9 +395,6 @@ options(op);
 
  
 
-num.toEng = num.toEngineering;
-num.toENG = num.toEngineering;
-"%ENG%" = function(x, r=NULL) { num.toEngineering(x); }
 
 
 
@@ -652,7 +594,6 @@ num.toCFrac = function(...,
 	}
 
 	
-num.toContinuousFraction = num.toCFrac;
 
  
 

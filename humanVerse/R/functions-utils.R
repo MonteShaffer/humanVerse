@@ -2,50 +2,7 @@
 
 
 
-# dataframe(x, y) : could not find function "dataframe"
  
-dataframe = data.frame;
-
-as.dataframe = as.data.frame;
-
-#' @rdname ceil
-#' @export
-ceil = ceiling;
-
-# natural log as log ... log10 is other, AS-IS so no collision ... 
-ln = log; 
-
-e = E = exp(1);
-PI = 3.1415926535897932384626
-# works 
-# π = 3.1415926535897932384626
-
-PHI = (1+sqrt(5))/2;
-
-# define("FOO",     "something");
-# WRAP these in INIT so BUILD doesn't require global export of VARIABLE 
- 
-
-
-# from javascript CONSTANTS 
-#  y = [Math.PI, Math.E, Math.LN10, Math.LN2, Math.LOG10E, Math.LOG2E, Math.SQRT2, Math.SQRT1_2]
-
-# [3.141592653589793, 2.718281828459045, 2.302585092994046, 0.6931471805599453, 0.4342944819032518, 1.4426950408889634, 1.4142135623730951, 0.7071067811865476]
-
-
-
-
-axes = axis;
-
-#' @rdname nchars
-#' @export
-nchars = nchar;
-
-.ord = utf8ToInt;  # mb_ord ?
-.chr = intToUtf8;
-
-
-
 
 ### 
 ###	res = str.trimFromAny(res, "()");  # so .%$$%(obj) WORKS (remove)
@@ -78,30 +35,6 @@ access = function(str)
 	}
 	 
 	
-# leading . will work
-"%$$%" = function(r="HI", ...) 
-			{ 
-			str = str.fromObjectName(...);
-			access(str);			
-			}
-			
-#### THIS is *SPECIAL FUNCTION* ... (PARANTHESES) is optional			
-# .%$$% "dcf$Depends@dependencies" ;
-# .%$$% dcf$Depends@dependencies ;			
-# .%$$%("dcf$Depends@dependencies");
-# .%$$%(dcf$Depends@dependencies);				
-			
-			
-`$$`   = function(...) 
-			{ 
-			str = str.fromObjectName(...);
-			access(str);			
-			}
-
-### THIS IS FUNCTION, MUST HAVE (PARANTHESES)
-# `$$`("dcf$Depends@dependencies");
-# `$$`(dcf$Depends@dependencies);
-
 
 
 allNA = function(x)
@@ -205,7 +138,6 @@ define = function(KEY, VALUE) {}
 	gggassign(key,VALUE);	
 	}
 	
-"%GLOBAL%" = .GLOBAL.;
 
 
 
@@ -234,7 +166,6 @@ print(parent.env(parent.env(environment())));
 	assign(key, val, envir=WHERE );
 	}
 	
-"%TO%" = .TO.;	
 	
 	
 # x = 44;
@@ -300,7 +231,6 @@ print(parent.env(parent.env(environment())));
 	assign("THIS", res, envir=WHERE );
 	}
 	
-"%THIS%" = .THIS.; 
 
 
 
@@ -340,13 +270,12 @@ print(parent.env(parent.env(environment())));
 	math.cleanup(out);
 	}
 	
-"%+%" = .ADD.;
 	
 	
 .PLUSPLUS. = function() {}
 # x = function() { print(environment()); print(parent.env(environment())); print(parent.frame(1)); print(parent.frame(2)); i = 0; a = 0; b = 0; for(j in 1:3) { a = i%++%.; cat("\n ja -->", j, "\t a:",a, "\t b:",b, "\t i:",i); b = .%++%i; cat("\n jb -->", j, "\t a:",a, "\t b:",b, "\t i:",i); }; cat("\n"); }
 
-.PLUSPLUS. = function(KEY, VALUE, WHERE=parent.frame(1))
+.PLUS_PLUS. = function(KEY, VALUE, WHERE=parent.frame(1))
 	{
 # cat("\n");
 # print(environment()); 
@@ -395,14 +324,13 @@ print(parent.env(parent.env(environment())));
 	stop("how did you get here");
 	}
 
-"%++%" = .PLUSPLUS.;	
-	
+
 	
 	
 
 
 
-.MINUSMINUS. = function(KEY, VALUE, WHERE=parent.frame(1))
+.MINUS_MINUS. = function(KEY, VALUE, WHERE=parent.frame(1))
 	{
 	ct.KEY = check.type(KEY);
 	ct.VAL = check.type(VALUE);
@@ -436,7 +364,6 @@ print(parent.env(parent.env(environment())));
 	stop("how did you get here");
 	}
 
-"%--%" = .MINUSMINUS.;	
 	
 	
 
@@ -511,7 +438,6 @@ IN = function(KEY, VALUE, mem.key = "-CURRENT_IN-")
 	(match(ele, set, 0L) > 0L);
 	}
    
-"%IN%" = IN;
  
 
 
@@ -677,7 +603,7 @@ charCode = function(s)
 
 # a = base64.fromHEX(hexstr);
 # b = base64.toHEX(a);
-
+### LOOKUP WORKS ... 
 base64.fromHEX = function(hexstr)
 	{
 	h = bin(toupper(hexstr), n=3);	
@@ -835,27 +761,6 @@ as.type = function(vals, types="character", ...)
 	}
 
 
-#' @rdname as.Type
-#' @export
-as.Type = as.type;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#' @rdname readChars
-#' @export
-readChars = readChar;
-
 # This is obviously tedious, violates DRY, and introduces bloat.
 # @rdname vs @alias
 # https://stackoverflow.com/questions/57770755/
@@ -887,9 +792,7 @@ strip.tags = function(...)
 	}
 	
 	
-striptags = strip.tags;
-str.striptags = strip.tags;
-strip_tags = strip.tags;
+
 
 
 

@@ -6,6 +6,7 @@ trig.setMode = function(mode="radians")
 	memory.set("-RADIANS_MODE-", "SYSTEM", mode);	
 	}
 	
+	
 trig.toMode = function(x, mode="radians", direction="from")
 	{
 	mo = prep.arg(mode, n=2);	

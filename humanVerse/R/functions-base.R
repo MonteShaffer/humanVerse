@@ -1,13 +1,14 @@
 
 
-		
-check.base = function(base = 10)
+base.init = function()
 	{
-	base = as.integer(base);
-	if(base == 64) { return(base); }  # base64 will work as string/int
-	if(base > 36 || base < 2) { stop("'base' must be between 2 and 36."); }
-	base; 
+	if(is.undefined(BXXv)) { constants.default(); }
+	# can we get this check to happen here, so we don't have to constantly check?
+	
+	
 	}
+		
+
 	
 cleanup.base = function(xstr)
 	{
@@ -22,11 +23,15 @@ cleanup.base = function(xstr)
 .base2int = function(xstri, base=16)
 	{
 	# univariate, no checks 
-	base.chars = c(as.character(0:9), LETTERS[1:22]);
+	base.init();
+	MAP = BXXv[1:base];	
+	# update to allow base64 
+	# update to allow base64 
+	if(base == 64) { MAP = B64v; }
 	
-	xstri = toupper(xstri);
+	# xstri = toupper(xstri);
 	xv = str.explode("",xstri);
-	idx = set.match(xv, base.chars) - 1;
+	idx = set.match(xv, MAP) - 1;
 	n = length(xv);
 	p = base^((n-1):0);
 	
@@ -74,13 +79,16 @@ base.from = base2int;
 .int2base = function(num, base=16)
 	{
 	if(length(num) != 1) { stop("This is univariate, num should be one number"); }
-	# univariate, no checks 
-	base.chars = c(as.character(0:9), LETTERS[1:22]);	
+	base.init();
+	MAP = BXXv[1:base];
+	# update to allow base64 
+	if(base == 64) { MAP = B64v; }
+	
 	r = ""; if(num == 0) { return("0"); }
 	while(num > 0) 
 		{
 		m = num %% base;
-		r = paste0(base.chars[m + 1], r);
+		r = paste0(MAP[m + 1], r);
 		num =  as.integer(num/base);
 		}
 	r;

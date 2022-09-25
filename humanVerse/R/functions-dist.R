@@ -93,9 +93,8 @@ v.dist = function(vec1, vec2, method="Euclidean", ..., na.rm=TRUE, show.warning=
 	KEY = prep.distance(METHOD);
 	if(KEY == "--NULL--")
 		{
-		df = property.get("IN", KEY);
-		msg = msg.badOption("method", method, METHOD);	
-		cat("\n\n"); minvisible( df, display=TRUE ); cat("\n\n"); 
+		msg = msg.badOption("method", method, METHOD);		
+		cat("\n\n"); minvisible( IN.df(), display=TRUE ); cat("\n\n"); 
 		IN.clear();	
 		cat.stop(msg);
 		}
@@ -124,9 +123,8 @@ matrix.dist = function(m, method="euclidean", ...)
 	KEY = prep.distance(METHOD);
 	if(KEY == "--NULL--")
 		{
-		df = property.get("IN", KEY);
 		msg = msg.badOption("method", method, METHOD);	
-		cat("\n\n"); minvisible( df, display=TRUE ); cat("\n\n"); 
+		cat("\n\n"); minvisible( IN.df(), display=TRUE ); cat("\n\n"); 
 		IN.clear();	
 		cat.stop(msg);
 		}

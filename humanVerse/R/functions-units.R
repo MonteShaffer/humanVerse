@@ -301,7 +301,7 @@ dput(out);
 			{ 
 			msg = msg.badOption("to", to, TO);			
 			cat("\n\n"); minvisible( IN.df(), display=TRUE ); cat("\n\n"); 
-			IN.clear();	
+			IN.clear();	 
 			cat.stop(msg);
 			}	
 		IN.clear();
