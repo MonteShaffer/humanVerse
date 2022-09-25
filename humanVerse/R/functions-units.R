@@ -90,6 +90,70 @@ SI.convert = function(..., from="micro", to="nano", force.from=FALSE, force.to=F
 	minvisible(res);
 	}
 
+# height.cm2ft(ft.string=FALSE)
+
+convert.height = function(..., from="ft-in", to="cm", ft.string = TRUE, ft.digits=0, r.digits=3)
+	{
+	FROM	= prep.arg(from, n=2, case="lower");  
+	TO 		= prep.arg(to, 	 n=2, case="lower");
+	if(FROM %in% c("ft", "fo", "fe", "en", "uk"))
+		{
+		DEFAULT = c("4'0", "5'5", "5'8", "5'9", "6'5");
+		} else {
+				DEFAULT = c(1.22, 1.65, 1.73, 1.75, 1.95);
+				if(FROM %in% c("cm", "ce")) { DEFAULT = DEFAULT*100;  }  # centimeters
+				if(FROM %in% c("mm", "mi")) { DEFAULT = DEFAULT*1000; } # millimeters
+	
+				}
+				
+	
+	x = prep.dots(..., default=DEFAULT);
+	
+	
+	if(FROM %in% c("ft", "fo", "fe", "en", "uk"))
+		{
+		if(is.character(x))
+			{
+			y = check.list(str.explode("'", x));
+			ft_ = as.numeric(list.getElements(y, 1));
+			in_ = as.numeric(list.getElements(y, 2));  # 'in' is reserved word 
+			res = 12*0.0254*ft_ + 0.0254*in_;
+			} else {
+					x = as.numeric(x);
+					res = 12*0.0254*x;
+					}
+		
+		res = round(res, r.digits);
+		
+		if(TO %in% c("cm", "ce")) { return( 100 * res ); }  # centimeters
+		if(TO %in% c("mm", "mi")) { return( 1000 * res ); } # millimeters
+		return(res);  # DEFAULT is meters 
+		}
+	
+	## we have cm, mm or meters ... convert to meters 
+	y = x;
+	if(FROM %in% c("cm", "ce")) { y = x/100;  }  # centimeters
+	if(FROM %in% c("mm", "mi")) { y = x/1000; } # millimeters
+	
+	ft = y / (12*0.0254);
+	if(!ft.string) { return ( round( ft, r.digits) ); }
+	ft_ = as.integer(ft);
+	in_ = round( ft - ft_ , ft.digits);
+	res = paste0(ft_, "'", in_);
+	res;
+	}
+
+
+height.ft2m  = function(...) { convert.height(..., from="ft-in", to="m"); }
+height.ft2cm = function(...) { convert.height(..., from="ft-in", to="cm"); }
+height.ft2mm = function(...) { convert.height(..., from="ft-in", to="mm"); }
+
+
+height.m2ft  = function(...) { convert.height(..., from="m",  to="ft-in"); }
+height.cm2ft = function(...) { convert.height(..., from="cm", to="ft-in"); }
+height.mm2ft = function(...) { convert.height(..., from="mm", to="ft-in"); }
+
+
 
 units.convert = function(..., from="in", to="ft", type="distance")
 	{
@@ -126,6 +190,121 @@ units.convert = function(..., from="in", to="ft", type="distance")
 	
 	std = NULL;
 	out = NULL;
+	
+	
+	# https://www.nist.gov/physical-measurement-laboratory/nist-guide-si-appendix-b9#MASSinertia
+	conv.mass = function() {}
+
+	#  do we have MASS ... weight ? kilo grams ... 
+		if(TYPE %IN% c("mass", "kg", "kilo", "weig"))  # mass or weight 
+		{
+		IN.init();
+		
+		# kilogram (kg)
+		if(is.null(std) && FROM %IN% c("Kilogram", "kilogram", "kil", "kg")) 
+			{ std = 1 * x; }
+			
+		# carat, metric
+		if(is.null(std) && FROM %IN% c("Carat (metric)", "car", "ca", "car-met", "car-m", "ca-met", "ca-m")) 
+			{ std = 0.0002 * x; }
+			
+		# grain (gr)
+		if(is.null(std) && FROM %IN% c("Grain", "grain", "gra", "gr", "g")) 
+			{ std = 0.00006479891 * x; }
+			
+		# hundredweight (long, 112 lb)
+		if(is.null(std) && FROM %IN% c("Hundredweight (long 112 lb)", "hundred-long", "hun-lon", "h-l")) 
+			{ std = 50.80235 * x; }
+			
+		# hundredweight (short, 100 lb)
+		if(is.null(std) && FROM %IN% c("Hundredweight (short 100 lb)", "hundred-short", "hun-sho", "h-s")) 
+			{ std = 45.35924 * x; }
+			
+		# ounce (avoirdupois) (oz)
+		if(is.null(std) && FROM %IN% c("Ounce (avoirdupois) (oz)", "oz-av", "oun-avo", "oun-av", "oz-avo")) 
+			{ std = 0.02834952 * x; }
+			
+		# ounce (troy or apothecary) (oz)
+		if(is.null(std) && FROM %IN% c("Ounce (troy or apothecary) (oz)", "oz-ap", "oun-apo", "oun-ap", "oz-apo", "oz-tr", "oun-tro", "oun-tr", "oz-tro")) 
+			{ std = 0.03110348 * x; }
+			
+			
+		# pennyweight (dwt)
+		if(is.null(std) && FROM %IN% c("Pennyweight (dwt)", "penny", "pen", "pe", "p", "dwt", "pen-dwt", "pe-dwt", "p-dwt")) 
+			{ std = 0.001555174 * x; }
+		
+		
+		# pound (avoirdupois) (lb)
+		if(is.null(std) && FROM %IN% c("Pound (avoirdupois) (lb)", "lb-av", "pou-avo", "pou-av", "lb-avo")) 
+			{ std = 0.4535924 * x; }
+			
+		# pound (troy or apothecary) (lb)
+		if(is.null(std) && FROM %IN% c("Pound (troy or apothecary) (lb)", "lb-ap", "pou-apo", "pou-ap", "lb-apo", "lb-tr", "pou-tro", "pou-tr", "lb-tro")) 
+			{ std = 0.3732417 * x; }
+		
+		
+		
+		# inches
+		if(is.null(std) && FROM %IN% c("Inches", "in", "inc")) 
+			{ std = 0.0254 * x; }
+		# kayser 
+		if(is.null(std) && FROM %IN% c("Kayser", "kai", "kay")) 
+			{ std = 100 * x; }
+		# light-year (l. y.)
+		if(is.null(std) && FROM %IN% c("Light-Year", "lyr", "ly", "lig", "l-y", "li-yr", "l-yr", "lig-yr", "lig-yea")) 
+			{ std = 1.828804 * x; }
+		# mile (mi)
+		if(is.null(std) && FROM %IN% c("Mile", "mi", "mil")) 
+			{ std = 1609.344 * x; }
+		# survey-mile  us-mile (based on U.S. survey foot)
+		if(is.null(std) && FROM %IN% c("Survey-Mile", "sur-mi", "us-mi", "us-mil", "sur-mil")) 
+			{ std = 1609.347 * x; }
+		# nautical-mile  ... The value of this unit, 1 nautical mile = 1852 m, was adopted by the First International Extraordinary Hydrographic Conference, Monaco, 1929, under the name "International nautical mile."
+		if(is.null(std) && FROM %IN% c("Nautical-Mile",  "nau-mi", "n-mi", "n-mil", "nau-mil")) 
+			{ std = 1852 * x; }
+		# parsec 
+		if(is.null(std) && FROM %IN% c("Parsec", "par")) 
+			{ std = 30856780000000000 * x; }
+		# pica-computer 
+		if(is.null(std) && FROM %IN% c("Pica-Computer", "pic-com")) 
+			{ std = 0.004233333 * x; }
+		# pica-printer 
+		if(is.null(std) && FROM %IN% c("Pica-Printer", "pic-pri")) 
+			{ std = 0.004217518 * x; }
+		# point-computer 
+		if(is.null(std) && FROM %IN% c("Point-Computer", "pt-com", "poi-com")) 
+			{ std = 0.004233333 * x; }
+		# point-printer 
+		if(is.null(std) && FROM %IN% c("Point-Printer", "pt-pri", "poi-pri")) 
+			{ std = 0.004217518 * x; }
+		# rod 
+		if(is.null(std) && FROM %IN% c("Rod", "rd", "rod")) 
+			{ std = 5.029210 * x; }	
+		# yard 
+		if(is.null(std) && FROM %IN% c("Yard", "yd", "yar")) 
+			{ std = 0.9144 * x; }
+			
+			
+			
+		if(is.null(std)) 
+			{ 
+			msg = msg.badOption("from", from, FROM);			
+			cat("\n\n"); minvisible( IN.df(), display=TRUE ); cat("\n\n"); 
+			IN.clear();
+			cat.stop(msg);
+			}
+		IN.clear();
+		
+dput(FROM);
+dput(std);
+		################### REVERSE ############################
+		# since I alreayd have the IN.df() ... could I not just use it here?
+		# Pass a key? ... we may not have scanned all of the above ... 
+		IN.init();
+		
+
+	
+	
 	## num.toEng can convert scales (as strings) ... 
 	## primarily not an SI unit conversion ... scale conversion ...	
 	## maybe comment about that ... 
