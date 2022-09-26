@@ -1,5 +1,20 @@
 
 
+# maybe have a copy/paste file ...
+
+# maybe have openSesame, but this is generally me copying PATH from WINDOWZ into R ...
+pathFromClipboard = function(trailing = TRUE)
+	{
+	x = readClipboard();
+	y = str.replace("\\", "/", x);
+	if(trailing) { y = paste0(y, "/"); y = str.replace("//", "/", y);}
+	minvisible(y, display=print, key="PATH");
+	}
+
+
+
+
+
 file.init = function()
 	{
 	# grab settings from MEMORY if exists ... 
@@ -321,6 +336,25 @@ testme = "C:\\_git_\\github\\MonteShaffer\\humanVerse\\humanVerse\\R\\functions-
 #'
 #' @examples
 #' WARNING:  OneDrive, DropBox may have file-lock ... CACHE, DATA, CODE are separate
+
+
+#  /humanVerse/ SETUP ... SANDBOX ... CODE/NOTEBOOKS ... SYSTEM_LOGS ... DATA ... SECRET
+
+# may I suggest for now ... C:/_R_/  or /home/_R_/ or /Users/_R_/ ... would not suggest ~
+
+
+# SETUP ... log-level ... 
+# $conf = new Config();
+# $root = $conf->parseConfig("/etc/apache2/httpd.conf", "apache");
+# php.ini 
+# use my custom format ...
+# $settings = @parse_ini_file($configfile, TRUE);
+# everyone starts with output 
+# https://github.com/austinhyde/IniParser/blob/master/src/IniParser.php
+# https://stackoverflow.com/a/2120481/184614
+# under the hood, it is written in C ... portable, eventually ...
+# let's write an R-base version ...
+ 
 
 file.init = function(
 	CONFIG = paste0(Sys.getenv("R_USER"),"/R/humanVerse/"),

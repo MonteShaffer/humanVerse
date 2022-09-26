@@ -8,17 +8,17 @@ is.formula = function() {}
 # is.model?
 
 
-is.undefined = function(KEY)
+is.defined = function(KEY)
 	{
 	ct = check.type(KEY);
 	typeof = property.get("typeof", ct);
-	res = as.logical(!ct);			# strips attributes of type ...
+	res = as.logical(ct);			# strips attributes of type ...
 	# I could use callbacks and set the property without the object 
 	# maybe I update the SYSTEM to make it so ...
 	# CHANGE my setters with envir=parent.frame(1);
 	# I don't know, I kinda like it ... procedural not OBJ return 
 	# or sys.functions(-1)?
-	if(!res) { res = property.set("typeof", res, typeof); }
+	if(res) { res = property.set("typeof", res, typeof); }
 	res;
 	}
 

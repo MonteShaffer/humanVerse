@@ -158,14 +158,18 @@ minvisible.get = function(key="LAST")
 	memory.get(key, "-MINVISIBLE-");
 	}
 
-minvisible = function(x, key="LAST", display=TRUE)
+minvisible = function(x, key="ANS", display=TRUE)
 	{
 	memory.set(key, "-MINVISIBLE-", x);
 	# also store to ANS variable ... 
 	# I could do ANS = Ans = x;   ANS %GLOBAL%. ; Ans %GLOBAL%. ;
 	# ANS %GLOBAL% x;  # undefined ANS ... treated as "." (dot)
-	"ANS" %GLOBAL% x; 
-	"Ans" %GLOBAL% x; 
+	
+	key %GLOBAL% x; 
+	
+	
+	
+	# "Ans" %GLOBAL% x; 
 	
 	
 	ct.DISPLAY = check.type(display);

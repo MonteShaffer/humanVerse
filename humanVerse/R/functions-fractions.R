@@ -17,7 +17,7 @@ gcd.lcm = function(x,y)
 
 num.init = function()
 	{
-	if(is.undefined(SI_PREFIX)) { constants.default(); }
+	if(!is.defined(SI_PREFIX)) { constants.default(); }
 	
 	
 	}
@@ -251,7 +251,7 @@ cat("\n SHOW_WHAT ", SHOW_WHAT, "\n");
 cat("\n METHOD ", METHOD, "\n");  # [E]ngineering or [S]cientific
 	# maybe put this in num.init()
 	num.init();
-	#if(is.undefined(SI_PREFIX)) { constants.default(); }
+	#if(!is.defined(SI_PREFIX)) { constants.default(); }
 	
 	# num.constants();
 # dput(SI_PREFIX); 

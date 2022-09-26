@@ -56,7 +56,7 @@ js.b64 = function(input, method="encode")
 	i = 0;	
 	 
 	# this is univariate function	
-	if(is.undefined(B64)) { constants.default(); }
+	if(!is.defined(B64)) { constants.default(); }
 	
 	encode = function() 
 		{	

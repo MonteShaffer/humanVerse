@@ -129,7 +129,7 @@ xls.COMBINE = function(n, r)
 xls.PERMUT = function(n, r)
 	{
 	n %nPr% r;	
-	}
+	} 
 	
 xls.T.DIST = function(x, df, cdf=TRUE, method="humanVerse", plot=TRUE)
 	{

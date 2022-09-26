@@ -2,7 +2,7 @@
 
 base.init = function()
 	{
-	if(is.undefined(BXXv)) { constants.default(); }
+	if(!is.defined(BXXv)) { constants.default(); }
 	# can we get this check to happen here, so we don't have to constantly check?
 	
 	
@@ -61,8 +61,8 @@ base2int = function(..., base=16, method="first")
 	METHOD = prep.switch(METHOD, keys, vals, default);
 		
 		
-	if((METHOD == "cpp" || METHOD == "first") && exists("cpp_base2int")) 
-			{ 
+	if((METHOD == "cpp" || METHOD == "first") && exists("cpp_int2base") && b != 64) 
+			{
 			res = cpp_base2int(xstr,b);
 			return( v.return(res) );
 			}
@@ -77,7 +77,6 @@ base2int = function(..., base=16, method="first")
 	res;	
 	}
 	
-base.from = base2int;	 
 	
 
 
@@ -167,7 +166,31 @@ int.convert = function(..., from="binary", to="octal", to.length=NULL)
 	xOUT;
 	}	
 
-# convertBase = base.convert; 
+# these have to be defined INTEGERS (2^31 - 1)
+dec2hex = function(...) { int.convert(..., from="dec", to="hex"); } 
+
+dec2bin = function(...) { int.convert(..., from="dec", to="bin"); } 
+
+dec2oct = function(...) { int.convert(..., from="dec", to="oct"); } 
+
+hex2dec = function(...) { int.convert(..., from="hex", to="dec"); } 
+
+hex2bin = function(...) { int.convert(..., from="hex", to="bin"); } 
+
+hex2oct = function(...) { int.convert(..., from="hex", to="oct"); } 
+
+bin2dec = function(...) { int.convert(..., from="bin", to="dec"); } 
+
+bin2hex = function(...) { int.convert(..., from="bin", to="hex"); } 
+
+bin2oct = function(...) { int.convert(..., from="bin", to="oct"); } 
+
+oct2dec = function(...) { int.convert(..., from="oct", to="dec"); } 
+
+oct2hex = function(...) { int.convert(..., from="oct", to="hex"); } 
+
+oct2bin = function(...) { int.convert(..., from="oct", to="bin"); } 
+
 
 
 
@@ -208,37 +231,74 @@ bin = function(..., n=2, pad="0")
 	
 	
 	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# > .hex_b64("abcdef")
+# [1] "q83v"
+# > .b64_hex("q83v")
+# [1] "abcdef"
 	
-.b64_hex = function(b64str)
+.b64_hex = function(b64str, collapse="")
 	{
-	b = bin(b64str, n=2, "A");
+	# b64str is one long string, no breaks ...
+	if(length(b64str) > 1) {  b64str = paste(b64str, collapse=""); }
+	b = bin(b64str, n=2, pad="A");   # B64v[1];
 	nb = length(b);
-	res = "";
-	for(i in 1:nb)
-		{
-		# would blocks of similar with "set.match" be faster?
-		res = paste0(res, lookupB64HEX[[ b[i] ]], collapse="");
-		}
-	res;	
-	
-	MAP = .map_hexb64("b64");
+	MAP = .map_hexb64();
+	idx = set.match(b, MAP$b64); # there shouldn't be NA/NULL
+	r = tolower(MAP$hex[idx]);  # to match 'raw' format 
+	paste0(r, collapse=collapse);
 	}
 
-.hex_b64 = function(hexstr)
+
+
+
+
+.hex_b64 = function(hexstr, collapse="")
 	{
 	# hexstr is one long string, no breaks ...
 	if(length(hexstr) > 1) {  hexstr = paste(hexstr, collapse=""); }
-	b = toupper( bin(hexstr, n=3, pad="0") );
+	# 'raw' seems to be lower case, TRUE hex is upper?
+	b = toupper( bin(hexstr, n=3, pad="0") );   # BXXv[1];
 	nb = length(b);
-	MAP = .map_hexb64("hex");
-	set.keymatch(
-	
+	MAP = .map_hexb64();
+	idx = set.match(b, MAP$hex);	# there shouldn't be NA/NULL
+	r = MAP$b64[idx];
+	paste0(r, collapse=collapse);
 	}
 	
 
-.map_hexb64 = function(keys="hex")
+.map_hexb64 = function()
 	{
-	# res = memory.get(keys, "-B64_HEX-");
+	res = memory.get("map", "-B64_HEX-");
 	if(is.null(res))
 		{
 		n = .lcm.bits(64, 16);
@@ -312,11 +372,6 @@ bin = function(..., n=2, pad="0")
 
 
 
-base2base = function(basestring, from=13, to=17)
-	{
-	
-	
-	}
 	
 	
 
@@ -329,12 +384,12 @@ base2base = function(basestring, from=13, to=17)
 # base.convert = function(..., from="binary", to="hex", decimal.numeric=TRUE)
 
 
-.baseTrim = function(x)
+.baseTrim = function(x, pad="0")
 	{
 	# 
 	# maybe do something smart with base ... bin ( repeat myself ?)
-	# convolutins is BAD ...  
-	y = str.trimFromAny(x, "0", "LEFT");
+	# convolutins is BAD ... 
+	y = str.trimFromAny(x, pad, "LEFT");
 	y[y==""] = "0";
 	y;	
 	}
@@ -546,31 +601,6 @@ dput(x);
 
 
 
-
-# the decimal onces should return numerics ... 
-dec2hex = function(...) { base.convert(..., from="dec", to="hex"); } 
-
-dec2bin = function(...) { base.convert(..., from="dec", to="bin"); } 
-
-dec2oct = function(...) { base.convert(..., from="dec", to="oct"); } 
-
-hex2dec = function(...) { base.convert(..., from="hex", to="dec"); } 
-
-hex2bin = function(...) { base.convert(..., from="hex", to="bin"); } 
-
-hex2oct = function(...) { base.convert(..., from="hex", to="oct"); } 
-
-bin2dec = function(...) { base.convert(..., from="bin", to="dec"); } 
-
-bin2hex = function(...) { base.convert(..., from="bin", to="hex"); } 
-
-bin2oct = function(...) { base.convert(..., from="bin", to="oct"); } 
-
-oct2dec = function(...) { base.convert(..., from="oct", to="dec"); } 
-
-oct2hex = function(...) { base.convert(..., from="oct", to="hex"); } 
-
-oct2bin = function(...) { base.convert(..., from="oct", to="bin"); } 
 
 
 
