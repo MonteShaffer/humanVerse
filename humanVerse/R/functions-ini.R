@@ -76,6 +76,30 @@ addKeyToResult = function(key)
 		}
 	
 	
+	
+	parseHeader = function()
+		{
+		# https://regex101.com/r/JAVV4a/1
+		# we have a line ... should not be nested, one bracket pair ?
+		# may have a ":" as a subkey of the parent, just one? YES, KISS
+		# ([^()]*)  # https://stackoverflow.com/a/45477441/184614
+		# key = gsub("^`(.*)`$", "\\1", line)
+		# https://stackoverflow.com/a/62129083/184614 # *REGEX GURU*
+		key = gsub("\\[(.*?)\\]", "\\1", line);
+		# line="[PEOPLE:key:keys:key33:fdjksj]"
+
+		sub = str.explode(":", key);
+		slen = length(sub);
+		for(i in 1:slen)
+			{
+			addKeyToResult(sub[i]); 
+			}
+		
+		# GOOD TO GO, DONE 
+		}
+		
+		 
+	
 envir = environment(); 
 	
 	COMMENT = ";";
@@ -107,28 +131,9 @@ ini.parse = function(inistr, as.lines=FALSE)
 	# we are going to walk ... 
 	# evaluate everything to envir so can be available downstream 
 	
-	parseHeader = function()
-		{
-		# https://regex101.com/r/JAVV4a/1
-		# we have a line ... should not be nested, one bracket pair ?
-		# may have a ":" as a subkey of the parent, just one? YES, KISS
-		# ([^()]*)  # https://stackoverflow.com/a/45477441/184614
-		# key = gsub("^`(.*)`$", "\\1", line)
-		# https://stackoverflow.com/a/62129083/184614 # *REGEX GURU*
-		key = gsub("\\[(.*?)\\]", "\\1", line);
-		# line="[PEOPLE:key:keys:key33:fdjksj]"
-
-		sub = str.explode(":", key);
-		slen = length(sub);
-		for(i in 1:slen)
-			{
-			addKeyToResult(sub[i]); 
-			}
-		
-		# GOOD TO GO, DONE 
-		}
 	
 	
+########################## HERE WE ARE #########################	
 	for(line in lines) # no need for index here 
 		{
 		line = str.trim(line);
@@ -142,12 +147,14 @@ ini.parse = function(inistr, as.lines=FALSE)
 			parseHeader();			
 			} else {
 					# we are under a TREE by CURRENT_XYZ
-			
+					print(line); stop("monte");
 					}
 		
 		
 		stop("monte");
 		}
+################################################################
+
 	
 	
 	}
