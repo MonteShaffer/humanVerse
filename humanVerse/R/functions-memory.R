@@ -104,6 +104,13 @@ memory.log = function(key, MEMORY, action="get")
 	}
 	
 	
+memory.clear = function(MEMORY = "-B64_HEX-")	
+	{
+	# deletes everyting in the MEMORY block or group 
+	.GlobalEnv$.humanVerse[["."]][[MEMORY]] = NULL;
+	}
+	
+	
 # DOWN ARROW on CONSOLE BRINGS UP WORD 'ANS' ... how to ADD to history??? 
 
 memory.get = function(key, MEMORY="BASE", unused=NULL) 

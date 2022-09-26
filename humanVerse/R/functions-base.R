@@ -220,19 +220,25 @@ bin = function(..., n=2, pad="0")
 		res = paste0(res, lookupB64HEX[[ b[i] ]], collapse="");
 		}
 	res;	
+	
+	MAP = .map_hexb64("b64");
 	}
 
 .hex_b64 = function(hexstr)
 	{
-	b = bin(hexstr, n=3, "0");
+	# hexstr is one long string, no breaks ...
+	if(length(hexstr) > 1) {  hexstr = paste(hexstr, collapse=""); }
+	b = toupper( bin(hexstr, n=3, pad="0") );
 	nb = length(b);
+	MAP = .map_hexb64("hex");
+	set.keymatch(
 	
 	}
 	
 
 .map_hexb64 = function(keys="hex")
 	{
-	res = memory.get(keys, "-B64_HEX-");
+	# res = memory.get(keys, "-B64_HEX-");
 	if(is.null(res))
 		{
 		n = .lcm.bits(64, 16);
@@ -249,26 +255,23 @@ bin = function(..., n=2, pad="0")
 		rawH = memory.get("rawH", "-B64_HEX-");
 		if(is.null(rawH))
 			{
-			info = int2base(0:(n-1), base=64);
+			info = int2base(0:(n-1), base=16);
 			rawH = str.pad(info, wH, "0", "LEFT");
 			memory.set("rawH", "-B64_HEX-", rawH);
 			}
-			
-			i = 1;
-			while(i <= n)
-				{
-				
-				
-				i %++%.;
-				}
-			
-			}
-		
-		# .int2base won't pad correctly AA on bit64 
-		
+		### FOR SETS this is rather meaningless
+		# if(keys == "hex")
+			# {
+			# res = list.create(rawH, raw64);
+			# memory.set(keys, "-B64_HEX-", res);
+			# } else {
+					# res = list.create(raw64, rawH);
+					# memory.set("b64", "-B64_HEX-", res);
+					# }		
+		res = list("b64" = raw64, "hex" = rawH);
+		memory.set("map", "-B64_HEX-", res);
 		}
-	
-	
+	res;	
 	}
 	
 .lcm.width = function(a=64, n=4096)
