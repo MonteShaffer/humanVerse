@@ -50,9 +50,10 @@ suppressWarning = suppressWarnings;
 # source( res$
 ## assuming res is alive from include.dir
 # get bytecode ... of fun... => name ?
-quick.source = function(..., character.only = FALSE, res=NULL, verbose=FALSE)
+quick = function(..., character.only = FALSE, res=NULL, verbose=FALSE)
 	{
 	fns = prep.dots(..., collapse=character.only, has.objects=!character.only);
+# dput(fns);
 		minvisible(fns, display=none);
 	if(!character.only) { fns = as.character(fns); }
 # dput(fns);
@@ -129,7 +130,7 @@ debug = FALSE;
 	}
 
 
-quick = quick.source;
+quick.source = qucik = quick;
 
 
 

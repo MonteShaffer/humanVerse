@@ -172,13 +172,25 @@ debug = FALSE;
 	}
 
 
-
-check.string = function(thing)
+   
+check.string = function(...)
 	{
-	ct.THING = check.type(thing);
-	if(!ct.THING || !is.character(thing) ) 
-		{ thing = deparse(substitute(thing)); }
-	thing;
+debug = FALSE;
+	checktype = suppressError( typeof(...), 
+								show.notice=debug,
+								msg="debugging typeof check.type REGULAR" 
+							);
+	dots = prep.dots(..., collapse=FALSE);
+dput(dots);
+	res = TRUE; key = "";
+	if(is.error(checktype) || !is.character(...)) 
+		{ 
+		res = FALSE;   
+		key = deparse(substitute(unlist(...))); 
+		} else { key = unlist(...); }
+	# res = property.set("typeof", res, checktype);
+	# res;
+	key; 
 	}
 
 

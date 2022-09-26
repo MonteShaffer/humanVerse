@@ -26,7 +26,7 @@ parse.syscall = function(syscall)
 	{
 	# none of these functions can have dots (...)  ::: prep.dots(...)
 	str = lang2str(syscall);
- dput(str);  # stop("monte");
+############ dput(str);  # stop("monte");
 	info = strsplit(str, "(", fixed=TRUE)[[1]];
 	fn = trimws(info[1], which="both");			
 			
@@ -73,11 +73,12 @@ parse.syscall = function(syscall)
 		key = keys[i];
 		pidx = i + pskip;
 		pkey = fkeys = pkeys[pidx]; 
+		if(is.na(fkeys)) { fkeys = NULL; }
 		if(key != "...")
 			{
 			pval = pvals[pidx]; 
 			
-# if(fn == "v.chain") { cat("\n\n key: ", key, " \t pidx :", pidx, " \t pkey :", pkey, " \t pval :", pval, "\n\n"); 	}
+# if(fn == "CDF") { cat("\n\n key: ", key, " \t pidx :", pidx, " \t pkey :", pkey, " \t pval :", pval, "\n\n"); 	}
 	
 			if(!is.na(pval))
 				{
@@ -86,18 +87,23 @@ parse.syscall = function(syscall)
 			}
 		if(key == "...")
 			{			
-			nkey = keys[i+1]; if(is.na(nkey)) { nkey = "kdsfjklsdj093-"; }
-			if(nkey != pkey) { fkeys = pkey; } else { stop("bad keys"); }
-			np = length(pkeys); # maximum search 
-			j = pidx;
-			while(j <= np)
+			nkey = keys[i+1]; 
+# if(fn == "CDF") { cat("\n\n key: ", key, " \t pidx :", pidx, " \t pkey :", pkey, " \t pval :", pval, " \t nkey :", nkey, "\n\n"); 	}
+				if(is.na(nkey)) { nkey = "kdsfjklsdj093-"; }
+			if(!is.na(pkey))  # na if nothing inside 
 				{
-				pskip %++%.
-				j = pidx = i + pskip;
-				pkey = pkeys[pidx];
-				if(!is.null(withV) && withV[1] == pidx) { pskip %--%. ; break; }
-				if(is.na(pkey)) { pskip %--%. ; break; }  # out pf pkeys ... 
-				if(nkey != pkey) { fkeys = c(fkeys, pkey); } else { pskip %--%. ; break; } 
+				if(nkey != pkey) { fkeys = pkey; } else { stop("bad keys"); }
+				np = length(pkeys); # maximum search 
+				j = pidx;
+				while(j <= np)
+					{
+					pskip %++%.
+					j = pidx = i + pskip;
+					pkey = pkeys[pidx];
+					if(!is.null(withV) && withV[1] == pidx) { pskip %--%. ; break; }
+					if(is.na(pkey)) { pskip %--%. ; break; }  # out pf pkeys ... 
+					if(nkey != pkey) { fkeys = c(fkeys, pkey); } else { pskip %--%. ; break; } 
+					}
 				}
 			}
 		map[[key]] = fkeys; 
@@ -119,7 +125,7 @@ parse.syscall = function(syscall)
 				"formals" = form
 				);
 
-# if(fn == "v.chain") { print(str(res)); }
+# if(fn == "CDF") { print(str(res)); }
 	res;
 	}
   
@@ -134,9 +140,10 @@ prep.dots = function(...,
 					)
 	{
 	dots = NULL;
-	o = list(...);	
+	
 	if(is.null(dots) && collapse) 
-		{ 		
+		{
+		o = list(...);
 		dots = unlist(o);
 		if(length(dots) == 0 && !is.null(default)) { dots = default; }
 		return( dots ); 
@@ -156,8 +163,9 @@ prep.dots = function(...,
 	# what is has.objects?
 	if(is.null(dots) && has.objects) 
 		{
+		o = NULL;
 		dots = finfo$dot.keys; # just strings 
-		}
+		} else { o = list(...);	}
 		
 # dput(dots);
 # stop("monte");

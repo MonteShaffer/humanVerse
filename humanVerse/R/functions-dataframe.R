@@ -214,24 +214,35 @@ df.empty = function(df)
 	df[FALSE, ];	
 	}
 
-df.row = function(..., use.names=FALSE)
+df.row = function(..., use.names=FALSE, character.only = FALSE)
 	{
-	dots = prep.dots(..., collapse = FALSE, has.objects = FALSE);
+	# dots = prep.dots(..., collapse = !, has.objects = FALSE);
+	dots = prep.dots(..., collapse=character.only, has.objects=character.only, default="stringi"); 
  
-	xlist = list.flatten( .%$$% dots@original );
-	if(length(xlist) == 1)
-		{
-		xlist = t(unlist(xlist)); # if it was a vector, possible anymore?
-		
-		# if length 1 FINE, otherwise, its a vector that needs to be flattened into separate elements ...
-		df = dataframe( xlist );  # a vector of the same type 		
-		} else { df = dataframe(xlist); }
+# cat(" monte ");  
+#cat("\n\n"); dput(dots); cat("\n\n"); 
+ # stop("monte");
+ 
+#dput(is.list(dots));
 
-	if(use.names)
-		{ 
-		colnames(df) = (.%$$% dots@fn.info)$dot.keys;
+	if(!is.list(dots))
+		{
+		df = dataframe( t (dots) );
+		names = names(dots);
 		} else {
-				names = paste0("V", 1:ncol(df)); # needs something to MATCH
+				xlist = list.flatten( .%$$% dots@original );
+				names = (.%$$% dots@fn.info)$dot.keys;
+				df = dataframe(xlist);
+				}
+ 
+ 
+	if(use.names)
+		{  
+		if(is.null(names)) { names = paste0("V", 1:ncol(df)); }
+		colnames(df) = names;
+		} else {
+				# needs something to MATCH for rbind 
+				names = paste0("V", 1:ncol(df)); 
 				colnames(df) = names;
 				}
 		

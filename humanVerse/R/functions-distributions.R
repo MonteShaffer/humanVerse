@@ -72,7 +72,8 @@ prep.distribution = function(method)
 	
 # call-list ... do.call()
 prep.distCall = function(clist, dots)
-	{
+	{ 
+dput(clist);
 dput(dots);
 stop("monte");
 dput(...);
@@ -188,18 +189,26 @@ PDF = function(x, method="norm", ...)
 	invisible(res);
 	}
  
-
-CDF.fn = function() {}
  
-
+CDF.fn = function() {}
+  
+ 
 # http://127.0.0.1:23214/library/stats/html/Distributions.html
 CDF = function(q, method="norm", ...)
-	{
+	{ 
 	# cumulative distribution function ... cumulative area from -Inf to x
+	method = check.string(method);
+	
+#	key = as.character(substitute(KEY));
+	
+	
+dput(method);
 	dots = prep.dots(..., collapse = FALSE, has.objects = TRUE);
-	method = check.string(method);	
-		
+dput(dots);
+	
 	KEY = prep.distribution(method);  # this will trigger STOP 
+dput(KEY);	
+	
 	fn.name = paste0("p", as.character(KEY));
 	
 	clist = prep.distCall(list(q=q), dots);
