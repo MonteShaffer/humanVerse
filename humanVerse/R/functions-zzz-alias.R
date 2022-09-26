@@ -122,7 +122,7 @@ ln = log;
 "%.=%" = .DOT_EQUAL.;
 "%=.%" = .EQUAL_DOT.;
 "%.%" = .DOT.;
-
+"%.=.%" = .DOT_APPEND.;
 
 # > x= "monte"
 # > y = "alex"

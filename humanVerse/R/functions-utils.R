@@ -304,7 +304,7 @@ cat("\n\n MONTE \n\n");
 			# dot.operator  ... append "|" by default ... 
 			# %.=% ... "|" . THING 
 			# %=.% ... THING . "|" 
-			# %.=.% ... THING only ... this is DOT below  	
+			# %.=.% ... THING only ... but appended  	
 			# %.% ... ccould you chain these ? like NORMAL PHP 
 		
 
@@ -331,6 +331,22 @@ cat("\n\n MONTE \n\n");
 	assign(KEY, key, envir=WHERE );
 	minvisible(key, key=KEY);
 	}
+
+# %.=.% ... THING only ... but appended  # "%.=.%" = .DOT_APPEND.;
+.DOT_APPEND. = function() {}
+.DOT_APPEND. = function(KEY, VALUE,  sep=" ", WHERE=parent.frame(1))
+	{
+	# these functions are much simpler than the one's already written
+	key = KEY; val = VALUE;
+	key = paste0(key, sep, val);  	# order is same as .DOT_EQUAL.
+									# just change the separator
+									# don't want to deal with WHERE
+									# DRY ... DO-REPEAT-YOURSELF when R call stack demands it ... 
+	KEY = deparse(substitute(KEY));
+	assign(KEY, key, envir=WHERE );
+	minvisible(key, key=KEY);
+	}
+
 
 
 .DOT. = function() {}		 # %.%  ==>  a . b . c  ... 
