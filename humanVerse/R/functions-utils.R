@@ -301,11 +301,38 @@ cat("\n\n MONTE \n\n");
 	}
 	
 	
+	
+	
+	
 			# dot.operator  ... append "|" by default ... 
 			# %.=% ... "|" . THING 
 			# %=.% ... THING . "|" 
 			# %.=.% ... THING only ... but appended  	
 			# %.% ... ccould you chain these ? like NORMAL PHP 
+			# like complex addition, parentheses are your friend ...
+			# CL was faster than me at multipliers, except 7
+			# student-teacher (algebra x ... what are you talking about)
+			# people (let me explain atob)... what are you talking about 
+			# CL shift ... 
+			# MR experience (two-meanings... ice and car)
+			# MS treatment (love and affection)
+			# DJ wisdom (2nd / 12th)
+			# DT goodness 
+			# MC craftiness
+			# JA embarrassment (woody)
+			# BP swagger (white lightning)
+			# JG backlines (chess, rooks)
+			# MM moment (CL, 8th grade)
+			# CR shift 
+			# JE BA (they tried)
+			# Teddy effect (belt)
+			# Schm first name (get outta here)
+			# Hol (smoking)
+			# memorizing maps of mt ... hofst
+			# bullet in your brain (PE study hall)
+			# SH moment (double off the wall) ... dad 4th grade 
+			# boundaries 150% A+ vs tradition A- border ...
+			# simulation, created shitty software ... ATONEMENT ... FIX IT ... 
 		
 
 .EQUAL_DOT. = function() {}  # %=.% ==> THING . "|" 
@@ -355,8 +382,6 @@ cat("\n\n MONTE \n\n");
 	# these functions are much simpler than the one's already written
 	key = KEY; val = VALUE;
 	key = paste0(key, sep, val);
-	
-	KEY = deparse(substitute(KEY));
 	key;
 	}		
 		
