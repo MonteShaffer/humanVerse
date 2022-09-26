@@ -1153,6 +1153,14 @@ whatever I want except for single  .. # lksdjf lkj
 		
 strtrim_ = function(str, side="both", pattern=NULL)
 	{
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.SIDE = check.type(side);
+	if(!ct.SIDE || !is.character(side))	
+		{ side = deparse(substitute(side)); } 
+##########################################################
+
 	SIDE = prep.strSide(side, n=1);	
 	# is this faster than base::trimws? ... no collapsing?
 	g = "\\s+";
@@ -1174,6 +1182,13 @@ strpad_ = function(str,
 					side		= "right"  # default is for NNN.dd00 decimal
 					)
 	{
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.SIDE = check.type(side);
+	if(!ct.SIDE || !is.character(side))	
+		{ side = deparse(substitute(side)); } 
+##########################################################
 	str = as.character(str);
 	SIDE = prep.strSide(side, n=1);
 	ns = str.len(str);

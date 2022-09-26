@@ -90,6 +90,8 @@ memory.start = function(	key="timer",
 
  
 
+# set a log level ... 
+# log to file ... 
 memory.log = function(key, MEMORY, action="get")
 	{
 	# manual set the value so no recursion 

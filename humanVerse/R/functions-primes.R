@@ -248,7 +248,13 @@ primes.get = function(n, first=TRUE, optimus=FALSE, method="first")
 	if(first && optimus  && n <= 9) { return( c(1, p[1:(n-1)]) ); }
 	if(first && !optimus && n <= 9) { return(      p[1:n] ); }
 		
-		
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.METHOD = check.type(method);
+	if(!ct.METHOD || !is.character(method))	
+		{ method = deparse(substitute(method)); } 
+##########################################################	
 	METHOD = prep.primeMethod(method, n=1);
 
 	FNS = list(

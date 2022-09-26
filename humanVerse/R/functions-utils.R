@@ -440,7 +440,7 @@ IN.df = function(mem.key = "-CURRENT_IN-")
 		key = keys[i];
 		val = v.fill( info[[key]], klen, ""); 
 		row = df.row(c(key, val), use.names=FALSE, character.only=TRUE);
-# dput(row); 
+dput(row); 
 		df = rbind(df, row);
 		}
 	cnames = c("-OPTION-", "ideal => shortcodes", paste0("ALT-", 1:(klen-1)) ); 	

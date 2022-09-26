@@ -92,7 +92,13 @@ str.len = function(str, method="first", locale="")
 		}
 		
 	str = as.character(str);	
-		
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.METHOD = check.type(method);
+	if(!ct.METHOD || !is.character(method))	
+		{ method = deparse(substitute(method)); } 
+##########################################################
 	METHOD = prep.strMethod(method, n=1);
 
 	FNS = list(
@@ -147,6 +153,13 @@ str.length = str.len;
  
 str.case = function(str, case="lower")
 	{
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.CASE = check.type(case);
+	if(!ct.CASE || !is.character(case))	
+		{ case = deparse(substitute(case)); } 
+##########################################################
 #cat("\n str.toCase: ", str, "\n");  # was there a weird str() collision?
 	cas = substring(tolower(case), 1, 3);
 #dput(cas);
@@ -195,7 +208,21 @@ str.toCase = str.case;
 #------------------------------------------------#
 str.trim = function(str, side="both", method="first", pattern=NULL, ...)
 	{  
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.METHOD = check.type(method);
+	if(!ct.METHOD || !is.character(method))	
+		{ method = deparse(substitute(method)); } 
+##########################################################
 	METHOD = prep.strMethod(method, n=1);
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.SIDE = check.type(side);
+	if(!ct.SIDE || !is.character(side))	
+		{ side = deparse(substitute(side)); } 
+##########################################################
 	SIDE = prep.strSide(side, n=1);
 	
 	PATTERN = list(
@@ -280,6 +307,13 @@ str_trim = str.trim;
 # BASE is broken ... 
 str.explode = function(sep = " ", str = "hello friend", method="first")
 	{
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.METHOD = check.type(method);
+	if(!ct.METHOD || !is.character(method))	
+		{ method = deparse(substitute(method)); } 
+##########################################################
 	METHOD = prep.strMethod(method, n=1);
  
 	FNS = list(
@@ -340,7 +374,13 @@ str.split = str.explode;
 str.implode = function(sep=" ", str, method="base")
 	{
 	str = check.list(str);  # maybe redundant of a check from another function
-
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.METHOD = check.type(method);
+	if(!ct.METHOD || !is.character(method))	
+		{ method = deparse(substitute(method)); } 
+##########################################################
 	METHOD = prep.strMethod(method, n=1);
 
 	FNS = list(
@@ -408,6 +448,13 @@ str.unsplit = str.implode;
 #------------------------------------------------#
 str.repeat = function(str, times=1, method="base")
 	{
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.METHOD = check.type(method);
+	if(!ct.METHOD || !is.character(method))	
+		{ method = deparse(substitute(method)); } 
+##########################################################
 	METHOD = prep.strMethod(method, n=1);
 
 	FNS = list(
@@ -489,7 +536,13 @@ str.replace = function(search, replace, subject, method="first", force.case=0)
 	# 3 is 				1-n paired over each N 
 	# 4 is 				m=n over each N ... recycling (nonsensical)
 debug = FALSE;
-
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.METHOD = check.type(method);
+	if(!ct.METHOD || !is.character(method))	
+		{ method = deparse(substitute(method)); } 
+##########################################################
 	METHOD = prep.strMethod(method, n=1);
 
 			# stringi::stri_replace_all_fixed
@@ -567,8 +620,21 @@ str.pad = function(str,
 					)
 	{
 	str = as.character(str);	
-	
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.METHOD = check.type(method);
+	if(!ct.METHOD || !is.character(method))	
+		{ method = deparse(substitute(method)); } 
+##########################################################
 	METHOD = prep.strMethod(method, n=1);
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.SIDE = check.type(side);
+	if(!ct.SIDE || !is.character(side))	
+		{ side = deparse(substitute(side)); } 
+##########################################################
 	SIDE = prep.strSide(side, n=1);
 
 	FNS = list(
@@ -741,4 +807,3 @@ str.pos = function(str, search, n=Inf, skip=0)
 	list.return(res);
 	}
 	
-strpos = str.pos;

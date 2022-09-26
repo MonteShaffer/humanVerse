@@ -3,9 +3,17 @@
 
 fn.distance = function(method="euclidean")
 	{
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
 	ct.METHOD = check.type(method);
 	if(!ct.METHOD || !is.character(method))	
-		{ method = deparse(substitute(method)); }
+		{ method = deparse(substitute(method)); } 
+##########################################################
+
+	ct.METHOD = check.type(method);
+	if(!ct.METHOD || !is.character(method))	
+		{ method = deparse(substitute(method)); } 
 	
 	DISTANCE = list(
 		"euclidean" = function(a,b) { sqrt(sum((a - b)^2)); }, # norm-euclidean?

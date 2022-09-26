@@ -175,14 +175,27 @@ constants.init = function(globalize.ALL = TRUE)
 	
 constants.get = function(KEY)
 	{
-	key = check.string(KEY);
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.KEY = check.type(KEY);
+	if(!ct.KEY || !is.character(KEY))	
+		{ key = deparse(substitute(key)); } else { key = KEY; }
+##########################################################
+
 	memory.get(key, "-CONSTANTS-", VAL);	
 	}
 	
 	
 constants.define = function(KEY, VAL, namespace="humanVerse")
 	{
-	key = check.string(KEY);
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.KEY = check.type(KEY);
+	if(!ct.KEY || !is.character(KEY))	
+		{ key = deparse(substitute(key)); } else { key = KEY; }
+##########################################################
 	
 	# a constant, if SET doesn't change ... DEFINE_CONSTANT not const 
 	val = constants.get(key);

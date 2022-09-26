@@ -131,16 +131,17 @@ xls.PERMUT = function(n, r)
 	n %nPr% r;	
 	}
 	
-xls.T.DIST = function(x, df, cdf=TRUE, method="humanVerse")
+xls.T.DIST = function(x, df, cdf=TRUE, method="humanVerse", plot=TRUE)
 	{
 	if(method == "humanVerse")
 		{
-		if(cdf) 	{ return( CDF(x, "t", df) ); }  # cdf 
-		if(!cdf) 	{ return( PDF(x, "t", df) ); }  # pdf 
+		if(cdf) 	{ res = CDF(x, "t", df); }  # cdf 
+		if(!cdf) 	{ res = PDF(x, "t", df); }  # pdf 
 		} else {
-				if(cdf) 	{ return(stats::pt(x, df)); }  # cdf 
-				if(!cdf) 	{ return(stats::dt(x, df)); }  # pdf 
+				if(cdf) 	{ res = stats::pt(x, df); }  # cdf 
+				if(!cdf) 	{ res = stats::dt(x, df); }  # pdf 
 				}
+	if(plot) { ggg.t(x, df, cdf, overlay=TRUE); }
 	}
 	
 xls.T.DIST.2T = function(x, df)

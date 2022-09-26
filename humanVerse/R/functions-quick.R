@@ -130,7 +130,6 @@ debug = FALSE;
 	}
 
 
-quick.source = qucik = quick;
 
 
 

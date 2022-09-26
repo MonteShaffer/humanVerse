@@ -22,6 +22,7 @@ cleanup.base = function(xstr)
 
 .base2int = function(xstri, base=16)
 	{
+	if(length(num) != 1) { stop("This is univariate, num should be one number.  Maybe try [int2base] without the dot [.] for the multivariate version"); }
 	# univariate, no checks 
 	base.init();
 	MAP = BXXv[1:base];	
@@ -78,7 +79,7 @@ base.from = base2int;
 
 .int2base = function(num, base=16)
 	{
-	if(length(num) != 1) { stop("This is univariate, num should be one number"); }
+	if(length(num) != 1) { stop("This is univariate, num should be one number.  Maybe try [int2base] without the dot [.] for the multivariate version"); }
 	base.init();
 	MAP = BXXv[1:base];
 	# update to allow base64 

@@ -135,7 +135,16 @@ obj.exists = check.obj;
 # isset = is.set;
 
 
+rowbind = rbind;
+colbind = cbind;
+deput = dput;
+deput.one = dput.one;
 
+
+strpos = str.pos;
+
+
+quick.source = qucik = quick; 
 	
 	}
 	

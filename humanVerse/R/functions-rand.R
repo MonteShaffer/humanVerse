@@ -25,21 +25,29 @@
 #' rand(1,10, n=5, method="sample", sample.replace=FALSE); # min, max, n must be comformable "with replacement = FALSE"
 #' rand(1,10, n=5, seed=10);  # fixed seed requires the min/max to be known
 rand = function() {}
-rand = function(min = -1*as.integer(Sys.time()), max = as.integer(Sys.time()), n = 1, method = "high-low", sample.replace = TRUE, seed = NULL, attributes=NULL) 
+rand = function(min = as.integer(-1*10^5*as.numeric(Sys.time())), max = as.integer(1*10^5*as.numeric(Sys.time())), n = 1, method = "high-low", sample.replace = TRUE, seed = NULL, attributes=NULL, to.integer=TRUE) 
     {
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.METHOD = check.type(method);
+	if(!ct.METHOD || !is.character(method))	
+		{ method = deparse(substitute(method)); } 
+##########################################################
 	METHOD = prep.rand(method);
 	
 	n = as.integer ( n );
+	# min/max can be non-integer, but 'rand' is generally considered an integer operation
 	if(is.na(n) || n < 1)
 		{
-		msg = prep.msg( paste0('Bad value for n "', n, '" in function [rand]', "\n", "Setting n=1") );
+		msg = prep.msg( paste0('Bad input for parameter n "', n, '" in function [rand]', "\n", "Setting n=1") );
 		cat.warning(msg);
 		n = 1;
 		}
 	
 	FNS = list(
-			"high-low" 		= function() { ( as.integer(( (max + 1) - min) * stats::runif(n) + min) ) } , 
-			"floor" 	= function() { ( as.integer( floor( stats::runif(n, min = min, max = (max + 1) ) ) ) ); } ,
+			"high-low" 		= function() { min + (max + 1 - min) * stats::runif(n)  } , 
+			"floor" 	= function() { floor( stats::runif(n, min = min, max = (max + 1) ) ); } ,
 			"sample" 		= function() { sample(min:max, n, replace = check.sample(sample.replace, min,max, n)); }
 			);
 			
@@ -53,6 +61,7 @@ rand = function(min = -1*as.integer(Sys.time()), max = as.integer(Sys.time()), n
 				res = FNS[["high-low"]]();
 				}
 		
+	if(to.integer) { res = as.integer(res); }
 	if(!is.null(attributes))
 		{
 		vals = list('min' = min, 'max' = max, 'n' = n, 

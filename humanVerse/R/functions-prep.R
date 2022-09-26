@@ -42,6 +42,7 @@ parse.syscall = function(syscall)
 	pkeys = trimws(pkeys, which="both");
 	
 	pvals = list.getElements(minfo, 2);
+	dot.vals = NULL;
 	
 	
 
@@ -78,21 +79,28 @@ parse.syscall = function(syscall)
 			{
 			pval = pvals[pidx]; 
 			
-# if(fn == "CDF") { cat("\n\n key: ", key, " \t pidx :", pidx, " \t pkey :", pkey, " \t pval :", pval, "\n\n"); 	}
+if(fn == "CDF") { cat("\n\n key: ", key, " \t pidx :", pidx, " \t pkey :", pkey, " \t pval :", pval, "\n\n"); 	}
 	
+			
 			if(!is.na(pval))
 				{
-				params[[ pkey ]] = eval(parse(text=pval));
-				}
+				params[[ key ]] = eval(parse(text=pval));
+				} else {
+						params[[ key ]] = eval(pkey);
+						}
 			}
 		if(key == "...")
 			{			
 			nkey = keys[i+1]; 
-# if(fn == "CDF") { cat("\n\n key: ", key, " \t pidx :", pidx, " \t pkey :", pkey, " \t pval :", pval, " \t nkey :", nkey, "\n\n"); 	}
+ if(fn == "CDF") { cat("\n\n key: ", key, " \t pidx :", pidx, " \t pkey :", pkey, " \t pval :", pval, " \t nkey :", nkey, "\n\n"); 	}
 				if(is.na(nkey)) { nkey = "kdsfjklsdj093-"; }
 			if(!is.na(pkey))  # na if nothing inside 
 				{
-				if(nkey != pkey) { fkeys = pkey; } else { stop("bad keys"); }
+				if(nkey != pkey) 
+					{ 
+					fkeys = pkey; 
+					dot.vals = c(dot.vals, eval(pkey));
+					} else { stop("bad keys"); }
 				np = length(pkeys); # maximum search 
 				j = pidx;
 				while(j <= np)
@@ -102,12 +110,19 @@ parse.syscall = function(syscall)
 					pkey = pkeys[pidx];
 					if(!is.null(withV) && withV[1] == pidx) { pskip %--%. ; break; }
 					if(is.na(pkey)) { pskip %--%. ; break; }  # out pf pkeys ... 
-					if(nkey != pkey) { fkeys = c(fkeys, pkey); } else { pskip %--%. ; break; } 
+					if(nkey != pkey) 
+						{ 
+if(fn == "CDF") { cat("\n\n key: ", key, " \t pidx :", pidx, " \t pkey :", pkey, " \t pval :", pval, " \t nkey :", nkey, " \t pskip :", pskip, "\n\n"); 	}
+
+						fkeys = c(fkeys, pkey); 
+						dot.vals = c(dot.vals, eval(pkey));
+						} else { pskip %--%. ; break; } 
 					}
 				}
 			}
 		map[[key]] = fkeys; 
 		}
+	
 
 #dput(map);
  
@@ -120,6 +135,7 @@ parse.syscall = function(syscall)
 	res = list(
 				"fn" = fn, 
 				"dot.keys"  = fkeys,
+				"dot.vals"  = dot.vals,
 				"params" = params, 
 				"map" = map, 
 				"formals" = form
@@ -235,12 +251,11 @@ prep.switch = function(THING="both", keys=c("l","r","b"), vals=c("left", "right"
 		}
 	if(is.null(newthing)) { newthing = default; }
 	newthing;	
-	}
+	} 
 	
 	
 prep.strSide = function(side="both", n=1, ... , default="both", keys=NULL, vals=NULL)
-	{
-	side = check.string(side);		
+	{		
 	SIDE = prep.arg(side, n=n, ...);
 		
 	if(is.null(keys)) { keys = c("l","r","b"); }
@@ -250,8 +265,7 @@ prep.strSide = function(side="both", n=1, ... , default="both", keys=NULL, vals=
 	}
 	
 prep.rand = function(method="high-low", n=2, ... , default="first", keys=NULL, vals=NULL)
-	{
-	method = check.string(method);		
+	{	
 	METHOD = prep.arg(method, n=n, ...);
 		
 	if(is.null(keys)) { keys = c("fi", "hi","fl","sa"); }
@@ -263,8 +277,7 @@ prep.rand = function(method="high-low", n=2, ... , default="first", keys=NULL, v
 
 	
 prep.strMethod = function(method="first", n=1, ... , default="base", keys=NULL, vals=NULL)
-	{
-	method = check.string(method);		
+	{	
 	METHOD = prep.arg(method, n=n, ...);
 
 	if(is.null(keys)) { keys = c("f","c","s","b", "t"); }
@@ -278,8 +291,7 @@ prep.strMethod = function(method="first", n=1, ... , default="base", keys=NULL, 
 	
 
 prep.primeMethod = function(method="first", n=1, ... , default="base", keys=NULL, vals=NULL)
-	{
-	method = check.string(method);		
+	{		
 	METHOD = prep.arg(method, n=n, ...);
 
 	if(is.null(keys)) { keys = c("f","c","p","b", "s", "h"); }

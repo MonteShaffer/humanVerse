@@ -71,25 +71,23 @@ prep.distribution = function(method)
 	
 	
 # call-list ... do.call()
+# do.call("pt", list(3, 3))
+# do.call("pt", list(3, df=3))
 prep.distCall = function(clist, dots)
 	{ 
-dput(clist);
+	nk = length(dots); if(nk < 1) { return(clist); }
+	idx = 1 + length(clist);
 dput(dots);
-stop("monte");
-dput(...);
-mc = match.call(expand.dots = FALSE)$... ;
-mcc = as.character(mc);
-dput(mc);
-dput(mcc);
-dput(unlist(as.list(...)));
-	keys = names(dots);
+	# could be unnamed keys ...
+	keys = names(dots); if(is.null(keys)) { keys = (idx):(idx+nk); }
 	vals = unname(dots);
-	nk = length(keys);
+
 	for(i in 1:nk)
 		{
 		key = keys[i]; val = unlist(vals[i]);  # vectored?
 		clist[[key]] = val;
 		}
+
 	clist;
 	}
 
@@ -156,36 +154,31 @@ PDF.fn = function() {}
 PDF = function(x, method="norm", ...)
 	{
 	# probability density function ... height at point x ... 
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.METHOD = check.type(method);
+	if(!ct.METHOD || !is.character(method))	
+		{ method = deparse(substitute(method)); } 
+##########################################################
+
 	dots = match.call(expand.dots = FALSE)$...
-# dput(dots);
 	clist = list(x=x); 
 	if(!is.null(dots)) 
 		{
 		dots = list(...);
-		clist = prep.clist(clist, dots);
+		clist = prep.distCall(clist, dots);
 		}
-	ct.method = check.type(method);
-	if(!ct.method || !is.character(method)) 
-		{ method = deparse(substitute(method)); }
-	METHOD = prep.arg(method, n=4, keep="-");
-	# http://127.0.0.1:23214/library/stats/html/Distributions.html
+dput(clist);
 		
-	KEY = prep.distribution(METHOD);
-	if(KEY == "--NULL--")
-		{
-		df = property.get("IN", KEY);
-		msg = msg.badOption("method", method, METHOD);	
-		cat("\n\n"); minvisible( df, display=TRUE ); cat("\n\n"); 
-		IN.clear();	
-		cat.stop(msg);
-		}
+	KEY = prep.distribution(method);		
+		
 	fn.name = paste0("d", as.character(KEY));
-	
 	
 	res = do.call(fn.name, clist);	
 	res = property.set("params", res, clist);
 	res = property.set("fn.name", res, fn.name);
-	minvisible(res, print="str");
+	minvisible(res, display="str");
 	invisible(res);
 	}
  
@@ -197,25 +190,32 @@ CDF.fn = function() {}
 CDF = function(q, method="norm", ...)
 	{ 
 	# cumulative distribution function ... cumulative area from -Inf to x
-	method = check.string(method);
-	
-#	key = as.character(substitute(KEY));
-	
-	
-dput(method);
-	dots = prep.dots(..., collapse = FALSE, has.objects = TRUE);
-dput(dots);
-	
-	KEY = prep.distribution(method);  # this will trigger STOP 
-dput(KEY);	
-	
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.METHOD = check.type(method);
+	if(!ct.METHOD || !is.character(method))	
+		{ method = deparse(substitute(method)); } 
+##########################################################
+
+	dots = match.call(expand.dots = FALSE)$...
+	clist = list(q=q); 
+	if(!is.null(dots)) 
+		{
+		dots = list(...);
+		clist = prep.distCall(clist, dots);
+		}
+dput(clist);
+		
+	KEY = prep.distribution(method);		
+		
 	fn.name = paste0("p", as.character(KEY));
-	
+
 	clist = prep.distCall(list(q=q), dots);
 	res = do.call(fn.name, clist);	
 	res = property.set("params", res, clist);
 	res = property.set("fn.name", res, fn.name);
-	minvisible(res, print="str");
+	minvisible(res, display="str");
 	invisible(res);
 	}
 	
@@ -225,29 +225,26 @@ CDF.inv = function(p, method="norm", ...)
 	# inverse cumulative distribution function ...
 	#	cumulative area from -Inf to x 
 	# give me the area (a as probability [0,1]), I will give you the x value 
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.METHOD = check.type(method);
+	if(!ct.METHOD || !is.character(method))	
+		{ method = deparse(substitute(method)); } 
+##########################################################
+
 	dots = match.call(expand.dots = FALSE)$...
 	clist = list(p=p); 
 	if(!is.null(dots)) 
 		{
-		dots = list(...); 
-		clist = prep.clist(clist, dots);
+		dots = list(...);
+		clist = prep.distCall(clist, dots);
 		}
-	ct.method = check.type(method);
-	if(!ct.method || !is.character(method)) 
-		{ method = deparse(substitute(method)); }
-	
-	METHOD = prep.arg(method, n=4, keep="-");
-	# http://127.0.0.1:23214/library/stats/html/Distributions.html
+dput(clist);
 		
-	KEY = prep.dist(METHOD);
-	if(KEY == "--NULL--")
-		{
-		df = property.get("IN", KEY);
-		msg = msg.badOption("method", method, METHOD);	
-		cat("\n\n"); minvisible( df, display=TRUE ); cat("\n\n"); 
-		IN.clear();	
-		cat.stop(msg);
-		}
+	KEY = prep.distribution(method);		
+		
+		
 	fn.name = paste0("q", as.character(KEY));
 	# https://www.stat.umn.edu/geyer/old/5101/rlook.html
 	

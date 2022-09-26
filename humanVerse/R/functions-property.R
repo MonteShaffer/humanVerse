@@ -1,12 +1,18 @@
 
 
-system.set_ = function(key, value=NULL)
+system.set_ = function(KEY, value=NULL)
 	{
-	key = check.string(key);
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.KEY = check.type(KEY);
+	if(!ct.KEY || !is.character(KEY))	
+		{ key = deparse(substitute(key)); } else { key = KEY; }
+##########################################################
 	# everything's a string ...
-	str = paste0('Sys.setenv("',key[i],'" = "',value[idx.v],'")');
+	str = paste0('Sys.setenv("',key,'" = "',value,'")');
 				eval(parse(text=str));	
-	(Sys.getenv(key[i]));
+	(Sys.getenv(key));
 	}
 	
 system.set = function(key, value=NULL, as.null = FALSE) 
@@ -149,9 +155,15 @@ system.restoreInitialState = function()
 #' @examples
 # .get has to be key first ... SYSTEM 
 # set key on obj with value 
-property.set_ = function(key, obj, value=NULL)
+property.set_ = function(KEY, obj, value=NULL)
 	{
-	key = check.string(key);
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.KEY = check.type(KEY);
+	if(!ct.KEY || !is.character(KEY))	
+		{ key = deparse(substitute(key)); } else { key = KEY; }
+##########################################################
 	attributes(obj)[[ key[1] ]] = value;
 	obj;	
 	}
@@ -286,9 +298,15 @@ property.restoreInitialState = function()
 #' @export
 #'
 #' @examples
-option.set_ = function(key, value)
+option.set_ = function(KEY, value)
 	{
-	key = check.string(key);
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.KEY = check.type(KEY);
+	if(!ct.KEY || !is.character(KEY))	
+		{ key = deparse(substitute(key)); } else { key = KEY; }
+##########################################################
 	TEMPLATE = "options({key} = {value});"; 
 	eval.fromTemplate(TEMPLATE, key, value);	
 	}
@@ -453,9 +471,15 @@ options.restoreInitialState = function()
 #'
 #' @examples
 # bazaar graphics::par opens a par window in RGui
-par.set_ = function(key, value)
+par.set_ = function(KEY, value)
 	{
-	key = check.string(key);
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.KEY = check.type(KEY);
+	if(!ct.KEY || !is.character(KEY))	
+		{ key = deparse(substitute(key)); } else { key = KEY; }
+##########################################################
 	TEMPLATE = "graphics::par({key} = {value});"; 
 	eval.fromTemplate(TEMPLATE, key, value);	
 	}
