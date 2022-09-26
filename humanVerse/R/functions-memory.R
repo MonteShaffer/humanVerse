@@ -156,7 +156,7 @@ memory.append = function(key, MEMORY="BASE", value)
 minvisible.get = function(key="LAST")
 	{
 	memory.get(key, "-MINVISIBLE-");
-	}
+	} 
 
 minvisible = function(x, key="ANS", display=TRUE)
 	{

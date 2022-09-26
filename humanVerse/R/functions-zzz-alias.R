@@ -14,6 +14,8 @@ alias.init = function()
 	
 	
 	INTERNAL = list(); # smart aliasing on functions ... fn. expansion 
+	 }
+	 
 	 
 	arg.prep = prep.arg; 
 	prep.args = prep.arg; 
@@ -110,10 +112,39 @@ ln = log;
 
 "%GLOBAL%" = .GLOBAL.;
 "%TO%" = .TO.;	
-"%THIS%" = .THIS.; 
+"%THIS%" = .THIS.;  
 "%+%" = .ADD.;
-"%++%" = .PLUS_PLUS.;		# TODO  .PLUS_EQUAL.
-"%--%" = .MINUS_MINUS.;		# TODO  .MINUS_EQUAL.
+"%++%" = .PLUS_PLUS.;		  
+"%+=%" = .PLUS_EQUAL.;
+"%--%" = .MINUS_MINUS.;		
+"%-=%" = .MINUS_EQUAL.;
+
+"%.=%" = .DOT_EQUAL.;
+"%=.%" = .EQUAL_DOT.;
+"%.%" = .DOT.;
+
+
+# > x= "monte"
+# > y = "alex"
+# > z = "mama"
+# > x %.% y
+# [1] "monte alex"
+# > x %.% y %.% z
+# [1] "monte alex mama"
+# > x %.% y %.% z %.% y
+# [1] "monte alex mama alex"
+# > zz = x %.% y %.% z %.% y
+# > zz
+# [1] "monte alex mama alex"
+# > zz %.=% a
+# > zz
+# [1] "monte alex mama alex|-7"
+# > zz %=.% b
+# > zz
+# [1] "monte alex mama alex|-76|"
+
+
+ 
 	
 "%IN%" = IN;
 
@@ -148,7 +179,8 @@ quick.source = qucik = quick;
 
 gcd = lcd = gcd.lcd = lcm = gcd.lcm;
 	
-	}
+	
+	
 	
 	
 alias.add = function()

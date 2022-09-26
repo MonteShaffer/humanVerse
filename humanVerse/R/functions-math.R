@@ -1,4 +1,6 @@
 
+# row.echelon for INTERNAL rank calcualtion 
+# have some sort of demo option ...
 
 
 

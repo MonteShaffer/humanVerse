@@ -47,14 +47,14 @@ lines = str.explode("\r\n", inistr);
 
 
 
-addKeyToResult = function(key)
+addKeyToResult = function(key, what=list())
 		{
 		hasResult = FALSE;  # shorter than is.null on search
 		if(!hasResult && CURRENT_GRAND == "")
 			{
 			# top level 
 			CURRENT_GRAND = key;
-			res[[CURRENT_GRAND]] = list();
+			res[[CURRENT_GRAND]] = what;
 			CURRENT_GRAND %TO% envir;
 			hasResult = TRUE;
 			}
@@ -62,7 +62,7 @@ addKeyToResult = function(key)
 			{
 			# top level 
 			CURRENT_PARENT = key;
-			res[[CURRENT_GRAND]][[CURRENT_PARENT]] = list();
+			res[[CURRENT_GRAND]][[CURRENT_PARENT]] = what;
 			CURRENT_PARENT %TO% envir;
 			hasResult = TRUE;
 			}
@@ -70,7 +70,7 @@ addKeyToResult = function(key)
 			{
 			# top level 
 			CURRENT_CHILD = key;
-			res[[CURRENT_GRAND]][[CURRENT_PARENT]][[CURRENT_CHILD]] = list();
+			res[[CURRENT_GRAND]][[CURRENT_PARENT]][[CURRENT_CHILD]] = what;
 			CURRENT_CHILD %TO% envir;
 			hasResult = TRUE;
 			}
@@ -84,22 +84,71 @@ addKeyToResult = function(key)
 			dput(nodes); stop("monte");
 			# need to do maybe, not necessary for default setup ...
 			
-			}
+			} 
 			
 			
 		res %TO% envir;		 
 		}
+		
+	updateCurrentTree()
+		{
+		# maybe pass in existing TREE and PRUNE or AUGMENT depending on KEY
+		CURRENT_TREE = "";
+			# dot.operator  ... append "|" by default ... 
+			# %.=% ... "|" . THING 
+			# %=.% ... THING . "|" 
+			# %.=.% ... THING only ... 
+		if(CURRENT_GRAND != "") { CURRENT_TREE %=.% CURRENT_GRAND; }
+		if(CURRENT_PARENT != "") { CURRENT_TREE %=.% CURRENT_PARENT; }
+		if(CURRENT_CHILD != "") { CURRENT_TREE %=.% CURRENT_CHILD; }
+		
+		CURRENT_TREE = str.trimFromFixed(CURRENT_TREE, "|", "RIGHT");
+		
+		CURRENT_TREE %TO% envir;
+		}
+		
 		
 	treeReset = function()
 		{
 		CURRENT_GRAND = "";		CURRENT_GRAND %TO% envir;
 		CURRENT_PARENT = "";	CURRENT_PARENT %TO% envir;
 		CURRENT_CHILD = "";		CURRENT_CHILD %TO% envir;
-		
+		CURRENT_TREE = ""; 		CURRENT_TREE %TO% envir;
 		}
 	
-	
-	
+	parseKey = function(key)
+		{
+		# ##################### key ##############
+		# calendar	  = "Gregorian"	
+		# tz["display"] = "UTC"
+		# salt.key = EE8553FD3B5FD6EE   ; 152-bit WEP
+		# salt[salt.key:key]
+		# authorizeNET[sandbox][user] 
+		# images[good] ... lengthy array ... 
+		
+		
+		
+		}
+		
+		
+	parseLine = function()
+		{
+		# has equals, only one ??? 
+		# first equals separates key = value 
+		# value may have equals in text only ...
+		info = str.explode("=", line);
+		
+		key = str.trim(info[1]);
+		parseKey(key);  # need to return a list pointer of somesort
+		
+		# put extra equals back ... 
+		val = str.implode("=", info[-1]);
+		parseVal(val);	# append the value to current TREE ... 
+		
+		
+		}
+		
+		
 	parseHeader = function()
 		{
 		# https://regex101.com/r/JAVV4a/1
@@ -171,6 +220,8 @@ ini.parse = function(inistr, as.lines=FALSE)
 			next;
 			} else {
 					# we are under a TREE by CURRENT_XYZ
+					parseLine();
+					next;
 					print(line); stop("monte");
 					}
 		

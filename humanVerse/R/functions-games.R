@@ -130,7 +130,7 @@ snails.pace = function(snails = 6, finish.line = 8, moves = 200,
 				x = readline(prompt="Press [enter] to continue, [ESC] to quit");
 				} 
 		# n = sample((1:snails), 1);	n %TO% envir;
-		n = v.shuffle((1:snails), 1);	n %TO% envir;
+		n = v.shuffle((1:snails), 1);	n %TO% envir; 
 		
 		snail.x[n] %++%. ;  # = 1 + snail.x[n];
 		if( (snail.rank[n] == 0) && (snail.x[n] >= finish.line) )

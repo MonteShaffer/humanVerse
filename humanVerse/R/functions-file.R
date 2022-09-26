@@ -1,7 +1,7 @@
 
 
 # maybe have a copy/paste file ...
-
+ 
 # maybe have openSesame, but this is generally me copying PATH from WINDOWZ into R ...
 pathFromClipboard = function(trailing = TRUE)
 	{
@@ -11,6 +11,10 @@ pathFromClipboard = function(trailing = TRUE)
 	minvisible(y, display=print, key="PATH");
 	}
 
+# > y = pathFromClipboard()
+# > y
+# [1] "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/"
+# > openSesame(y)
 
 
 

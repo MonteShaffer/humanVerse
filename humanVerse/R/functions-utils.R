@@ -180,6 +180,7 @@ define = function(KEY, VALUE) {}
 .TO. = function() {}
 .TO. = function(WHAT, WHERE=parent.frame(2))
 	{
+cat("\n\n MONTE \n\n");
 # cat("\n");
 # print(environment());
 # print(parent.env(environment()));
@@ -300,8 +301,79 @@ define = function(KEY, VALUE) {}
 	}
 	
 	
+			# dot.operator  ... append "|" by default ... 
+			# %.=% ... "|" . THING 
+			# %=.% ... THING . "|" 
+			# %.=.% ... THING only ... this is DOT below  	
+			# %.% ... ccould you chain these ? like NORMAL PHP 
+		
+
+.EQUAL_DOT. = function() {}  # %=.% ==> THING . "|" 
+.EQUAL_DOT. = function(KEY, VALUE, sep="|", WHERE=parent.frame(1))
+	{
+	# these functions are much simpler than the one's already written
+	key = KEY; val = VALUE;
+	key = paste0(key, val, sep);
+	 
+	KEY = deparse(substitute(KEY));
+	assign(KEY, key, envir=WHERE );
+	minvisible(key, key=KEY);
+	}
 	
-.PLUSPLUS. = function() {}
+.DOT_EQUAL. = function() {}  # %.=% ==> "|" . THING 
+.DOT_EQUAL. = function(KEY, VALUE, sep="|", WHERE=parent.frame(1))
+	{
+	# these functions are much simpler than the one's already written
+	key = KEY; val = VALUE;
+	key = paste0(key, sep, val);
+	
+	KEY = deparse(substitute(KEY));
+	assign(KEY, key, envir=WHERE );
+	minvisible(key, key=KEY);
+	}
+
+
+.DOT. = function() {}		 # %.%  ==>  a . b . c  ... 
+.DOT. = function(KEY, VALUE, sep=" ", WHERE=parent.frame(1))
+	{
+	# these functions are much simpler than the one's already written
+	key = KEY; val = VALUE;
+	key = paste0(key, sep, val);
+	
+	KEY = deparse(substitute(KEY));
+	key;
+	}		
+		
+		
+.PLUS_EQUAL. = function() {}	# "%+=%"
+.PLUS_EQUAL. = function(KEY, VALUE, WHERE=parent.frame(1))
+	{
+	# these functions are much simpler than the one's already written
+	key = KEY; val = VALUE;
+	key = key + val;
+	
+	KEY = deparse(substitute(KEY));
+	assign(KEY, key, envir=WHERE );
+	minvisible(key, key=KEY);
+	}
+
+
+
+
+.MINUS_EQUAL. = function() {}	# "%-=%"
+.MINUS_EQUAL. = function(KEY, VALUE, WHERE=parent.frame(1))
+	{ 
+	# these functions are much simpler than the one's already written
+	key = KEY; val = VALUE;
+	key = key - val;
+	
+	KEY = deparse(substitute(KEY));
+	assign(KEY, key, envir=WHERE );
+	minvisible(key, key=KEY);
+	}
+	
+
+.PLUS_PLUS. = function() {}
 # x = function() { print(environment()); print(parent.env(environment())); print(parent.frame(1)); print(parent.frame(2)); i = 0; a = 0; b = 0; for(j in 1:3) { a = i%++%.; cat("\n ja -->", j, "\t a:",a, "\t b:",b, "\t i:",i); b = .%++%i; cat("\n jb -->", j, "\t a:",a, "\t b:",b, "\t i:",i); }; cat("\n"); }
 
 .PLUS_PLUS. = function(KEY, VALUE, WHERE=parent.frame(1))
@@ -358,7 +430,7 @@ define = function(KEY, VALUE) {}
 	
 
 
-
+.MINUS_MINUS. = function() {}
 .MINUS_MINUS. = function(KEY, VALUE, WHERE=parent.frame(1))
 	{
 	ct.KEY = check.type(KEY);
