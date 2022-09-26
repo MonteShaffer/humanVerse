@@ -1,4 +1,27 @@
 
+
+
+
+
+
+
+ini.file = "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/sample.ini";
+
+
+inistr = readChars(ini.file, 8888);
+
+# write a new readString function that doesn't require a length ... all of it by default ... 
+
+
+lines = str.explode("\r\n", inistr);
+
+
+
+
+
+
+
+
 # need a .regex(PATTERN) wrapper that allows standard INPUTS
 # from PCRE or PHP or JAVASCRIPT /regex/gi ... 
 # and translates to GREP / PCRE in R ...
@@ -144,7 +167,8 @@ ini.parse = function(inistr, as.lines=FALSE)
 		if(first == "[")
 			{
 			treeReset();
-			parseHeader();			
+			parseHeader();	
+			next;
 			} else {
 					# we are under a TREE by CURRENT_XYZ
 					print(line); stop("monte");
@@ -159,13 +183,6 @@ ini.parse = function(inistr, as.lines=FALSE)
 	
 	}
 
-
-ini.file = "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/sample.ini";
-
-
-inistr = readChars(ini.file, 8888);
-
-# write a new readString function that doesn't require a length ... all of it by default ... 
 
 
 

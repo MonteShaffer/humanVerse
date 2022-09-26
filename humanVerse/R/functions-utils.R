@@ -174,16 +174,16 @@ define = function(KEY, VALUE) {}
  
  
  
-
-
+  
+ 
  
 .TO. = function() {}
 .TO. = function(WHAT, WHERE=parent.frame(2))
 	{
-cat("\n");
-print(environment());
-print(parent.env(environment()));
-print(parent.env(parent.env(environment())));
+# cat("\n");
+# print(environment());
+# print(parent.env(environment()));
+# print(parent.env(parent.env(environment())));
 	#DEFAULT = parent.frame(1); # caller? parent
 	DEFAULT = parent.frame(2); # one above caller? grandparent
 	# allows x %TO% . 

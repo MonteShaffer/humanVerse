@@ -58,6 +58,9 @@ quick = function(..., character.only = FALSE, res=NULL, verbose=FALSE)
 	if(!character.only) { fns = as.character(fns); }
 # dput(fns);
 
+	# we moved our aliases, so quick(utils) doesn't update %TO% 
+	fns = unique( c(fns, "zza-special", "zzz-alias"));
+
 	if(is.null(res)) { res = memory.get("alex", "SYSTEM"); };
 	
 	for(key in fns)
