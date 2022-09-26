@@ -145,6 +145,8 @@ strpos = str.pos;
 
 
 quick.source = qucik = quick; 
+
+gcd = lcd = gcd.lcd = lcm = gcd.lcm;
 	
 	}
 	

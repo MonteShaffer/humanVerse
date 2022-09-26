@@ -264,24 +264,24 @@ prep.strSide = function(side="both", n=1, ... , default="both", keys=NULL, vals=
 	prep.switch(SIDE, keys, vals, default);
 	}
 	
-prep.rand = function(method="high-low", n=2, ... , default="first", keys=NULL, vals=NULL)
+prep.rand = function(method="high-low", n=2, ... , default="high-low", keys=NULL, vals=NULL)
 	{	
 	METHOD = prep.arg(method, n=n, ...);
 		
-	if(is.null(keys)) { keys = c("fi", "hi","fl","sa"); }
-	if(is.null(vals)) { vals = c("first", "high-low", "floor", "sample"); }
+	if(is.null(keys)) { keys = c("hi","fl","sa"); }
+	if(is.null(vals)) { vals = c("high-low", "floor", "sample"); }
 	
 	prep.switch(METHOD, keys, vals, default);
 	}
 
 
 	
-prep.strMethod = function(method="first", n=1, ... , default="base", keys=NULL, vals=NULL)
+prep.strMethod = function(method="cpp", n=1, ... , default="first", keys=NULL, vals=NULL)
 	{	
 	METHOD = prep.arg(method, n=n, ...);
 
-	if(is.null(keys)) { keys = c("f","c","s","b", "t"); }
-	if(is.null(vals)) {	vals = c("first", "cpp", "stringi", "base", "trimws"); }
+	if(is.null(keys)) { keys = c("c","s","b", "t"); }
+	if(is.null(vals)) {	vals = c("cpp", "stringi", "base", "trimws"); }
 
 	
 	prep.switch(METHOD, keys, vals, default);
@@ -290,12 +290,12 @@ prep.strMethod = function(method="first", n=1, ... , default="base", keys=NULL, 
 	
 	
 
-prep.primeMethod = function(method="first", n=1, ... , default="base", keys=NULL, vals=NULL)
+prep.primeMethod = function(method="bit", n=1, ... , default="first", keys=NULL, vals=NULL)
 	{		
 	METHOD = prep.arg(method, n=n, ...);
 
-	if(is.null(keys)) { keys = c("f","c","p","b", "s", "h"); }
-	if(is.null(vals)) {	vals = c("first", "cpp", "pracma", "bit", "sfsmisc", "hack"); }
+	if(is.null(keys)) { keys = c("c","p","b", "s", "h"); }
+	if(is.null(vals)) {	vals = c("cpp", "pracma", "bit", "sfsmisc", "hack"); }
 
 	
 	prep.switch(METHOD, keys, vals, default);

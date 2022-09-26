@@ -22,8 +22,8 @@ cleanup.base = function(xstr)
 
 .base2int = function(xstri, base=16)
 	{
-	if(length(num) != 1) { stop("This is univariate, num should be one number.  Maybe try [int2base] without the dot [.] for the multivariate version"); }
 	# univariate, no checks 
+	xstri = as.character(xstri[1]);
 	base.init();
 	MAP = BXXv[1:base];	
 	# update to allow base64 
@@ -44,13 +44,20 @@ cleanup.base = function(xstr)
 # base2int to an INTEGER 
 base2int = function(..., base=16, method="first")
 	{
-	xstr = prep.dots(..., default=c("0", "abc", "EA08", "c8008c", "abbacdc", "7FFFFFFF") );
+	xstr = prep.dots(..., default=c("0", "abc", "EA08", 
+								"c8008c", "abbacdc", "7FFFFFFF") 
+					);
+	
+		
 #dput(xstr);
 	xstr = cleanup.base(xstr);
 	b = check.base(base);
 	
 	METHOD = prep.arg(method, n=1);
-			keys = c("c","b"); vals = c("cpp", "base");	default = "first";	
+		keys = c("c","b"); 
+		vals = c("cpp", "base");
+		# NOTICE 'default' doesn't have to be in key/val map ...
+		default = "first";	
 	METHOD = prep.switch(METHOD, keys, vals, default);
 		
 		
@@ -79,13 +86,15 @@ base.from = base2int;
 
 .int2base = function(num, base=16)
 	{
-	if(length(num) != 1) { stop("This is univariate, num should be one number.  Maybe try [int2base] without the dot [.] for the multivariate version"); }
+	# univariate, no checks 
+	num = as.integer(num[1]);
 	base.init();
 	MAP = BXXv[1:base];
 	# update to allow base64 
 	if(base == 64) { MAP = B64v; }
 	
-	r = ""; if(num == 0) { return("0"); }
+	if(num == 0) { return(MAP[1]); }
+	r = ""; 
 	while(num > 0) 
 		{
 		m = num %% base;
@@ -101,15 +110,20 @@ base.from = base2int;
 # cpp_int2base(cpp_base2int(c("abc", "def"))) ... in primes.cpp for now ...  
 int2base = function(..., base=16, to.length=NULL, method="first")
 	{
-	x = prep.dots(..., default = c(0, 2748, 59912, 13107340, 180071644,  2^31 - 1) );
+		x = prep.dots(..., 	default = c(0, 2748, 59912, 
+								13107340, 180071644,  2^31 - 1) 
+				);
 #dput(x);
 	b = check.base(base);
 	
 	METHOD = prep.arg(method, n=1);
-			keys = c("c","b"); vals = c("cpp", "base");	default = "first";	
+			keys = c("c","b"); 
+			vals = c("cpp", "base");
+			# NOTICE 'default' doesn't have to be in key/val map ...
+			default = "first";	
 	METHOD = prep.switch(METHOD, keys, vals, default);
 		
-	if((METHOD == "cpp" || METHOD == "first") && exists("cpp_int2base")) 
+	if((METHOD == "cpp" || METHOD == "first") && exists("cpp_int2base") && b != 64) 
 			{ 
 			res = cpp_int2base(x,b);
 			return( v.return(v.toNA(res, (res==""))) );
@@ -122,7 +136,8 @@ int2base = function(..., base=16, to.length=NULL, method="first")
 		res[i] = .int2base(x[i], base);	
 		}
 	# str.pad("LEFT");
-	if(!is.null(to.length)) { res = str.pad(res, to.length, "0", "LEFT"); }
+	if(!is.null(to.length)) 
+		{ res = str.pad(res, to.length, "0", "LEFT"); }
 	res;
 	}
 
@@ -180,16 +195,112 @@ int.convert = function(..., from="binary", to="octal", to.length=NULL)
 #  to do converion 16 / 24 (base 64)
 # buckets any string of numbers in a base to buckets 
 # useful with binary strings ... n=4, n=8, n=16
-bin = function(..., n=2)
+bin = function(..., n=2, pad="0")
 	{
 	str = prep.dots(..., default="c8008c");
 	bins = check.list(str.splitN(str, n=n)); 
 	first = list.getElements(bins, 1);
-	first = str.pad(first, to.length=n, side="LEFT");
+	first = str.pad(first, n, pad, "LEFT"); 
+		# defaults of function 
+		# str.pad(first, n);  # equivalent 
 	list.return( list.setElements(bins, 1, first) );	
 	}
 	
 	
+	
+	
+.b64_hex = function(b64str)
+	{
+	b = bin(b64str, n=2, "A");
+	nb = length(b);
+	res = "";
+	for(i in 1:nb)
+		{
+		# would blocks of similar with "set.match" be faster?
+		res = paste0(res, lookupB64HEX[[ b[i] ]], collapse="");
+		}
+	res;	
+	}
+
+.hex_b64 = function(hexstr)
+	{
+	b = bin(hexstr, n=3, "0");
+	nb = length(b);
+	
+	}
+	
+
+.map_hexb64 = function(keys="hex")
+	{
+	res = memory.get(keys, "-B64_HEX-");
+	if(is.null(res))
+		{
+		n = .lcm.bits(64, 16);
+		w64 = .lcm.width(64, n);  # 2 wide
+		wH = .lcm.width(16, n);	  # 3 wide
+		
+		raw64 = memory.get("raw64", "-B64_HEX-");
+		if(is.null(raw64))
+			{
+			info = int2base(0:(n-1), base=64);
+			raw64 = str.pad(info, w64, "A", "LEFT");
+			memory.set("raw64", "-B64_HEX-", raw64);
+			}
+		rawH = memory.get("rawH", "-B64_HEX-");
+		if(is.null(rawH))
+			{
+			info = int2base(0:(n-1), base=64);
+			rawH = str.pad(info, wH, "0", "LEFT");
+			memory.set("rawH", "-B64_HEX-", rawH);
+			}
+			
+			i = 1;
+			while(i <= n)
+				{
+				
+				
+				i %++%.;
+				}
+			
+			}
+		
+		# .int2base won't pad correctly AA on bit64 
+		
+		}
+	
+	
+	}
+	
+.lcm.width = function(a=64, n=4096)
+	{
+	log2(n)/log2(a);	
+	}
+	
+.lcm.bits = function(a=64, b=16)
+	{
+	# if a = 16, b=64 ... both 2^n form 
+	# 2^( gcd.lcm( log2(16), log2(64) )$lcm );
+	# a=5; b=16;
+	# 2^( gcd.lcm( ceiling(log2(5)), ceiling(log2(16)) )$lcm );
+	# lcm = gcd.lcm(5,16)$lcm;  # 80 
+	# set.match( 16^(1:80), 5^(1:80) )  # will they match?
+	# > set.match( 16^(1:20), 64^(1:10) )
+	# [1] NA NA  2 NA NA  4 NA NA  6 NA NA  8 NA NA 10 NA NA NA NA NA
+	# getting to floating.point issue on set.match 
+	# how to wrap it in is.equal ... 
+	2^( gcd.lcm( ceiling(log2(a)), ceiling(log2(b)) )$lcm );
+	}
+	
+	
+# notice the gcd/lcm of 16, 64 would get me to 4096 somehow 
+# how to apply to any base 5, 17 ... just build maps ...
+#  gcd.lcm( log2(16), log2(64) ) ... 12 
+# gcd.lcm( log2(5), log2(16) ) ,,, 2.32
+# how to find ... 16*16*16 = 64*64 
+#  5*5*
+
+
+
 	
 	
 

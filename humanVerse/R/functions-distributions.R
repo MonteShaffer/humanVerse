@@ -139,7 +139,7 @@ ERF.inv = function(...)
 
 
 # what is erfi?  imaginary but not complex?
-
+ 
 	
 ERF.fn = function() {}
 ERF.num = function() {} # numerical integration?
