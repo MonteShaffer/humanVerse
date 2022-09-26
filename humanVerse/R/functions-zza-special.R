@@ -72,8 +72,10 @@
  
 "%rand%" = function(seed = NULL, n)
 	{
-	# TODO write checkType ...   . %rand% 5
-	# 							seed.create() %rand% 5
+	if(!check.type(seed)) { seed = NULL; }
+	if(!check.type(n)) { n = 1; }
+	# . %rand% 5
+	#  seed.create() %rand% 5
 	rand(n=n, seed=seed);	
 	}
 	
@@ -81,26 +83,7 @@
 
 
 # takes num/den 
-"%frac%" = function(num, den, expand=TRUE) 
-			{ 
-			if(!expand) { return (num/den); }
-			nn = length(num);
-			nd = length(den);			
-			# normal recycling
-			if(nn == 1 || nd == 1) { return (num/den); }
-			
-			# 0:10 %frac% 1:100
-			# this is expand == TRUE
-			# I want 0...10 / 1:100 ... all of them ...
-			# 0:10/1 THEN 0:10/2 THEN 0:10/3 ...
-			res = NULL;
-			for(i in 1:nd)					# could have done nn 
-				{
-				res = c(res, num / den[i]); # could have done num[i]
-				}
-			res;
-			}
-
+"%FRAC%" = function(x, r=NULL) { num.toFrac(x); }
 
 "%SCI%" = function(x, r=NULL) { num.toScientific(x); }
 "%NAT%" = function(x, r=NULL) { num.toNatural(x); }
@@ -109,13 +92,20 @@
 
 
 
-# leading . will work
-"%$$%" = function(r="HI", ...) 
+
+## leading . will work
+
+
+
+
+"%$$%" = function(r = "HI", ...) 
 			{ 
 			str = str.fromObjectName(...);
 			access(str);			
 			}
 			
+
+
 #### THIS is *SPECIAL FUNCTION* ... (PARANTHESES) is optional			
 # .%$$% "dcf$Depends@dependencies" ;
 # .%$$% dcf$Depends@dependencies ;			

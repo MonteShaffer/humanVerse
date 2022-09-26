@@ -1,4 +1,22 @@
 
+
+check.sample = function(replace, min, max, n)
+	{
+	if(!replace)
+		{
+		len = (max - min) + 1;
+		if(len < n)
+			{
+			msg = prep.msg( "sample.replace forced to TRUE" );
+			cat.warning(msg);
+			replace = TRUE;
+			}
+		}
+	replace;	
+	}
+
+
+
 check.ifConformable = function(x, y) {} # matrix?
 
 check.square = function(x)

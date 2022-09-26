@@ -25,51 +25,40 @@
 #' rand(1,10, n=5, method="sample", sample.replace=FALSE); # min, max, n must be comformable "with replacement = FALSE"
 #' rand(1,10, n=5, seed=10);  # fixed seed requires the min/max to be known
 rand = function() {}
-rand = function(min = -1*as.integer(Sys.time()), max = as.integer(Sys.time()), n = 1, method = "high-low", sample.replace = TRUE, seed = NULL, attributes=NULL)
+rand = function(min = -1*as.integer(Sys.time()), max = as.integer(Sys.time()), n = 1, method = "high-low", sample.replace = TRUE, seed = NULL, attributes=NULL) 
     {
-	# if(is.null(seed)) { setSeed(NULL, "rand"); my.seed = getSeed("rand"); } else { my.seed = seed; }
-    me = substr( trimMe( tolower(method) ), 1, 2);
+	METHOD = prep.rand(method);
+	
 	n = as.integer ( n );
 	if(is.na(n) || n < 1)
 		{
-		warning( paste0('Bad value for n "', n, '" in function [rand]', "\n", "Setting n=1") );
+		msg = prep.msg( paste0('Bad value for n "', n, '" in function [rand]', "\n", "Setting n=1") );
+		cat.warning(msg);
 		n = 1;
 		}
-	res = NULL;
-    if(me == "fl")  # floor method
-      {
-	  if(!is.null(seed)) { set.seed(seed); }
-      res = ( as.integer( floor( stats::runif(n, min = min, max = (max + 1) ) ) ) );
-      }
-    else if(me == "sa")  # sample method
-      {
-      if(!sample.replace)
-        {
-        len = (max - min) + 1;
-        if(len < n)
-          {
-          warning( "sample.replace forced to TRUE" );
-          sample.replace = TRUE;
-          }
-        }
-	  if(!is.null(seed)) { set.seed(seed); }
-      res = ( sample(min:max, n, replace = sample.replace) );
-      }
-	else
+	
+	FNS = list(
+			"high-low" 		= function() { ( as.integer(( (max + 1) - min) * stats::runif(n) + min) ) } , 
+			"floor" 	= function() { ( as.integer( floor( stats::runif(n, min = min, max = (max + 1) ) ) ) ); } ,
+			"sample" 		= function() { sample(min:max, n, replace = check.sample(sample.replace, min,max, n)); }
+			);
+			
+	if(METHOD != "first")
 		{
-		if(me != "hi")  # high-low method
-			{
-			warning( paste0('Bad value for method "', method, '" in function [rand]', "\n", "Setting method='high-low'") );
-			}
-		# DEFAULT will run 
+		# AS-IS, no checks 
 		if(!is.null(seed)) { set.seed(seed); }
-		res = ( as.integer(( (max + 1) - min) * stats::runif(n) + min) );
-		}
+		res = FNS[[METHOD]]();
+		} else {
+				if(!is.null(seed)) { set.seed(seed); }
+				res = FNS[["high-low"]]();
+				}
 		
 	if(!is.null(attributes))
 		{
-		vals = list('min' = min, 'max' = max, 'seed' = seed, 'method' = method);
-		res = property.set(res, vals);
+		vals = list('min' = min, 'max' = max, 'n' = n, 
+								'seed' = seed, 'method' = METHOD);
+		if(METHOD == "sample") { vals$sample.replace = sample.replace;}
+		res = property.set("setup", res, vals);
 		}	 
 	res;
 	}

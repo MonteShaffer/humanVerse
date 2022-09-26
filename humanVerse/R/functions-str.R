@@ -110,7 +110,7 @@ str.len = function(str, method="first", locale="")
 	# CASCADING, first-one to meet criteria 
 	hasResult = FALSE;
 	if(!hasResult && exists("cpp_strlen"))
-		{
+		{ 
 		# must not have exported it ... 
 		hasResult = TRUE;
 		res = FNS[["cpp"]]();

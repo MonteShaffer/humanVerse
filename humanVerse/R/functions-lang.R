@@ -78,27 +78,6 @@ check.lang = function(str)
 	}
 	
 	
-# was wrap.lang 
-prep.msg = function(...,  type="msg", out="paste0", sep=" ")
-	{	
-	str = prep.dots(...);
-	str = check.ansi(str);
-	str = check.lang(str);
-		# append res = property.set("msg.type", res, "message or notice or warning 3 or error");
-
-	if(is.null(out)) { return(str); } # do nothing ...
-	# out is a string ... one level deep
-	fn.str = as.character(substitute(out));
-	fn.obj = function.find(fn.str, character.only=TRUE);
-	if(is.null(fn.obj)) { return(str); }
-# dput( as.character(substitute(out)) );
-	# find.function(out) ... 
-	# res = paste0(str, collapse=sep);
-	# do.call("paste0", list(str, collapse=""))
-	# other functions may have different parameters ... 
-	do.call(fn.str, list(str, collapse=sep));
-	}
-	
 count.ansi = function(str)
 	{
 	v  = str.count(str, "<v>");		# this is a "garbage" tag used to 

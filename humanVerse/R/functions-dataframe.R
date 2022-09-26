@@ -216,24 +216,20 @@ df.empty = function(df)
 
 df.row = function(..., use.names=FALSE)
 	{
-# dput( (list(...)) );   # list(structure(1663114668.6615, class = c("POSIXct", "POSIXt")), "set", "STACK", "alex")
-# x = df.row(c(1,2,3,4)); y = df.row(1,2,3,4); identical(x,y);
-   
-	xlist = list(...);	names = NULL;
-# dput(xlist);    
+	dots = prep.dots(..., collapse = FALSE, has.objects = FALSE);
+ 
+	xlist = list.flatten( .%$$% dots@original );
 	if(length(xlist) == 1)
 		{
-		xlist = list.flatten(xlist); 
+		xlist = t(unlist(xlist)); # if it was a vector, possible anymore?
 		
 		# if length 1 FINE, otherwise, its a vector that needs to be flattened into separate elements ...
-		df = dataframe(t(unlist(xlist)));  # a vector of the same type 		
+		df = dataframe( xlist );  # a vector of the same type 		
 		} else { df = dataframe(xlist); }
 
 	if(use.names)
-		{
-		dots = match.call(expand.dots = FALSE)$...
-		names = as.character(dots);
-		colnames(df) = names;
+		{ 
+		colnames(df) = (.%$$% dots@fn.info)$dot.keys;
 		} else {
 				names = paste0("V", 1:ncol(df)); # needs something to MATCH
 				colnames(df) = names;

@@ -884,7 +884,7 @@ dput(out);
 			msg = msg.badOption("from", from, FROM);			
 			cat("\n\n"); minvisible( IN.df(), display=TRUE ); cat("\n\n"); 
 			IN.clear();
-			cat.stop(msg);
+			cat.stop(msg); 
 			}
 		IN.clear();
 		

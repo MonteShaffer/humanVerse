@@ -121,3 +121,30 @@ strint = function(num = 5*10^222)
 ## download / parse / store a database 
 ## do it monthly ?
 ## 
+
+
+
+
+
+# is this not just simple division 
+num.den = function(num, den, expand=TRUE) 
+			{ 
+			if(!expand) { return (num/den); }
+			nn = length(num);
+			nd = length(den);			
+			# normal recycling
+			if(nn == 1 || nd == 1) { return (num/den); }
+			
+			# 0:10 %frac% 1:100
+			# this is expand == TRUE
+			# I want 0...10 / 1:100 ... all of them ...
+			# 0:10/1 THEN 0:10/2 THEN 0:10/3 ...
+			res = NULL;
+			for(i in 1:nd)					# could have done nn 
+				{
+				res = c(res, num / den[i]); # could have done num[i]
+				}
+			res;
+			}
+
+

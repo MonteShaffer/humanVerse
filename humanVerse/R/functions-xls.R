@@ -63,14 +63,14 @@ xls.VAR.S = function(x, na.rm=TRUE, show.warning=TRUE)
 	stats::var(xx, na.rm=na.rm);
 	}
 
-xls.STDEV.P = function(x, ...)
+xls.STDEV.P = function(x)
 	{
-	sqrt( xls.VAR.P(x, ...) );
+	sqrt( xls.VAR.P(x) );
 	}
 	
-xls.STDEV.S = function(x, ...)
+xls.STDEV.S = function(x)
 	{
-	sqrt( xls.VAR.S(x, ...) );
+	sqrt( xls.VAR.S(x) );
 	}
 
 
@@ -131,10 +131,16 @@ xls.PERMUT = function(n, r)
 	n %nPr% r;	
 	}
 	
-xls.T.DIST = function(x, df, cdf=TRUE)
+xls.T.DIST = function(x, df, cdf=TRUE, method="humanVerse")
 	{
-	if(cdf) 	{ return(stats::pt(x, df)); }  # cdf 
-	if(!cdf) 	{ return(stats::dt(x, df)); }  # pdf 	 
+	if(method == "humanVerse")
+		{
+		if(cdf) 	{ return( CDF(x, "t", df) ); }  # cdf 
+		if(!cdf) 	{ return( PDF(x, "t", df) ); }  # pdf 
+		} else {
+				if(cdf) 	{ return(stats::pt(x, df)); }  # cdf 
+				if(!cdf) 	{ return(stats::dt(x, df)); }  # pdf 
+				}
 	}
 	
 xls.T.DIST.2T = function(x, df)

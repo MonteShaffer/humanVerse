@@ -8,6 +8,9 @@
 ###	res = str.trimFromAny(res, "()");  # so .%$$%(obj) WORKS (remove)
 # I am pretty sure this is UNIVARIATE 
 # should be a character already and have length == 1
+## (.%$$% dots@fn.info)$dot.keys;
+## ABOVE works, I would like it to be 
+## .%$$% dots@fn.info$dot.keys;
 access = function(str)
 	{	
 	str = str.trimFromFixed(str, "(", "left");
@@ -34,6 +37,32 @@ access = function(str)
 					}
 	}
 	 
+
+
+SO.access = function(str)
+	{	
+	E = strsplit(str, "@", fixed=TRUE);
+	k = length(E);
+		if(k==1)
+			{
+			# we are at the lowest level of @, recurse on $
+			eval(parse(text=str));
+			} else  {
+					# k == 2
+					nstr = paste("attributes(", E[1] ,")", sep="");
+					nstr = paste(nstr,'$', "`", E[2], "`", sep="");
+					if(k > 2) 
+						{
+						for(i in 3:k)
+							{
+							nstr = paste("attributes(",nstr,")",sep="");
+							nstr = paste(nstr,'$',"`",E[i],"`",sep="");
+							}
+						}
+					# recursion 
+					access(nstr);
+					}
+	}
 	
 
 

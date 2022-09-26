@@ -364,13 +364,14 @@ list.setByIDX = function(info, idx, vals=NULL)
 		info[[i]] = vals[j];  j %++%. 
 		}
 	info;
-	}
+	} 
 
 
 # info = list(1, "alex", c(`0/3 [min]` = 0.1, `1/3 [lower-trecile]` = 0.4, `1/2 [median]` = 0.5, `2/3 [upper-trecile]` = 0.7, `3/3 [max]` = 1 ), 0, 1);
 
 list.flatten = function(info)
 	{
+	if(!is.list(info)) { return(info); } 
 	n = length(info);
 	xlen = list.getLengths(info);
 	res = list();
@@ -378,16 +379,16 @@ list.flatten = function(info)
 	for(i in 1:n)
 		{
 		xlist = info[[i]];
-		if(xlen[i] == 1) { res[[idx]] = rlist; idx %++%.; next; }
+		if(xlen[i] == 1) { res[[idx]] = xlist; idx %++%.; next; }
 		
 		for(j in 1:xlen[i])
 			{
-			res[[idx]] = info[[i]][j]; 
+			res[[idx]] = xlist[j]; 
 			idx %++%.;
 			}
 		}	
 	list.return(res);
-	}
+	}  
 
 # list.mapNtoOne(dict$search, variants, type);
 # a simple paired list 

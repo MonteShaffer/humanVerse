@@ -1,5 +1,26 @@
 
- 
+
+# was wrap.lang 
+prep.msg = function(...,  type="msg", out="paste0", sep=" ")
+	{	
+	str = prep.dots(...);
+	str = check.ansi(str);
+	str = check.lang(str);
+		# append res = property.set("msg.type", res, "message or notice or warning 3 or error");
+
+	if(is.null(out)) { return(str); } # do nothing ...
+	# out is a string ... one level deep
+	fn.str = as.character(substitute(out));
+	fn.obj = function.find(fn.str, character.only=TRUE);
+	if(is.null(fn.obj)) { return(str); }
+# dput( as.character(substitute(out)) );
+	# find.function(out) ... 
+	# res = paste0(str, collapse=sep);
+	# do.call("paste0", list(str, collapse=""))
+	# other functions may have different parameters ... 
+	do.call(fn.str, list(str, collapse=sep));
+	}
+	 
 
 parse.syscall = function(syscall)
 	{
@@ -113,13 +134,16 @@ prep.dots = function(...,
 					)
 	{
 	dots = NULL;
+	o = list(...);	
 	if(is.null(dots) && collapse) 
 		{ 		
-		dots = unlist(list(...));
+		dots = unlist(o);
 		if(length(dots) == 0 && !is.null(default)) { dots = default; }
 		return( dots ); 
-		}
+	 	}
  
+	
+	
 	BY = prep.arg(by, n=3);  # don't know if we still need this 
 		
 	## EQUIV:: # # parent.call = sys.call(sys.nframe() - 1L);
@@ -129,6 +153,7 @@ prep.dots = function(...,
 #dput(fn);	
 #dput(finfo);
 #stop("monte");	
+	# what is has.objects?
 	if(is.null(dots) && has.objects) 
 		{
 		dots = finfo$dot.keys; # just strings 
@@ -137,20 +162,22 @@ prep.dots = function(...,
 # dput(dots);
 # stop("monte");
 
+
 	if(is.null(dots))
-		{
-		dots = list(...);
+		{ 
+		dots = o;
 		names(dots) = finfo$dot.keys;
 
 		# let's flatten to one set of lists 
 		res = list();
-		n = length(dots);
+		n = length(dots); 
 		if(n > 0)
 			{
 			for(i in 1:n)
 				{
 				dot = dots[[i]];
-				dname = paste0(finfo$dot.keys[i],".",i); # keep unique ...
+				# keep unique ...
+				dname = paste0(finfo$dot.keys[i],".",i); 
 				
 				# we are treating multi-dimension (matrix/df) as by.column 
 				if(is.dataframe(dot) || is.matrix(dot))
@@ -176,17 +203,21 @@ prep.dots = function(...,
 
 	if(length(dots) == 0 && !is.null(default)) { dots = default; }
 	
-	if(append.info) { dots = property.set("fn.info", dots, finfo); } 	
+	if(append.info) 
+		{ 
+		dots = property.set("fn.info", dots, finfo); 
+		dots = property.set("original", dots, o); 
+		} 	
 	dots;
 	}
 
+ 
 
 
 
-
-
+prep.switch = function() {}
 prep.switch = function(THING="both", keys=c("l","r","b"), vals=c("left", "right", "both"), default = "both")
-	{
+	{ 
 	# THING has been cleansed as string already
 	newthing = NULL;
 	n = length(keys);  # these need to be equal length .... 
@@ -208,6 +239,17 @@ prep.strSide = function(side="both", n=1, ... , default="both", keys=NULL, vals=
 	if(is.null(vals)) { vals = c("left", "right", "both"); }
 	
 	prep.switch(SIDE, keys, vals, default);
+	}
+	
+prep.rand = function(method="high-low", n=2, ... , default="first", keys=NULL, vals=NULL)
+	{
+	method = check.string(method);		
+	METHOD = prep.arg(method, n=n, ...);
+		
+	if(is.null(keys)) { keys = c("fi", "hi","fl","sa"); }
+	if(is.null(vals)) { vals = c("first", "high-low", "floor", "sample"); }
+	
+	prep.switch(METHOD, keys, vals, default);
 	}
 
 

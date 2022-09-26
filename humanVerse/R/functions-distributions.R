@@ -1,7 +1,8 @@
 
 
-prep.distribution = function(METHOD)
-	{
+prep.distribution = function(method)
+	{	
+	METHOD = prep.arg(method, n=4, keep="-");
 	IN.init();
 	key = NULL;
 	if(is.null(key) && METHOD %IN% c("Uniform Distribution", "unif", "unif-dist")) 
@@ -55,21 +56,31 @@ prep.distribution = function(METHOD)
 		{ key = "Wishart"; }
 							
 
-	
-	if(is.null(key)) { key = "--NULL--"; }
-	
-	df = IN.df();
-	IN.clear();
-	minvisible(df, print=FALSE);
-	key = property.set("IN", key, df);
+	if(is.null(key)) 
+			{ 
+			msg = msg.badOption("method", method, METHOD);			
+			cat("\n\n"); minvisible( IN.df(), display=TRUE ); cat("\n\n"); 
+			IN.clear();
+			cat.stop(msg); 
+			}
+		IN.clear();
+		
 	key;
 	}
 	
 	
 	
 # call-list ... do.call()
-prep.clist = function(clist, dots)
+prep.distCall = function(clist, dots)
 	{
+dput(dots);
+stop("monte");
+dput(...);
+mc = match.call(expand.dots = FALSE)$... ;
+mcc = as.character(mc);
+dput(mc);
+dput(mcc);
+dput(unlist(as.list(...)));
 	keys = names(dots);
 	vals = unname(dots);
 	nk = length(keys);
@@ -145,6 +156,7 @@ PDF = function(x, method="norm", ...)
 	{
 	# probability density function ... height at point x ... 
 	dots = match.call(expand.dots = FALSE)$...
+# dput(dots);
 	clist = list(x=x); 
 	if(!is.null(dots)) 
 		{
@@ -175,37 +187,22 @@ PDF = function(x, method="norm", ...)
 	minvisible(res, print="str");
 	invisible(res);
 	}
-
+ 
 
 CDF.fn = function() {}
+ 
 
+# http://127.0.0.1:23214/library/stats/html/Distributions.html
 CDF = function(q, method="norm", ...)
 	{
-	# cumulative distribution function ... cumulative area from -Inf to x 
-	dots = match.call(expand.dots = FALSE)$...
-	clist = list(q=q); 
-	if(!is.null(dots)) 
-		{
-		dots = list(...);
-		clist = prep.clist(clist, dots);
-		}
-	ct.method = check.type(method);
-	if(!ct.method || !is.character(method)) 
-		{ method = deparse(substitute(method)); }
-	METHOD = prep.arg(method, n=4, keep="-");
-	# http://127.0.0.1:23214/library/stats/html/Distributions.html
+	# cumulative distribution function ... cumulative area from -Inf to x
+	dots = prep.dots(..., collapse = FALSE, has.objects = TRUE);
+	method = check.string(method);	
 		
-	KEY = prep.dist(METHOD);
-	if(KEY == "--NULL--")
-		{
-		df = property.get("IN", KEY);
-		msg = msg.badOption("method", method, METHOD);	
-		cat("\n\n"); minvisible( df, display=TRUE ); cat("\n\n"); 
-		IN.clear();	
-		cat.stop(msg);
-		}
+	KEY = prep.distribution(method);  # this will trigger STOP 
 	fn.name = paste0("p", as.character(KEY));
 	
+	clist = prep.distCall(list(q=q), dots);
 	res = do.call(fn.name, clist);	
 	res = property.set("params", res, clist);
 	res = property.set("fn.name", res, fn.name);
