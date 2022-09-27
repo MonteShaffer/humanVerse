@@ -592,40 +592,22 @@ str.trimFromAny = function(str, search="#me", side="both")
 			# walk until we are not contiguous ...
 			for(i in ilen:1)
 				{
-				if(IDX[i] == (nc-i+1)) { from.right = c(i, from.right); } else { break; }
+				if(IDX[i] == (nc)) { from.right = c(nc, from.right); nc %--%.; } else { break; }
 				}			
 			}
 		
 		
-		
-		if(s == "b" || s == "l")
-			{
-			for(j in 1:nc)
-				{
-				if(char[j] %in% search) { from.left = c(from.left, j); } else { break; }
-				}
-			}
-			
-		if(s == "b" || s == "r")
-			{
-			# technically the search could reduce from PREVIOUS SEARCH
-			for(j in nc:1)
-				{
-				if(char[j] %in% search) { from.right = c(from.right, j); } else { break; }
-				}
-			}
-
-		# stop("here");
 		set = switch(s,
 						  "l"	= from.left,
 						  "r" 	= from.right,
 						  "b"  	= c(from.left, from.right),
 					c(from.left, from.right)
 					);
+	
 		nchar = char;
 		if(!is.null(set)) { nchar = char[-c(set)]; }
 
-		res[i] = str.implode("", nchar);
+		res[j] = str.implode("", nchar);
 		}
 	res;
 	}

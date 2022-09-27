@@ -113,7 +113,10 @@
 			str = str.fromObjectName(...);
 			smart.access(str);			
 			}
-			
+# .%$$% dots$test$alex@b[[4]]@prop$`b=3`  # doesn't like = with .
+# .%$$% "dots$test$alex@b[[4]]@prop$b=3"	
+# .%$$% (dots$test$alex@b[[4]]@prop$`b=3`)  # doesn't like = with .
+# .%$$% ("dots$test$alex@b[[4]]@prop$b=3")	
 
 
 #### THIS is *SPECIAL FUNCTION* ... (PARANTHESES) is optional			
@@ -133,3 +136,5 @@
 # `$$`("dcf$Depends@dependencies");
 # `$$`(dcf$Depends@dependencies);
 
+# `$$`(dots$test$alex@b[[4]]@prop$`b=3`);  
+# `$$`("dots$test$alex@b[[4]]@prop$b=3");

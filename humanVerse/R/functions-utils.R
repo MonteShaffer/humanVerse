@@ -28,12 +28,13 @@ smart.access = function(objstr, a.sep="@")
 ##########################################################
 	o.seps = c("[[", "[", "$");
 	o.map = list("[[" = "]]", "[" = "]", "$" = "");
-cat("\n\n");	
-dput(objstr);
-cat("\n\n");
-stop("monte");
+#cat("\n\n");	
+#dput(objstr);
+#cat("\n\n");
+#stop("monte");
 	objstr = str.trim(objstr);
-	objstr = str.trimFromAny(objstr, search="()", side="both");
+		# str.trimFromAny ... doesn't seem to work as expected
+	objstr = str.trimFromAny(objstr, "()", "both");
 	
 	o.sep = "$"; 	alen = str.len(a.sep);
 					olen = str.len(o.sep);
