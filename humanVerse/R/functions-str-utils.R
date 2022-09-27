@@ -562,7 +562,7 @@ str.trimFromAny = function(str, search="#me", side="both")
 	{
 	search = as.character(search);
 	if(search == "") { stop("you need to enter at least one character"); }
-		s = prep.arg(side, 1);
+		SIDE = prep.strSide(side, 1);
 
 	# let's explode on "" to get chars as list
 	search = str.explode("", search); # turn into a set
@@ -576,34 +576,35 @@ str.trimFromAny = function(str, search="#me", side="both")
 		from.right = NULL;
 		
 		nc = length(char);
-		IDX = set.match(search,char);
+		# maybe set.intersect? ... gives vals not idx 
+		IDX = sort(unique(set.match(search,char)));
 		# nothing to do 
-		if(allNA(IDX)) { res[j] = str.implode("", char); next; }
+		if(allNA(IDX) || length(IDX) == 0) { res[j] = str.implode("", char); next; }
 		# will be at least length of search ...		
-		IDX = IDX[ v.test(IDX, NA, invert=TRUE) ]; 
+		IDX = IDX[ !is.na(IDX) ];  
 		ilen = length(IDX);  
-		if(!is.na(IDX[1]) && IDX[1] == 1)
+		if((SIDE=="left" || SIDE=="both") && IDX[1] == 1)
 			{
 			# walk until we are not contiguous ...
 			for(i in 1:ilen)
 				{
-				if(!is.na(IDX[i]) && IDX[i] == i) { from.left = c(from.left, i); } else { break; }
+				if(IDX[i] == i) { from.left = c(from.left, i); } else { break; }
 				}			
 			}
-		if(!is.na(IDX[ilen]) && IDX[ilen] == nc)
+		if((SIDE=="right" || SIDE=="both") && IDX[ilen] == nc)
 			{
 			# walk until we are not contiguous ...
 			for(i in ilen:1)
 				{
-				if(!is.na(IDX[i]) && IDX[i] == (nc)) { from.right = c(nc, from.right); nc %--%.; } else { break; }
+				if(IDX[i] == (nc)) { from.right = c(nc, from.right); nc %--%.; } else { break; }
 				}			
 			}
 		
 		
-		set = switch(s,
-						  "l"	= from.left,
-						  "r" 	= from.right,
-						  "b"  	= c(from.left, from.right),
+		set = switch(SIDE,
+						  "left"	= from.left,
+						  "right" 	= from.right,
+						  "both"  	= c(from.left, from.right),
 					c(from.left, from.right)
 					);
 	

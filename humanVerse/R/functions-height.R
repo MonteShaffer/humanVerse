@@ -58,7 +58,14 @@ convert.height = function(..., from="ft-in", to="cm", ft.string = TRUE, ft.digit
 	ft = y / (12*0.0254);
 	if(!ft.string) { return ( round( ft, r.digits) ); }
 	ft_ = as.integer(ft);
-	in_ = round( ft - ft_ , ft.digits);
+	in_ = round( 12*(ft - ft_) , ft.digits);
+	
+	o = (in_ == 12);
+	ft_[o] = 1 + ft_[o]; # rounding up ...
+	in_[o] = in_[o] - 12; 
+	
+	# 1.219 ... 3'12"
+	
 	res = paste0(ft_, sep, in_);
 	res;
 	}
