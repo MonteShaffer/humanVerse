@@ -8,10 +8,7 @@ smart.sep = function(x, search.order=c("'", "-", ":", ",", "^", ".", "ft", "f"))
 	for(i in 1:n)
 		{
 		sep = search.order[i];
-		print(sep); print(i);
-		print( str.contains( sep , x ) );
-		cat("\n\n", sep, "\n\n");
-		#if(anyFALSE(str.contains( sep , x )))	{ return ( sep ); }		
+		if(allTRUE(str.contains( sep , x )))	{ return ( sep ); }		
 		}
 	o;
 	}
@@ -105,7 +102,7 @@ smart.access = function(objstr, a.sep="@")
 		# substring(objstr, 1, (aIDX[1] - alen ))
 		
 		sub = info[i];
-		
+		 
 		if(fstr == "")
 			{
 			fstr = wrapBackTick(sub);
@@ -119,6 +116,9 @@ smart.access = function(objstr, a.sep="@")
 			# put everything back 
 		rem = paste0(sep, str.implode(sep, sinfo[-c(1)])); 
 		if(i == n) { rem = wrapBackTick(rem, TRUE); }
+		if(sub == sinfo[1]) { rem = ""; } # we had nothing left ...
+		# could dig into smart.sep ... return NULL ? # more checks ...
+		# this works ....
 			# cleanup rem noise ... [4] should be [[4]]
 			# let is pass, could be a potential TRUE key, how do I know 
 			# [[4]][4]@next ... 

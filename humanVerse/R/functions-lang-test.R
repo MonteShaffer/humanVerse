@@ -406,7 +406,7 @@ dput(cres);
 				ctype	= TRUE; 
 				}
 			}
-						# str.count(ex, "<") == str.count(ex, ">")
+						# str.count("<", ex) == str.count(">", ex)
 						# HAS_TAGs = (!is.na(str.between(cres, c("<","/>"))));
 						# HAS_TAGS = (count.ansi(cres) > 1);
 		if(is.null(ctype))

@@ -1,8 +1,7 @@
 
-
-
-
-
+SINGLE_QUOTE = "'";
+DOUBLE_QUOTE = '"';
+BACKSLASH = "\\";
 
 
 ini.file = "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/sample.ini";
@@ -16,12 +15,6 @@ inistr = readChars(ini.file, 8888);
 lines = str.explode("\r\n", inistr);
 
 
-
-
-
-
-
-
 # need a .regex(PATTERN) wrapper that allows standard INPUTS
 # from PCRE or PHP or JAVASCRIPT /regex/gi ... 
 # and translates to GREP / PCRE in R ...
@@ -31,19 +24,6 @@ lines = str.explode("\r\n", inistr);
 	# TODO 
 	}
 
-# 
-
-# https://stackoverflow.com/a/70272954/184614
-.nodes <- function(x, s = NULL) {
-  if (!is.list(x)) {
-    return(s)
-  }
-  nms <- names(x)
-  if (is.null(nms)) {
-    nms <- character(length(x))
-  }
- Map(.nodes, x = x, s = Map(c, list(s), nms))
-}
 
 
 
@@ -90,7 +70,7 @@ addKeyToResult = function(key, what=list())
 		res %TO% envir;		 
 		}
 		
-	updateCurrentTree()
+	updateCurrentTree = function()
 		{
 		# maybe pass in existing TREE and PRUNE or AUGMENT depending on KEY
 		CURRENT_TREE = "";
@@ -116,8 +96,123 @@ addKeyToResult = function(key, what=list())
 		CURRENT_TREE = ""; 		CURRENT_TREE %TO% envir;
 		}
 	
-	parseKey = function(key)
+		
+	parseLine = function()
 		{
+# line = "loglevel = 5  	; TODO ... determine logging and verbosity within"
+
+		# has equals, only one ??? 
+		# first equals separates key = value 
+		# value may have equals in text only ...
+		info = str.explode("=", line);
+		
+		# put extra equals back ... 
+		val = str.implode("=", info[-1]);
+	
+		val = str.trim(val);
+		valV = str.explode("", val);
+		nv = length(valV);
+		
+		# get to COMMENT or EOL, I stop, have what I need ...
+		IN_STRING = FALSE;
+		STRING_TYPE = NULL;
+							
+		# write a generic str.walk function ... limited to this line ...
+		
+		nval = "";
+		cchar = "";
+		pchar = "";
+		i = 1;
+		while(i <= nv)
+			{
+			pchar = cchar;
+			cchar = valV[i];
+			if(cchar == SINGLE_QUOTE || cchar == DOUBLE_QUOTE)
+				{
+				if(IN_STRING)
+					{
+					# already IN_STRING ...
+					if(cchar != STRING_TYPE)
+						{
+						# we have ' in "envir" or " in 'envir' OKEY
+						nval %.=.% cchar;
+						i %++%. ;
+						next;
+						}
+					if(cchar == STRING_TYPE)
+						{
+						if(pchar == BACKSLASH)
+							{
+							# we have \' in 'envir'  or \" in "envir" OKEY
+							nval %.=.% cchar;
+							i %++%. ;
+							next;
+							} else {
+									# can I recover or do I have to stop ...
+									# stop("looks like you have a QUOTE issue on line.no");
+									
+									# wait, this means the string is OVER 
+									break;
+									}
+						
+						
+						}
+					
+					}
+				
+				## just starting the STRING 
+				IN_STRING = TRUE;
+				if(cchar == SINGLE_QUOTE) { STRING_TYPE = SINGLE_QUOTE; } else { STRING_TYPE = DOUBLE_QUOTE; }
+				i %++%. ;
+				next;
+				}
+			
+			if(cchar == COMMENT && !IN_STRING)
+				{
+				break;
+				}
+			# possible to have a missing CLOSING_STRING ... my parser won't care ...
+			
+			nval %.=.% cchar;
+			i %++%. ;
+			next;
+			
+			}
+	
+		nval = str.trim(nval);
+		
+	
+		nval = NULL;
+			nsc = str.count(COMMENT, val);
+			nsq = str.count(SINGLE_QUOTE, val);
+			ndq = str.count(DOUBLE_QUOTE, val);
+			
+		
+		if(is.null(nval) && (sum(nsc,nsq,ndq) == 0))
+			{
+			# if no "" or '' ... we have a value without string enclosures
+			# val = "https://github.com/MonteShaffer/humanVerse/tree/main/HVcpp";
+			
+			nval = str.trim(val);
+			}
+			
+		if(is.null(nval) && (sum(nsq,ndq) == 0))
+			{			
+			# no quotes, but at least one ;
+			ninfo = str.explode(COMMENT, val);
+			nval = str.trim(ninfo[1]);
+			nnum = check.number(nval);
+			if(allTRUE(nnum)) { nval = as.numeric(nval); }
+			}
+			
+			
+			
+		
+		
+		
+####################   PARSE KEY ##################
+		key = str.trim(info[1]);
+		
 		# ##################### key ##############
 		# calendar	  = "Gregorian"	
 		# tz["display"] = "UTC"
@@ -125,25 +220,26 @@ addKeyToResult = function(key, what=list())
 		# salt[salt.key:key]
 		# authorizeNET[sandbox][user] 
 		# images[good] ... lengthy array ... 
+		# "user[] = \"mshaffer\""
 		
 		
 		
-		}
+		
+		key = str.replace("[[","[", key);  # in case they put doubles (R vs php)
+		key = str.replace("]]","]", key);
+		
+		kinfo = str.explode("[", key);
+		klen = length(kinfo);
+		if(klen == 1) 
+			{
+			# simple key
+			
+			}
 		
 		
-	parseLine = function()
-		{
-		# has equals, only one ??? 
-		# first equals separates key = value 
-		# value may have equals in text only ...
-		info = str.explode("=", line);
+		cat("\n\n", key, "\n\n"); stop("jdflksj");
 		
-		key = str.trim(info[1]);
-		parseKey(key);  # need to return a list pointer of somesort
 		
-		# put extra equals back ... 
-		val = str.implode("=", info[-1]);
-		parseVal(val);	# append the value to current TREE ... 
 		
 		
 		}
@@ -180,6 +276,10 @@ envir = environment();
 	CURRENT_GRAND = "";		# TOP-LEVEL key  res[[CURRENT_GRAND]]
 	CURRENT_PARENT = "";	# MID-LEVEL key res[[CURRENT_GRAND]][[CURRENT_PARENT]]
 	CURRENT_CHILD = "";		# LOW-LEVEL key res[[CURRENT_GRAND]][[CURRENT_PARENT]][[CURRENT_CHILD]]
+		
+	CURRENT_TREE = "";    # current complete index ...
+	MEMORY = list();  # in case they use variables FORWARD ?
+	
 	
 	res = list();
 	
@@ -192,22 +292,16 @@ ini.parse = function(inistr, as.lines=FALSE)
 	
 	envir = environment(); 
 	
-	COMMENT = ";";
-	EMPTY = "";
-	# should be deep enough for what I need ...
-	CURRENT_GRAND = "";		# TOP-LEVEL key  res[[CURRENT_GRAND]]
-	CURRENT_PARENT = "";	# MID-LEVEL key res[[CURRENT_GRAND]][[CURRENT_PARENT]]
-	CURRENT_CHILD = "";		# LOW-LEVEL key res[[CURRENT_GRAND]][[CURRENT_PARENT]][[CURRENT_CHILD]]
-	
-	res = list();
 	# we are going to walk ... 
 	# evaluate everything to envir so can be available downstream 
 	
 	
 	
-########################## HERE WE ARE #########################	
-	for(line in lines) # no need for index here 
+########################## HERE WE ARE #########################
+	line.no = 0;
+	for(line in lines) # no need for index here error on line.no
 		{
+		line.no %++%. ;
 		line = str.trim(line);
 		first = charAt(line,1);
 		if(first == COMMENT || first == EMPTY) { next; }

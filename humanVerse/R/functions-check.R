@@ -172,6 +172,13 @@ debug = FALSE;
 	}
 
 
+check.number = function(x)
+	{
+	# TRUE/FALSE result 
+	# https://stackoverflow.com/a/13638403/184614
+	# idxI = suppressWarning( !is.na(as.integer(x)) );
+	suppressWarning( !is.na(as.numeric(x)) );	
+	}
 
 
 

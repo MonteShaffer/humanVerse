@@ -34,7 +34,7 @@ str.compare = function(a, b=NULL, methods="all")
 #'
 #'
 #------------------------------------------------#
-str.count = function(str, what="|") 
+str.count = function(what="|", str) 
 	{ 
 	# count occurrence of "what" in a string 
 	# n.pipes = str.count(lines, what="|");

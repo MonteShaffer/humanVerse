@@ -80,22 +80,22 @@ check.lang = function(str)
 	
 count.ansi = function(str)
 	{
-	v  = str.count(str, "<v>");		# this is a "garbage" tag used to 
-	vc = str.count(str, "</v>");	# ignore the element for prep.msg (TRANSLATE)
-	i  = str.count(str, "<i>");
-	ic = str.count(str, "</i>");
-	u  = str.count(str, "<u>");
-	uc = str.count(str, "</u>");
-	b  = str.count(str, "<b>");
-	bc = str.count(str, "</b>");
-	l  = str.count(str, "<bb>");
-	lc = str.count(str, "</bb>");
-	f  = str.count(str, "<fg");
-	fc = str.count(str, "</fg>");
-	g  = str.count(str, "<bg");
-	gc = str.count(str, "</bg>");
-	c  = str.count(str, "<color");
-	cc = str.count(str, "</color>");
+	v  = str.count("<v>", str);		# this is a "garbage" tag used to 
+	vc = str.count("</v>", str);	# ignore the element for prep.msg (TRANSLATE)
+	i  = str.count("<i>", str);
+	ic = str.count("</i>", str);
+	u  = str.count("<u>", str);
+	uc = str.count("</u>", str);
+	b  = str.count("<b>", str);
+	bc = str.count("</b>", str);
+	l  = str.count("<bb>", str);
+	lc = str.count("</bb>", str);
+	f  = str.count("<fg", str);
+	fc = str.count("</fg>, str");
+	g  = str.count("<bg", str);
+	gc = str.count("</bg>", str);
+	c  = str.count("<color", str);
+	cc = str.count("</color>", str);
 	sum(i, ic, u, uc, b, bc, l, lc, f, fc, g, gc, c, cc);
 	}
 	

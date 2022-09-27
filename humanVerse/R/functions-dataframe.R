@@ -230,8 +230,10 @@ df.row = function(..., use.names=FALSE, character.only = FALSE)
 		df = dataframe( t (dots) );
 		names = names(dots);
 		} else {
+		
+		# print(str(dots)); exit;
 				xlist = list.flatten( .%$$% dots@original );
-				names = (.%$$% dots@fn.info)$dot.keys;
+				names = .%$$% dots@fn.info$dot.keys;
 				df = dataframe(xlist);
 				}
  
