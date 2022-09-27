@@ -1,4 +1,11 @@
  
+ 
+v.append = function(vec, val)
+	{
+	if(is.null(vec)) { return( c(val) ); }
+	c(vec, val);
+	} 
+ 
 # v.chain(x, hex2dec, mean, dec2hex, hex.prepend, character.only=FALSE)
 v.chain = function(vec, ..., character.only = FALSE)
 	{ 

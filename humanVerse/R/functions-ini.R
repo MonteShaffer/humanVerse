@@ -1,25 +1,34 @@
 
 
-
 parse.walkTheLine = function(){}
-parse.walkTheLine = function(str, COMMENT="#")
+parse.walkTheLine = function(str, COMMENT="#", continue=NULL)
 	{
 	# I am not dealing with = signs ... just simple parser 
-	
+
 	SINGLE_QUOTE = "'";  # make these constants?
 	DOUBLE_QUOTE = '"';
 	BACKSLASH = "\\";
 	# get to COMMENT or EOL, I stop, have what I need ...
-	IN_STRING = FALSE;
-	STRING_TYPE = NULL;
+	IN_STRING 		= FALSE;
+	STRING_TYPE 	= NULL;
+	nval			= "";
+	if(!is.null(continue)) 
+		{
+		IN_STRING 	= continue[["IN_STRING"]];
+		STRING_TYPE = continue[["STRING_TYPE"]];
+		nval 		= continue[["nval"]];
+		}
 	
+cat("\n\n HEAD nval: ", nval, "\n\n");
+cat("\n\n str: ", str, "\n\n");	
+
 	str = str.trim(str);
 	strV = str.explode("", str);
 	ns = length(strV);
 	
 	# write a generic str.walk function ... limited to this line ...
 		
-	nval = "";
+	
 	cchar = "";
 	pchar = "";
 	i = 1;
@@ -51,7 +60,8 @@ parse.walkTheLine = function(str, COMMENT="#")
 								# can I recover or do I have to stop ...
 								# stop("looks like you have a QUOTE issue on line.no");
 								
-								# wait, this means the string is OVER 
+								# wait, this means the string is OVER
+								IN_STRING = FALSE;
 								break;
 								}
 					
@@ -80,25 +90,271 @@ parse.walkTheLine = function(str, COMMENT="#")
 		}
 
 	nval = str.trim(nval);
+	# is there a use case when this goes wrong?
+	# YEAH, a string with a COMMA inside ... Fort Knox
+	# if(str.contains(COMMA, nval)) { nval = str.explode(COMMA,nval); }
 	nnum = check.number(nval);
 	if(allTRUE(nnum)) { nval = as.numeric(nval); }
 	
-
-	
+	# if we have a multiline, and didn't close the STRING ... 
+	if(IN_STRING)
+		{
+		if(str.trim(str) == "") { nval = paste0(nval,"\n"); }
+		extra = list("nval" = nval, 
+					"IN_STRING" = IN_STRING, 
+					"STRING_TYPE" = STRING_TYPE);
+		nval = property.set("extra", nval, extra);
+		}
+cat("\n\n FOOT nval: ", nval, "\n\n");
 	nval;
 	}
 
 
-ini.file = "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/sample.ini";
 
 
-inistr = readChars(ini.file, 8888);
+
+
+parse.iniOLD = function(lines)
+	{
+	# KISS ... store keys as | = val ...
+
+	CONTINUE_KEY = "";
+	MEMORY = list();
+	RES = list();
+	line.no = 0;
+	pkey = "";
+	pval = "";
+	pparent = cparent = "";
+	continue = NULL;
+	for(line in lines)
+		{
+		line.no %++%.;
+		
+
+		line_ = str.trim(line);
+		first = charAt(line_,1);
+		if(is.null(continue) && (first == COMMENT || first == EMPTY)) { next; }
+		
+		
+cat("\n\n ", line.no, " --> ", line, "\n\n");
+# if(line.no > 20) { stop("testing"); }
+
+	
+		if(first == "[")  # not equal to anything ... 
+			{
+			if(CONTINUE_KEY != "")
+				{
+				key = CONTINUE_KEY;
+				nval = pval;
+				if(str.contains("[",key))
+					{
+					RES[[cparent]][[key]] = list.append(RES[[cparent]][[key]], nval);
+					} else { RES[[cparent]][[key]] = nval; } 
+				
+				CONTINUE_KEY == "";
+				continue = NULL;
+				key = pkey = val = pval = nval = "";
+				}
+			
+			
+			info = parse.walkTheLine(line_, COMMENT=";");
+			pparent = cparent;
+			cparent = info;
+			RES[[cparent]] = list();
+			pkey = pval = "";
+			next;
+			}
+		
+		if(is.null(continue))
+			{
+			info = str.explode("=", line);
+			key = str.trim(info[1]);
+			# in case they put doubles (R vs php)
+			key = str.replace("[[","[", key);  
+			key = str.replace("]]","]", key);
+			key = str.replace(c(SINGLE_QUOTE,DOUBLE_QUOTE), "", key);
+		
+cat("\n\n"); dput(continue); cat("\n\n");
+			val = str.implode("=", info[-1]);
+			} else { val = line; }
+print(val);
+		nval = parse.walkTheLine(val, COMMENT=";", continue=continue);
+		
+		continue = property.get("extra", nval);
+		if(!is.null(continue))
+			{
+			CONTINUE_KEY = key;
+			pkey = key;
+			pval = nval;
+			next;			
+			} else {
+					# we finished a multiline, get the KEY, and store 
+					if(CONTINUE_KEY != "")
+						{
+						key = CONTINUE_KEY; 
+						CONTINUE_KEY == "";
+						}
+					}
+		
+		
+		# can only be one liners ...
+		if(!str.contains("[",key) && str.contains("^",key))
+			{
+			key = str.trim(str.replace("^", "", key));
+			MEMORY[[key]] = nval;
+			}
+			
+		## GRAB INFO from MEMORY with ^ operator 
+		if(str.contains("[",key) && str.contains("^",key))
+			{
+			# which element has this in it ...
+			keys = str.trim(str.replace("]","",str.explode("[", key)));
+			logic = str.contains("^", keys);
+			keys = str.replace("^", "", keys);
+				subkey = keys[logic];
+			if(!is.null(MEMORY[[subkey]]))
+				{
+				keys[logic] = MEMORY[[subkey]];
+				}
+			
+			key = str.implode("", "[" %.% keys %.% "]");
+			}
+			
+			
+		if(str.contains("[",key))
+			{
+			RES[[cparent]][[key]] = list.append(RES[[cparent]][[key]], nval);
+			} else { RES[[cparent]][[key]] = nval; } 
+			
+		pkey = key;
+		pval = nval;
+		
+cat("\n\n\t\t\t ", pkey, " --> ", pval, "\n\n");
+		
+		
+		}
+	RES;
+	}
+
 
 # write a new readString function that doesn't require a length ... all of it by default ... 
 
-
+ini.file = "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/sample.ini";
+inistr = readChars(ini.file, 8888);
 lines = str.explode("\r\n", inistr);
 
+
+
+
+#lines = lines[1:33];
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+envir = environment(); 
+
+	SINGLE_QUOTE = "'";
+	DOUBLE_QUOTE = '"';
+	BACKSLASH = "\\";
+	COMMENT = ";";
+	EMPTY = "";
+
+
+
+
+stop("monte");
+
+
+
+
+	
+	
+	
+	# should be deep enough for what I need ...
+	CURRENT_GREATGRAND = "";	
+	CURRENT_GRAND = "";		
+	CURRENT_PARENT = "";	
+	CURRENT_CHILD = "";	
+	CURRENT_TADPOLE = "";	
+	
+	MEMORY = list();  # in case they use variables FORWARD ?
+	
+	
+	res = list();
+
+
+
+currentTREE = function()
+	{
+	CURRENT_GREATGRAND %|% CURRENT_GRAND %|% CURRENT_PARENT %|% CURRENT_CHILD %|% CURRENT_TADPOLE;	
+	}
+
+
+clearTREE = function()
+	{
+	CURRENT_GREATGRAND = "";
+	CURRENT_GRAND = "";
+	CURRENT_PARENT = "";
+	CURRENT_CHILD = "";
+	CURRENT_TADPOLE = "";
+	
+	CURRENT_GREATGRAND %TO% envir;
+	CURRENT_GRAND %TO% envir;
+	CURRENT_PARENT %TO% envir;
+	CURRENT_CHILD %TO% envir;
+	CURRENT_TADPOLE %TO% envir;
+
+	}
 
 # need a .regex(PATTERN) wrapper that allows standard INPUTS
 # from PCRE or PHP or JAVASCRIPT /regex/gi ... 
@@ -111,76 +367,115 @@ lines = str.explode("\r\n", inistr);
 
 
 
+					
+			
+			
+		
+		oSET = function(i, val)
+			{
+			if(i == 1) { res[[CURRENT_GREATGRAND]] = val; }
+			if(i == 2) { res[[CURRENT_GREATGRAND]][[CURRENT_GRAND]] = val; }
+			if(i == 3) { res[[CURRENT_GREATGRAND]][[CURRENT_GRAND]][[CURRENT_PARENT]] = val ; }
+			if(i == 4) { res[[CURRENT_GREATGRAND]][[CURRENT_GRAND]][[CURRENT_PARENT]][[CURRENT_CHILD]] = val; }
+			if(i == 5) { res[[CURRENT_GREATGRAND]][[CURRENT_GRAND]][[CURRENT_PARENT]][[CURRENT_CHILD]][[CURRENT_TADPOLE]] = val; }
+			
+			res;
+			}
+			
+		oCALC = function(i)
+			{
+			if(i == 1) { return(res[[CURRENT_GREATGRAND]]); }
+			if(i == 2) { return(res[[CURRENT_GREATGRAND]][[CURRENT_GRAND]]); }
+			if(i == 3) { return(res[[CURRENT_GREATGRAND]][[CURRENT_GRAND]][[CURRENT_PARENT]]) ; }
+			if(i == 4) { return(res[[CURRENT_GREATGRAND]][[CURRENT_GRAND]][[CURRENT_PARENT]][[CURRENT_CHILD]]); }
+			if(i == 5) { return(res[[CURRENT_GREATGRAND]][[CURRENT_GRAND]][[CURRENT_PARENT]][[CURRENT_CHILD]][[CURRENT_TADPOLE]]); }
+			}
+			
 
-addKeyToResult = function(key, what=list())
+addKeyToResult = function() {}
+addKeyToResult = function(key_, what=list(), val_=NULL)
 		{
+		
+cat("\n\n addKeyToResult ... key: ", key_, "\t what :", what, " \t val : ", val_, "\n\n");
+		
+			
+		LIST = list("CURRENT_GREATGRAND" = CURRENT_GREATGRAND,  "CURRENT_GRAND" = CURRENT_GRAND, "CURRENT_PARENT" = CURRENT_PARENT, "CURRENT_CHILD" = CURRENT_CHILD, "CURRENT_TADPOLE" = CURRENT_TADPOLE);
+		n = length(LIST);
+		NAMES = names(LIST);
 		hasResult = FALSE;  # shorter than is.null on search
-		if(!hasResult && CURRENT_GRAND == "")
+		for(j in 1:n)
 			{
-			# top level 
-			CURRENT_GRAND = key;
-			res[[CURRENT_GRAND]] = what;
+			LEVEL = LIST[[j]];
+			NAME  = NAMES[j];
+			if(!hasResult && LEVEL != "")
+				{
+				# we append ... 
+				# determine the level ... 
+				}
+			if(!hasResult && LEVEL == "")
+				{
+				
+				rwhat = oCALC(j);
+			
+				if(is.null(rwhat)) 
+					{
+					e = paste0(NAME, " = key_; ");
+						eval(parse(text=e));
+					e = paste0(NAME, " %TO% envir; ");
+						eval(parse(text=e));
+					rwhat = oSET(j, what); 					
+					}
+				if(!is.null(val_)) { rwhat = list.append(rwhat, val_); }
+# cat.smart (allows lists ... stringify or print(str) on new line 
+cat("\n\n rwhat "); 
+print(str(rwhat));
+cat("\n\n");
+				# how to reverse ... res = list.merge(res, rwhat);
+				res = list.merge(res, rwhat);  
+cat("\n\n res "); 
+print(str(res));
+cat("\n\n");
+				# should work, no attributes
+				hasResult = TRUE;
+				}			
+			}
+			
+		## update everything, just in CASE 
+			CURRENT_GREATGRAND %TO% envir;
 			CURRENT_GRAND %TO% envir;
-			hasResult = TRUE;
-			}
-		if(!hasResult && CURRENT_PARENT == "")
-			{
-			# top level 
-			CURRENT_PARENT = key;
-			res[[CURRENT_GRAND]][[CURRENT_PARENT]] = what;
 			CURRENT_PARENT %TO% envir;
-			hasResult = TRUE;
-			}
-		if(!hasResult && CURRENT_CHILD == "")
-			{
-			# top level 
-			CURRENT_CHILD = key;
-			res[[CURRENT_GRAND]][[CURRENT_PARENT]][[CURRENT_CHILD]] = what;
 			CURRENT_CHILD %TO% envir;
-			hasResult = TRUE;
+			CURRENT_TADPOLE %TO% envir;
+			
+			res %TO% envir;	
+		}
+		
+		
+		
+	parseKey = function(key, nval)
+		{
+		key = str.replace("[[","[", key);  # in case they put doubles (R vs php)
+		key = str.replace("]]","]", key);
+		
+		kinfo = str.trim(str.explode("[", key));
+		klen = length(kinfo);
+		if(klen == 1)  # simple key
+			{
+			addKeyToResult(kinfo[1], val=nval);
+			return(TRUE);
+			}
+		kinfo = str.trimFromFixed(kinfo, "]", "RIGHT");
+		# we know we are in an array of some sort ... 
+			addKeyToResult(kinfo[1]);
+		
+		for(i in 2:klen)
+			{
+			if(i == klen) { addKeyToResult(kinfo[i]); next; }
+			addKeyToResult(kinfo[i], val=nval);
 			}
 		
-		# do we have to search the TREE of CURRENT_PARENT?
-		# this is SLOW ... INI file for R load - one , so WHAT!
-		if(!hasResult)
-			{
-			# I have CURRENT_PARENT ... local parent and new key ...
-			nodes = .nodes(res[[CURRENT_GRAND]]);
-			dput(nodes); stop("monte");
-			# need to do maybe, not necessary for default setup ...
-			
-			} 
-			
-			
-		res %TO% envir;		 
 		}
 		
-	updateCurrentTree = function()
-		{
-		# maybe pass in existing TREE and PRUNE or AUGMENT depending on KEY
-		CURRENT_TREE = "";
-			# dot.operator  ... append "|" by default ... 
-			# %.=% ... "|" . THING 
-			# %=.% ... THING . "|" 
-			# %.=.% ... THING only ... 
-		if(CURRENT_GRAND != "") { CURRENT_TREE %=.% CURRENT_GRAND; }
-		if(CURRENT_PARENT != "") { CURRENT_TREE %=.% CURRENT_PARENT; }
-		if(CURRENT_CHILD != "") { CURRENT_TREE %=.% CURRENT_CHILD; }
-		
-		CURRENT_TREE = str.trimFromFixed(CURRENT_TREE, "|", "RIGHT");
-		
-		CURRENT_TREE %TO% envir;
-		}
-		
-		
-	treeReset = function()
-		{
-		CURRENT_GRAND = "";		CURRENT_GRAND %TO% envir;
-		CURRENT_PARENT = "";	CURRENT_PARENT %TO% envir;
-		CURRENT_CHILD = "";		CURRENT_CHILD %TO% envir;
-		CURRENT_TREE = ""; 		CURRENT_TREE %TO% envir;
-		}
-	
 		
 	parseLine = function()
 		{
@@ -189,16 +484,20 @@ addKeyToResult = function(key, what=list())
 		# has equals, only one ??? 
 		# first equals separates key = value 
 		# value may have equals in text only ...
+
+
 		info = str.explode("=", line);
 		
 		# put extra equals back ... 
 		val = str.implode("=", info[-1]);
 	
-		nval = parse.walkTheLine(val, COMMENT=";");
+		nval = parse.walkTheLine(val, COMMENT=";");  # deal with "," list ... 
+#   PARSE KEY #
+		key = str.trim(info[1]);		
 		
-		
-####################   PARSE KEY ##################
-		key = str.trim(info[1]);
+		# this will do the updates ...
+		parseKey(key, nval);
+
 	
 # user[] ... array ... or list depending on the other side of the =
 # maybe just make unnamed list ... KISS ... 
@@ -206,7 +505,7 @@ addKeyToResult = function(key, what=list())
 		key = str.replace("[[","[", key);  # in case they put doubles (R vs php)
 		key = str.replace("]]","]", key);
 		
-		kinfo = str.explode("[", key);
+		kinfo = str.trim(str.explode("[", key));
 		klen = length(kinfo);
 		if(klen == 1) 
 			{
@@ -217,7 +516,7 @@ addKeyToResult = function(key, what=list())
 		# maybe we should just read, as above ...
 		# store a local MAP of the TREE 
 		
-		# ##################### key ##############
+		# # key #
 		# calendar	  = "Gregorian"	
 		# tz["display"] = "UTC"
 		# salt.key = EE8553FD3B5FD6EE   ; 152-bit WEP
@@ -248,14 +547,25 @@ addKeyToResult = function(key, what=list())
 		# ([^()]*)  # https://stackoverflow.com/a/45477441/184614
 		# key = gsub("^`(.*)`$", "\\1", line)
 		# https://stackoverflow.com/a/62129083/184614 # *REGEX GURU*
-		key = gsub("\\[(.*?)\\]", "\\1", line);
 		# line="[PEOPLE:key:keys:key33:fdjksj]"
 
-		sub = str.explode(":", key);
+
+		keys = gsub("\\[(.*?)\\]", "\\1", line);
+		sub = str.explode(":", keys);
 		slen = length(sub);
 		for(i in 1:slen)
 			{
-			addKeyToResult(sub[i]); 
+			k = sub[i]; 
+			if(str.contains("^",k))   # variable in keyname ... 
+				{
+				# let's replace it 
+				ke = str.replace("^", k);
+					nk = MEMORY[[ke]];
+					if(is.null(nk)) { nk = ke; } # not found ...
+				addKeyToResult(nk);
+				} else { addKeyToResult(k); }
+				
+			 
 			}
 		
 		# GOOD TO GO, DONE 
@@ -263,23 +573,6 @@ addKeyToResult = function(key, what=list())
 		
 		 
 	
-envir = environment(); 
-
-	SINGLE_QUOTE = "'";
-	DOUBLE_QUOTE = '"';
-	BACKSLASH = "\\";
-	COMMENT = ";";
-	EMPTY = "";
-	# should be deep enough for what I need ...
-	CURRENT_GRAND = "";		# TOP-LEVEL key  res[[CURRENT_GRAND]]
-	CURRENT_PARENT = "";	# MID-LEVEL key res[[CURRENT_GRAND]][[CURRENT_PARENT]]
-	CURRENT_CHILD = "";		# LOW-LEVEL key res[[CURRENT_GRAND]][[CURRENT_PARENT]][[CURRENT_CHILD]]
-		
-	CURRENT_TREE = "";    # current complete index ...
-	MEMORY = list();  # in case they use variables FORWARD ?
-	
-	
-	res = list();
 	
 	
 	
@@ -294,8 +587,14 @@ ini.parse = function(inistr, as.lines=FALSE)
 	# evaluate everything to envir so can be available downstream 
 	
 	
+	main = function() {}
 	
-########################## HERE WE ARE #########################
+	
+	
+	
+	
+	{
+########################## HERE WE GO #########################
 	line.no = 0;
 	for(line in lines) # no need for index here error on line.no
 		{
@@ -309,10 +608,18 @@ ini.parse = function(inistr, as.lines=FALSE)
 			{
 			treeReset();
 			parseHeader();	
+cat("\n\n HEADER: \n\n")
+print(line);
+print(str(res));
+xxx = readline(prompt="Press [enter] to continue, [ESC] to quit");
 			next;
 			} else {
 					# we are under a TREE by CURRENT_XYZ
 					parseLine();
+cat("\n\n LINE: \n\n")
+print(line);
+print(str(res));
+xxx = readline(prompt="Press [enter] to continue, [ESC] to quit");
 					next;
 					print(line); stop("monte");
 					}
@@ -321,6 +628,21 @@ ini.parse = function(inistr, as.lines=FALSE)
 		stop("monte");
 		}
 ################################################################
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	
 	

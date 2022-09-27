@@ -283,7 +283,7 @@ define = function(KEY, VALUE) {}
 .TO. = function() {}
 .TO. = function(WHAT, WHERE=parent.frame(2))
 	{
-cat("\n\n MONTE \n\n");
+###cat("\n\n MONTE \n\n");
 # cat("\n");
 # print(environment());
 # print(parent.env(environment()));
@@ -438,8 +438,8 @@ cat("\n\n MONTE \n\n");
 			# simulation, created shitty software ... ATONEMENT ... FIX IT ... 
 		
 
-.EQUAL_DOT. = function() {}  # %=.% ==> THING . "|" 
-.EQUAL_DOT. = function(KEY, VALUE, sep="|", WHERE=parent.frame(1))
+.EQUAL_PIPE. = function() {}  # %=|% ==> THING . "|" 
+.EQUAL_PIPE. = function(KEY, VALUE, sep="|", WHERE=parent.frame(1))
 	{
 	# these functions are much simpler than the one's already written
 	key = KEY; val = VALUE;
@@ -450,8 +450,8 @@ cat("\n\n MONTE \n\n");
 	minvisible(key, key=KEY);
 	}
 	
-.DOT_EQUAL. = function() {}  # %.=% ==> "|" . THING 
-.DOT_EQUAL. = function(KEY, VALUE, sep="|", WHERE=parent.frame(1))
+.PIPE_EQUAL. = function() {}  # %|=% ==> "|" . THING 
+.PIPE_EQUAL. = function(KEY, VALUE, sep="|", WHERE=parent.frame(1))
 	{
 	# these functions are much simpler than the one's already written
 	key = KEY; val = VALUE;
@@ -462,13 +462,26 @@ cat("\n\n MONTE \n\n");
 	minvisible(key, key=KEY);
 	}
 
-# %.=.% ... THING only ... but appended  # "%.=.%" = .DOT_APPEND.;
-.DOT_APPEND. = function() {}
-.DOT_APPEND. = function(KEY, VALUE,  sep=" ", WHERE=parent.frame(1))
+
+.PIPE. = function() {}		 # %|%  ==>  a | b | c  ... 
+.PIPE. = function(KEY, VALUE, sep="|", WHERE=parent.frame(1))
 	{
 	# these functions are much simpler than the one's already written
 	key = KEY; val = VALUE;
-	key = paste0(key, sep, val);  	# order is same as .DOT_EQUAL.
+	key = paste0(key, sep, val);
+	key;
+	}
+
+
+
+
+# %.=% ... THING only ... but appended  # "%.=.%" = .DOT_APPEND.;
+.DOT_EQUAL. = function() {}
+.DOT_EQUAL. = function(KEY, VALUE,  sep="", WHERE=parent.frame(1))
+	{
+	# these functions are much simpler than the one's already written
+	key = KEY; val = VALUE;
+	key = paste0(key, sep, val);  	# order is same as .DOT_PIPE.
 									# just change the separator
 									# don't want to deal with WHERE
 									# DRY ... DO-REPEAT-YOURSELF when R call stack demands it ... 
@@ -480,13 +493,22 @@ cat("\n\n MONTE \n\n");
 
 
 .DOT. = function() {}		 # %.%  ==>  a . b . c  ... 
-.DOT. = function(KEY, VALUE, sep=" ", WHERE=parent.frame(1))
+.DOT. = function(KEY, VALUE, sep="", WHERE=parent.frame(1))
 	{
 	# these functions are much simpler than the one's already written
 	key = KEY; val = VALUE;
 	key = paste0(key, sep, val);
 	key;
-	}		
+	}	
+
+.DOT_SPACE. = function() {}		 # %. %  ==>  a . b . c  ... 
+.DOT_SPACE. = function(KEY, VALUE, sep=" ", WHERE=parent.frame(1))
+	{
+	# these functions are much simpler than the one's already written
+	key = KEY; val = VALUE;
+	key = paste0(key, sep, val);
+	key;
+	}	
 		
 		
 .PLUS_EQUAL. = function() {}	# "%+=%"

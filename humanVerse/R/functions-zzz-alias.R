@@ -113,16 +113,24 @@ ln = log;
 "%GLOBAL%" = .GLOBAL.;
 "%TO%" = .TO.;	
 "%THIS%" = .THIS.;  
-"%+%" = .ADD.;
+"%+%" = .ADD.;   # outer addition of two vectors ... 
+
+
+
+##### INCREMENTING OPERATORS #####
 "%++%" = .PLUS_PLUS.;		  
 "%+=%" = .PLUS_EQUAL.;
 "%--%" = .MINUS_MINUS.;		
 "%-=%" = .MINUS_EQUAL.;
 
-"%.=%" = .DOT_EQUAL.;
-"%=.%" = .EQUAL_DOT.;
+##### STRING OPERATORS #####
+"%|=%" = .PIPE_EQUAL.;
+"%=|%" = .EQUAL_PIPE.;
+"%|%" = .PIPE.;
 "%.%" = .DOT.;
-"%.=.%" = .DOT_APPEND.;
+"%. %" = .DOT_SPACE.;
+"%.=%" = .DOT_EQUAL.;
+
 
 # > x= "monte"
 # > y = "alex"

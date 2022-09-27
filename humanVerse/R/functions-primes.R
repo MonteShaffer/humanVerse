@@ -1,10 +1,14 @@
 
+primes.load = function() {}
+	# if is.library_("bit") else {other}
+	# 
 primes.scan = function() {}
 # scan bit 
 # reformat downloaded file, one prime per line
 # MATH has 1,000,000; 				max 15485863
 # because of gn I have 1,057,662;	max 16441303
-# bits didn't save as expected ... 
+# bits didn't save as expected ... little larger than I anticipated ...
+#  
  
 
 optimus.logic = function(p, n, first=TRUE, optimus=FALSE)

@@ -1,4 +1,43 @@
 
+
+# may have custom functions ... or a way people can add custom functions 
+# personality ... cleanup ... as custom function .
+
+data.init = function() 
+	{
+	# don't want to call them, just load a list ...
+	SOURCES = list(
+					"inflation" = check.inflationData(),
+					"personality" = "https://github.com/MonteShaffer/humanVerse/tree/main/data/personality.rds",
+					"personality.self" = "https://github.com/MonteShaffer/humanVerse/tree/main/data/personality.self.json",
+					"personality.self" = "https://github.com/MonteShaffer/humanVerse/tree/main/data/personality.self.json"
+					);
+	
+	memory.set("SOURCES", "-DATA-", SOURCES);
+	minvisible(SOURCES);
+	}
+	
+	
+data.addSource = function(key, url)
+	{
+	
+	}
+	
+data.load = function(key)
+	{
+	
+	
+	}
+
+
+
+
+
+
+
+
+
+
 # hadley
 # https://stackoverflow.com/a/1816487/184614
 # 

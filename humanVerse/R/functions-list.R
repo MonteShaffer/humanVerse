@@ -64,6 +64,43 @@ list.toString = function(simpleList, 	sep.keyvalue = "`=`",
 	}
 
 
+
+
+
+list.merge = function(pinfo, cinfo)
+	{
+	return( modifyList(pinfo, cinfo) );
+	# maybe just ?modifyList
+	# again, does it preserve attributes 
+	# https://stackoverflow.com/a/37856431/184614
+	# we have cinfo [child] which is a substructure of pinfo [parent]
+	# smartly merge ....
+	# https://stackoverflow.com/a/18539199/184614
+	# not recursively deep 
+	# keys = unique(c(names(pinfo), names(cinfo)))
+	# setNames(mapply(c, pinfo[keys], cinfo[keys]), keys)
+	# https://stackoverflow.com/a/51264788/184614
+	# if(is.list(x) && is.list(y) && !is.null(names(x)) && !is.null(names(y)))
+		# {
+		# ecom 	= intersect(names(x), names(y));
+		# enew 	= setdiff(names(y), names(x));
+		# res		= x;
+		# if(length(enew) > 0) { res = c(res, y[enew]); }
+		# if(length(ecom) > 0)
+			# {
+			# for(i in ecom)
+				# {
+				# res[i] = list(list.merge(x[[i]], y[[i]]));
+				# }
+			# }
+		# return(res);
+		# } else {
+				# return(c(x, y));  # doesn't this strip attributes?
+				# }
+	# 
+	}
+	
+	
 list.update = function(res, keys, vals, overwrite=FALSE)
 	{
 	n = length(keys);
@@ -264,8 +301,21 @@ list.getLengths = function(info)
 	res;
 	}
 
-
-
+ 
+# my function appends to end new val ... what is ?append 
+list.append = function(info, val)
+	{
+	# if the thing is null, create and append to first element 
+	if(is.null(info)) 
+		{ 
+		new = list(); 
+		new[[1]] = val; 
+		return( new );
+		}
+	n = 1 + length(info);
+	info[[n]] = val;
+	info;
+	}
 
 list.fill = function() {} 
 list.truncate = function() {}
