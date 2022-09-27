@@ -78,6 +78,24 @@ constants.default = function(default.numbers = TRUE, namespace="humanVerse", whi
 		}
 	
 	
+	SYSTEM = list(  
+						SEEK_END = "end",
+						SEEK_START = "start",
+						SEEK_CURRENT = "current"
+					);
+				
+	s = length(SYSTEM);
+	SYS.names = names(SYSTEM);
+	for(i in 1:s)
+		{
+		KEY = SYS.names[i];
+		VAL = SYSTEM[[i]];
+		##assignInNamespace(KEY, VAL, ns=namespace);
+		gggassign(KEY,VAL);
+		}
+	
+
+	
 	TIME = list(
 				SECS_PER_SEC	= 1,
 				SECS_PER_MIN 	= 60,
@@ -104,7 +122,7 @@ constants.default = function(default.numbers = TRUE, namespace="humanVerse", whi
 		KEY = TIM.names[i];
 		VAL = TIME[[i]];
 		##assignInNamespace(KEY, VAL, ns=namespace);
-		gggassign(KEY,VAL);
+		gggassign(KEY,VAL); 
 		}
 
 	
@@ -143,10 +161,10 @@ constants.default = function(default.numbers = TRUE, namespace="humanVerse", whi
 		
 	c = length(CIRCLE);
 	CIR.names = names(CIRCLE);
-	for(i in 1:t)
+	for(i in 1:c)
 		{
-		KEY = TEM.names[i];
-		VAL = CIR[[i]];
+		KEY = CIR.names[i];
+		VAL = CIRCLE[[i]];
 		##assignInNamespace(KEY, VAL, ns=namespace);
 		gggassign(KEY,VAL);
 		}
@@ -158,6 +176,7 @@ constants.default = function(default.numbers = TRUE, namespace="humanVerse", whi
 	minvisible(list(
 					"NUMBERS" 	= NUMBERS, 
 					"STRINGS" 	= STRINGS,
+					"SYSTEM" 	= SYSTEM,
 					"TIME" 		= TIME,
 					"TEMP" 		= TEMP,
 					"CIRCLE" 	= CIRCLE

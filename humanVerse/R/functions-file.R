@@ -23,6 +23,41 @@ file.init = function()
 	{
 	# grab settings from MEMORY if exists ... 
 	
+	# prompt for at least a root 
+	
+	if(!is.null(ROOT))
+		{
+	LIST = list("SYSTEM" = paste0(ROOT, "humanVerse/SYSTEM/"),
+				"CONFIG" = paste0(ROOT, "humanVerse/CONFIG/"),
+				"SECRET" = paste0(ROOT, "humanVerse/SECRET/"),
+				"SANDBOX" = paste0(ROOT, "humanVerse/SANDBOX/"),
+				"DATA" = paste0(ROOT, "humanVerse/DATA/"),
+				"WORKSPACE" = paste0(ROOT, "humanVerse/WORKSPACE/")
+				);
+		}
+	
+	# TEMP 
+	ini.file = "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/sample.ini";
+	inistr = readChars(ini.file, 9999);
+	lines = str.explode("\r\n", inistr);
+	info = parse.ini(lines);
+	names(info);
+	
+	x = info[["[PATH][laptop]"]];
+	xnames = names(x);
+	n = length(x);
+	for(i in 1:n)
+		{
+		xname = xnames[i];
+		xpath = as.character(x[i]);
+cat("\n\n Checking directory [",xname,"] at ", xpath, "\n\n");
+		# maybe a wrapper function to be verbose 
+		dir.create(xpath, showWarnings=FALSE, recursive=TRUE);
+		}
+		
+	# copy 
+	# file.copy("C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/sample.ini", "C:/_R_/humanVerse/CONFIG/humanVerse.ini");
+		
 	}
 
 
@@ -194,6 +229,8 @@ file.readFromPipe = readFromPipe;
 # fp as file-pointer 
 fopen = function(filename, mode="rb", use.include.path = FALSE, ... )
 	{
+	if(!is.defined(SEEK_CURRENT)) { constants.default(); }
+ 
 	# maybe do smart filename if use.include.path 
 	if(!file.exists(filename)) { return(FALSE); }
 	fp = file( description=filename, open=mode, ...);
@@ -241,8 +278,97 @@ fread = function(fp)
 fseek = function(fp, pos, origin="current")
 	{	
 	seek(fp, -1 * pos * buffer, origin = SEEK_END);
+	} 
+
+defaultPipeHeader = function() 
+	{
+	# welcome to the univres
+	
+	
 	}
 	
+prep.data = function(df, sep="|", quote="", row.names = FALSE)
+	{
+	# factors as characters?
+	n = nrow(df);	
+	if(row.names) 
+		{
+		df = cbind(rownames(df), df);		
+		}
+	str = character(n);
+	for(i in 1:n)
+		{
+		row = paste0(df[i, ], collapse=sep);
+		# encase in "quote"[data]"quote"
+		rstr = str.replace(sep, paste0(quote,sep,quote), row);
+		str[i] = paste0(quote, rstr, quote);
+		}
+	str;	
+	}
+
+writePipeDelimitedFile = function() {}
+writePipeDelimitedFile = function (df, 
+				filename, 
+				header=TRUE, 
+				sep="|",
+				quote="",
+				
+				meta.attach = TRUE, 
+				meta.comment="#",
+				meta.sep="^",
+				row.names = FALSE
+				meta.content = defaultPipeHeader(),
+					)
+	{
+	# just use cat?
+	
+	
+	
+	}
+	
+readPipeDelimitedFile = function() {}
+readPipeDelimitedFile = function(
+				filename, 
+				header=TRUE, 
+				sep="|",
+				quote="",
+				
+				meta.attach = TRUE, 
+				meta.comment="#",
+				meta.sep="^",
+				row.names = FALSE
+								)
+	{
+	lines = str.explode("\r\n", readTextFile(filename) );
+	
+	
+	}
+	
+# identical(readChar(filename, file.info(filename)$size), readTextFile(filename));
+readTextFile = function(filename)
+	{
+	fp = file(filename, "rb");  # we have to read in binary 
+		on.exit(close(fp));
+	buffer = 1024;
+	file.size = file.info(filename)$size;
+	if (file.size < buffer) 
+		{
+		buffer = file.size;
+		}
+		
+	str = "";
+	pos = 0;
+	csize = 0;
+	while(csize < file.size)
+		{
+		fs = seek(fp, pos*buffer, origin = SEEK_START);
+		stream = readChar(fp, nchars = buffer);
+		str = paste0(str, stream);
+		pos %++%.;
+		csize %+=% buffer;
+		}	
+	str;
+	}
 	
 # skip.lines has to be >= 0 as integer 
 freadlines = function(filename, howmany=Inf, direction="FORWARD", skip.lines=0)
@@ -388,7 +514,7 @@ file.init = function(
 						# DATA="C:/_R-DATA_/", 			append.data  = TRUE,
 						# CODE="/-CODE-/",			append.code  = TRUE )
   
-file.init = function()  
+dfsafile.init = function()  
   {
 	my.path = normalizePath(my.path);
 

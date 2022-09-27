@@ -1,5 +1,19 @@
 
 
+# write a new readString function that doesn't require a length ... all of it by default ... 
+
+ini.file = "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/sample.ini";
+# inistr = readChars(ini.file, 8888);
+# inistr = readChars(ini.file, 9999);
+# lines = str.explode("\r\n", inistr);
+
+
+
+
+#lines = lines[1:33];
+
+
+
 parse.walkTheLine = function(){}
 parse.walkTheLine = function(str, COMMENT="#", continue=NULL)
 	{
@@ -19,8 +33,8 @@ parse.walkTheLine = function(str, COMMENT="#", continue=NULL)
 		nval 		= continue[["nval"]];
 		}
 	
-cat("\n\n HEAD nval: ", nval, "\n\n");
-cat("\n\n str: ", str, "\n\n");	
+#cat("\n\n HEAD nval: ", nval, "\n\n");
+#cat("\n\n str: ", str, "\n\n");	
 
 	str = str.trim(str);
 	strV = str.explode("", str);
@@ -105,7 +119,7 @@ cat("\n\n str: ", str, "\n\n");
 					"STRING_TYPE" = STRING_TYPE);
 		nval = property.set("extra", nval, extra);
 		}
-cat("\n\n FOOT nval: ", nval, "\n\n");
+#cat("\n\n FOOT nval: ", nval, "\n\n");
 	nval;
 	}
 
@@ -113,9 +127,11 @@ cat("\n\n FOOT nval: ", nval, "\n\n");
 
 
 
+# multiline logic is messing it up... skip for now ... 
 
-parse.iniOLD = function(lines)
+parse.ini = function(lines)
 	{
+verbose=FALSE;
 	# KISS ... store keys as | = val ...
 
 	CONTINUE_KEY = "";
@@ -126,46 +142,16 @@ parse.iniOLD = function(lines)
 	pval = "";
 	pparent = cparent = "";
 	continue = NULL;
-	for(line in lines)
-		{
-		line.no %++%.;
-		
-
-		line_ = str.trim(line);
-		first = charAt(line_,1);
-		if(is.null(continue) && (first == COMMENT || first == EMPTY)) { next; }
-		
-		
-cat("\n\n ", line.no, " --> ", line, "\n\n");
-# if(line.no > 20) { stop("testing"); }
-
 	
-		if(first == "[")  # not equal to anything ... 
-			{
-			if(CONTINUE_KEY != "")
-				{
-				key = CONTINUE_KEY;
-				nval = pval;
-				if(str.contains("[",key))
-					{
-					RES[[cparent]][[key]] = list.append(RES[[cparent]][[key]], nval);
-					} else { RES[[cparent]][[key]] = nval; } 
-				
-				CONTINUE_KEY == "";
-				continue = NULL;
-				key = pkey = val = pval = nval = "";
-				}
-			
-			
-			info = parse.walkTheLine(line_, COMMENT=";");
-			pparent = cparent;
-			cparent = info;
-			RES[[cparent]] = list();
-			pkey = pval = "";
-			next;
-			}
-		
-		if(is.null(continue))
+	envir = environment();
+	
+	prepKeyVal = function()
+		{
+if(verbose)
+	{
+cat("\n\n prepKeyVal() \n\n");
+	}
+		if(CONTINUE_KEY == "")
 			{
 			info = str.explode("=", line);
 			key = str.trim(info[1]);
@@ -173,35 +159,142 @@ cat("\n\n ", line.no, " --> ", line, "\n\n");
 			key = str.replace("[[","[", key);  
 			key = str.replace("]]","]", key);
 			key = str.replace(c(SINGLE_QUOTE,DOUBLE_QUOTE), "", key);
-		
+if(verbose)
+	{		
 cat("\n\n"); dput(continue); cat("\n\n");
-			val = str.implode("=", info[-1]);
-			} else { val = line; }
-print(val);
-		nval = parse.walkTheLine(val, COMMENT=";", continue=continue);
+	}
+			val = str.implode("=", info[-1]);			
+			} else { 
+					key = CONTINUE_KEY;
+					val = line;					
+					}
+		key %TO% envir;
+		val %TO% envir;
+		}
 		
-		continue = property.get("extra", nval);
-		if(!is.null(continue))
+	doNew = function()
+		{
+if(verbose)
+	{
+cat("\n\n doNew() \n\n");
+	}
+		info = parse.walkTheLine(line_, COMMENT=";");
+			
+		pparent = cparent;				pparent %TO% envir;	
+		cparent = info;					cparent %TO% envir;	
+		RES[[cparent]] = list();		RES %TO% envir;	
+		pkey = pval = "";				pkey %TO% envir;	
+										pval %TO% envir;	
+
+if(verbose)
+	{
+print(RES);
+	}
+		}
+	
+	
+	checkContinue = function()
+		{
+if(verbose)
+	{
+cat("\n\n checkContinue() \n\n");
+	}
+		if(CONTINUE_KEY != "")
 			{
-			CONTINUE_KEY = key;
+			key = CONTINUE_KEY;
+			nval = pval;
+			if(str.contains("[",key))
+				{
+				RES[[cparent]][[key]] = list.append(RES[[cparent]][[key]], nval);
+				} else { RES[[cparent]][[key]] = nval; } 
+			
+			RES %TO% envir;	
+				
+			CONTINUE_KEY == "";			CONTINUE_KEY %TO% envir;
+			continue = NULL;			continue %TO% envir;
+			}
+		}
+		
+		
+	updateMultiLine = function()
+		{
+if(verbose)
+	{
+cat("\n\n updateMultiLine() with CONTINUE_KEY: ", CONTINUE_KEY, "\n\n");
+	}
+		status = ""
+		continue = property.get("extra", nval);
+		
+		truth = "0";
+		if(!is.null(continue)) { truth = "1"; }
+		if(CONTINUE_KEY != "") { truth = paste0(truth,"1"); } else {truth = paste0(truth,"0");}
+		
+		if(truth == "00")
+			{
+			# continue is null 
+			# CONTINUE KEY is EMPTY 
+			
 			pkey = key;
 			pval = nval;
-			next;			
-			} else {
-					# we finished a multiline, get the KEY, and store 
-					if(CONTINUE_KEY != "")
-						{
-						key = CONTINUE_KEY; 
-						CONTINUE_KEY == "";
-						}
-					}
+			status = "normal";
+			}
+			
+		if(truth == "01")
+			{
+			# continue is null 
+			# CONTINUE KEY is NOT EMPTY 
+			# we had a multiline that finished 
+			
+			pkey = key;
+			pval = nval;					pval %TO% envir;
+			status = "end-multiline";
+			# key = CONTINUE_KEY gets referenced inside 
+			# contine = NULL, CONTINUE_KEY = "" AFTER ....
+			checkContinue();
+			}
+			
+		if(truth == "10")
+			{
+			# continue is not null 
+			# CONTINUE KEY is EMPTY 
+			# we had a multiline that started 
+			
+			CONTINUE_KEY = key;				CONTINUE_KEY %TO% envir;
+			pkey = key;
+			pval = nval;
+			status = "started-multiline";
+			}
+			
+		if(truth == "10")
+			{
+			# continue is not null 
+			# CONTINUE KEY is NOT EMPTY 
+			# we are in the middle of a streaming multiline
+			
+			pkey = key;
+			pval = nval;
+			status = "streaming-multiline";
+			}
+			
+		key %TO% envir;
+		nval %TO% envir;
+		pkey %TO% envir;
+		pval %TO% envir;
+		return(status);
+		}
 		
-		
+	storeKeyVal = function()
+		{
+if(verbose)
+	{
+cat("\n\n storeKeyVal() \n\n");
+	}
+		### MEMORY ELMENTS CAN ONLY BE ONE LINERS .... 
 		# can only be one liners ...
 		if(!str.contains("[",key) && str.contains("^",key))
 			{
 			key = str.trim(str.replace("^", "", key));
-			MEMORY[[key]] = nval;
+			MEMORY[[key]] = nval;				MEMORY %TO% envir;
 			}
 			
 		## GRAB INFO from MEMORY with ^ operator 
@@ -220,1082 +313,79 @@ print(val);
 			key = str.implode("", "[" %.% keys %.% "]");
 			}
 			
-			
-		if(str.contains("[",key))
+		## STORE 
+		if(str.contains("[]",key))
 			{
 			RES[[cparent]][[key]] = list.append(RES[[cparent]][[key]], nval);
 			} else { RES[[cparent]][[key]] = nval; } 
+		
+		# nval didn't change 
+		key %TO% envir;
+		RES %TO% envir;
+			
+		}
+	
+	main = function() {}
+############################### MAIN #######################
+	for(line in lines)
+		{
+		line.no %++%.;
+		
+if(verbose)
+	{
+cat("\n\n ", line.no, " --> ", line, "\n\n");
+	}
+
+if(verbose)
+	{
+xxx = readline(prompt="Press [enter] to continue, [ESC] to quit");
+	}
+		line_ = str.trim(line);
+		first = charAt(line_,1);
+		# SKIP LINES ...
+		if(is.null(continue) && (first == COMMENT || first == EMPTY)) { next; }
+		
+		
+
+# if(line.no > 20) { stop("testing"); }
+
+	
+		if(first == "[")  # not equal to anything ... 
+			{
+			doNew();
+			next;
+			}
+		
+		prepKeyVal();
+		
+		nval = parse.walkTheLine(val, COMMENT=";", continue=continue);
+		
+		status = updateMultiLine();
+		
+if(verbose)
+	{
+cat("\n\n status: ", status, " key : ", key, " nval : ", nval, "\n\n");
+	}
+		if(status != "normal") { next; }
+		
+		
+		storeKeyVal();
 			
 		pkey = key;
 		pval = nval;
-		
+
+if(verbose)
+	{		
 cat("\n\n\t\t\t ", pkey, " --> ", pval, "\n\n");
-		
+print(str(RES));		
+print(str(MEMORY));
+cat("\n\n MDLFjkdlsj \n\n");
+	}
 		
 		}
 	RES;
 	}
 
 
-# write a new readString function that doesn't require a length ... all of it by default ... 
 
-ini.file = "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/sample.ini";
-inistr = readChars(ini.file, 8888);
-lines = str.explode("\r\n", inistr);
 
-
-
-
-#lines = lines[1:33];
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-envir = environment(); 
-
-	SINGLE_QUOTE = "'";
-	DOUBLE_QUOTE = '"';
-	BACKSLASH = "\\";
-	COMMENT = ";";
-	EMPTY = "";
-
-
-
-
-stop("monte");
-
-
-
-
-	
-	
-	
-	# should be deep enough for what I need ...
-	CURRENT_GREATGRAND = "";	
-	CURRENT_GRAND = "";		
-	CURRENT_PARENT = "";	
-	CURRENT_CHILD = "";	
-	CURRENT_TADPOLE = "";	
-	
-	MEMORY = list();  # in case they use variables FORWARD ?
-	
-	
-	res = list();
-
-
-
-currentTREE = function()
-	{
-	CURRENT_GREATGRAND %|% CURRENT_GRAND %|% CURRENT_PARENT %|% CURRENT_CHILD %|% CURRENT_TADPOLE;	
-	}
-
-
-clearTREE = function()
-	{
-	CURRENT_GREATGRAND = "";
-	CURRENT_GRAND = "";
-	CURRENT_PARENT = "";
-	CURRENT_CHILD = "";
-	CURRENT_TADPOLE = "";
-	
-	CURRENT_GREATGRAND %TO% envir;
-	CURRENT_GRAND %TO% envir;
-	CURRENT_PARENT %TO% envir;
-	CURRENT_CHILD %TO% envir;
-	CURRENT_TADPOLE %TO% envir;
-
-	}
-
-# need a .regex(PATTERN) wrapper that allows standard INPUTS
-# from PCRE or PHP or JAVASCRIPT /regex/gi ... 
-# and translates to GREP / PCRE in R ...
-
-.regex = function(PATTERN, from="javascript", to="grep")
-	{
-	# TODO 
-	}
-
-
-
-					
-			
-			
-		
-		oSET = function(i, val)
-			{
-			if(i == 1) { res[[CURRENT_GREATGRAND]] = val; }
-			if(i == 2) { res[[CURRENT_GREATGRAND]][[CURRENT_GRAND]] = val; }
-			if(i == 3) { res[[CURRENT_GREATGRAND]][[CURRENT_GRAND]][[CURRENT_PARENT]] = val ; }
-			if(i == 4) { res[[CURRENT_GREATGRAND]][[CURRENT_GRAND]][[CURRENT_PARENT]][[CURRENT_CHILD]] = val; }
-			if(i == 5) { res[[CURRENT_GREATGRAND]][[CURRENT_GRAND]][[CURRENT_PARENT]][[CURRENT_CHILD]][[CURRENT_TADPOLE]] = val; }
-			
-			res;
-			}
-			
-		oCALC = function(i)
-			{
-			if(i == 1) { return(res[[CURRENT_GREATGRAND]]); }
-			if(i == 2) { return(res[[CURRENT_GREATGRAND]][[CURRENT_GRAND]]); }
-			if(i == 3) { return(res[[CURRENT_GREATGRAND]][[CURRENT_GRAND]][[CURRENT_PARENT]]) ; }
-			if(i == 4) { return(res[[CURRENT_GREATGRAND]][[CURRENT_GRAND]][[CURRENT_PARENT]][[CURRENT_CHILD]]); }
-			if(i == 5) { return(res[[CURRENT_GREATGRAND]][[CURRENT_GRAND]][[CURRENT_PARENT]][[CURRENT_CHILD]][[CURRENT_TADPOLE]]); }
-			}
-			
-
-addKeyToResult = function() {}
-addKeyToResult = function(key_, what=list(), val_=NULL)
-		{
-		
-cat("\n\n addKeyToResult ... key: ", key_, "\t what :", what, " \t val : ", val_, "\n\n");
-		
-			
-		LIST = list("CURRENT_GREATGRAND" = CURRENT_GREATGRAND,  "CURRENT_GRAND" = CURRENT_GRAND, "CURRENT_PARENT" = CURRENT_PARENT, "CURRENT_CHILD" = CURRENT_CHILD, "CURRENT_TADPOLE" = CURRENT_TADPOLE);
-		n = length(LIST);
-		NAMES = names(LIST);
-		hasResult = FALSE;  # shorter than is.null on search
-		for(j in 1:n)
-			{
-			LEVEL = LIST[[j]];
-			NAME  = NAMES[j];
-			if(!hasResult && LEVEL != "")
-				{
-				# we append ... 
-				# determine the level ... 
-				}
-			if(!hasResult && LEVEL == "")
-				{
-				
-				rwhat = oCALC(j);
-			
-				if(is.null(rwhat)) 
-					{
-					e = paste0(NAME, " = key_; ");
-						eval(parse(text=e));
-					e = paste0(NAME, " %TO% envir; ");
-						eval(parse(text=e));
-					rwhat = oSET(j, what); 					
-					}
-				if(!is.null(val_)) { rwhat = list.append(rwhat, val_); }
-# cat.smart (allows lists ... stringify or print(str) on new line 
-cat("\n\n rwhat "); 
-print(str(rwhat));
-cat("\n\n");
-				# how to reverse ... res = list.merge(res, rwhat);
-				res = list.merge(res, rwhat);  
-cat("\n\n res "); 
-print(str(res));
-cat("\n\n");
-				# should work, no attributes
-				hasResult = TRUE;
-				}			
-			}
-			
-		## update everything, just in CASE 
-			CURRENT_GREATGRAND %TO% envir;
-			CURRENT_GRAND %TO% envir;
-			CURRENT_PARENT %TO% envir;
-			CURRENT_CHILD %TO% envir;
-			CURRENT_TADPOLE %TO% envir;
-			
-			res %TO% envir;	
-		}
-		
-		
-		
-	parseKey = function(key, nval)
-		{
-		key = str.replace("[[","[", key);  # in case they put doubles (R vs php)
-		key = str.replace("]]","]", key);
-		
-		kinfo = str.trim(str.explode("[", key));
-		klen = length(kinfo);
-		if(klen == 1)  # simple key
-			{
-			addKeyToResult(kinfo[1], val=nval);
-			return(TRUE);
-			}
-		kinfo = str.trimFromFixed(kinfo, "]", "RIGHT");
-		# we know we are in an array of some sort ... 
-			addKeyToResult(kinfo[1]);
-		
-		for(i in 2:klen)
-			{
-			if(i == klen) { addKeyToResult(kinfo[i]); next; }
-			addKeyToResult(kinfo[i], val=nval);
-			}
-		
-		}
-		
-		
-	parseLine = function()
-		{
-# line = "loglevel = 5  	; TODO ... determine logging and verbosity within"
-
-		# has equals, only one ??? 
-		# first equals separates key = value 
-		# value may have equals in text only ...
-
-
-		info = str.explode("=", line);
-		
-		# put extra equals back ... 
-		val = str.implode("=", info[-1]);
-	
-		nval = parse.walkTheLine(val, COMMENT=";");  # deal with "," list ... 
-#   PARSE KEY #
-		key = str.trim(info[1]);		
-		
-		# this will do the updates ...
-		parseKey(key, nval);
-
-	
-# user[] ... array ... or list depending on the other side of the =
-# maybe just make unnamed list ... KISS ... 
-	
-		key = str.replace("[[","[", key);  # in case they put doubles (R vs php)
-		key = str.replace("]]","]", key);
-		
-		kinfo = str.trim(str.explode("[", key));
-		klen = length(kinfo);
-		if(klen == 1) 
-			{
-			# simple key
-			
-			}
-	
-		# maybe we should just read, as above ...
-		# store a local MAP of the TREE 
-		
-		# # key #
-		# calendar	  = "Gregorian"	
-		# tz["display"] = "UTC"
-		# salt.key = EE8553FD3B5FD6EE   ; 152-bit WEP
-		# salt[salt.key:key]
-		# authorizeNET[sandbox][user] 
-		# images[good] ... lengthy array ... 
-		# "user[] = \"mshaffer\""
-		
-		
-		
-		
-		
-		
-		
-		cat("\n\n", key, "\n\n"); stop("jdflksj");
-		
-		
-		
-		
-		}
-		
-		
-	parseHeader = function()
-		{
-		# https://regex101.com/r/JAVV4a/1
-		# we have a line ... should not be nested, one bracket pair ?
-		# may have a ":" as a subkey of the parent, just one? YES, KISS
-		# ([^()]*)  # https://stackoverflow.com/a/45477441/184614
-		# key = gsub("^`(.*)`$", "\\1", line)
-		# https://stackoverflow.com/a/62129083/184614 # *REGEX GURU*
-		# line="[PEOPLE:key:keys:key33:fdjksj]"
-
-
-		keys = gsub("\\[(.*?)\\]", "\\1", line);
-		sub = str.explode(":", keys);
-		slen = length(sub);
-		for(i in 1:slen)
-			{
-			k = sub[i]; 
-			if(str.contains("^",k))   # variable in keyname ... 
-				{
-				# let's replace it 
-				ke = str.replace("^", k);
-					nk = MEMORY[[ke]];
-					if(is.null(nk)) { nk = ke; } # not found ...
-				addKeyToResult(nk);
-				} else { addKeyToResult(k); }
-				
-			 
-			}
-		
-		# GOOD TO GO, DONE 
-		}
-		
-		 
-	
-	
-	
-	
-ini.parse = function(inistr, as.lines=FALSE)
-	{
-	if(!as.lines) 
-		{ lines = str.explode("\r\n", inistr); } else { lines = inistr; }
-	
-	envir = environment(); 
-	
-	# we are going to walk ... 
-	# evaluate everything to envir so can be available downstream 
-	
-	
-	main = function() {}
-	
-	
-	
-	
-	
-	{
-########################## HERE WE GO #########################
-	line.no = 0;
-	for(line in lines) # no need for index here error on line.no
-		{
-		line.no %++%. ;
-		line = str.trim(line);
-		first = charAt(line,1);
-		if(first == COMMENT || first == EMPTY) { next; }
-		
-		# first is a "[" ... bracket, or should be ...
-		if(first == "[")
-			{
-			treeReset();
-			parseHeader();	
-cat("\n\n HEADER: \n\n")
-print(line);
-print(str(res));
-xxx = readline(prompt="Press [enter] to continue, [ESC] to quit");
-			next;
-			} else {
-					# we are under a TREE by CURRENT_XYZ
-					parseLine();
-cat("\n\n LINE: \n\n")
-print(line);
-print(str(res));
-xxx = readline(prompt="Press [enter] to continue, [ESC] to quit");
-					next;
-					print(line); stop("monte");
-					}
-		
-		
-		stop("monte");
-		}
-################################################################
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	
-	
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# str(dcf.get("tibble"));
-# str(dcf.get(tibble)); 
-dcf.get = function(..., return="list", character.only = FALSE)
-	{ 
-	RETURN = prep.arg(return, 1);
-debug = FALSE;
-	pkgs = prep.dots(..., collapse=character.only, has.objects=!character.only, default="stringi");
-	if(!character.only) { pkgs = as.character(pkgs); }
-
-	# if not pkg true name, character.only
-	idx = check.pkgs(pkgs, character.only = TRUE);
-		if(is.null(idx)) { cat.stop("no good packages"); }
-	good = pkgs[idx];
-dput(good);
-
-	n = length(good);
-	badns = NULL;
-	res = list();
-	for(i in 1:n)
-		{
-		pkg = good[i];
-		pkg.ns = suppressError( getNamespace(pkg), show.notice=debug, msg="debug dcf.get ");
-		if(is.error(pkg.ns)) { badns = c(badns, pkg); next; }		
-		# CACHING mechanism as JSON files
-	
-		# get the data 
-		h = help.get(pkg); dcf = dcf.parse( h$info[[1]] );
-		if(RETURN == "j") { json = JSON.stringify(dcf); return(dcf); }
-		dcf;
-		}
-		
-	list.return(res);
-	}
-
- 
-
-
-# dcf.getKey(tibble, key="Version");
-# dcf.getKey("tibble", "Version");
-dcf.getKey = function(..., key = "Version")
-	{
-	pkgs = prep.dots(..., collapse=character.only, has.objects=!character.only, default="stringi");
-	if(!character.only) { pkgs = as.character(pkgs); }
-	
-# TODO, update this ... allow multiple keys ... dataframe regarless
-# rows are pkgs, cols are keys ... 
-# easier way to get DESCRIPTION file 
-# maybe a wrapper function with a CHOICE ... 
-# help.get ... go to the folder, go to the web ... SO had another idea, I forget
-
-
-stop("monte: update this");
-	pkg = str.fromObjectName(...);
-	# key = tolower(key); # maybe do a pmatch?
-	# h = help.get(pkg); dcf = dcf.parse( h$info[[1]] ); 
-	dcf = dcf.get(pkg);  # has caching 	
-	dcf[[key]]; # AUTOMATICALLY returns NULL if not found 	
-	}
-
-
-
-
-
-# first RUN was "tibble"  
-# pkgs = .packages(); np = length(pkgs); idx = sample(1:np, 1); pkg = pkgs[idx];  h = help.get(pkg); dcf = dcf.parse( h$info[[1]] ); str(dcf); print(pkg);
-	
-dcf.parse = function(dcfstr)
-	{
-debug = FALSE;
-	# h = help.get(pkg); dcf = dcf.parse( h$info[[1]] );
-	# h = help.get(pkg); dcfstr = ( h$info[[1]] );
-	# lined string, easily available within R scope ...
-	# see help.parseFromLibrary
-	info = str.explode(":", dcfstr);
-	keys = list.getElements(info, 1);
-	unkeyed = str.trim( str.replace( paste0(keys,":"), "", dcfstr) ); 
-	## unkeyed are RAW, unparsed values 
-
-if(debug) 
-	{
-print(keys);
-	}
-	
-	n = length(keys);
-	# out = vector("list", n);	
-	out = NULL; # "tibble" has weirdness at top 
-	for(i in 1:n)
-		{
-		key = keys[i];
-		val = unkeyed[i];
-		.key = tolower(key);
-		if(.key == "") { next; }
-		
-		
-		if(.key == "built" || .key == "date" || .key == "date/publication" || .key == "repository/r-forge/datetimestamp" || .key == "packaged" || .key == "license")
-			{
-			v = dcf.parseBuild(val);				
-			out[[key]] = v; 
-			next;
-			}
-		
-		if(.key == "suggests" || .key == "depends" || .key == "imports")
-			{
-			pkgs = dcf.parseDepends(val);
-			out[[key]] = pkgs;
-			next;
-			}
-		
-		if(.key == "url" || .key == "bugreports" || .key == "urlnote"|| .key == "additional_repositories" || .key == "urlnote")
-			{
-			ukey = dcf.parseURL(val);				
-			out[[key]] = ukey;
-			next;
-			}
-		
-		if(.key == "author" || .key == "maintainer" || .key == "contact"|| .key == "authors@r")
-			{
-			
-			if(.key == "authors@r")
-				{
-				# needs ", " ... the space is important for *words* parser
-				val = paste0( eval(parse(text = val)), collapse=", ");
-				}
-			people = dcf.parsePeople(val);			
-			out[[key]] = people;
-			next;
-			}
-		
-		# DEFAULT
-		out[[key]] = str.removeWhiteSpace(val);
-		}
-	
-	## find URLs, find EMAILs, <email> prefered 
-	## find [aut, cre, cph]
-	## maybe it has @Rperson so must be evaluated ...
-	##  r_code <- gsub("^`(.*)`$", "\\1", value)
-   ##     if (nchar(r_code) != nchar(value)) {
-    ##        settings[[s]] <- eval(parse(text = r_code))
-     ##   }
-
-	## BUILT is ";" sep 
-	## PACKAGED is ";" TIME/WHO (r-profile?)
-	## 
-	
-	
-	
-	
-	out;
-	# df = as.data.frame( cbind(keys, unkeyed) );
-		# colnames(df) = c("keys", "values");
-	# df;
-	}
-
-
-
-
-
-
-# idx = which(all.vals$pkg=="readr"); val = all.vals$val[idx]; all.vals$pkg[idx]; val;
-# idx = rand(1, length(all.vals$pkg)); val = all.vals$val[idx]; all.vals$pkg[idx]; val;
-# people = dcf.parsePeople(val); str(people);
- 
-## idx = rand(1, length(all.vals$pkg)); val = all.vals$val[idx]; all.vals$pkg[idx]; val; people = dcf.parsePeople(val); str(people); all.vals$pkg[idx];
-## rgl is quite long, DIRK
-## BH (also DIRK) ... with "and"  ... [ , and ]
-## "Dirk Eddelbuettel, Romain Francois, Doug Bates, Binxiang Ni, and Conrad Sanderson"
-
-## Atsushi Yasumoto in "rmarkdown"
-# "Atsushi" "Yasumoto"  "[ctb,"  "cph]"  "(<https://orcid.org/0000-0002-8335-495X>," "Number"  "sections" "Lua" "filter),"
-
-
-dcf.parsePeople = function(val)
-	{
-debug = FALSE;
-	# this is the *HARD* one to do well...
-	# let's just read, right=to=left 
-	tmp = str.replace("\n", " ", val);
-	tmp = str.removeWhiteSpace(tmp);
-	## uuid 
-	words = str.explode(" ",tmp);
-if(debug)
-	{
-	print(words);
-	}
-	nwords = length(words);
-	j = 1;
-	newp = TRUE;
-	stack = list();
-	people = NULL;
-	pidx = 1;
-	while(j <= nwords)
-		{
-		word = words[j]; # print(word);
-		
-		if(newp)
-			{
-if(debug)
-	{
-cat("\n --NEW P-- \n");
-	}
-			stack = list();
-			what = "pname";
-			if(word != "and")
-				{
-				stack[[what]] = word;	
-				}
-			newp = FALSE;
-			j = 1 + j; 
-			next;
-			}
-			
-		{
-		has.tag = str.contains("<", word);	
-		has.bra = str.contains("[", word);
-		has.braE = str.contains("]", word);
-		has.par = str.contains("(", word);
-		has.parE = str.contains(")", word);
-		has.com = str.contains(",", word);
-		has.and = (word == "and") ;	
-		
-		is.end = (has.and || has.com);
-		end.r = c("and", ",")
-
-		all = c(has.tag, has.bra, has.braE, has.par, has.parE, has.com, has.and);
-if(debug)
-	{
-print(all);
-	}	
-		}
-		if(sum(all) == 0) 
-			{ 
-if(debug)
-	{
-cat("\n --ALL-- \n");
-	}
-			stack[[what]] = str.trim(paste0(stack[[what]], " ", word));
-			j = 1 + j; 
-			next;
-			} 
-		
-		
-		if(has.bra || what == "role")
-			{
-if(debug)
-	{
-cat("\n --BRACKET-- \n");
-	}
-			what = "role";
-			r = str.replace("[", "", word);
-			if(has.braE)
-				{
-				r = str.explode("]",r)[1];
-				stack[[what]] = c(stack[[what]] , r);
-				what = "";
-				if(is.end) 
-					{
-					people[[pidx]] = stack;
-					pidx = 1 + pidx;
-					newp = TRUE;
-					j = 1 + j;
-					next;
-					}
-				} else {
-						r = str.replace("," , "", r);
-						stack[[what]] = c(stack[[what]] , r);
-						}
-			j = 1 + j;
-			next;
-			}
-		
-		
-		if(has.tag)
-			{
-if(debug)
-	{
-cat("\n -- <tag> -- \n");
-	}
-			e = str.between(word, keys=c("<",">"));
-			# shouldn't be NA 
-			if(what == "pname")
-				{
-				what = "email";				
-				} else {
-						what = "url";
-						}
-# "Atsushi" "Yasumoto"  "[ctb,"  "cph]"  "(<https://orcid.org/0000-0002-8335-495X>," "Number"  "sections" "Lua" "filter),"
-			stack[[what]] = e;
-			if(has.par) { what = "more"; } # for next iteration
-			if(is.end && has.parE) 
-				{
-				people[[pidx]] = stack;
-				pidx = 1 + pidx;
-				newp = TRUE;			
-				}
-			j = 1 + j;
-			next;
-			}
-		
-
-		if(has.par || what == "more")
-			{
-if(debug)
-	{
-cat("\n -- (PARA) -- \n");
-	}
-			what = "more";
-			m = str.trim( str.replace("(","",word) );			
-			# (par ONE WORD parE)
-			if(has.parE)
-				{
-				m = str.explode(")",m);	
-				m = m[1];
-				stack[[what]] = str.trim( paste0(stack[[what]], " ", m) );									
-				what = "";
-				if(has.com)  # not and, maybe a word in "more"
-					{
-					people[[pidx]] = stack;
-					pidx = 1 + pidx;
-					newp = TRUE;
-					}	
-				} else {
-						stack[[what]] = str.trim( paste0(stack[[what]], " ", m) );
-						}			
-			j = 1 + j;
-			next;
-			}
-		
-
-		
-		
-		
-		
-		
-		
-		if(what == "pname")
-			{
-if(debug)
-	{
-cat("\n --PNAME-- \n");
-	}
-			# a person has "and" in their NAME ==> GONER ???
-			m = word;
-			if(is.end)
-				{
-				m = str.replace("," , "", m);
-				stack[[what]] = str.trim(paste0( stack[[what]], " ", m));
-				people[[pidx]] = stack;
-				pidx = 1 + pidx;
-				newp = TRUE;
-				j = 1 + j;
-				next;
-				} else { 
-						stack[[what]] = str.trim(paste0( stack[[what]], " ", m));						
-						}
-			# stack[[what]] = str.trim( str.replace("and ", "", stack[[what]] ) );
-			j = 1 + j;
-			next;
-			}
-		
-			
-		# if(is.end)
-			# {
-			# people[[pidx]] = stack;
-			# pidx = 1 + pidx;
-			# newp = TRUE;
-			# j = 1 + j;
-			# next;
-			# }
-		
-if(debug)
-	{
-cat("\n END OF THE STACK, HOW??? \n");
-	}
-		# print(stack);
-		# stack[[what]] = paste0( stack[[what]], " ", word);
-		# j = 1 + j;
-		}
-	## last one ... outside of loop ... words ended 
-	if(length(stack) > 0) 
-		{ 
-		people[[pidx]] = stack; 
-		}
-	
-if(debug)
-	{
-print(words);
-	}
-	
-	return(people);
-	}
- 
-
-
-
-
-
-
-
-dcf.parseURL = function(val)
-	{
-debug = FALSE;
-	# anything that looks like only URLS , 
-	# idx = rand(1, length(all.vals$pkg)); val = all.vals$val[idx]; all.vals$pkg[idx]; val;
-	# "dendextend"
-	# "multcomp"
-if(debug) 
-	{
-print(val); 
-dput(val);
-stop("monte");
-	}
-	tmp = str.removeWhiteSpace(str.explode(",", val));
-	# "antiword" ... missing a comma
-	tmp2 = unlist(str.explode(" ", tmp));
-	u = check.url(tmp2);
-	
-	ukey = NULL; 
-	s = v.which(tmp2, u );
-	ns = v.which(tmp2, !u );
-	if(!is.null(s)) 
-		{ 
-		ukey = tmp2[s];
-		if(!is.null(ns)) 
-			{
-			uval = tmp2[ns];
-			ukey = property.set("more", ukey, uval);
-			# names(ukey) = uval;
-			}
-		}			
-	ukey;
-	}
-
-
-
-
-
-
-
-
-dcf.parseDepends = function(val)
-	{
-debug = FALSE;
-	# pkgs with (>version)
-	tmp = str.removeWhiteSpace(str.explode(",", val));
-	tmp2 = str.explode("(", tmp);
-if(debug) 
-	{
-print(tmp);
-print(tmp2);
-	}
-	pkgs = list.getElements(tmp2, 1);
-		depe = list.getElements(tmp2, 2);
-		depe[!is.na(depe)] = paste0("(", depe[!is.na(depe)]);
-		depe[ is.na(depe)] = "";
-	pkgs = property.set("dependencies", pkgs, depe);
-	pkgs;
-	}
-
-
-
-
-
-
-
-dcf.parseBuild = function(val)
-	{
-debug = FALSE;
-	# has dates ... 
-	v = list();					
-	tmp = str.removeWhiteSpace(str.explode(";", val));
-if(debug) 
-	{
-print(tmp);
-	}
-	s = v.which(tmp, str.contains("R", tmp) )[1];
-	if(!is.null(s)) 
-		{ 
-		v[["R.raw"]] = tmp[s]; 
-		v[["R.version"]] = str.trim(str.replace("R","",tmp[s]));
-		tmp = v.truncate(tmp[s], tmp);
-		if(is.null(tmp)) { return(v); }
-		}
-	s = v.which(tmp, check.date(tmp) )[1];
-	if(!is.null(s)) 
-		{ 
-		v[["date"]] = tmp[s];
-		tmp = v.truncate(tmp[s], tmp);
-		if(is.null(tmp)) { return(v); }
-		}			
-	s = v.which(tmp, str.contains("win", tmp))[1];
-	if(!is.null(s)) 
-		{ 
-		v[["win"]] = tmp[s];
-		tmp = v.truncate(tmp[s], tmp);
-		if(is.null(tmp)) { return(v); }
-		}
-	s = v.which(tmp, str.contains("ming", tmp))[1];
-	if(!is.null(s)) 
-		{ 
-		v[["ming"]] = tmp[s];
-		tmp = v.truncate(tmp[s], tmp);
-		if(is.null(tmp)) { return(v); }
-		}
-		
-	s = v.which(tmp, str.contains("tap", tmp))[1];
-	if(!is.null(s)) 
-		{ 
-		v[["tap"]] = tmp[s];
-		tmp = v.truncate(tmp[s], tmp);
-		if(is.null(tmp)) { return(v); }
-		}
-		v[["more"]] = tmp; 
-	v;
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-###################### USEFUL FOR EDGE CASES
-### DEBUGGER functions ... get uniqueKeys from PKGS
-###                    ... get uniqueVals for KEY from PKGS 
-
-# i = help.parseFromLibrary(); str(i); dcf = .%$$%("i@dcf"); str(dcf);
-
-dcf.uniqueKeys = function() {}
-dcf.uniqueKeys = function(pkgs = (.packages(all.available=TRUE)) )
-	{
-	h = help.parseFromLibrary(); str(h); dcf = .%$$%("h@dcf"); str(dcf);
-	res = list.create(dcf$keys, dcf$values);
-	res2 = list.create(dcf$keys, rep("base", length(dcf$keys)));
-cat("\n", " INIT ... ", length(res), "\n"); Sys.sleep(0.25);
-	# pkgs = (.packages(all.available=TRUE));
-	n = length(pkgs);
-	for(i in 1:n)
-		{
-		pkg = pkgs[i];
-		h = help.get(pkg); dcf = dcf.parse( h$info[[1]] );
-		res = list.update(res, dcf$keys, dcf$values);
-		res2 = list.update(res2, dcf$keys, rep(pkg, length(dcf$keys)));
-cat("\n", "\t ", i, " of ", n, "\t package:", pkg," ... ", length(res), "\n");
-flush.console();
-		}
-	list("values" = res, "pkg" = res2);	
-	}
-	
-# all.keys = dcf.uniqueKeys();  # ... all.keys = 81 with first val 
-# str(all.keys);
-# df = as.data.frame( cbind( names(all.keys$values), all.keys$pkg, all.keys$values ) ); rownames(df) = NULL; colnames(df) = c("keys", "package", "values"); head(df);
-
-
-
-
-
-
-
-
-
-
-dcf.uniqueVals = function() {}
-dcf.uniqueVals = function(key="Built", 
-							pkgs = (.packages(all.available=TRUE)) 
-						)
-	{
-	res = list();
-	h = help.parseFromLibrary(); str(h); dcf = .%$$%("h@dcf"); str(dcf);
-	s = v.which(dcf$keys, key);
-	if(!is.null(s)) { res = list.update(res, "base", dcf$values[s]); }
-	n = length(pkgs);
-	for(i in 1:n)
-		{
-		pkg = pkgs[i];
-		h = help.get(pkg); dcf = dcf.parse( h$info[[1]] );
-		s = v.which(dcf$keys, key);
-		if(!is.null(s)) { res = list.update(res, pkg, dcf$values[s]); }
-cat("\n", "\t ", i, " of ", n, "\t package:", pkg," ... ", length(res), "\n");
-flush.console();
-		}
-	
-	#df = as.data.frame( cbind( names(res), unname(unlist(res)) ) );
-	df = as.data.frame( cbind( names(res), as.character(res) ) );
-		rownames(df) = NULL; colnames(df) = c("pkg", "val");
-	df = df.sortBy(df, "pkg", "ASC"); head(df);
-	df;	
-	}
-	
-# all.vals = dcf.uniqueVals("Author"); head(all.vals); View(all.vals);
-# idx = which.max(str.len(all.vals$val)); val = all.vals$val[idx]; all.vals$pkg[idx]; val; 
-# idx = which(all.vals$pkg=="readr"); val = all.vals$val[idx]; all.vals$pkg[idx]; val;
-# idx = rand(1, length(all.vals$pkg)); val = all.vals$val[idx]; all.vals$pkg[idx]; val;
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
