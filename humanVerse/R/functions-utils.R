@@ -8,7 +8,10 @@ smart.sep = function(x, search.order=c("'", "-", ":", ",", "^", ".", "ft", "f"))
 	for(i in 1:n)
 		{
 		sep = search.order[i];
-		if(str.contains( sep , x ))	{ return ( sep ); }		
+		print(sep); print(i);
+		print( str.contains( sep , x ) );
+		cat("\n\n", sep, "\n\n");
+		#if(anyFALSE(str.contains( sep , x )))	{ return ( sep ); }		
 		}
 	o;
 	}

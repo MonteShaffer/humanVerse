@@ -577,14 +577,17 @@ str.trimFromAny = function(str, search="#me", side="both")
 		
 		nc = length(char);
 		IDX = set.match(search,char);
-		ilen = length(IDX);  # will be at least length of search ...
 		# nothing to do 
+		if(allNA(IDX)) { res[j] = str.implode("", char); next; }
+		# will be at least length of search ...		
+		IDX = IDX[ v.test(IDX, NA, invert=TRUE) ]; 
+		ilen = length(IDX);  
 		if(!is.na(IDX[1]) && IDX[1] == 1)
 			{
 			# walk until we are not contiguous ...
 			for(i in 1:ilen)
 				{
-				if(IDX[i] == i) { from.left = c(from.left, i); } else { break; }
+				if(!is.na(IDX[i]) && IDX[i] == i) { from.left = c(from.left, i); } else { break; }
 				}			
 			}
 		if(!is.na(IDX[ilen]) && IDX[ilen] == nc)
@@ -592,7 +595,7 @@ str.trimFromAny = function(str, search="#me", side="both")
 			# walk until we are not contiguous ...
 			for(i in ilen:1)
 				{
-				if(IDX[i] == (nc)) { from.right = c(nc, from.right); nc %--%.; } else { break; }
+				if(!is.na(IDX[i]) && IDX[i] == (nc)) { from.right = c(nc, from.right); nc %--%.; } else { break; }
 				}			
 			}
 		
