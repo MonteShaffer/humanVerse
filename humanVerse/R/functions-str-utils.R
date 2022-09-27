@@ -558,7 +558,7 @@ removeWhiteSpace = str.removeWhiteSpace;
 # str.trimFromAny(str, search="#tx\n", side="left")
 #------------------------------------------------#
 str.trimFromAny = function() {}
-str.trimFromAny = function(str, search="#me", side="both", ...)
+str.trimFromAny = function(str, search="#me", side="both")
 	{
 	search = as.character(search);
 	if(search == "") { stop("you need to enter at least one character"); }
@@ -566,15 +566,38 @@ str.trimFromAny = function(str, search="#me", side="both", ...)
 
 	# let's explode on "" to get chars as list
 	search = str.explode("", search); # turn into a set
-	chars = str.explode("", str);
-	n = length(str);
+	chars = check.list(str.explode("", str));
+	n = length(chars);
 	res = character(n);
-	for(i in 1:n)
+	for(j in 1:n)
 		{
-		char = chars[[i]];
-		nc = length(char);
+		char = chars[[j]];
 		from.left = NULL;
 		from.right = NULL;
+		
+		nc = length(char);
+		IDX = set.match(search,char);
+		ilen = length(IDX);  # will be at least length of search ...
+		# nothing to do 
+		if(!is.na(IDX[1]) && IDX[1] == 1)
+			{
+			# walk until we are not contiguous ...
+			for(i in 1:ilen)
+				{
+				if(IDX[i] == i) { from.left = c(from.left, i); } else { break; }
+				}			
+			}
+		if(!is.na(IDX[ilen]) && IDX[ilen] == nc)
+			{
+			# walk until we are not contiguous ...
+			for(i in ilen:1)
+				{
+				if(IDX[i] == (nc-i+1)) { from.right = c(i, from.right); } else { break; }
+				}			
+			}
+		
+		
+		
 		if(s == "b" || s == "l")
 			{
 			for(j in 1:nc)

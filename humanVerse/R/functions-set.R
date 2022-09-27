@@ -42,6 +42,12 @@ set.match = function(searching, set, ...)
 	{
 	# searching %in% set 
 	# set %in% searching   # different things
+	# returns NA, I don't like it ...
+	# could have two NA ... but could have match and NA ?
+	# 
+	# res = match(searching, set, ...);
+	# if(anyNA(res
+	# match(x, table, nomatch = 0) > 0
 	match(searching, set, ...);	
 	}
 	

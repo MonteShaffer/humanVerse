@@ -16,7 +16,7 @@ smart.sep = function(x, search.order=c("'", "-", ":", ",", "^", ".", "ft", "f"))
 	
 # # dots = structure(list(now.1 = structure(1664158355.03661, class = c("POSIXct", "POSIXt")), action.2 = "set", MEMORY.3 = "-IN-", key.4 = "-CURRENT_IN-",     test = list(monte = structure(123, prop = list(a = 1, `b=3` = 7)),         alex = structure(-7, m = 33, b = list(44, 33, structure(-7, m = 33),             structure(123, prop = list(a = 1, `b=3` = 7)))))), fn.info = list(    fn = "df.row", dot.keys = c("now", "action", "MEMORY", "key"    ), params = list(use.names = TRUE), map = list(... = c("now",     "action", "MEMORY", "key"), use.names = "use.names"), formals = list(        ... = "--EMPTY--", use.names = FALSE, character.only = FALSE)), original = list(    structure(1664158355.03661, class = c("POSIXct", "POSIXt"    )), "set", "-IN-", "-CURRENT_IN-"))
 
-
+  
 smart.access = function(objstr, a.sep="@")
 	{
 ##########################################################
@@ -28,8 +28,12 @@ smart.access = function(objstr, a.sep="@")
 ##########################################################
 	o.seps = c("[[", "[", "$");
 	o.map = list("[[" = "]]", "[" = "]", "$" = "");
-	
+cat("\n\n");	
+dput(objstr);
+cat("\n\n");
+stop("monte");
 	objstr = str.trim(objstr);
+	objstr = str.trimFromAny(objstr, search="()", side="both");
 	
 	o.sep = "$"; 	alen = str.len(a.sep);
 					olen = str.len(o.sep);
@@ -119,6 +123,8 @@ smart.access = function(objstr, a.sep="@")
 	eval(parse(text=fstr));
 	}
 
+
+
  
 
 ### 
@@ -156,31 +162,6 @@ access = function(str)
 	}
 	 
 
-
-SO.access = function(str)
-	{	
-	E = strsplit(str, "@", fixed=TRUE);
-	k = length(E);
-		if(k==1)
-			{
-			# we are at the lowest level of @, recurse on $
-			eval(parse(text=str));
-			} else  {
-					# k == 2
-					nstr = paste("attributes(", E[1] ,")", sep="");
-					nstr = paste(nstr,'$', "`", E[2], "`", sep="");
-					if(k > 2) 
-						{
-						for(i in 3:k)
-							{
-							nstr = paste("attributes(",nstr,")",sep="");
-							nstr = paste(nstr,'$',"`",E[i],"`",sep="");
-							}
-						}
-					# recursion 
-					access(nstr);
-					}
-	}
 	
 
 

@@ -109,8 +109,9 @@
 
 "%$$%" = function(r = "HI", ...) 
 			{ 
+			if(!check.type(r)) { r = "hello friend"; }
 			str = str.fromObjectName(...);
-			access(str);			
+			smart.access(str);			
 			}
 			
 
@@ -121,11 +122,11 @@
 # .%$$%("dcf$Depends@dependencies");
 # .%$$%(dcf$Depends@dependencies);				
 			
-			
+			 
 `$$`   = function(...) 
 			{ 
 			str = str.fromObjectName(...);
-			access(str);			
+			smart.access(str);			
 			}
 
 ### THIS IS FUNCTION, MUST HAVE (PARANTHESES)
