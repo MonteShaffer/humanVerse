@@ -1,7 +1,92 @@
 
-SINGLE_QUOTE = "'";
-DOUBLE_QUOTE = '"';
-BACKSLASH = "\\";
+
+
+parse.walkTheLine = function(){}
+parse.walkTheLine = function(str, COMMENT="#")
+	{
+	# I am not dealing with = signs ... just simple parser 
+	
+	SINGLE_QUOTE = "'";  # make these constants?
+	DOUBLE_QUOTE = '"';
+	BACKSLASH = "\\";
+	# get to COMMENT or EOL, I stop, have what I need ...
+	IN_STRING = FALSE;
+	STRING_TYPE = NULL;
+	
+	str = str.trim(str);
+	strV = str.explode("", str);
+	ns = length(strV);
+	
+	# write a generic str.walk function ... limited to this line ...
+		
+	nval = "";
+	cchar = "";
+	pchar = "";
+	i = 1;
+	while(i <= ns)
+		{
+		pchar = cchar;
+		cchar = strV[i];
+		if(cchar == SINGLE_QUOTE || cchar == DOUBLE_QUOTE)
+			{
+			if(IN_STRING)
+				{
+				# already IN_STRING ...
+				if(cchar != STRING_TYPE)
+					{
+					# we have ' in "envir" or " in 'envir' OKEY
+					nval = paste0(nval, cchar);
+					i %++%. ;
+					next;
+					}
+				if(cchar == STRING_TYPE)
+					{
+					if(pchar == BACKSLASH)
+						{
+						# we have \' in 'envir'  or \" in "envir" OKEY
+						nval = paste0(nval, cchar);
+						i %++%. ;
+						next;
+						} else {
+								# can I recover or do I have to stop ...
+								# stop("looks like you have a QUOTE issue on line.no");
+								
+								# wait, this means the string is OVER 
+								break;
+								}
+					
+					
+					}
+				
+				}
+			
+			## just starting the STRING 
+			IN_STRING = TRUE;
+			if(cchar == SINGLE_QUOTE) { STRING_TYPE = SINGLE_QUOTE; } else { STRING_TYPE = DOUBLE_QUOTE; }
+			i %++%. ;
+			next;
+			}
+		
+		if(cchar == COMMENT && !IN_STRING)
+			{
+			break;
+			}
+		# possible to have a missing CLOSING_STRING ... my parser won't care ...
+		
+		nval = paste0(nval, cchar);
+		i %++%. ;
+		next;
+		
+		}
+
+	nval = str.trim(nval);
+	nnum = check.number(nval);
+	if(allTRUE(nnum)) { nval = as.numeric(nval); }
+	
+
+	
+	nval;
+	}
 
 
 ini.file = "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/sample.ini";
@@ -109,109 +194,28 @@ addKeyToResult = function(key, what=list())
 		# put extra equals back ... 
 		val = str.implode("=", info[-1]);
 	
-		val = str.trim(val);
-		valV = str.explode("", val);
-		nv = length(valV);
-		
-		# get to COMMENT or EOL, I stop, have what I need ...
-		IN_STRING = FALSE;
-		STRING_TYPE = NULL;
-							
-		# write a generic str.walk function ... limited to this line ...
-		
-		nval = "";
-		cchar = "";
-		pchar = "";
-		i = 1;
-		while(i <= nv)
-			{
-			pchar = cchar;
-			cchar = valV[i];
-			if(cchar == SINGLE_QUOTE || cchar == DOUBLE_QUOTE)
-				{
-				if(IN_STRING)
-					{
-					# already IN_STRING ...
-					if(cchar != STRING_TYPE)
-						{
-						# we have ' in "envir" or " in 'envir' OKEY
-						nval %.=.% cchar;
-						i %++%. ;
-						next;
-						}
-					if(cchar == STRING_TYPE)
-						{
-						if(pchar == BACKSLASH)
-							{
-							# we have \' in 'envir'  or \" in "envir" OKEY
-							nval %.=.% cchar;
-							i %++%. ;
-							next;
-							} else {
-									# can I recover or do I have to stop ...
-									# stop("looks like you have a QUOTE issue on line.no");
-									
-									# wait, this means the string is OVER 
-									break;
-									}
-						
-						
-						}
-					
-					}
-				
-				## just starting the STRING 
-				IN_STRING = TRUE;
-				if(cchar == SINGLE_QUOTE) { STRING_TYPE = SINGLE_QUOTE; } else { STRING_TYPE = DOUBLE_QUOTE; }
-				i %++%. ;
-				next;
-				}
-			
-			if(cchar == COMMENT && !IN_STRING)
-				{
-				break;
-				}
-			# possible to have a missing CLOSING_STRING ... my parser won't care ...
-			
-			nval %.=.% cchar;
-			i %++%. ;
-			next;
-			
-			}
-	
-		nval = str.trim(nval);
-		
-	
-		nval = NULL;
-			nsc = str.count(COMMENT, val);
-			nsq = str.count(SINGLE_QUOTE, val);
-			ndq = str.count(DOUBLE_QUOTE, val);
-			
-		
-		if(is.null(nval) && (sum(nsc,nsq,ndq) == 0))
-			{
-			# if no "" or '' ... we have a value without string enclosures
-			# val = "https://github.com/MonteShaffer/humanVerse/tree/main/HVcpp";
-			
-			nval = str.trim(val);
-			}
-			
-		if(is.null(nval) && (sum(nsq,ndq) == 0))
-			{			
-			# no quotes, but at least one ;
-			ninfo = str.explode(COMMENT, val);
-			nval = str.trim(ninfo[1]);
-			nnum = check.number(nval);
-			if(allTRUE(nnum)) { nval = as.numeric(nval); }
-			}
-			
-			
-			
-		
+		nval = parse.walkTheLine(val, COMMENT=";");
 		
 		
 ####################   PARSE KEY ##################
 		key = str.trim(info[1]);
+	
+# user[] ... array ... or list depending on the other side of the =
+# maybe just make unnamed list ... KISS ... 
+	
+		key = str.replace("[[","[", key);  # in case they put doubles (R vs php)
+		key = str.replace("]]","]", key);
+		
+		kinfo = str.explode("[", key);
+		klen = length(kinfo);
+		if(klen == 1) 
+			{
+			# simple key
+			
+			}
+	
+		# maybe we should just read, as above ...
+		# store a local MAP of the TREE 
 		
 		# ##################### key ##############
 		# calendar	  = "Gregorian"	
@@ -225,16 +229,7 @@ addKeyToResult = function(key, what=list())
 		
 		
 		
-		key = str.replace("[[","[", key);  # in case they put doubles (R vs php)
-		key = str.replace("]]","]", key);
 		
-		kinfo = str.explode("[", key);
-		klen = length(kinfo);
-		if(klen == 1) 
-			{
-			# simple key
-			
-			}
 		
 		
 		cat("\n\n", key, "\n\n"); stop("jdflksj");
@@ -269,7 +264,10 @@ addKeyToResult = function(key, what=list())
 		 
 	
 envir = environment(); 
-	
+
+	SINGLE_QUOTE = "'";
+	DOUBLE_QUOTE = '"';
+	BACKSLASH = "\\";
 	COMMENT = ";";
 	EMPTY = "";
 	# should be deep enough for what I need ...
