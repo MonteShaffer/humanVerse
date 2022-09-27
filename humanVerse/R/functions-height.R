@@ -1,8 +1,12 @@
 
+
+
+
 # height.cm2ft(ft.string=FALSE)
 
-convert.height = function(..., from="ft-in", to="cm", ft.string = TRUE, ft.digits=0, r.digits=3)
+convert.height = function(..., from="ft-in", to="cm", ft.string = TRUE, ft.digits=0, r.digits=3, ft.sep=NULL)
 	{
+	seps = c("'", "-", ":", ",", "^", ".", "ft", "f");
 	FROM	= prep.arg(from, n=2, case="lower");  
 	TO 		= prep.arg(to, 	 n=2, case="lower");
 	if(FROM %in% c("ft", "fo", "fe", "en", "uk"))
@@ -22,9 +26,11 @@ convert.height = function(..., from="ft-in", to="cm", ft.string = TRUE, ft.digit
 	
 	if(FROM %in% c("ft", "fo", "fe", "en", "uk"))
 		{
-		if(is.character(x))
+		if(is.character(x) || ft.string)
 			{
-			y = check.list(str.explode("'", x));
+			x = as.character(x);
+			if(is.null(ft.sep)) { sep = smart.sep(x, seps); } else { sep = ft.sep; }
+			y = check.list(str.explode(sep, x));
 			ft_ = as.numeric(list.getElements(y, 1));
 			# 'in' is reserved word 
 			in_ = as.numeric(list.getElements(y, 2));  
@@ -46,11 +52,14 @@ convert.height = function(..., from="ft-in", to="cm", ft.string = TRUE, ft.digit
 	if(FROM %in% c("cm", "ce")) { y = x/100;  }  # centimeters
 	if(FROM %in% c("mm", "mi")) { y = x/1000; } # millimeters
 	
+	
+	if(is.null(ft.sep)) { sep = seps[1]; } else { sep = ft.sep; }
+	
 	ft = y / (12*0.0254);
 	if(!ft.string) { return ( round( ft, r.digits) ); }
 	ft_ = as.integer(ft);
 	in_ = round( ft - ft_ , ft.digits);
-	res = paste0(ft_, "'", in_);
+	res = paste0(ft_, sep, in_);
 	res;
 	}
 

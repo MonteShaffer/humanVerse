@@ -1,6 +1,123 @@
 
 
+smart.sep = function() {}
+smart.sep = function(x, search.order=c("'", "-", ":", ",", "^", ".", "ft", "f"))
+	{
+	n = length(search.order);
+	o = search.order[1];  # first is default, if not found ...
+	for(i in 1:n)
+		{
+		sep = search.order[i];
+		if(str.contains( sep , x ))	{ return ( sep ); }		
+		}
+	o;
+	}
+	
+	
+# # dots = structure(list(now.1 = structure(1664158355.03661, class = c("POSIXct", "POSIXt")), action.2 = "set", MEMORY.3 = "-IN-", key.4 = "-CURRENT_IN-",     test = list(monte = structure(123, prop = list(a = 1, `b=3` = 7)),         alex = structure(-7, m = 33, b = list(44, 33, structure(-7, m = 33),             structure(123, prop = list(a = 1, `b=3` = 7)))))), fn.info = list(    fn = "df.row", dot.keys = c("now", "action", "MEMORY", "key"    ), params = list(use.names = TRUE), map = list(... = c("now",     "action", "MEMORY", "key"), use.names = "use.names"), formals = list(        ... = "--EMPTY--", use.names = FALSE, character.only = FALSE)), original = list(    structure(1664158355.03661, class = c("POSIXct", "POSIXt"    )), "set", "-IN-", "-CURRENT_IN-"))
 
+
+smart.access = function(objstr, a.sep="@")
+	{
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.OS = check.type(objstr);
+	if(!ct.OS || !is.character(objstr))	
+		{ objstr = deparse(substitute(objstr)); } 
+##########################################################
+	o.seps = c("[[", "[", "$");
+	o.map = list("[[" = "]]", "[" = "]", "$" = "");
+	
+	objstr = str.trim(objstr);
+	
+	o.sep = "$"; 	alen = str.len(a.sep);
+					olen = str.len(o.sep);
+	# objstr = "dots@fn.info$dot.keys";
+	# objstr = "dots$test$alex@b[4]@prop$b=3"
+	aIDX = strpos(objstr, a.sep);	aIN = length(aIDX);
+	# nothing in attributes, just parse it ...
+	if(is.null(aIDX)) { return( eval(parse(text=objstr)) ); }
+
+	wrapBackTick = function(x, trimLeft=FALSE)
+		{
+		if(str.contains(o.sep, x))
+			{
+			x = str.replace("$", "`$`", x);
+			x = paste0("`",x, "`");
+			# in case we OVERDID it ...
+			x = str.replace("``", "`", x);
+			# last element 
+			if(trimLeft) { x = str.trimFromFixed(x, "`", "LEFT"); }
+			}
+		x;
+		}
+	
+	prepAttribute = function(x)
+		{
+		paste0("[['",x,"']]");  # maybe jsut make $ 
+		#paste0("$`",x,"`");
+		}
+	wrapAttribute = function(fstr,key,rem)
+		{
+		# attributes(`dots`$`test`$`alex`)[["b"]]
+		paste0("attributes(",fstr,")",key,rem);
+		}
+	
+	# first one just needs wrappers ...
+	# count $ in info[1]
+#	info[1] = str.replace("$", "`$`", info[1]);
+#	info[1] = paste0("`", info[1], "`");
+#	info[1] = str.replace("``", "`", info[1]); # in case we messed up
+	# 2:n ... we need to separate the attribute from any possible
+	# downstream tags $ [[name]] [[number]] [name] [number] (mistakes)
+	# need attribute keys ... 
+	
+
+	info = str.explode(a.sep, objstr);
+	# oIDX = strpos(objstr, o.sep);	oIN = length(oIDX);
+	
+	fstr = "";
+	n = length(info);
+	for(i in 1:n)
+		{
+		# we need to replace the '@key' with 'attributes(key)'
+		# need to get the 'val@key' element, not 'val$val@key' ?
+		# regex might work, but I have my wheelhouse 
+		# when did they add @ as a slot operator, ridiculous
+		# http://127.0.0.1:12967/library/base/html/slotOp.html
+		# "attributes(dots)$`fn.info`$dot.keys"
+		# dots$test$alex@b[4]@prop$b=3
+		# attributes(dots$test$alex)$`b`
+		# for CLARITY, I want to do it this way 
+		#  attributes(`dots`$`test`$`alex`)[["b"]][[4]]
+		#  attributes(attributes(`dots`$`test`$`alex`)[["b"]][[4]])[["prop"]]$`b=3`
+
+		# `dots`$`test`$`alex`
+		# substring(objstr, 1, (aIDX[1] - alen ))
+		
+		sub = info[i];
+		
+		if(fstr == "")
+			{
+			fstr = wrapBackTick(sub);
+			next;
+			}
+			## we need to separate the @attr$from or @attr[[from]]
+		sep = smart.sep(sub, o.seps);
+			# should be in the sep list ... maybe ERROR check ...
+		sinfo = str.explode(sep, sub);
+		key = prepAttribute(sinfo[1]);
+			# put everything back 
+		rem = paste0(sep, str.implode(sep, sinfo[-c(1)])); 
+		if(i == n) { rem = wrapBackTick(rem, TRUE); }
+			# cleanup rem noise ... [4] should be [[4]]
+			# let is pass, could be a potential TRUE key, how do I know 
+			# [[4]][4]@next ... 
+		fstr = wrapAttribute(fstr, key, rem);		
+		}
+	eval(parse(text=fstr));
+	}
 
  
 
@@ -19,6 +136,7 @@ access = function(str)
 	k = length(E);
 		if(k==1)
 			{
+			cat("\n\n"); dput.one(str); cat("\n\n");
 			eval(parse(text=str));
 			} else  {
 					# k == 2
@@ -315,7 +433,7 @@ cat("\n\n MONTE \n\n");
 			# people (let me explain atob)... what are you talking about 
 			# CL shift ... 
 			# MR experience (two-meanings... ice and car)
-			# MS treatment (love and affection)
+			# MS treatment (love and affection, triangle)
 			# DJ wisdom (2nd / 12th)
 			# DT goodness 
 			# MC craftiness
@@ -323,7 +441,7 @@ cat("\n\n MONTE \n\n");
 			# BP swagger (white lightning)
 			# JG backlines (chess, rooks)
 			# MM moment (CL, 8th grade)
-			# CR shift 
+			# CR shift (sweather, 10th grade) 
 			# JE BA (they tried)
 			# Teddy effect (belt)
 			# Schm first name (get outta here)

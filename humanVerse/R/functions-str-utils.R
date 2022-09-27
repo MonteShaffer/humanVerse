@@ -1330,7 +1330,8 @@ strrep_ = function(str, times=1)
 
 strunsplit_ = function(str, sep)
 	{
-	n = length(str);
+	str = check.list(str);
+	n = length(str); # is this a vector or list ? 
 	res = character(n);
 	for(i in 1:n)
 		{
