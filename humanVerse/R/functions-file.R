@@ -81,62 +81,67 @@ cat("\n\n Checking directory [",xname,"] at ", xpath, "\n\n");
 #' @export
 #'
 #' @aliases storeToPipe 
-writeToPipe = function(df, filename, header=TRUE, quote="", sep="|", 
+writeToPipe = function() {}
+writeToPipe = function(df, filename, header = TRUE, quote="", sep="|", 
 									prepend.meta = TRUE, 
-									meta.content="",
+									meta.content = "",
 									meta.sep = "^",
-									row.names=FALSE, ...)
-  {
-  if(quote == "") { quote = FALSE; }
-  if(!prepend.meta)
+									meta.skip = "#",
+									row.names = FALSE, ...)
 	{
-	utils::write.table(df, file=filename, quote=quote, col.names=header, row.names=row.names, sep=sep);
-	return(TRUE);
-	}
-  
-  if(meta.content == "")
-	{
-	meta.content = property.get("meta", df); 
-	if(is.null(meta.content))
+	quote_ = quote;
+	if(quote == "") { quote = FALSE; }
+	if(!prepend.meta)
 		{
-		types = df.getColumnTypes(df);
-		if(row.names) { types = c("row.names", types); }
-		types.line = paste0("# ", paste0(types, collapse=meta.sep), " #");
-		h.length = strlen(types.line);
-		
-		# meta.content = 
-		# msg = paste0("\n\n", 
-			# str.commentWrapper(paste0("\n\n", "Welcome to the {humanVerse}", "\n\n") ), 
-			# "\n\n",
-					# "You could try installing the package: ", "\n\n",
-					# str.commentWrapper( pkg, r.tag = "-", s.pad=15), "\n");
-					
-		# str.commentWrapper
+		utils::write.table(df, file=filename, quote=quote, col.names=header, row.names=row.names, sep=sep);
+		return(TRUE);
 		}
-	}
 	
-  m.a = property.get("meta", df); 
-  ## if we have meta , str.trim(charAt(meta,1)) ... all = "#", just append and go ...
-  #types = df.getColumnTypes(df);
-  #types.line = paste0("# ", paste0(y, collapse="^"), " #"); # if row.names == TRUE, append - or something?
-  #h.length = strlen(types.line); # use for custom header ... 
-  #meta = paste0("# fdlskjf #", "\n");
-  
-	conn = file(filename, "rt");
-	on.exit(close(conn));
-  writeLines(meta);
-  utils::write.table(df, conn, quote=quote, col.names=header, row.names=row.names, sep=sep);
-  
-  
-  #fp = file(filename, open="wt");
-  # writeLines("# comments #");
-  # write.csv(df, fp);
-  # close(fp);
-  # open connection, write # comment header #, nearest data, write 
-  # date types ... if row.names = TRUE, do what ... if they wanted row.names, make it a column
-  # so I restore types ... as-is on dataframe 
-  utils::write.table(df, file=filename, quote=quote, col.names=header, row.names=row.names, sep=sep);
-  }
+	# we can load our data ... write ...
+	# then call write.table (append=TRUE)
+	## IF we have, GOOD TO GO, otherwise, build it ...
+	if(meta.content == "")
+		{
+		meta.content = property.get("meta", df); 
+		if(is.null(meta.content))
+			{
+			names = colnames(df);
+				if(row.names) { names = c("row.names", names); }
+			names.line = paste0(meta.skip, " ", paste0(names, collapse=meta.sep) );
+			types = df.getColumnTypes(df);
+				if(row.names) { types = c("row.names", types); }
+			types.line = paste0(meta.skip, " ", paste0(types, collapse=meta.sep) );
+			
+			# maybe compute str.len or fixed to an amount and spread this out?
+			
+			# extra rows for factors?
+			idx = v.which(types, "factor");	
+			factor.lines = "";
+			if(!is.null(idx))
+				{
+				n = length(idx);
+				factor.lines = character(n);
+				for(i in 1:n)
+					{
+					id = idx[i]; cname = colnames(df)[id];
+					# fact = paste0("FACTOR: ", quote_, cname, quote_, " with LEVELS: ", paste0(quote_,paste0( levels(df[[cname]]), collapse = paste0(quote_,meta.sep,quote_))
+					,quote_));
+					factor.lines[i] = paste0(meta.skip, " " , "FACTOR: ", cname, " with LEVELS: ", paste0( levels(df[[cname]]), collapse = meta.sep));					
+					}				
+				}
+			
+			# maybe build ASCII art WELCOME to HUMAN VERSE 
+			meta.content = "jdflksj";  merge the lines in order 
+			}
+		# if it is a property, we may have to parse it a bit to get to meta.content 	
+		
+		}
+	# writeLines(meta.content, sep="\r\n");
+	
+	
+	utils::write.table(df, file=filename, quote=quote, col.names=header, row.names=row.names, sep=sep, append=TRUE);
+	
+	}
 
 #' @rdname file.writeToPipe
 #' @export
@@ -154,7 +159,7 @@ file.writeToPipe = writeToPipe;
 #'
 #' @return a dataframe
 #' @export
-readFromPipe = function() {}  
+readFromPipe = function() {}	
 								# , as.is=TRUE
 								# comment.char="#" ... hexdata
 readFromPipe = function(filename, header=TRUE, quote="", sep="|",
@@ -163,25 +168,25 @@ readFromPipe = function(filename, header=TRUE, quote="", sep="|",
 								meta.skip="#", 
 								stop.at=100, 
 								meta.sep="^", ...)
-  {
-  if(!meta.content) 
+	{
+	if(!meta.content) 
 	{
 	df = utils::read.csv(filename, header=header, row.names=row.names,
 										quote=quote, sep=sep, ...);
 	return(df);
 	}
-  
-  if(meta.skip == "") { stop("meta.skip must have a value, ala comment.char = '#'"); }
-  # loop over readlines, grab the "header" content before the variable names ...
-  # comment.char doesn't stop at header ... e.g., hexcolor data ...
-  
-  i = 0;
-  hstr = character(0);
-  conn = file(filename, "rt");
+	
+	if(meta.skip == "") { stop("meta.skip must have a value, ala comment.char = '#'"); }
+	# loop over readlines, grab the "header" content before the variable names ...
+	# comment.char doesn't stop at header ... e.g., hexcolor data ...
+	
+	i = 0;
+	hstr = character(0);
+	conn = file(filename, "rt");
 	on.exit(close(conn));
-  while ( i < stop.at ) 
+	while ( i < stop.at ) 
 	{
-    line = readLines(conn, n = 1);
+		line = readLines(conn, n = 1);
 	line_ = str.trim(line);
 	if(length(line_) == 0) { stop("after n=i lines, we reached end of line without finidng"); }
 	if(charAt(line_, 1) == meta.skip) 
@@ -200,10 +205,10 @@ readFromPipe = function(filename, header=TRUE, quote="", sep="|",
 	df = property.set("meta", df, hstr);
 	# meta.sep="^" ... let's find it ... and convert df.setColumnsType(df, types);
 	return(df);	
-  }
-  
-  
-  
+	}
+	
+	
+	
 #' @rdname file.readFromPipe
 #' @export
 file.readFromPipe = readFromPipe;
@@ -219,7 +224,7 @@ file.readFromPipe = readFromPipe;
 #' @rdname fopen
 #' @export
 # https://www.php.net/manual/en/function.fopen.php
-# EXPOSING the library:  https://www.tutorialspoint.com/c_standard_library/c_function_fopen.htm
+# EXPOSING the library:	https://www.tutorialspoint.com/c_standard_library/c_function_fopen.htm
 # line 773 of connections.c in R:::source ... 
 # 	fp = R_fopen(name, con->mode);
 # https://www.php.net/manual/en/function.fgets.php
@@ -283,8 +288,9 @@ fseek = function(fp, pos, origin="current")
 defaultPipeHeader = function() 
 	{
 	# welcome to the univres
+	str = "";
 	
-	
+	str;	
 	}
 	
 prep.data = function(df, sep="|", quote="", row.names = FALSE)
@@ -312,11 +318,12 @@ writePipeDelimitedFile = function (df,
 				header=TRUE, 
 				sep="|",
 				quote="",
+				row.names = FALSE.
 				
 				meta.attach = TRUE, 
 				meta.comment="#",
 				meta.sep="^",
-				row.names = FALSE
+				
 				meta.content = defaultPipeHeader(),
 					)
 	{
@@ -347,7 +354,7 @@ readPipeDelimitedFile = function(
 # identical(readChar(filename, file.info(filename)$size), readTextFile(filename));
 readTextFile = function(filename)
 	{
-	fp = file(filename, "rb");  # we have to read in binary 
+	fp = file(filename, "rb");	# we have to read in binary 
 		on.exit(close(fp));
 	buffer = 1024;
 	file.size = file.info(filename)$size;
@@ -387,11 +394,11 @@ freadlines = function(filename, howmany=Inf, direction="FORWARD", skip.lines=0)
 		{
 		buffer = file.size;
 		}
-	fp = file(filename, "rb");  # we have to read in binary 
+	fp = file(filename, "rb");	# we have to read in binary 
 		on.exit(close(fp));
 		
-	pos = 1;  # count of buffers ... 
-	n 	= 1;  # count of lines ... 
+	pos = 1;	# count of buffers ... 
+	n 	= 1;	# count of lines ... 
 	
 	EOL = "\r\n";
 	
@@ -444,7 +451,7 @@ file.readRDS = readRDS;
 
 
 
-##  cat(stri_info(short = TRUE))
+##	cat(stri_info(short = TRUE))
 ## file:///C:/Users/Monte%20J.%20Shaffer/Desktop/v103i02.pdf
 ## https://stackoverflow.com/questions/7779032/validate-a-character-as-a-file-path
 
@@ -465,12 +472,12 @@ testme = "C:\\_git_\\github\\MonteShaffer\\humanVerse\\humanVerse\\R\\functions-
 #' @export
 #'
 #' @examples
-#' WARNING:  OneDrive, DropBox may have file-lock ... CACHE, DATA, CODE are separate
+#' WARNING:	OneDrive, DropBox may have file-lock ... CACHE, DATA, CODE are separate
 
 
-#  /humanVerse/ SETUP ... SANDBOX ... CODE/NOTEBOOKS ... SYSTEM_LOGS ... DATA ... SECRET
+#	/humanVerse/ SETUP ... SANDBOX ... CODE/NOTEBOOKS ... SYSTEM_LOGS ... DATA ... SECRET
 
-# may I suggest for now ... C:/_R_/  or /home/_R_/ or /Users/_R_/ ... would not suggest ~
+# may I suggest for now ... C:/_R_/	or /home/_R_/ or /Users/_R_/ ... would not suggest ~
 
 
 # SETUP ... log-level ... 
@@ -511,11 +518,11 @@ file.init = function(
 	# base.path = getwd()
 # ;
 						# CACHE="/humanVerse/CACHE/", append.cache = TRUE,
-						# DATA="C:/_R-DATA_/", 			append.data  = TRUE,
-						# CODE="/-CODE-/",			append.code  = TRUE )
-  
-dfsafile.init = function()  
-  {
+						# DATA="C:/_R-DATA_/", 			append.data	= TRUE,
+						# CODE="/-CODE-/",			append.code	= TRUE )
+	
+dfsafile.init = function()	
+	{
 	my.path = normalizePath(my.path);
 
 	msg = list();
@@ -550,7 +557,7 @@ dfsafile.init = function()
 
 	dir.createDirectoryRecursive(my.pathCODE);
 	path.set("_CODE_", my.pathCODE);
-  }
+	}
 
 
 
@@ -568,7 +575,7 @@ dfsafile.init = function()
 #' @export
 #'
 #' @examples
-#' WARNING:  OneDrive, DropBox may have file-lock ... CACHE, DATA, CODE are separate
+#' WARNING:	OneDrive, DropBox may have file-lock ... CACHE, DATA, CODE are separate
 # add basic save/load ... save.image 
 file.readFrom = function(filename, ..., method="stringi")
 	{
@@ -588,7 +595,7 @@ file.readFrom = function(filename, ..., method="stringi")
 									comment.char=comment.char, ...) );
 		}
 
-	if(mmm == "tab")  # table
+	if(mmm == "tab")	# table
 		{
 		return( utils::read.table(filename, ...) );
 		}
@@ -598,7 +605,7 @@ file.readFrom = function(filename, ..., method="stringi")
 		return( readRDS(filename) );
 		}
 
-	if(mmm == "jso")  # JSON
+	if(mmm == "jso")	# JSON
 		{
 		# maybe call this function again with "str" to get the stringi form.
 		# json 	= rjson::fromJSON(json_str = readChar(filename, file.info(filename)$size), ...);
@@ -608,42 +615,42 @@ file.readFrom = function(filename, ..., method="stringi")
 
 	# readChar is one long string; readLines is a vector broken on "\n"
 
-	if(mmm == "str")  # stringi
+	if(mmm == "str")	# stringi
 		{
 		# file:///C:/Users/Monte%20J.%20Shaffer/Desktop/v103i02.pdf
 		x = stringi::stri_read_raw(filename);
 		if(!is.set(from))
 			{
 			y = stringi::stri_enc_detect(x);
-			from = y[[1]][1,]$Encoding;  # most probable
+			from = y[[1]][1,]$Encoding;	# most probable
 			}
 		if(!is.set(to)) { to = "UTF-8"; }
 		z = stringi::stri_encode(x, from = from, to = to);
 		return (z);
 
-		## also has a readLines ...  stri_read_lines("ES_latin1.txt", encoding = "ISO-8859-1")
+		## also has a readLines ...	stri_read_lines("ES_latin1.txt", encoding = "ISO-8859-1")
 		}
 
 
-	if(mmm == "cha")  # readChar
+	if(mmm == "cha")	# readChar
 		{
 		return( readChar(filename, file.info(filename)$size) );
 		}
 
-	if(mmm == "lin")  # readLines
+	if(mmm == "lin")	# readLines
 		{
 		if( !exists("n", inherits = FALSE ) ) { n = 10^5;} # guessing [pass in the value]
 		return( readLines(filename, n) );
 		}
 
-	if(mmm == "bin")  # binary
+	if(mmm == "bin")	# binary
 		{
 		if( !exists("what", inherits = FALSE ) )		{ what = "raw";}
 		if( !exists("n", inherits = FALSE ) ) { n = 10^5;} # guessing [pass in the value]
 		return( readBin(filename, what, n=n, ...) );
 		}
 
-	if(mmm == "dcf" || mmm =="deb")  # debian
+	if(mmm == "dcf" || mmm =="deb")	# debian
 		{
 		return( read.dcf(filename, ...) );
 		}
@@ -666,7 +673,7 @@ file.readTailPipe = function( filename,
 		{
 		buffer = file.size;
 		}
-	fp = file(filename, "rb");  # we have to read in binary 
+	fp = file(filename, "rb");	# we have to read in binary 
 		on.exit(close(fp));
 		
 	SEEK_END = "end";
