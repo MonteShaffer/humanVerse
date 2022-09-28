@@ -159,7 +159,17 @@ constants.default = function(default.numbers = TRUE, namespace="humanVerse", whi
 					# # https://www.unicode.org/faq/private_use.html
 					# R doesn't allow null \x00 in a string. 
 					# challenge to do b64 with that limitation	
-					# # PUA range is U+E000...U+F8FF
+					# # PUA range is U+E000...U+F8FF ... EA60 ... EA5F
+					#                57344 ... 63743
+					# -INF 59999  +INF 60000
+					# 98955999911209916464644119185682 ... 46999921285999993996122
+					#      559999112					             599999399
+					#     1550059912								1550059912
+					# OMG ...
+					# 101323206354325344240488600003090822619003 ... 7299600005402969139086326671417923649756297192502128839909708484 
+					#						  1550059912 ... 600003090
+					#   1550059912 ... 600005402
+					# is that my PSEUDO mensa number 
 					.U_NULL		= "U+EA07",   # 59911
 					.U_NA		= "U+EA08",   # 59912
 					.U_INF_		= "U+E007",   # 57351	# NEGATIVE INFINITY
@@ -237,20 +247,32 @@ constants.default = function(default.numbers = TRUE, namespace="humanVerse", whi
 						## too big even to cast to INTEGER ... 2^31 
 						## can't manipulate very EASILY ...
 						# NULL_INT = 227878880988633599116081923,
+						#                       
 						NULL_INT = 863353016082155991131414420509144729353502223,
+						#                      1559911314
+						#                      1550059912
+						# maybe swithc NULL / INF ... 57... don't like 7 
 						NULL_CHAR = "U+EA07",  # PUA ... do I need NULL_FN? [BIGFORK]
 						FAKE_NA = "`[NA]`",
 						# NA_NUM == NA_INT ... FALSE, GOOD 
 						#NA_NUM = 59912001001550.4068925815,
 						NA_NUM = 1550059912.4068925815,
-						NA_INT = 59912001001550,
+						# 1550059912 is rather random, not found in 1 MILLION of PI 
+						NA_INT = 1550059912,
+						# > NA_NUM == NA_INT ... [1] FALSE
+						# > as.integer(NA_NUM) == NA_INT [1] TRUE
+
 						NA_CHAR = "U+EA08",	# could do same for NA ... 
 						# what about +/- INF 
 						# https://www.facade.com/legacy/amiinpi/?thenum=57351
 						# search my pi.dec.txt DATA file 
+						# WHY IS NOTEPAD++ not finidng 57351
 						# 22199658207573513157075923.592169694573513122969929
+						#                                    1550059912
 						# 2350141441973568548161361157352552133.62258218781200116285735213380860436525201235
-						
+						# playing off of JAMES BOND 007 .... 
+						# maybe just use  60000 ... use one number for INF, make - for -INF
+						# "U+EA60" 
 						#.U_INF_		= "U+E007",   # 57351	# NEGATIVE INFINITY
 						#.U_INF		= "U+E008"    # 57352  
 						
