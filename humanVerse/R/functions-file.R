@@ -162,7 +162,7 @@ writeToPipe = function(df, filename, header = TRUE, quote="", sep="|",
 	idx = v.which(types, "factor");	
 	factor.lines = NULL;
 	if(!is.null(idx))
-		{
+		{ 
 		n = length(idx);
 		factor.lines = character(n);
 		for(i in 1:n)

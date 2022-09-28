@@ -35,7 +35,7 @@ constants.default = function(default.numbers = TRUE, namespace="humanVerse", whi
 					invSQRT3	= "0.5773502691896257645",
 					SQRT3_2 	= "0.86602540378443864676372317075293618347140262690519031402790348972596650845",
 					SQRT5		= "2.236067977499789696409173668731276235440618359611525724270897245",
-					invSQRT5	= "0.44721359549995793928183473374625524708812367192230514485417944908210418512756097988288288167575645", 
+					invSQRT5	= "0.44721359549995793928183473374625524708812367192230514485417944908210418512756097988288288167575645",
 					ANSWER.is	= "5"
 					);
 
@@ -78,11 +78,151 @@ constants.default = function(default.numbers = TRUE, namespace="humanVerse", whi
 		}
 	
 	
+	# create unicode library ... make searchable with tag adds 
+	# have grid-search using MNIST tech to find similar items...
+	# allow non-standard elements into search space (e.g., old proto-sinaitci or egyptian that wasn't approved)
+	# #https://en.wikipedia.org/wiki/Proto-Sinaitic_script
+	# why we like lower-case omega
+	# https://en.wikipedia.org/wiki/Proto-Sinaitic_script#/media/File:Proto-semiticS-01.svg
+	# https://en.wikipedia.org/wiki/Proto-Sinaitic_script#/media/File:Proto-semiticT-01.svg
+	U = list(
+					U_TIMES		= "U+00D7",
+					U_CHI 		= "U+1D6D8", 
+					U_BETA		= "U+03B2",
+					U_GAMMA		= "U+0393",
+					U_THETA		= "U+1D6C9",
+					U_ALPHA		= "U+03B1",
+					U_EPSILON	= "U+03B5",
+					U_SQRT		= "U+221A",
+					U_ROOT2		= "U+221A",
+					U_ROOT3		= "U+221B",
+					U_ROOT4		= "U+221C",
+				U_PROPORTIONAL	= "U+221D",
+					U_INFINITY	= "U+221E",
+				# https://www.compart.com/en/unicode/U+2245
+				U_APPROXIMATELY	= "U+2245",
+					
+					U_MATH		= c("U+002B", "U+2212", "U+00D7", "U+00F7"),
+					U_SNAIL		= "U+1F40C",
+					U_CDOTS		= "U+22EF",
+					U_LYING		= "U+1F925", 
+					U_ARROW_UP	= "U+2191",
+				U_ARROW_LEFT	= "U+27FD",
+					U_EURO		= "U+20AC",
+					U_POUND		= "U+00A3",
+					# https://en.wikipedia.org/wiki/Astrological_symbols#Signs_of_the_zodiac
+					U_ZODIAC = list("Aries" = "U+2648", "Taurus" = "U+2649", "Gemini" = "U+264A", "Cancer" = "U+264B", "Leo" = "U+264C", "Virgo" = "U+264D", "Libra" = "U+264E", "Scorpio" = "U+264F", "Sagittarius" = "U+2650", "Capricorn" = "U+2651", "Aquarius" = "U+2652", "Pisces" = "U+2653"),
+				U_ZODIAC_CHINA = list(""), # 12 signs, 5 elements (yin/yang)
+					# https://en.wikipedia.org/wiki/Lichun
+					# DEMO "wiki" parser on that page, grab other planets 
+					# https://pages.ucsd.edu/~dkjordan/resources/unicodemaker.html
+					# https://hanzicraft.com/character/%E7%89%9B%E4%B8%91
+					U_STAIR		= "U+1328D", # Egyptian  ... sort by ASC/DESC
+					U_EGY_N		= "U+13216",  # water (not m?)
+					# https://en.wikipedia.org/wiki/Mem
+					U_EGY_FIVE1 = "U+132B0",
+					U_EGY_FIVE2 = "U+132B1",
+					U_EGY_ONE	= "U+133FA",
+			U_EGY_NUMBER_LINE 	= "U+13416",
+					U_EGY_CROSS = "U+133F6",
+					U_EGY_TAV	= "U+13384",  # intersect/union member of in this group 
+				U_EGY_THIRDS 	= "U+13279", # third part
+				U_PERSIAN_RUG 	= "U+13254", 
+					U_STAR		= "U+131FD", # http://www.alanwood.net/unicode/egyptian-hieroglyphs.html
+					U_EYE		= "U+13080", # Egyptian Fractions (how to reflect ... U+XX to mirror reflect?)
+					U_PHALLUS	= "U+130B8",		# Egyptian 
+					U_OX		= "U+130FE",		# OLD HEBREW 
+					U_CROSS		= "U+5341",		# CHINESE "10"
+					# different? https://www.fileformat.info/info/unicode/char/571f/browsertest.htm
+					U_SCHOLAR	= "U+58EB",
+					U_EARTH		= "U+571F",
+					
+					# https://www.compart.com/en/unicode/block/U+0080
+					U_N_QUESTION = "U+00BF", 		# upside-down ?
+					U_N_EXCLAMATION = "U+00A1", 	# upside-down !
+					
+					U_ARAB_NO	= "U+10A7F",
+				U_CHINA_SUNDAY 	= "U+65E5", 
+					
+					
+					# https://en.wikipedia.org/wiki/Proto-Sinaitic_script
+					# https://codepoints.net/U+10A67?lang=en
+					# OX ... 
+					U_SUP_09	= c("U+2070", "U+00B9", "U+00B2", "U+00B3", "U+2074", "U+2075", "U+2076", "U+2077", "U+2078", "U+2079"),
+					# maybe do letters/LETTERS in SUPer and SUBscripts
+					U_POWER		= c("ᵉ","ᴱ", "⁺", "⁻"),  # what are codes? no SUPERSCRIPT TIMES ???
+					
+					# https://www.w3schools.com/charsets/ref_utf_cyrillic.asp
+					U_RU_R_ 	= "U+042F",  # cyrillic omeaga, olala
+					
+					
+					# # https://www.unicode.org/faq/private_use.html
+					# R doesn't allow null \x00 in a string. 
+					# challenge to do b64 with that limitation	
+					# # PUA range is U+E000...U+F8FF
+					.U_NULL		= "U+EA08",   # 59912
+					.U_INF_		= "U+E007",   # 57351	# NEGATIVE INFINITY
+					.U_INF		= "U+E008"    # 57352  
+					
+					
+					
+					
+					);
+				
+	u = length(U);
+	U.names = names(U);
+	for(i in 1:u)
+		{
+		KEY = U.names[i];
+		VAL = U[[i]];
+		##assignInNamespace(KEY, VAL, ns=namespace);
+		gggassign(KEY,VAL);
+		}
+	
 	SYSTEM = list(  
 						SEEK_END = "end",
 						SEEK_START = "start",
-						SEEK_CURRENT = "current"
+						SEEK_CURRENT = "current",
+						BUFFER = 1024,
+						
+						OPTIMUS_PRIME = 1,
+						CIPHER_IN_SNOW= 0,
+						ZERO=0,
+						ONE = 1,
+						COMMENT = "#",
+						MULTILINE_START = "/*",
+						MULTILINE_END = "*/",
+						VSEP = "\\./",
+						COMMA = ",",	
+						FAKE_COMMA = "`[comma]`",
+						PIPE = "|",
+						FAKE_PIPE = "`[pipe]`",
+						SINGLE_QUOTE = "'",
+						SQ = "'",
+						ESC_SQ = '\'',
+						FAKE_SQ = "`[sq]`",
+						DOUBLE_QUOTE = '"',
+						DQ = '"',
+						ESC_DQ = "\"",
+						FAKE_DQ = "`[dq]`",
+						BACKSLASH = "\\",
+						IN_STRING = FALSE,		# these will change often in parser
+						STRING_TYPE = NULL,		# pseudo-constants, as in C++ 'const' definition?
+						TAB = "\t",
+						FAKE_TAB = "`[t]`",
+						NEWLINE = "\n",
+						FAKE_NEWLINE = "`[n]`",
+						EOL = "\r\n",
+						FAKE_EOL = "`[rn]`",
+						
+						OP = "(", 			# OPEN_PARENTHESSDFJlkd
+						CP = ")"
 					);
+					
+					
+				
+				
+				
 				
 	s = length(SYSTEM);
 	SYS.names = names(SYSTEM);
@@ -176,6 +316,7 @@ constants.default = function(default.numbers = TRUE, namespace="humanVerse", whi
 	minvisible(list(
 					"NUMBERS" 	= NUMBERS, 
 					"STRINGS" 	= STRINGS,
+					"U"			= U,
 					"SYSTEM" 	= SYSTEM,
 					"TIME" 		= TIME,
 					"TEMP" 		= TEMP,
@@ -218,6 +359,7 @@ constants.define = function(KEY, VAL, namespace="humanVerse")
 	
 	# a constant, if SET doesn't change ... DEFINE_CONSTANT not const 
 	val = constants.get(key);
+	# obviously in R, they can just change the value .... FAKE_CONSTANTS
 	if(!is.null(val)) { warning("Constant has already been defined as "); return(NULL); }
 	
 	# if(global) { gggassign(key,VAL); }

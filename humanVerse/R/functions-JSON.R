@@ -99,7 +99,7 @@ RHON.describe = function(obj, name=NULL)
 	
 	
 	}
-
+ 
 
 # let's compare rjson to jsonlite 
 # do they comply with ECMA/javascript standards?
