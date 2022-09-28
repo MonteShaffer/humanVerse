@@ -252,7 +252,7 @@ prep.switch = function(THING="both", keys=c("l","r","b"), vals=c("left", "right"
 	if(is.null(newthing)) { newthing = default; }
 	newthing;	
 	} 
-	
+	 
 	
 prep.strSide = function(side="both", n=1, ... , default="both", keys=NULL, vals=NULL)
 	{		
@@ -407,4 +407,26 @@ prep.evalValue = function(value)
 				value = deparse(value);
 				}
 	value;
+	}
+
+
+	
+# library(help = "datasets")
+prep.dir = function(x, trailing = TRUE, force.trailing=FALSE)
+	{
+	z = check.ext(x);
+	y = str.replace(DIR_WINDOZE, DIR_LINUX, x);
+	# you may want to create a directory with stem
+	# force.trailing ... DATA PROVENANCE ... 
+	# "C:/.../Temp/Rtmp2XXr6l/iris.txt" => "C:/.../Temp/Rtmp2XXr6l/iris.txt/"
+	if((trailing && is.null(z)) || force.trailing) 
+		{ 
+		y = paste0(y, DIR_LINUX); 
+		y = str.replace(DOUBLE_SLASH, DIR_LINUX, y);
+		}
+	y = str.replace(DOUBLE_SLASH, DIR_LINUX, y);  # ONE more, just in CASE 
+	# minvisible(y, display=print, key="DIR");	
+	# Error in eval(parse(text = objstr)) :  trying to get slot "original" from an object of a basic class ("list") with no slots
+
+	y;
 	}

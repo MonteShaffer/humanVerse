@@ -181,6 +181,88 @@ check.number = function(x)
 	}
 
 
+# create as in create.DIRECTORY
+check.file = function(path, trailing = TRUE, create=TRUE)  
+	{
+	d = check.dir(path, create=create, trailing=trailing);
+	stem = basename(path);  # not filename()	
+	f = paste0(d, stem);
+	f;
+	}
+
+
+.NULL = function(x, type=typeof(x))
+	{
+	# TRAPPING NULLS in VECTORS ... 
+	if(!is.defined(NULL_INT)) { constants.default(); }
+	.NULL_ = NULL_CHAR; # default 
+	if(type == "integer") { .NULL_ = NULL_INT; }
+	if(type == "double")  { .NULL_ = NULL_NUM; }
+	.NULL_;	
+	}
+
+.isNULL = function(x, type=typeof(x), invert=FALSE)
+	{
+	# TRAPPING NULLS in VECTORS ... 
+	.NULL_ = .NULL(x, type=type);	
+	v.test(x, .NULL_, invert=invert);
+	}
+
+check.ext = function(x, dotless=TRUE)
+	{
+	stem = basename(x);  # not filename()
+	lenstem = str.len(stem);
+	
+	s = str.pos(EXT, stem);  # hard to use ... but returns NULL
+	# s = str.explode(EXT, stem); # easier to use
+	if(is.null(s)) { return(EMPTY); }  # univariate ...
+	s = check.list(s);  # multivariate 
+	
+	
+		# I have NULL's trapped inside, what will get ELEMENTS DO 
+		# maybe create a bogus NUMBER 
+		# NULL_NUM = 59912001001550.4068925815,
+		# NULL_INT = 59912001001550,
+		# NULL_CHAR = "U+EA08",
+		# TRAP in VECTORS ... 
+		# FREAKING AWESOME
+		# maybe implement into list.getElements ... 
+		# ultimately THROUGHOUT ... TRAP NULLS in VECTORS... AWESOME
+	
+	vals = list.getElements(s, 1);  # NA's on NULLs ... 
+	# vlen = str.len(vals);
+	
+	logic = v.test(vals, NA, invert=TRUE);
+	
+	dot = 1;
+	if(!dotless) { dot = 0; }  # could allow for DOT of any length ...
+	
+	res = EMPTY;  	
+	res[logic] = substring(stem[logic], 
+							dot + vals[logic], 
+							lenstem[logic]
+							);
+	res;
+	}	
+	
+# tempdir()
+check.dir = function(path, trailing = TRUE, create=TRUE)
+	{
+	# if NOT LOCAL, download to TMP location
+	# update filename using %TO% ?  parent.frame(1)
+	d = dirname(path);
+	d = prep.dir(d, trailing=trailing);
+	
+	if(create)
+		{
+		dir.create( d, 
+					showWarnings = FALSE, 
+					recursive = TRUE
+				);
+		}
+	d;
+	}
+
 
 
 

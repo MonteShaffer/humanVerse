@@ -100,29 +100,6 @@ parse.pipeMeta = function(meta.content, meta.sep = VSEP, meta.skip=COMMENT_CHAR,
 	meta;
 	}
 
-
-dir.setSeparator = function(force=NULL)
-	{
-	if(!is.defined(DIR_SEPARATOR)) { constants.default(); }
-	if(is.null(force))
-		{	
-		DIR_SEPARATOR = DIR_LINUX;
-		if(is.windows()) { DIR_SEPARATOR = DIR_WINDOZE; }
-		} else { DIR_SEPARATOR = force; } # manually force ... 
-	
-	# this needs to be modified to NAMESPACE of library
-	# keep ls() clean ... 
-	# %NAMESPACE% could also be functions ...
-	# DIR_SEPARATOR %NAMESPACE%.   #(. would be humanVerse, but any allowed)
-	DIR_SEPARATOR %GLOBAL%.;   
-	DIR_SEPARATOR;  # should be mute ... seems like R internally handles LINUX forms on windows ... 
-	}
-
-tmp.dir = function()
-	{
-	d = prep.dir( tempdir(check=TRUE) );
-	d;
-	}
 	
 tmp.file = function(stem = "humanVerse.txt")
 	{
@@ -148,6 +125,9 @@ tmp.file = function(stem = "humanVerse.txt")
 
 path.info = function(path, trailing = TRUE, create=FALSE)
 	{
+	# currently UNIVARIATE ...
+	
+	
 	# is.file and is.dir fails on path=getwd() ... not a file 
 	# fopen(path)  cannot open file 'C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R': Permission denied
 	# ergo, its a path ?
@@ -178,7 +158,7 @@ path.info = function(path, trailing = TRUE, create=FALSE)
 	# not the best logic, but all I got, I think ...
 	######################  OTHER TESTS ######  OS differences ?
 	ext.test 		= "file"; 
-					if(is.null(e)) { ext.test 		= "dir"; }
+					if(e == EMPTY) { ext.test 		= "dir"; }
 	trailing.test 	= "file"; 
 					if(pd != pf)   { trailing.test 	= "dir"; } 
 
@@ -201,66 +181,9 @@ path.info = function(path, trailing = TRUE, create=FALSE)
 	minvisible(info, key="PATH_INFO", display=str);
 	}
 	
-# create as in create.DIRECTORY
-check.file = function(path, trailing = TRUE, create=TRUE)  
-	{
-	d = check.dir(path, create=create, trailing=trailing);
-	stem = basename(path);  # not filename()	
-	f = paste0(d, stem);
-	f;
-	}	
 	
-# library(help = "datasets")
-prep.dir = function(x, trailing = TRUE, force.trailing=FALSE)
-	{
-	z = check.ext(x);
-	y = str.replace(DIR_WINDOZE, DIR_LINUX, x);
-	# you may want to create a directory with stem
-	# force.trailing ... DATA PROVENANCE ... 
-	# "C:/.../Temp/Rtmp2XXr6l/iris.txt" => "C:/.../Temp/Rtmp2XXr6l/iris.txt/"
-	if((trailing && is.null(z)) || force.trailing) 
-		{ 
-		y = paste0(y, DIR_LINUX); 
-		y = str.replace(DOUBLE_SLASH, DIR_LINUX, y);
-		}
-	y = str.replace(DOUBLE_SLASH, DIR_LINUX, y);  # ONE more, just in CASE 
-	# minvisible(y, display=print, key="DIR");	
-	# Error in eval(parse(text = objstr)) :  trying to get slot "original" from an object of a basic class ("list") with no slots
+	
 
-	y;
-	}
-	
-check.ext = function(x, dotless=TRUE)
-	{
-	stem = basename(x);  # not filename()
-	s = str.pos(EXT, stem);
-	if(is.null(s)) { return(NULL); }
-	lenstem = str.len(stem);
-	slen = len(s);
-	
-	dot = 1;
-	if(!dotless) { dot = 0; }
-	
-	substring(stem, dot + s[slen], lenstem);	
-	}
-	
-# tempdir()
-check.dir = function(path, trailing = TRUE, create=TRUE)
-	{
-	# if NOT LOCAL, download to TMP location
-	# update filename using %TO% ?  parent.frame(1)
-	d = dirname(path);
-	d = prep.dir(d, trailing=trailing);
-	
-	if(create)
-		{
-		dir.create( d, 
-					showWarnings = FALSE, 
-					recursive = TRUE
-				);
-		}
-	d;
-	}
 
 
 
@@ -638,65 +561,16 @@ fseek = function(fp, pos, buffer, origin=SEEK_CURRENT)
 	seek(fp, pos * buffer, origin = origin);
 	} 
 
-	
-prep.data = function(df, sep=PIPE, quote=EMPTY, row.names = FALSE)
+
+
+
+
+writeTextFile = function(str, file, sep=EMPTY, ...)
 	{
-	# factors as characters?
-	n = nrow(df);	
-	if(row.names) 
-		{
-		df = cbind(rownames(df), df);		
-		}
-	str = character(n);
-	for(i in 1:n)
-		{
-		row = paste0(df[i, ], collapse=sep);
-		# encase in "quote"[data]"quote"
-		rstr = str.replace(sep, paste0(quote,sep,quote), row);
-		str[i] = paste0(quote, rstr, quote);
-		}
-	str;	
+	cat(str, file = file, sep=sep, ...);
 	}
 
-writePipeDelimitedFile = function() {}
-writePipeDelimitedFile = function (df, 
-				filename, 
-				header=TRUE, 
-				sep="|",
-				quote="",
-				row.names = FALSE,
-				
-				meta.attach = TRUE, 
-				meta.comment="#",
-				meta.sep="^",
-				
-				meta.content = defaultPipeHeader()
-					)
-	{
-	# just use cat?
-	
-	
-	
-	}
-	
-readPipeDelimitedFile = function() {}
-readPipeDelimitedFile = function(
-				filename, 
-				header=TRUE, 
-				sep="|",
-				quote="",
-				
-				meta.attach = TRUE, 
-				meta.comment="#",
-				meta.sep="^",
-				row.names = FALSE
-								)
-	{
-	lines = str.explode("\r\n", readTextFile(filename) );
-	
-	
-	}
-	
+
 # identical(readChar(filename, file.info(filename)$size), readTextFile(filename));
 # maybe set default to a test file in /inst/ ... read.system ... 
 # colors would be a good choice ... # tag in FIELDS 
@@ -724,6 +598,10 @@ readTextFile = function(filename, buffer=BUFFER)
 	str;
 	}
 	
+
+# from back or front ... 
+# skip based on COLUMN-1 CHAR such as "#"  COMMENT_CHAR ...
+
 # skip.lines has to be >= 0 as integer 
 freadlines = function(filename, howmany=Inf, direction="FORWARD", skip.lines=0)
 	{
@@ -1007,6 +885,13 @@ file.readFrom = function(filename, ..., method="stringi")
 
 	}
 
+
+
+# generic file.writeTo ... match file.readFrom 
+# allow hooks for other types 
+# get others like SPSS, SAV, GAUSS, STATA ...
+# move all into BASE, one library to RULE them all 
+# and in the LIGHTNESS FREE THEM ...
 
 
 file.readTailPipe = function( filename,

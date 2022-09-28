@@ -160,7 +160,8 @@ constants.default = function(default.numbers = TRUE, namespace="humanVerse", whi
 					# R doesn't allow null \x00 in a string. 
 					# challenge to do b64 with that limitation	
 					# # PUA range is U+E000...U+F8FF
-					.U_NULL		= "U+EA08",   # 59912
+					.U_NULL		= "U+EA07",   # 59911
+					.U_NA		= "U+EA08",   # 59912
 					.U_INF_		= "U+E007",   # 57351	# NEGATIVE INFINITY
 					.U_INF		= "U+E008"    # 57352  
 					
@@ -196,6 +197,7 @@ constants.default = function(default.numbers = TRUE, namespace="humanVerse", whi
 						DOUBLE_SLASH = "//",
 						DIR_WINDOZE = "\\",
 						DIR_LINUX 	= "/",
+						SLASH = "/", 
 						DIR_SEPARATOR = "/", 	# seems to work everywhere, but could update at load time based on OS 
 						ATTRIBUTE_KEY = "@",   # slot operator, ridiculous
 						COMMENT_CHAR = "#",
@@ -226,6 +228,31 @@ constants.default = function(default.numbers = TRUE, namespace="humanVerse", whi
 						FAKE_NEWLINE = "`[n]`",
 						EOL = "\r\n",
 						FAKE_EOL = "`[rn]`",
+						FAKE_NULL = "`[null]`",
+						# use PI for NULL, NA use MT 
+						# 227878880988633599116081923.863353016082155991131414420509144729353502223
+						NULL_NUM = 227878880988633599116081923.863353016082155991131414420509144729353502223,
+						# CURRENTLY EQUAL ... NULL_NUM == NULL_INT
+						# TOO BIG ... can't cast as.integer/as.numeric 
+						## too big even to cast to INTEGER ... 2^31 
+						## can't manipulate very EASILY ...
+						# NULL_INT = 227878880988633599116081923,
+						NULL_INT = 863353016082155991131414420509144729353502223,
+						NULL_CHAR = "U+EA07",  # PUA ... do I need NULL_FN? [BIGFORK]
+						FAKE_NA = "`[NA]`",
+						# NA_NUM == NA_INT ... FALSE, GOOD 
+						#NA_NUM = 59912001001550.4068925815,
+						NA_NUM = 1550059912.4068925815,
+						NA_INT = 59912001001550,
+						NA_CHAR = "U+EA08",	# could do same for NA ... 
+						# what about +/- INF 
+						# https://www.facade.com/legacy/amiinpi/?thenum=57351
+						# search my pi.dec.txt DATA file 
+						# 22199658207573513157075923.592169694573513122969929
+						# 2350141441973568548161361157352552133.62258218781200116285735213380860436525201235
+						
+						#.U_INF_		= "U+E007",   # 57351	# NEGATIVE INFINITY
+						#.U_INF		= "U+E008"    # 57352  
 						
 						OP = "(", 			# OPEN_PARENTHESSDFJlkd
 						CP = ")"
