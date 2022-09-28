@@ -217,7 +217,13 @@ df.empty = function(df)
 df.row = function(..., use.names=FALSE, character.only = FALSE)
 	{
 	# dots = prep.dots(..., collapse = !, has.objects = FALSE);
-	dots = prep.dots(..., collapse=character.only, has.objects=character.only, default="stringi"); 
+	dots = prep.dots(..., collapse=character.only, has.objects=character.only, default="stringi");
+
+	# dots = prep.dotsRow(...);
+	# prep.dots ... EASY ... lazy loading of numbers ... 
+	#           .... MEDIUM ... df.row ... get NAMES, maintain STRUCTURE 
+	#           .... HARD ... v.chain ... get INFO from FUNCTIONS ... lazy loading of a list of FNS or OBJS that don't necessarily exist as STRINGS ...
+	#  BABY_BEAR, MAMA_BEAR, DADDY_BEAR ... 
  
 # cat(" monte ");  
 #cat("\n\n"); dput(dots); cat("\n\n"); 

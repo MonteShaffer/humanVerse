@@ -70,9 +70,6 @@ is.Inf = is.infinite;
 
 is.boolean = is.bool = is.logical;
 
-is.dir = dir.exists;
-
-is.file = file.exists;
 
 str.contains = is.substring;
 
@@ -119,11 +116,13 @@ invisilbe = invisible;
 
 "%-%" = str.subtract;
 
+str.diff = str.subtract;
+
 dir.name = dirname;
 
 tmp = tmpdir = temp = tempdir;
 
-is.dir = dir.exists;
+
 
 filename = basename;
 

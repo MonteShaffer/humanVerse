@@ -419,7 +419,7 @@ prep.dir = function(x, trailing = TRUE, force.trailing=FALSE)
 	# you may want to create a directory with stem
 	# force.trailing ... DATA PROVENANCE ... 
 	# "C:/.../Temp/Rtmp2XXr6l/iris.txt" => "C:/.../Temp/Rtmp2XXr6l/iris.txt/"
-	if((trailing && is.null(z)) || force.trailing) 
+	if((trailing && z==EMPTY) || force.trailing) 
 		{ 
 		y = paste0(y, DIR_LINUX); 
 		y = str.replace(DOUBLE_SLASH, DIR_LINUX, y);

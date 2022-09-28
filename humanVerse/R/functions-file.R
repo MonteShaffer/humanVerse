@@ -101,7 +101,7 @@ parse.pipeMeta = function(meta.content, meta.sep = VSEP, meta.skip=COMMENT_CHAR,
 	}
 
 	
-tmp.file = function(stem = "humanVerse.txt")
+tmp.file = function(stem = "humanVerse.txt", trailing=TRUE)
 	{
 ##########################################################
 ##### I can't wrap this into a function check.string #####
@@ -112,73 +112,9 @@ tmp.file = function(stem = "humanVerse.txt")
 ##########################################################
 
 	# allow lazy loading ... 
-	d = prep.dir( tempdir(check=TRUE) );
+	d = prep.dir( tempdir(check=TRUE), trailing=trailing );
 	f = paste0(d, stem);
 	f;
-	}
-	
-# path.info("C:/garba/dkfj/")
-# path.info(tmp.file("sldsfeep.txt"))
-# exists from writeToPipe(sleep, tmp.file("sleep.txt"));
-# path.info(tmp.file("sleep.txt"));  
-# path.info(getwd())
-
-path.info = function(path, trailing = TRUE, create=FALSE)
-	{
-	# currently UNIVARIATE ...
-	
-	
-	# is.file and is.dir fails on path=getwd() ... not a file 
-	# fopen(path)  cannot open file 'C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R': Permission denied
-	# ergo, its a path ?
-	
-	
-	
-	b 	= basename(path);
-	e 	= check.ext(path);
-	d 	= dirname(path);
-				if(trailing) { d = paste0(d, DIR_LINUX); }
-	pd 	= prep.dir(path, trailing=trailing); 
-	pf 	= check.file(path, trailing=trailing, create=create);
-				if_ = is.file(pf);  # reserved word 
-				id_ = is.dir(pf);
-			# I believe these are file.stat[us] and dir.stat[us] functions 
-			# May include R/W forbidden 0777 info ?
-	is_ = c("-UNKNOWN-", "!exists");
-	is__ = FALSE;
-			if(if_ && !id_) { is_ = c("file", "exists");  is__ = TRUE; }
-			if(if_ && id_ ) { is_ = c("dir",  "exists");  is__ = TRUE;}
-	
-	# subtract pd - d ... if it contains a SLASH
-	di = pd %-% d;
-			status = "file";
-			if(str.contains(SLASH, di)) { status = "dir"; }
-	
-			
-	# not the best logic, but all I got, I think ...
-	######################  OTHER TESTS ######  OS differences ?
-	ext.test 		= "file"; 
-					if(e == EMPTY) { ext.test 		= "dir"; }
-	trailing.test 	= "file"; 
-					if(pd != pf)   { trailing.test 	= "dir"; } 
-
-	info = list("type" 				= status,
-				"exists" 			= is__,
-				"exists.info" 		= is_,
-				"stem" 				= b,
-				"ext" 				= e,
-				"path.as.dirname"	= d,
-				"path.as.dir" 		= pd,
-				"path.dir.diff"		= di, # this is ultimately "mytest"
-				"path.as.file" 		= pf,
-				"ext.test" 			= ext.test,
-				"dir.test" 			= trailing.test,
-				
-				"stat.file" 		= if_,  # file.stat means has r/w perms?
-				"stat.dir" 			= id_		# chmod ... run as ADMIN
-				);
-	# print(str(info));
-	minvisible(info, key="PATH_INFO", display=str);
 	}
 	
 	

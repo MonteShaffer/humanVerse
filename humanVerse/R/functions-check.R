@@ -266,6 +266,101 @@ check.dir = function(path, trailing = TRUE, create=TRUE)
 
 
 
+	
+# check.path("C:/garba/dkfj/")
+# check.path(tmp.file("sldsfeep.txt"))
+# exists from writeToPipe(sleep, tmp.file("sleep.txt"));
+# check.path(tmp.file("sleep.txt"));  
+# check.path(getwd())
+# a "path" is a file or a dir ... this clears that up ...
+# check.path()$exists
+# check.path()$type == "dir"	# TRUE is.dir 
+# check.path()$type == "file"	# TRUE is.file 
+
+# I have a lingering NULL 
+# these were aliases ...
+is.file = function(path=getwd(), ...) 
+	{ r = check.path(path, ...); (r$type == "file"); }
+is.dir = function(path=getwd(), ...) 
+	{ r = check.path(path, ...); (r$type == "dir"); }
+
+dir.exists_ = function(path=getwd(), ...) 
+	{ r = check.path(path, ...); (r$type == "dir" && r$exists); }
+file.exists_ = function(path=getwd(), ...) 
+	{ r = check.path(path, ...); (r$type == "file" && r$exists); }
+	
+
+check.path = function() {}
+check.path = function(path=getwd(), trailing = TRUE, create=FALSE)
+	{
+	# currently UNIVARIATE ...
+	
+	
+	# is.file and is.dir fails on path=getwd() ... not a file 
+	# fopen(path)  cannot open file 'C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R': Permission denied
+	# ergo, its a path ?
+	
+	# logic BROKE with move over and removing STUFF ...
+	# str.diff
+	# TODO fix ... 
+	# I HAVE LOST a / somewhere.
+	# is.null(ext) vs is.empty(ext) ... ext == EMPTY ...
+	# b/c I updated check.ext and made it multivariate 
+	# quick.dir() broke?  is.dir ??? NODE overflow ... 
+	# memory.logging keeps jamming with prep.dots(...) on df.row 
+	# maybe need to go OLD-SCHOOL with df.row on MANUAL dots ...
+	# how to GET NAMES ... ETC?
+	# df.row NEEDS TO BE FAST ... 
+	
+	b 	= basename(path);
+	e 	= check.ext(path);
+	d 	= dirname(path);
+				if(trailing) { d = paste0(d, DIR_LINUX); }
+	pd 	= prep.dir(path, trailing=trailing); 
+	pf 	= check.file(path, trailing=trailing, create=create);
+				if_ = file.exists(pf);  # reserved word 
+				id_ = dir.exists(pf);
+			# I believe these are file.stat[us] and dir.stat[us] functions 
+			# May include R/W forbidden 0777 info ?
+	is_ = c("-UNKNOWN-", "!exists");
+	is__ = FALSE;
+			if(if_ && !id_) { is_ = c("file", "exists");  is__ = TRUE; }
+			if(if_ && id_ ) { is_ = c("dir",  "exists");  is__ = TRUE;}
+	
+	# subtract pd - d ... if it contains a SLASH
+	di = pd %-% d;
+			status = "file";
+			if(str.contains(SLASH, di)) { status = "dir"; }
+	
+			
+	# not the best logic, but all I got, I think ...
+	######################  OTHER TESTS ######  OS differences ?
+	ext.test 		= "file"; 
+					if(e == EMPTY) { ext.test 		= "dir"; }
+	trailing.test 	= "file"; 
+					if(pd != pf)   { trailing.test 	= "dir"; } 
+
+	info = list("type" 				= status,
+				"exists" 			= is__,
+				"exists.info" 		= is_,
+				"stem" 				= b,
+				"ext" 				= e,
+				"path.as.dirname"	= d,
+				"path.as.dir" 		= pd,
+				"path.dir.diff"		= di, # this is ultimately "mytest"
+				"path.as.file" 		= pf,
+				"ext.test" 			= ext.test,
+				"dir.test" 			= trailing.test,
+				
+				"stat.file" 		= if_,  # file.stat means has r/w perms?
+				"stat.dir" 			= id_		# chmod ... run as ADMIN
+				);
+	# print(str(info));
+	minvisible(info, key="PATH_INFO", display=str);
+	}
+
+
+
 
 check.isCompatibleLength = function() {}
 check.isCompatibleLength = function(x, y, 
