@@ -772,7 +772,8 @@ str.end = function(search="</i>", str="<i>hello friend</i>", trim = FALSE )
 # if n=1 we return a vector ... of pos with NA for not found 
 # x = "monte says hi monte loves alex and mama and all";
 # str.pos(c(x, str.wordShuffle(x), str.wordShuffle(x)), "and");
-str.pos = function(str, search, n=Inf, skip=0)
+# with str.explode(search, str) ... PHP is SCHIZO like R.
+str.pos = function(search, str, n=Inf, skip=0)
 	{
 	slen = str.len(str);	
 # dput(str);	
@@ -806,4 +807,16 @@ str.pos = function(str, search, n=Inf, skip=0)
 		}
 	list.return(res);
 	}
+	 
+	 
+str.subtract = function(a, b)
+	{	
+	# substr(string,nchar(string1)+1, nchar(string))
+	# https://stat.ethz.ch/pipermail/r-help/2011-June/281263.html
+	# a = "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/";
+	# b = "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/";
+	substring(a,nchar(b)+1, nchar(a));
+	}
+	
+	
 	

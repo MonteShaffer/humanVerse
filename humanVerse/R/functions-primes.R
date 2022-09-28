@@ -14,7 +14,7 @@ primes.scan = function() {}
 optimus.logic = function(p, n, first=TRUE, optimus=FALSE)
 	{
 	# I have a list of primes that is length(p) >= n ... NO OPTIMUS
-	if(optimus) { p = c(1,p); }
+	if(optimus) { p = c(OPTIMUS_PRIME, p); }
 	p = as.integer(p);
 	if(first) { p[1:n]; } else { p[p<=n]; }
 	}
@@ -93,7 +93,8 @@ primes.bit = function(n, first=TRUE)
 	p = which(bits.prime == TRUE); # indexes are primes (zero indexed???)
 	# gn is upper bound, so ... truncate ... 
 	if(first)  { p = p[1:n];    } 
-	if(!first) { p = p[p <= n]; }   
+	if(!first) { p = p[p <= n]; }
+# OPTIMUS_PRIME not checked here ... in this function 	
 		
 	p = property.set("bits", p, bits.prime);
 	return(p);
@@ -214,13 +215,13 @@ primes.inRange = function(xmin, xmax, ...)
 #'
 #' @param n {INTEGER:  how many _what_ ??? }
 #' @param first {TRUE: returns first 'n' primes; FALSE returns primes <= 'n' }
-#' @param optimus {TRUE: include 1 as prime}
+#' @param optimus {TRUE: include 1 as prime OPTIMUS_PRIME}
 #' @param method	{  	
-#'					[cp]p_primes from HVcpp or Rccp::source 
-#'					[pr]acma ... requires library (pracma)
-#'					[bi]t(s) ... requires library (bit)
-#'					[sf]smisc ... requires library (sfsmisc)
-#'					[ba]se ... DEFAULT ... internal enhanced `primes.pracma` 
+#'					[c]pp_primes from HVcpp or Rccp::source 
+#'					[p]racma ... requires library (pracma)
+#'					[b]it(s) ... requires library (bit)
+#'					[s]fsmisc ... requires library (sfsmisc)
+#'					[h]ack ... DEFAULT ... internal enhanced `primes.pracma` 
 #'					}
 #'
 #' @return NumericVector INTEGER (of primes)
@@ -242,15 +243,18 @@ primes.get = function(n, first=TRUE, optimus=FALSE, method="first")
 	if(n < 1) { return(NULL); }
 # dput(n);
 	# return NULL on 1 ... let's just calculate the first 	
-	if(optimus  && n == 1) { return( 1 ); }
+	if(optimus  && n == 1) { return( OPTIMUS_PRIME ); }
 	if(!optimus && n == 1) { return( NULL ); }
 	p = primes.pracma(10);
 	###############  MANUAL HACK on FIRST FEW ELEMENTS ###############
-	if(!first && optimus  && n <= 9) { return( c(1, p[p<=(n-1)]) ); }
-	if(!first && !optimus && n <= 9) { return(      p[p<=n]  ); }
-	
-	if(first && optimus  && n <= 9) { return( c(1, p[1:(n-1)]) ); }
-	if(first && !optimus && n <= 9) { return(      p[1:n] ); }
+	if(!first && optimus  && n <= 9) 
+		{ return( c(OPTIMUS_PRIME, p[p<=(n-1)]) ); }
+	if(!first && !optimus && n <= 9) 
+		{ return(      p[p<=n]  ); }	
+	if(first && optimus  && n <= 9) 
+		{ return( c(OPTIMUS_PRIME, p[1:(n-1)]) ); }
+	if(first && !optimus && n <= 9) 
+		{ return(      p[1:n] ); }
 		
 ##########################################################
 ##### I can't wrap this into a function check.string #####

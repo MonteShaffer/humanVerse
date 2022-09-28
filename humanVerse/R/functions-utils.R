@@ -17,7 +17,7 @@ smart.sep = function(x, search.order=c("'", "-", ":", ",", "^", ".", "ft", "f"))
 # # dots = structure(list(now.1 = structure(1664158355.03661, class = c("POSIXct", "POSIXt")), action.2 = "set", MEMORY.3 = "-IN-", key.4 = "-CURRENT_IN-",     test = list(monte = structure(123, prop = list(a = 1, `b=3` = 7)),         alex = structure(-7, m = 33, b = list(44, 33, structure(-7, m = 33),             structure(123, prop = list(a = 1, `b=3` = 7)))))), fn.info = list(    fn = "df.row", dot.keys = c("now", "action", "MEMORY", "key"    ), params = list(use.names = TRUE), map = list(... = c("now",     "action", "MEMORY", "key"), use.names = "use.names"), formals = list(        ... = "--EMPTY--", use.names = FALSE, character.only = FALSE)), original = list(    structure(1664158355.03661, class = c("POSIXct", "POSIXt"    )), "set", "-IN-", "-CURRENT_IN-"))
 
   
-smart.access = function(objstr, a.sep="@")
+smart.access = function(objstr, a.sep=ATTRIBUTE_KEY)
 	{
 ##########################################################
 ##### I can't wrap this into a function check.string #####
@@ -40,7 +40,7 @@ smart.access = function(objstr, a.sep="@")
 					olen = str.len(o.sep);
 	# objstr = "dots@fn.info$dot.keys";
 	# objstr = "dots$test$alex@b[4]@prop$b=3"
-	aIDX = strpos(objstr, a.sep);	aIN = length(aIDX);
+	aIDX = str.pos(a.sep, objstr);	aIN = length(aIDX);
 	# nothing in attributes, just parse it ...
 	if(is.null(aIDX)) { return( eval(parse(text=objstr)) ); }
 

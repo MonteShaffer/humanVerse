@@ -189,6 +189,16 @@ constants.default = function(default.numbers = TRUE, namespace="humanVerse", whi
 						CIPHER_IN_SNOW= 0,
 						ZERO=0,
 						ONE = 1,
+						
+						EXT = ".",  # file extension 
+						DOT = ".",
+						LDOTS = "...", 
+						DOUBLE_SLASH = "//",
+						DIR_WINDOZE = "\\",
+						DIR_LINUX 	= "/",
+						DIR_SEPARATOR = "/", 	# seems to work everywhere, but could update at load time based on OS 
+						ATTRIBUTE_KEY = "@",   # slot operator, ridiculous
+						COMMENT_CHAR = "#",
 						COMMENT = "#",
 						MULTILINE_START = "/*",
 						MULTILINE_END = "*/",
@@ -196,6 +206,8 @@ constants.default = function(default.numbers = TRUE, namespace="humanVerse", whi
 						COMMA = ",",	
 						FAKE_COMMA = "`[comma]`",
 						PIPE = "|",
+						EMPTY = "",
+						EMTPY = "",
 						FAKE_PIPE = "`[pipe]`",
 						SINGLE_QUOTE = "'",
 						SQ = "'",

@@ -131,13 +131,12 @@ path.openInExplorer = function(key = "wd")
 	utils::browseURL(path);
 	}
 	
+
+	
 # rework this with INCLUDE in mind and new memory KEYS 
 
 
-openSesame = function(path=getwd())
-	{
-	utils::browseURL(path);
-	}
+
 
 # cat(normalizePath(c(R.home(), tempdir())), sep = "\n")
 # list.files(R.home("bin"))

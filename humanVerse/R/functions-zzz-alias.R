@@ -111,7 +111,22 @@ ln = log;
 
 len = length; 
 
+file.delete = unlink;
+
+is.windoze = is.windows;
+
+invisilbe = invisible;
+
+"%-%" = str.subtract;
+
 dir.name = dirname;
+
+tmp = tmpdir = temp = tempdir;
+
+is.dir = dir.exists;
+
+filename = basename;
+
 
 
 "%GLOBAL%" = .GLOBAL.;

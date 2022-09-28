@@ -8,7 +8,7 @@
 
 #' @rdname is.dir
 #' @export
-is.dir = dir.exists;
+
 
 
 

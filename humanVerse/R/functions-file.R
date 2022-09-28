@@ -6,9 +6,7 @@
 pathFromClipboard = function(trailing = TRUE)
 	{
 	x = readClipboard();
-	y = str.replace("\\", "/", x);
-	if(trailing) { y = paste0(y, "/"); y = str.replace("//", "/", y);}
-	minvisible(y, display=print, key="PATH");
+	prep.dir(x);	# prep.dir cleanses .. check.dir verifies it 
 	}
 
 # > y = pathFromClipboard()
@@ -16,7 +14,12 @@ pathFromClipboard = function(trailing = TRUE)
 # [1] "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/"
 # > openSesame(y)
 
-
+openSesame = function() {}
+openSesame = function(path=getwd())
+	{
+	d = check.dir(path);  # could be a file or directory 
+	utils::browseURL(path);
+	}
 
 
 file.init = function()
@@ -61,7 +64,7 @@ cat("\n\n Checking directory [",xname,"] at ", xpath, "\n\n");
 	}
 
 parse.pipeMeta = function() {}
-parse.pipeMeta = function(meta.content, meta.sep = "\\./", meta.skip="#",
+parse.pipeMeta = function(meta.content, meta.sep = VSEP, meta.skip=COMMENT_CHAR,
 					keys=c("NAMES:","TYPES:","FACTOR:","with LEVELS:")
 				)
 	{
@@ -97,14 +100,159 @@ parse.pipeMeta = function(meta.content, meta.sep = "\\./", meta.skip="#",
 	meta;
 	}
 
-check.dir = function(filename)
+
+dir.setSeparator = function(force=NULL)
+	{
+	if(!is.defined(DIR_SEPARATOR)) { constants.default(); }
+	if(is.null(force))
+		{	
+		DIR_SEPARATOR = DIR_LINUX;
+		if(is.windows()) { DIR_SEPARATOR = DIR_WINDOZE; }
+		} else { DIR_SEPARATOR = force; } # manually force ... 
+	
+	# this needs to be modified to NAMESPACE of library
+	# keep ls() clean ... 
+	# %NAMESPACE% could also be functions ...
+	# DIR_SEPARATOR %NAMESPACE%.   #(. would be humanVerse, but any allowed)
+	DIR_SEPARATOR %GLOBAL%.;   
+	DIR_SEPARATOR;  # should be mute ... seems like R internally handles LINUX forms on windows ... 
+	}
+
+tmp.dir = function()
+	{
+	d = prep.dir( tempdir(check=TRUE) );
+	d;
+	}
+	
+tmp.file = function(stem = "humanVerse.txt")
+	{
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.STEM = check.type(stem);
+	if(!ct.STEM || !is.character(stem))	
+		{ stem = deparse(substitute(stem)); } 
+##########################################################
+
+	# allow lazy loading ... 
+	d = prep.dir( tempdir(check=TRUE) );
+	f = paste0(d, stem);
+	f;
+	}
+	
+# path.info("C:/garba/dkfj/")
+# path.info(tmp.file("sldsfeep.txt"))
+# exists from writeToPipe(sleep, tmp.file("sleep.txt"));
+# path.info(tmp.file("sleep.txt"));  
+# path.info(getwd())
+
+path.info = function(path, trailing = TRUE, create=FALSE)
+	{
+	# is.file and is.dir fails on path=getwd() ... not a file 
+	# fopen(path)  cannot open file 'C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R': Permission denied
+	# ergo, its a path ?
+	pf = check.file(path, trailing=trailing, create=create)
+	pd 	= prep.dir(path, trailing=trailing); 
+	cd =  check.dir(path, trailing=trailing, create=create);
+	d1 = prep.dir(dirname(pd), trailing=trailing);
+	e = check.ext(path);
+	b = basename(path);
+	d = dirname(path);
+	if(trailing) { d = paste0(d, DIR_LINUX); }
+	# not the best logic, but all I got, I think ... 
+	ext.test = "file"; if(is.null(e)) { ext.test = "dir"; }
+	trailing.test = "file"; if(pd != pf) { trailing.test = "dir"; } 
+	if_ = is.file(pf);  # reserved word 
+	id_ = is.dir(pf);
+	is_ = c("-UNKNOWN-", "!exists");
+	is__ = FALSE;
+		if(if_ && !id_) { is_ = c("file", "exists"); is__ = TRUE;}
+		if(if_ && id_) { is_ = c("dir", "exists");  is__ = TRUE;}
+	
+	# subtract pd - cd ... if it contains a SLASH
+	di = pd %-% d;
+	
+	status = "file";
+	if(str.contains(SLASH, di)) { status = "dir"; }
+	
+	info = list("type" 				= status,
+				"exists" 			= is__,
+				"exists.info" 		= is_,
+				"stem" 				= b,
+				"ext" 				= e,
+				"path.as.dirname"	= d,
+				"path.as.dir" 		= pd,
+				"path.diff" 		= di,
+				"path.as.file" 		= pf,
+				"ext.test" 			= ext.test,
+				"dir.test" 			= trailing.test,
+				
+				"is.file" = if_,  # file.stat means has r/w perms?
+				"is.dir" = id_		# chmod ... run as ADMIN
+				);
+	print(str(info));
+	invisible(info);
+	}
+	
+# create as in create.DIRECTORY
+check.file = function(path, trailing = TRUE, create=TRUE)  
+	{
+	d = check.dir(path, create=create, trailing=trailing);
+	stem = basename(path);  # not filename()	
+	f = paste0(d, stem);
+	f;
+	}	
+	
+# library(help = "datasets")
+prep.dir = function(x, trailing = TRUE, force.trailing=FALSE)
+	{
+	z = check.ext(x);
+	y = str.replace(DIR_WINDOZE, DIR_LINUX, x);
+	# you may want to create a directory with stem
+	# force.trailing ... DATA PROVENANCE ... 
+	# "C:/.../Temp/Rtmp2XXr6l/iris.txt" => "C:/.../Temp/Rtmp2XXr6l/iris.txt/"
+	if((trailing && is.null(z)) || force.trailing) 
+		{ 
+		y = paste0(y, DIR_LINUX); 
+		y = str.replace(DOUBLE_SLASH, DIR_LINUX, y);
+		}
+	y = str.replace(DOUBLE_SLASH, DIR_LINUX, y);  # ONE more, just in CASE 
+	# minvisible(y, display=print, key="DIR");	
+	# Error in eval(parse(text = objstr)) :  trying to get slot "original" from an object of a basic class ("list") with no slots
+
+	y;
+	}
+	
+check.ext = function(x, dotless=TRUE)
+	{
+	stem = basename(x);  # not filename()
+	s = str.pos(EXT, stem);
+	if(is.null(s)) { return(NULL); }
+	lenstem = str.len(stem);
+	slen = len(s);
+	
+	dot = 1;
+	if(!dotless) { dot = 0; }
+	
+	substring(stem, dot + s[slen], lenstem);	
+	}
+	
+# tempdir()
+check.dir = function(path, trailing = TRUE, create=TRUE)
 	{
 	# if NOT LOCAL, download to TMP location
 	# update filename using %TO% ?  parent.frame(1)
-	dir.create( dirname(filename), 
-				showWarnings = FALSE, 
-				recursive = TRUE
-			); 	
+	d = dirname(path);
+	d = prep.dir(d, trailing=trailing);
+	
+	if(create)
+		{
+		dir.create( d, 
+					showWarnings = FALSE, 
+					recursive = TRUE
+				);
+		}
+	d;
 	}
 
 
@@ -125,16 +273,20 @@ check.dir = function(filename)
 #'
 #' @aliases storeToPipe 
 writeToPipe = function() {}
-# filename = "C:/_R_/humanVerse/SANDBOX/data/iris.txt";
-writeToPipe = function(df, filename, header = TRUE, quote="", sep="|", 
+# sleep has two factors 
+# writeToPipe(sleep, tmp.file("sleep.txt"));
+# filename = "C:/_R_/humanVerse/SANDBOX/data/iris.txt"; 
+writeToPipe = function(df=iris, filename=tmp.file("iris.txt"), header = TRUE, quote=EMTPY, sep=PIPE, 
 									prepend.meta = TRUE, 
-									meta.content = "",
+									meta.content = EMPTY,
 									meta.msg = "This data is about",
-									meta.sep = "\\./",
-									meta.skip = "#",
+									meta.sep = VSEP,
+									meta.skip = COMMENT_CHAR,
 									row.names = FALSE, ...)
 	{
-	check.dir(filename);
+	filename = check.file(filename);
+cat("\n\n", filename, "\n\n");  openSesame(filename); 
+	df.name = substitute(df);
 	quote_ = quote;
 	if(quote == "") { quote = FALSE; } else { quote = TRUE; }
 	if(!prepend.meta)
@@ -154,9 +306,7 @@ writeToPipe = function(df, filename, header = TRUE, quote="", sep="|",
 	################### BUILD META #################
 	{
 	names = colnames(df);		
-	types = df.getColumnTypes(df);
-		
-	
+	types = df.getColumnTypes(df);	
 	
 	# extra rows for factors?
 	idx = v.which(types, "factor");	
@@ -182,6 +332,7 @@ writeToPipe = function(df, filename, header = TRUE, quote="", sep="|",
 			# maybe build ASCII art WELCOME to HUMAN VERSE 
 			meta.content = str.pipeHeader(meta.msg, ctag=meta.skip);
 				minfo = property.get("more", meta.content);
+			meta.content %.=% ("\n" %.% meta.skip %.% " DATA:  " %.% df.name %.% "\n");
 			meta.content %.=% ("\n" %.% meta.skip %.% " NAMES:  " %.% names.line %.% "\n");
 			meta.content %.=% (meta.skip %.%" TYPES:  " %.% types.line %.% "\n");
 			if(!is.null(factor.lines)) 
@@ -190,7 +341,7 @@ writeToPipe = function(df, filename, header = TRUE, quote="", sep="|",
 				}
 			meta.content %.=% (minfo[["cline"]] %.% "\n");
 			
-	cat(meta.content, sep="", file=filename, append=FALSE);
+	cat(meta.content, sep=EMPTY, file=filename, append=FALSE);
 	# writeLines(meta.content, sep="\r\n");
 	}
 	
@@ -258,10 +409,11 @@ writeToPipe = function(df, filename, header = TRUE, quote="", sep="|",
 
 readFromPipe = function() {}
 # filename = "C:/_R_/humanVerse/SANDBOX/data/iris.txt";
-readFromPipe = function(filename, header = TRUE, quote="", sep="|", 
+readFromPipe = function(filename=tmp.file("iris.txt"), header = TRUE, 
+									quote=EMPTY, sep=PIPE, 
 									append.meta = TRUE, 
-									meta.sep = "\\./",
-									meta.skip = "#",
+									meta.sep = VSEP,
+									meta.skip = COMMENT_CHAR,
 									...)
 	{
 	check.dir(filename);
@@ -474,20 +626,13 @@ fread = function(fp)
 # One of "start", "current", "end": see ‘Details’.
 # Use of seek on Windows is discouraged. We have found so many errors in the Windows implementation of file positioning that users are advised to use it only at their own risk, and asked not to waste the R developers' time with bug reports on Windows' deficiencies.
 # keep it binary 
-fseek = function(fp, pos, origin="current")
+fseek = function(fp, pos, buffer, origin=SEEK_CURRENT)
 	{	
-	seek(fp, -1 * pos * buffer, origin = SEEK_END);
+	seek(fp, pos * buffer, origin = origin);
 	} 
 
-defaultPipeHeader = function() 
-	{
-	# welcome to the univres
-	str = "";
 	
-	str;	
-	}
-	
-prep.data = function(df, sep="|", quote="", row.names = FALSE)
+prep.data = function(df, sep=PIPE, quote=EMPTY, row.names = FALSE)
 	{
 	# factors as characters?
 	n = nrow(df);	
@@ -546,11 +691,12 @@ readPipeDelimitedFile = function(
 	}
 	
 # identical(readChar(filename, file.info(filename)$size), readTextFile(filename));
-readTextFile = function(filename)
+# maybe set default to a test file in /inst/ ... read.system ... 
+# colors would be a good choice ... # tag in FIELDS 
+readTextFile = function(filename, buffer=BUFFER)
 	{
 	fp = file(filename, "rb");	# we have to read in binary 
 		on.exit(close(fp));
-	buffer = 1024;
 	file.size = file.info(filename)$size;
 	if (file.size < buffer) 
 		{
@@ -562,9 +708,9 @@ readTextFile = function(filename)
 	csize = 0;
 	while(csize < file.size)
 		{
-		fs = seek(fp, pos*buffer, origin = SEEK_START);
-		stream = readChar(fp, nchars = buffer);
-		str = paste0(str, stream);
+		fs 		= seek(fp, pos*buffer, origin = SEEK_START);
+		stream 	= readChar(fp, nchars = buffer);
+		str 	= paste0(str, stream);
 		pos %++%.;
 		csize %+=% buffer;
 		}	
