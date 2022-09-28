@@ -160,6 +160,14 @@ minvisible.get = function(key="LAST")
 
 minvisible = function(x, key="ANS", display=TRUE)
 	{
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.KEY = check.type(key);
+	if(!ct.KEY || !is.character(key))	
+		{ key = deparse(substitute(key)); } 
+##########################################################
+
 	memory.set(key, "-MINVISIBLE-", x);
 	# also store to ANS variable ... 
 	# I could do ANS = Ans = x;   ANS %GLOBAL%. ; Ans %GLOBAL%. ;
@@ -170,28 +178,35 @@ minvisible = function(x, key="ANS", display=TRUE)
 	
 	
 	# "Ans" %GLOBAL% x; 
-	
+	 
 	
 	ct.DISPLAY = check.type(display);
-	if(!ct.DISPLAY || !is.character(display))	
+	# we don't care if it is a character 
+	# 
+	if(!ct.DISPLAY || !is.character(display))
 		{ 
-		display = deparse(substitute(display)); 
-		display = prep.arg(display, n=3);
-		}
-	# str may be object ... str may be a var in GLOBAL ... str="hello world";
+		display = deparse(substitute(display));		
+		} else {
+# we have a str = "lkdfsjdkljs"
+# my keys for display are not longer than 10
+				dlen = str.len(display);
+				if(dlen > 10) { display = deparse(substitute(display));	}
+				}
+	display = prep.arg(display, n=3);
+	
 # dput(display);
-	has.displayed = NULL;
-	if(is.null(has.displayed) && display == "str") 
-		{ has.displayed = TRUE; print(str(x)); }
-	if(is.null(has.displayed) && display == "hea") 
-		{ has.displayed = TRUE; print(head(x)); }
-	if(is.null(has.displayed) && display == "pip") 
-		{ has.displayed = TRUE; print(pip(x)); } 
-		# maybe write a print.pip method 
-	if(is.null(has.displayed) && display == "print") 
-		{ has.displayed = TRUE; print(x); }
-	if(is.null(has.displayed) && display == TRUE) 
-		{ has.displayed = TRUE; print(x); }
+	has.displayed = FALSE;
+	if(!has.displayed && display == "str") 
+					{ has.displayed = TRUE; print(str(x)); }
+	if(!has.displayed && display == "head" || display == "hea") 
+					{ has.displayed = TRUE; print(head(x)); }
+	if(!has.displayed && display == "pip") 
+					{ has.displayed = TRUE; print(pip(x)); } 
+					# maybe write a print.pip method 
+	if(!has.displayed && display == "print" || display == "pri") 
+					{ has.displayed = TRUE; print(x); }
+	if(!has.displayed &&  display == TRUE) 
+					{ has.displayed = TRUE; print(x); }
 
 	 
 	invisible(x);	

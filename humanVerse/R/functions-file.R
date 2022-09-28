@@ -151,30 +151,37 @@ path.info = function(path, trailing = TRUE, create=FALSE)
 	# is.file and is.dir fails on path=getwd() ... not a file 
 	# fopen(path)  cannot open file 'C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R': Permission denied
 	# ergo, its a path ?
-	pf = check.file(path, trailing=trailing, create=create)
+	
+	
+	
+	b 	= basename(path);
+	e 	= check.ext(path);
+	d 	= dirname(path);
+				if(trailing) { d = paste0(d, DIR_LINUX); }
 	pd 	= prep.dir(path, trailing=trailing); 
-	cd =  check.dir(path, trailing=trailing, create=create);
-	d1 = prep.dir(dirname(pd), trailing=trailing);
-	e = check.ext(path);
-	b = basename(path);
-	d = dirname(path);
-	if(trailing) { d = paste0(d, DIR_LINUX); }
-	# not the best logic, but all I got, I think ... 
-	ext.test = "file"; if(is.null(e)) { ext.test = "dir"; }
-	trailing.test = "file"; if(pd != pf) { trailing.test = "dir"; } 
-	if_ = is.file(pf);  # reserved word 
-	id_ = is.dir(pf);
+	pf 	= check.file(path, trailing=trailing, create=create);
+				if_ = is.file(pf);  # reserved word 
+				id_ = is.dir(pf);
+			# I believe these are file.stat[us] and dir.stat[us] functions 
+			# May include R/W forbidden 0777 info ?
 	is_ = c("-UNKNOWN-", "!exists");
 	is__ = FALSE;
-		if(if_ && !id_) { is_ = c("file", "exists"); is__ = TRUE;}
-		if(if_ && id_) { is_ = c("dir", "exists");  is__ = TRUE;}
+			if(if_ && !id_) { is_ = c("file", "exists");  is__ = TRUE; }
+			if(if_ && id_ ) { is_ = c("dir",  "exists");  is__ = TRUE;}
 	
-	# subtract pd - cd ... if it contains a SLASH
+	# subtract pd - d ... if it contains a SLASH
 	di = pd %-% d;
+			status = "file";
+			if(str.contains(SLASH, di)) { status = "dir"; }
 	
-	status = "file";
-	if(str.contains(SLASH, di)) { status = "dir"; }
-	
+			
+	# not the best logic, but all I got, I think ...
+	######################  OTHER TESTS ######  OS differences ?
+	ext.test 		= "file"; 
+					if(is.null(e)) { ext.test 		= "dir"; }
+	trailing.test 	= "file"; 
+					if(pd != pf)   { trailing.test 	= "dir"; } 
+
 	info = list("type" 				= status,
 				"exists" 			= is__,
 				"exists.info" 		= is_,
@@ -182,16 +189,16 @@ path.info = function(path, trailing = TRUE, create=FALSE)
 				"ext" 				= e,
 				"path.as.dirname"	= d,
 				"path.as.dir" 		= pd,
-				"path.diff" 		= di,
+				"path.dir.diff"		= di, # this is ultimately "mytest"
 				"path.as.file" 		= pf,
 				"ext.test" 			= ext.test,
 				"dir.test" 			= trailing.test,
 				
-				"is.file" = if_,  # file.stat means has r/w perms?
-				"is.dir" = id_		# chmod ... run as ADMIN
+				"stat.file" 		= if_,  # file.stat means has r/w perms?
+				"stat.dir" 			= id_		# chmod ... run as ADMIN
 				);
-	print(str(info));
-	invisible(info);
+	# print(str(info));
+	minvisible(info, key="PATH_INFO", display=str);
 	}
 	
 # create as in create.DIRECTORY

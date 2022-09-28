@@ -227,7 +227,7 @@ gggassign = function(key, val)
 	{
 # cat("\n gggassing key ::: ", key, "\t val ::: ", val, "\n\n");
 	assign(key, val, envir = .GlobalEnv);
-	return(invisible(NULL));
+	invisible(NULL);  # vs.   return(invisible(NULL));
 	}
 	
 	
@@ -297,6 +297,7 @@ define = function(KEY, VALUE) {}
 	val = WHAT;
 	key = deparse(substitute(WHAT));		
 	assign(key, val, envir=WHERE );
+	invisible(val);
 	}
 	
 	
@@ -362,6 +363,7 @@ define = function(KEY, VALUE) {}
 		
 	# WHERE=parent.frame(1); # or WHERE = env?
 	assign("THIS", res, envir=WHERE );
+	invisible(res);
 	}
 	
 
@@ -400,7 +402,7 @@ define = function(KEY, VALUE) {}
 					out[i,] = a[i] + b;
 					}
 				}
-	math.cleanup(out);
+	invisible(math.cleanup(out));
 	}
 	
 	
@@ -447,7 +449,7 @@ define = function(KEY, VALUE) {}
 	 
 	KEY = deparse(substitute(KEY));
 	assign(KEY, key, envir=WHERE );
-	minvisible(key, key=KEY);
+	minvisible(key, key=KEY, display=none);
 	}
 	
 .PIPE_EQUAL. = function() {}  # %|=% ==> "|" . THING 
@@ -459,7 +461,7 @@ define = function(KEY, VALUE) {}
 	
 	KEY = deparse(substitute(KEY));
 	assign(KEY, key, envir=WHERE );
-	minvisible(key, key=KEY);
+	minvisible(key, key=KEY, display=none);
 	}
 
 
@@ -469,7 +471,7 @@ define = function(KEY, VALUE) {}
 	# these functions are much simpler than the one's already written
 	key = KEY; val = VALUE;
 	key = paste0(key, sep, val);
-	key;
+	minvisible(key, key=KEY, display=none);
 	}
 
 
@@ -487,7 +489,7 @@ define = function(KEY, VALUE) {}
 									# DRY ... DO-REPEAT-YOURSELF when R call stack demands it ... 
 	KEY = deparse(substitute(KEY));
 	assign(KEY, key, envir=WHERE );
-	minvisible(key, key=KEY);
+	minvisible(key, key=KEY, display=none);
 	}
 
 
@@ -498,7 +500,7 @@ define = function(KEY, VALUE) {}
 	# these functions are much simpler than the one's already written
 	key = KEY; val = VALUE;
 	key = paste0(key, sep, val);
-	key;
+	minvisible(key, key=KEY, display=none);
 	}	
 
 .DOT_SPACE. = function() {}		 # %. %  ==>  a . b . c  ... 
@@ -507,7 +509,7 @@ define = function(KEY, VALUE) {}
 	# these functions are much simpler than the one's already written
 	key = KEY; val = VALUE;
 	key = paste0(key, sep, val);
-	key;
+	minvisible(key, key=KEY, display=none);
 	}	
 		
 		
@@ -520,7 +522,7 @@ define = function(KEY, VALUE) {}
 	
 	KEY = deparse(substitute(KEY));
 	assign(KEY, key, envir=WHERE );
-	minvisible(key, key=KEY);
+	minvisible(key, key=KEY, display=none);
 	}
 
 
@@ -535,7 +537,7 @@ define = function(KEY, VALUE) {}
 	
 	KEY = deparse(substitute(KEY));
 	assign(KEY, key, envir=WHERE );
-	minvisible(key, key=KEY);
+	minvisible(key, key=KEY, display=none);
 	}
 	
 
@@ -572,7 +574,8 @@ define = function(KEY, VALUE) {}
 		str = paste0(key, " = ", nval, ";");
 # dput(str);
 		eval(parse(text = str), envir=WHERE);
-		return(nval);
+		# return(nval);
+		return( minvisible(nval, key=PLUS, display=none) );
 		}
 		
 	# . %++% i
@@ -585,7 +588,8 @@ define = function(KEY, VALUE) {}
 		str = paste0(key, " = ", nval, ";");
 # dput(str);
 		eval(parse(text = str), envir=WHERE);		
-		return(val);
+		# return(val);
+		return( minvisible(val, key=PLUS, display=none) );
 		}
 	
 	stop("how did you get here");
@@ -612,7 +616,8 @@ define = function(KEY, VALUE) {}
 		str = paste0(key, " = ", nval, ";");
 # dput(str);
 		eval(parse(text = str), envir=WHERE);
-		return(nval);
+		# return(nval);
+		return( minvisible(nval, key=MINUS, display=none) );
 		}
 		
 	# . %--% i
@@ -625,7 +630,8 @@ define = function(KEY, VALUE) {}
 		str = paste0(key, " = ", nval, ";");
 # dput(str);
 		eval(parse(text = str), envir=WHERE);		
-		return(val);
+		# return(val);		
+		return( minvisible(val, key=MINUS, display=none) );
 		}
 	
 	stop("how did you get here");
@@ -649,22 +655,51 @@ define = function(KEY, VALUE) {}
 
 IN.init = function(mem.key = "-CURRENT_IN-")
 	{
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.MEMKEY = check.type(mem.key);
+	if(!ct.MEMKEY || !is.character(mem.key))	
+		{ mem.key = deparse(substitute(mem.key)); } 
+##########################################################
+
 	memory.set(mem.key, "-IN-", list()); 
 	}
 	
 IN.clear = function(mem.key = "-CURRENT_IN-")
 	{
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.MEMKEY = check.type(mem.key);
+	if(!ct.MEMKEY || !is.character(mem.key))	
+		{ mem.key = deparse(substitute(mem.key)); } 
+##########################################################
 	memory.set(mem.key, "-IN-", list()); 
 	}
 
 IN.get = function(mem.key = "-CURRENT_IN-")
 	{
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.MEMKEY = check.type(mem.key);
+	if(!ct.MEMKEY || !is.character(mem.key))	
+		{ mem.key = deparse(substitute(mem.key)); } 
+##########################################################
 	memory.get(mem.key, "-IN-");	
 	}
 	
 	
 IN.df = function(mem.key = "-CURRENT_IN-")
 	{
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.MEMKEY = check.type(mem.key);
+	if(!ct.MEMKEY || !is.character(mem.key))	
+		{ mem.key = deparse(substitute(mem.key)); } 
+##########################################################
 	info = memory.get(mem.key, "-IN-");
 	
 	n 		= length(info);
@@ -690,6 +725,13 @@ dput(row);
 
 IN = function(KEY, VALUE, mem.key = "-CURRENT_IN-")
 	{
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.MEMKEY = check.type(mem.key);
+	if(!ct.MEMKEY || !is.character(mem.key))	
+		{ mem.key = deparse(substitute(mem.key)); } 
+##########################################################
 	# perform %in% with memory 	
 	info = memory.get(mem.key, "-IN-");
 	if(is.null(info)) { info = list(); }
