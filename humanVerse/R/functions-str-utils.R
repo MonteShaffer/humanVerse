@@ -722,15 +722,57 @@ suppressError( so they have not included it in base R.  It is probably true, but
 
 
 
+str.pipeHeader = function(str="Welcome to the {humanVerse}", 
+							width=72, 
+							ctag="#",
+							above = 3,
+							below = 3
+							)
+	{
+	str = as.character(str[1]);
+		lines = str.explode("\n", str);
+		n = length(lines);
+	slen = str.len(lines);  
+		half = as.integer( (width-max(slen))/2);
+		brand = "{humanVerse}"; blen = str.len(brand);		
+	bline = paste0( str.rep(ctag, (width-blen-5)),
+					brand,
+					str.rep(ctag, 5) );
+		rand = "{R}"; rlen = str.len(rand);		
+	rline = paste0( str.rep(ctag, 3), 
+					rand,
+					str.rep(ctag, (width-rlen-3)) );
+	cline = str.rep(ctag, width);
+	clen = str.len(cline);
+	sline = ctag;  # line with just a comment 
+	
+	out = character();
+	idx = 1;
+		out[idx] = bline; 	idx %++%.;
+	for(i in idx:(idx+above)) { out[i] = sline; }
+							idx %+=% above;
+	for(i in 1:n)
+		{		
+		out[idx] = paste0(ctag, str.rep(" ",half), lines[i]);
+							idx %++%.;
+		}
+	for(i in idx:(idx+below)) { out[i] = sline; }
+							idx %+=% below;
+		out[idx] = rline;	
+	res = paste0(out, collapse="\n");
+	res = property.set("more", res, list("rline" = rline, "cline" = cline, "bline" = bline));
+	res;
+	}
+
 
 #------------------------------------------------#
 str.commentWrapper = function() {}   # what about \n in str for "blank vertical space"?
 str.commentWrapper = function(str="Welcome to the {humanVerse}", 
 									nchars=0, 
-									c.tag="#", 
-									r.tag=c.tag, 
-									s.tag=" ", s.pad=5, 
-									i.tag=" ", i.pad=15
+									ctag="#", 
+									rtag=ctag, 
+									stag=" ", spad=5, 
+									itag=" ", ipad=15
 							)
 	{
 	# punchcards had 80 characters, a traditional typewriter US had 72 characters per line (CPL)
@@ -740,66 +782,70 @@ str.commentWrapper = function(str="Welcome to the {humanVerse}",
 	
 	# once max is set, build a basic "empty" for "\n" ... copy it ...
 	# if str.trim(str[i]) == "" ... do empty row ... 
-	n = length(str);  len.str = str.len(str);  max.len = max(len.str);
-		if(nchars > 0 && max.len > nchars) { nchars = max.len; }
-		if(nchars == 0) { nchars = max.len; } 
+	n = length(str);  lenstr = str.len(str);  maxlen = max(lenstr);
+		if(nchars > 0 && maxlen > nchars) { nchars = maxlen; }
+		if(nchars == 0) { nchars = maxlen; } 
 	res = character(n);
 	mylengths = integer(n);
-		i.str = str.repeat(i.tag, i.pad); i.len = str.len(i.str);
-		s.str = str.repeat(s.tag, s.pad); s.len = str.len(s.str); 
-											c.len = str.len(c.tag);
-											r.len = str.len(r.tag);
+		istr = str.repeat(itag, ipad); ilen = strlen(istr);
+		sstr = str.repeat(stag, spad); slen = strlen(sstr); 
+											clen = strlen(ctag);
+											rlen = strlen(rtag);
+	
+	
+	
+	
 	for(i in 1:n)
 		{
-		t.len = (i.len + s.len + c.len + r.len);
-		tmp.len = t.len + len.str[i];
-		d.len = nchars - t.len;
+		tlen = (ilen + slen + clen + rlen);
+		tmp.len = tlen + lenstr[i];
+		d.len = nchars - tlen;
 		if(nchars > 0) { if( tmp.len < nchars) { str[i] = str.pad(str[i], d.len, " ", "BOTH"); } }
-		s = paste0(		i.str, 
-						c.tag, 
-						r.tag, 
-						s.str, 
+		s = paste0(		istr, 
+						ctag, 
+						rtag, 
+						sstr, 
 					str[i], 
-						s.str, 
-						r.tag, 
-						c.tag
+						sstr, 
+						rtag, 
+						ctag
 					);
-		slen = str.len(s);
+		slen = strlen(s);
 		if(slen < nchars)
 			{
-			n.tag = 1 + ceiling( (nchars - slen)/2 );
-				n.str = str.repeat(s.tag, n.tag);
-			s = paste0(		i.str,
-							c.tag, 
-							r.tag, 
-							n.str, 
+			ntag = 1 + ceiling( (nchars - slen)/2 );
+				nstr = str.repeat(stag, ntag);
+			s = paste0(		istr,
+							ctag, 
+							rtag, 
+							nstr, 
 						str[i], 
-							n.str,
-							r.tag, 
-							c.tag
+							nstr,
+							rtag, 
+							ctag
 						);
-			slen = str.len(s);
+			slen = strlen(s);
 			}
 		nchars = slen; # first line will dictacte the others ...
-			f.n = slen - 2*str.len(s.pad) - i.len - str.len(i.pad);
-			f.str = str.repeat(r.tag, f.n);
+			fn = slen - 2*strlen(spad) - ilen - strlen(ipad);
+			fstr = str.repeat(rtag, fn);
 			
 		if(i == 1) 
 			{ 
-			c.line = paste0(i.str, c.tag, r.tag, f.str, r.tag, c.tag, "\n");
-			res[i] = paste0(c.line, s, "\n");
+			cline = paste0(istr, ctag, rtag, fstr, rtag, ctag, "\n");
+			res[i] = paste0(cline, s, "\n");
 			} else if (i == n)
 							{
-							res[i] = paste0(s, "\n", c.line);
+							res[i] = paste0(s, "\n", cline);
 							} else {
 									res[i] = paste0(s, "\n");
 									}
 		mylengths[i] = slen;
-		#mylengths[i] = str.len(res[i]);
+		#mylengths[i] = strlen(res[i]);
 		}
 	
 	res = property.set("lengths", res,  mylengths);
-	res = property.set("indent", res, i.len);
+	res = property.set("indent", res, ilen);
 	res;
 	}
 

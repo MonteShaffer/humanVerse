@@ -60,9 +60,52 @@ cat("\n\n Checking directory [",xname,"] at ", xpath, "\n\n");
 		
 	}
 
+parse.pipeMeta = function() {}
+parse.pipeMeta = function(meta.content, meta.sep = "\\./", meta.skip="#",
+					keys=c("NAMES:","TYPES:","FACTOR:","with LEVELS:")
+				)
+	{
+	
+		nam = str.contains(keys[1], meta.content);
+	tmp = meta.content[nam]; 
+	tmp2 = str.explode(keys[1], tmp);
+	names = str.trim( str.explode(meta.sep, tmp2[2]) );
+		typ = str.contains(keys[2], meta.content);
+	tmp = meta.content[typ]; 
+	tmp2 = str.explode(keys[2], tmp);
+	types = str.trim( str.explode(meta.sep, tmp2[2]) );
+		fac = str.contains(keys[3], meta.content);
+	tmp = meta.content[fac]; 
+	tmp2 = str.explode(keys[3], tmp);
+	tmp3 = str.explode(keys[4], tmp2[2]);
+	# this might be multivariate ...
+	# may have +1 cases or 0 cases on this and above names/types 
+	fkeys = str.trim(tmp3[1]);
+	fvals = str.trim(str.explode(meta.sep, tmp3[2]));
+	
+	## TODO, when multivariate or zero variate 
+	############## list(fkeys = fvals); # name => levels 
 
+	slen = str.len(meta.content);
+	description = "";  # lines between TOP and BOTTOM without 1 len ...
+	idx = v.which(slen, 1);  imin = min(idx); imax = max(idx);
+	missing = set.diff(imin:imax, idx);
+	description = str.trim(str.trimFromFixed( meta.content[missing], meta.skip, "LEFT"));
+	description = paste0(description, collapse="\n");
+	
+	meta = list("names" = names, "types" = types, "factors" = list("keys" = fkeys, "values" = fvals), "description" = description );
+	meta;
+	}
 
-
+check.dir = function(filename)
+	{
+	# if NOT LOCAL, download to TMP location
+	# update filename using %TO% ?  parent.frame(1)
+	dir.create( dirname(filename), 
+				showWarnings = FALSE, 
+				recursive = TRUE
+			); 	
+	}
 
 
 
@@ -82,66 +125,217 @@ cat("\n\n Checking directory [",xname,"] at ", xpath, "\n\n");
 #'
 #' @aliases storeToPipe 
 writeToPipe = function() {}
+# filename = "C:/_R_/humanVerse/SANDBOX/data/iris.txt";
 writeToPipe = function(df, filename, header = TRUE, quote="", sep="|", 
 									prepend.meta = TRUE, 
 									meta.content = "",
-									meta.sep = "^",
+									meta.msg = "This data is about",
+									meta.sep = "\\./",
 									meta.skip = "#",
 									row.names = FALSE, ...)
 	{
+	check.dir(filename);
 	quote_ = quote;
-	if(quote == "") { quote = FALSE; }
+	if(quote == "") { quote = FALSE; } else { quote = TRUE; }
 	if(!prepend.meta)
 		{
-		utils::write.table(df, file=filename, quote=quote, col.names=header, row.names=row.names, sep=sep);
+		# warning about HEADERS, weird?
+		suppressWarnings( 
+			utils::write.table(df, file=filename, 
+				sep=sep, quote=quote, 
+				col.names=header, row.names=row.names, ...)
+						);
 		return(TRUE);
 		}
 	
 	# we can load our data ... write ...
 	# then call write.table (append=TRUE)
 	## IF we have, GOOD TO GO, otherwise, build it ...
-	if(meta.content == "")
-		{
-		meta.content = property.get("meta", df); 
-		if(is.null(meta.content))
-			{
-			names = colnames(df);
-				if(row.names) { names = c("row.names", names); }
-			names.line = paste0(meta.skip, " ", paste0(names, collapse=meta.sep) );
-			types = df.getColumnTypes(df);
-				if(row.names) { types = c("row.names", types); }
-			types.line = paste0(meta.skip, " ", paste0(types, collapse=meta.sep) );
-			
-			# maybe compute str.len or fixed to an amount and spread this out?
-			
-			# extra rows for factors?
-			idx = v.which(types, "factor");	
-			factor.lines = "";
-			if(!is.null(idx))
-				{
-				n = length(idx);
-				factor.lines = character(n);
-				for(i in 1:n)
-					{
-					id = idx[i]; cname = colnames(df)[id];
-					# fact = paste0("FACTOR: ", quote_, cname, quote_, " with LEVELS: ", paste0(quote_,paste0( levels(df[[cname]]), collapse = paste0(quote_,meta.sep,quote_))
-					,quote_));
-					factor.lines[i] = paste0(meta.skip, " " , "FACTOR: ", cname, " with LEVELS: ", paste0( levels(df[[cname]]), collapse = meta.sep));					
-					}				
-				}
-			
-			# maybe build ASCII art WELCOME to HUMAN VERSE 
-			meta.content = "jdflksj";  merge the lines in order 
-			}
-		# if it is a property, we may have to parse it a bit to get to meta.content 	
+	################### BUILD META #################
+	{
+	names = colnames(df);		
+	types = df.getColumnTypes(df);
 		
+	
+	
+	# extra rows for factors?
+	idx = v.which(types, "factor");	
+	factor.lines = NULL;
+	if(!is.null(idx))
+		{
+		n = length(idx);
+		factor.lines = character(n);
+		for(i in 1:n)
+			{
+			id = idx[i]; 
+			cname = colnames(df)[id];
+			# fact = paste0("FACTOR: ", quote_, cname, quote_, " with LEVELS: ", paste0(quote_,paste0( levels(df[[cname]]), collapse = paste0(quote_,meta.sep,quote_)),quote_));
+			factor.lines[i] = paste0(meta.skip, " " , "FACTOR: ", cname, " with LEVELS: ", paste0( levels(df[[cname]]), collapse = meta.sep));					
+			}				
 		}
+		
+		if(row.names) { names = c("row.names", names); }
+			names.line = paste0(names, collapse=meta.sep);
+		if(row.names) { types = c("row.names", types); }
+			types.line = paste0(types, collapse=meta.sep);
+	
+			# maybe build ASCII art WELCOME to HUMAN VERSE 
+			meta.content = str.pipeHeader(meta.msg, ctag=meta.skip);
+				minfo = property.get("more", meta.content);
+			meta.content %.=% ("\n" %.% meta.skip %.% " NAMES:  " %.% names.line %.% "\n");
+			meta.content %.=% (meta.skip %.%" TYPES:  " %.% types.line %.% "\n");
+			if(!is.null(factor.lines)) 
+				{
+				meta.content %.=% (paste0(factor.lines, collapse="\n") %.% "\n");
+				}
+			meta.content %.=% (minfo[["cline"]] %.% "\n");
+			
+	cat(meta.content, sep="", file=filename, append=FALSE);
 	# writeLines(meta.content, sep="\r\n");
-	
-	
-	utils::write.table(df, file=filename, quote=quote, col.names=header, row.names=row.names, sep=sep, append=TRUE);
-	
 	}
+	
+	# warning about HEADERS, weird?
+	suppressWarnings( 
+			utils::write.table(df, file=filename, 
+				sep=sep, quote=quote, 
+				col.names=header, row.names=row.names, 
+				append=TRUE, ...)
+						);
+						
+	return(TRUE);
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+readFromPipe = function() {}
+# filename = "C:/_R_/humanVerse/SANDBOX/data/iris.txt";
+readFromPipe = function(filename, header = TRUE, quote="", sep="|", 
+									append.meta = TRUE, 
+									meta.sep = "\\./",
+									meta.skip = "#",
+									...)
+	{
+	check.dir(filename);
+	# quote is not TRUE/FALSE here, it is a string
+	# if the TEXT file has #336699 (hexcolors) in TABLE, the 
+	# regular import with read.table/csv will fail ...
+	if(!append.meta)
+		{
+		df = utils::read.table(filename, 
+					header=header, comment.char=meta.skip,
+					quote=quote, sep=sep, ...)
+		return(df);
+		}
+	
+	# can I pipe a stream to read.table ...
+	# make two files in TEMP ... 
+	# or just build it all myself ...
+	lines = str.explode("\r\n", readTextFile(filename) );
+		meta.content = character();
+	n = length(lines); idx = 1;
+	for(i in 1:n)
+		{
+		line = lines[i]; first = charAt(line,1);
+		if(first == meta.skip)
+			{
+			meta.content[idx] = line; idx %++%.; 
+			} else { break; }		
+		}				
+		meta = parse.pipeMeta(meta.content, 
+							meta.sep=meta.sep, meta.skip=meta.skip);
+	data = lines[i:n];
+		filenameTMP = paste0(filename, "TMP");
+	cat(data, file = filenameTMP, sep="\n");
+	
+	df = utils::read.table(filenameTMP, 
+					header=header, comment.char=meta.skip,
+					quote=quote, sep=sep, ...)
+		unlink(filenameTMP);
+		
+	types = df.getColumnTypes(df);
+	names = names(df);
+	
+	# meta may have rownames 
+	# if types != ... let's update that ...
+	logic = (types != meta$types);
+	# get type, with factor what is the best way ...
+	
+	# append meta object to df ... with meta.raw.content 
+	meta$raw = meta.content;
+	
+	# before appending meta, goal is to get 
+	# identical(df, iris)
+	# df[["Species"]] = factor(df[["Species"]], levels = meta$factors$values)
+	# > identical(df,iris)
+	#[1] TRUE
+
+	df = property.set("meta", df, meta);
+	df;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #' @rdname file.writeToPipe
 #' @export
@@ -159,10 +353,10 @@ file.writeToPipe = writeToPipe;
 #'
 #' @return a dataframe
 #' @export
-readFromPipe = function() {}	
+readFromPipe222 = function() {}	
 								# , as.is=TRUE
 								# comment.char="#" ... hexdata
-readFromPipe = function(filename, header=TRUE, quote="", sep="|",
+readFromPipe222 = function(filename, header=TRUE, quote="", sep="|",
 								row.names = FALSE,
 								meta.content = TRUE, 
 								meta.skip="#", 
@@ -318,13 +512,13 @@ writePipeDelimitedFile = function (df,
 				header=TRUE, 
 				sep="|",
 				quote="",
-				row.names = FALSE.
+				row.names = FALSE,
 				
 				meta.attach = TRUE, 
 				meta.comment="#",
 				meta.sep="^",
 				
-				meta.content = defaultPipeHeader(),
+				meta.content = defaultPipeHeader()
 					)
 	{
 	# just use cat?

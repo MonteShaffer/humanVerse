@@ -107,7 +107,11 @@ dataframe = data.frame;
 as.dataframe = as.data.frame;
 ceil = ceiling;
 
-ln = log; 
+ln = log;
+
+len = length; 
+
+dir.name = dirname;
 
 
 "%GLOBAL%" = .GLOBAL.;
