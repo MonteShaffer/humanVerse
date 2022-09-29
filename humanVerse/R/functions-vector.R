@@ -775,9 +775,15 @@ v.test = function(vec, what="", invert=FALSE)
 						}
 					}
 		}
-	if(is.null(logic) && is.character(what))
+	if(is.null(logic) && is.character(what) && !is.character(vec))
 		{
-		logic = (vec == what);
+		# could be a string-string number comparison 
+		# I *assume* by default that if they pass 5 or "5" 
+		# on a known vec ... 
+		if(!force.character && check.num(what))
+			{ 
+			logic = (vec == as.numeric(what) ); 
+			} else { logic = (vec == what); }
 		}
 	## DEFAULT
 	if(is.null(logic))
@@ -790,6 +796,25 @@ v.test = function(vec, what="", invert=FALSE)
 	}
 	
 
+# multivariate [what] ... INVERT ?
+# for now ... this 
+# maybe v.testOR ... 
+# vec = c(1,2,3,4,5,5,4,3,2,1); what=1:3;
+v.testOR = function(vec, what="")
+	{
+	n = length(what);
+	res = as.integer( v.test(vec, what[[1]]) );
+	if(n > 1)
+		{
+		for(i in 2:n)
+			{
+			res %+=% as.integer( v.test(vec, what[[n]]) );
+			}
+		}
+	v.test(res, ZERO, invert=TRUE);
+	}
+	
+	
 v.which = function(vec, what="", invert=FALSE)
 	{
 	# v.which returns idxs of v.test ... 
@@ -922,6 +947,8 @@ right.contiguous = function(idx, n)
 	from.right;	
 	}
 
+# v.trim(c(1,2,3,4,5,5,4,3,2,1), what=c(1,2,3))
+
 v.trim = function(vec, what="", side="both")
 	{
 	# remove as many empty "" what from beginning or end ... 
@@ -933,20 +960,25 @@ v.trim = function(vec, what="", side="both")
 	from.left = NULL;
 	from.right = NULL;
 	
-	if((SIDE=="left" || SIDE=="both") && idx[1] == 1)
+	if((SIDE=="left" || SIDE=="both"))
 		{
-		from.left = left.contiguous(idx, n);
+		from.left  = left.contiguous(idx, n);
 		}
-	if((SIDE=="right" || SIDE=="both") && IDX[ilen] == nc)
-			{
-			# walk until we are not contiguous ...
-			for(i in ilen:1)
-				{
-				if(IDX[i] == (nc)) { from.right = c(nc, from.right); nc %--%.; } else { break; }
-				}			
-			}
-			
+	if((SIDE=="right" || SIDE=="both"))
+		{
+		from.right = right.contiguous(idx, n);
+		}
 	
+	set = switch(SIDE,
+					  "left"	= from.left,
+					  "right" 	= from.right,
+					  "both"  	= c(from.left, from.right),
+				c(from.left, from.right)
+				);
+				
+	if(!is.null(set)) { vec = vec[-c(set)]; }			
+	if(length(vec) == 0) { vec = NULL; }
+	vec;
 	}
 
 v.fill = function(vec, to.length=5, with=NA)
