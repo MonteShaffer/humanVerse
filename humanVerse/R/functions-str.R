@@ -747,24 +747,7 @@ str.translate = function(str, to="latin-ascii")
 
 
 
-str.end = function(search="</i>", str="<i>hello friend</i>", trim = FALSE )
-	{
-	strlen = str.len(str);
-	slen = str.len(search);
-		start = strlen - slen + 1;	idx = v.return(which(start < 1));
-		if(!is.null(idx)) { start[idx] = 1; }
-	sub = substring(str, start, strlen);	
-	res = (sub == search);
-	
-	if(!trim) { return(res); }	
-	if(allFALSE(res)) { return(str); }
-	
-	rem = substring(str, 1, (start-1));  # TEST  ... str == paste0(rem,sub)
-		
-	nstr = str;
-	nstr[res] = rem[res];
-	nstr;  
-	}
+
 
 # STRPOS() returns the index of the first occurence of its second argument (“needle”) in its first argument (“haystack”), or -1 if there are no occurrences.
 
@@ -844,4 +827,45 @@ str.subtract = function(a, b, from="left")
 	}
 	
 	
+# str.endsWith = str.end
+str.end = function(search="</i>", str="<i>hello friend</i>", trim = FALSE )
+	{
+	# can't do it this way, becuse used within str.explode ... 
+	info = check.list(str.explode(search, str));
 	
+	strlen = str.len(str);
+	slen = str.len(search);
+		start = strlen - slen + 1;	idx = v.return(which(start < 1));
+		if(!is.null(idx)) { start[idx] = 1; }
+	sub = substring(str, start, strlen);	
+	res = (sub == search);
+	
+	if(!trim) { return(res); }	
+	if(allFALSE(res)) { return(str); }
+	
+	rem = substring(str, 1, (start-1));  # TEST  ... str == paste0(rem,sub)
+		
+	nstr = str;
+	nstr[res] = rem[res];
+	nstr;  
+	}
+	
+# str.startsWith = str.begin
+str.end = function(search="</i>", str="<i>hello friend</i>", trim = FALSE )
+	{
+	strlen = str.len(str);
+	slen = str.len(search);
+		start = strlen - slen + 1;	idx = v.return(which(start < 1));
+		if(!is.null(idx)) { start[idx] = 1; }
+	sub = substring(str, start, strlen);	
+	res = (sub == search);
+	
+	if(!trim) { return(res); }	
+	if(allFALSE(res)) { return(str); }
+	
+	rem = substring(str, 1, (start-1));  # TEST  ... str == paste0(rem,sub)
+		
+	nstr = str;
+	nstr[res] = rem[res];
+	nstr;  
+	}
