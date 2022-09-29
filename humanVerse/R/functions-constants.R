@@ -282,23 +282,35 @@ constants.default = function(default.numbers = TRUE, namespace="humanVerse", whi
 						
 						"\./" 		= list(
 										PRIME_AXIOM = "There are '10' types of people in this world: those that understand mathematics *and* those that do not.",
-										PRIME_DIRECTIVE = "As a semi-sentient being, I am 'intrisically motivated' to *share* =freely= any perspective, understanding, knowledge, experience, or wisdom that I believe I possess.",
-										PRIME_MOTIVATION = "To advance (or restore) the human conditon for the benefit of all.",
+										PRIME_DIRECTIVE = "As a semi-sentient being, I am 'intrisically motivated' to *share* =freely= any perspective, understanding, knowledge, experience, or wisdom that I believe I possess.",	
+										PRIME_GOAL = "To advance (or restore) the human conditon for the benefit of ALL.",
+										PRIME_KISS = "Transcending simplicity on THIS side of complexity to reveal simplicity on the OTHER side of complexity. [Break on through to the OTHER side.]",
+										PRIME_DICHO = "¡Del dicho al hecho hay mucho estrecho!",
+										PRIME_ADMONICION = "¡Oh, que tenga sabiduría! ¿Qué más puedo decir?",
+										PRIME_QUESTION = "What are you listening for?", 
+										PRIME_ANSWER = 5,
+										PRIME_SEPARATOR = "\./",
+										# LIST (this.key) ... VSEP ... key from above ...
+										# maybe make a smart.list function that does this for a list ... 
+										# smart.list = (...) ... 
 										
-										W 
-										K
-										E 
-										U 
-										P 
-										EKPUW 
-										WE
-										PUKEW 
+										# https://www.youtube.com/watch?v=Tktvu_J1grI
+										# https://hinduism.stackexchange.com/questions/6777/was-value-of-pi-really-defined-in-a-sloka
+										# https://web.archive.org/web/20041114092424/http://www.pa.uky.edu:80/~ameya/pi.html
+										# 
+										PRIME_SHLOKA = "gopi bhagya madhuvrata, srngiso dadhi sandhiga, khala jivita khatava, gala hala rasandara",
+										PRIME_TZU = "Silence is strength.",
+										PRIME_CHANGE = "You and the river are always changing.  For the better.", 
+										PRIME_TREEBEARD = "Break the damns.  Release the rivers.  Let the salmon run home so we can 'fillet' them.",
+										PRIME_LEGEND = "{an ee} {na fee} {a la} {al ma} {ee ma} {mer men}",
+										PRIME_GALILEO = "E pur, si muove",
+										PRIME_IDIOT = c("ID-10-T error", "SCSI buffer underrun"),
+										PRIME_READING = "Combine letters to form words.  Combine words to form sentences.  Top to bottom.  Left to right.",
+										# http://billposer.org/Software/tamilconverters.html
+										# where is a transliterator ... 
+										PRIME_TAMIL = "எல்லாம் நல்லதே",
 										
-										As the right of each sentient species to live in accordance with its normal cultural evolution is considered sacred, no Starfleet personnel may interfere with the normal and healthy development of alien life and culture. Such interference includes introducing superior knowledge, strength, or technology to a world whose society is incapable of handling such advantages wisely. Starfleet personnel may not violate this Prime Directive, even to save their lives and/or their ship, unless they are acting to right an earlier violation or an accidental contamination of said culture. This directive takes precedence over any and all other considerations, and carries with it the highest moral obligation
-										
-										complexity, simplicity, complexity
-										O be wise, what more can I say 
-										same stream twice  
+										PRIME_NAMETAG = "Welcome to the {humanVerse}!"
 											)
 					);
 					
