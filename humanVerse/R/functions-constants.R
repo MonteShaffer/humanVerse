@@ -298,7 +298,7 @@ constants.default = function(default.numbers = TRUE, namespace="humanVerse", whi
 										# allow trailing comma --> is that possible?
 										# if we trap it before it throws an error 
 										# looks like we can TRAP ... 
-										# check.type( x=3,y=4, )
+										# check.type( x=3,y=4, ) 
 
 										
 										# https://www.youtube.com/watch?v=Tktvu_J1grI
@@ -458,15 +458,15 @@ constants.default = function(default.numbers = TRUE, namespace="humanVerse", whi
 
 
 	
-	minvisible(list(
-					"NUMBERS" 	= NUMBERS, 
-					"STRINGS" 	= STRINGS,
-					"U"			= U,
-					"SYSTEM" 	= SYSTEM,
-					"TIME" 		= TIME,
-					"TEMP" 		= TEMP,
-					"CIRCLE" 	= CIRCLE
-					), display=none);
+	# minvisible(list(
+					# "NUMBERS" 	= NUMBERS, 
+					# "STRINGS" 	= STRINGS,
+					# "U"			= U,
+					# "SYSTEM" 	= SYSTEM,
+					# "TIME" 		= TIME,
+					# "TEMP" 		= TEMP,
+					# "CIRCLE" 	= CIRCLE
+					# ), display=none);
 	}
 
 

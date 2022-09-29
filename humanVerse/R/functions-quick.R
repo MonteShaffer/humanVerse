@@ -128,8 +128,10 @@ debug = FALSE;
 # get bytecode ... of fun... => name ?
 quick = function(..., character.only = FALSE, res=NULL, verbose=FALSE)
 	{ 
+	
 	fns = prep.dots(..., collapse=character.only, has.objects=!character.only);
 # dput(fns);
+	if(!is.defined(EMPTY)) { constants.default(); }
 		################ minvisible(fns, display=none);
 	if(!character.only) { fns = as.character(fns); }
 # dput(fns);

@@ -613,3 +613,10 @@ par.restoreState = function(key="DEFAULT")
 ## similar to par ... see include.dir function 
 
 
+
+
+# download ONE.R and install library, 
+# housekeeping, remove the files/functions added to the ls() namespace ...
+ls.saveState = function() {}
+ls.restoreState = function() {}
+
