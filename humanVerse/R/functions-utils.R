@@ -757,8 +757,23 @@ IN = function(KEY, VALUE, mem.key = "-CURRENT_IN-")
 
 
 
+# THIS IS A BLOCK OF LOGIC, 
+# do I want to separate them into "is" and "utils"
+# if I build a network "leaf" from path.summary, it won't matter 
 
 
+is.file = function(path=getwd(), ...) 
+	{ r = path.summary(path, ...); (r$type == "file"); }
+is.dir = function(path=getwd(), ...) 
+	{ r = path.summary(path, ...); (r$type == "dir"); }
+
+dir.exists_ = function(path=getwd(), ...) 
+	{ r = path.summary(path, ...); (r$type == "dir" & r$exists); }
+file.exists_ = function(path=getwd(), ...) 
+	{ r = path.summary(path, ...); (r$type == "file" & r$exists); }
+	
+path.exists_ = function(path=getwd(), ...) 
+	{ r = path.summary(path, ...); ( r$exists ); }
 
 
 

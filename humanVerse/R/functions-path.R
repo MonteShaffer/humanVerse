@@ -1,4 +1,90 @@
 
+# x = c(getwd(), "C:/dsjkfklj/klsdjf/", "C:\\rtools42\\x86_64-w64-mingw32.static.posix\\bin\\c++.exe");
+# scary ...  openSesame(x[3])
+path.summary = function() {}
+path.summary = function(path=getwd(), trailing = TRUE)
+	{
+	n = length(path); # multivariate 
+	
+	# is.file and is.dir fails on path=getwd() ... not a file 
+	# fopen(path)  cannot open file 'C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R': Permission denied
+	# ergo, its a path ?
+	
+	# logic BROKE with move over and removing STUFF ...
+	# str.diff
+	# TODO fix ... 
+	# I HAVE LOST a / somewhere.
+	# is.null(ext) vs is.empty(ext) ... ext == EMPTY ...
+	# b/c I updated check.ext and made it multivariate 
+	# quick.dir() broke?  is.dir ??? NODE overflow ... 
+	# memory.logging keeps jamming with prep.dots(...) on df.row 
+	# maybe need to go OLD-SCHOOL with df.row on MANUAL dots ...
+	# how to GET NAMES ... ETC?
+	## maybe it is the is.defined() function?
+	## what changed ... DID I add a lazy-loading SOMEWHERE BAD?
+	# regardless ... prep.dots needs EASY, MEDIUM, DIFFICULT ... 
+	# a rewrite ... 
+	b_	= basename_(path);
+	#b 	= basename(path);
+	e 	= check.ext(path);
+	d 	= dirname(path);
+	d_ 	= d;		# so subtraction works 
+		if(trailing) { d_ = paste0(d_, SLASH); }		
+	pp 	= check.dir(path, trailing=trailing, create=FALSE); # dir 
+	pf 	= prep.dir(path, trailing=trailing); 				# file 
+				if_ = file.exists(pf);  # reserved word 
+				id_ = dir.exists(pf);
+			# I believe these are file.stat[us] and dir.stat[us] functions 
+			# May include R/W forbidden 0777 info ?
+			# Actually ... if_ may be `stat` on the INODE 
+			#              id_ is that INODE a directory?
+	 
+	# subtract pd - d ... if it contains a SLASH
+	di = pp %.-% d_;  # str.subract(a,b)
+		
+		status = rep("file", n);
+		logic = str.contains(SLASH, di);
+		status[logic] = "dir";
+		
+					
+	
+	# do I want to REFORMAT to dataframE?
+	info = list("type" 				= status,
+				"exists" 			= if_,
+				"stem" 				= b_,
+				"ext" 				= e,
+				"dir.R"				= d,
+				"dir.humanVerse" 	= pp,
+				# this is ultimately "my type test"	
+				"diff.dir"			= di, 	
+				"inode.file" 		= if_,  
+				"inode.dir" 		= id_,
+				"path.humanVerse"	= pf   # cleansed ... 
+				);
+	# print(str(info));
+	info = property.set("more", info, file.info(pf));
+	
+	# minvisible(info, key="PATH_INFO", display=str);
+	info;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## have local / remote for these ?
 path.setBase = function() {}
 path.getBase = function() {}   
