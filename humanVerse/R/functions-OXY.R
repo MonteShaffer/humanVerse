@@ -1,4 +1,8 @@
 
+
+## youtube doesn't have simple copy button on transcripts ... how to translate from RUSSIAN!! INTENTIONAL, they can't be that DUMB, or are they?
+
+
 # OXY ... ALIAS will build a ALIAS.R file with the correct syntax
 # have buildONE = TRUE as default option ... inst/R/-ONE-.R 
 
