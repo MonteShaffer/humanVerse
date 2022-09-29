@@ -41,39 +41,10 @@ suppressError = function(expression, show.notice = TRUE, msg = "")
 
 
 
-suppressErrors = suppressError;
-suppressWarning = suppressWarnings;
 
 
 
 
-# source( res$
-## assuming res is alive from include.dir
-# get bytecode ... of fun... => name ?
-quick = function(..., character.only = FALSE, res=NULL, verbose=FALSE)
-	{
-	fns = prep.dots(..., collapse=character.only, has.objects=!character.only);
-# dput(fns);
-		minvisible(fns, display=none);
-	if(!character.only) { fns = as.character(fns); }
-# dput(fns);
-
-	# we moved our aliases, so quick(utils) doesn't update %TO% 
-	fns = unique( c(fns, "zza-special", "zzz-alias"));
-
-	if(is.null(res)) { res = memory.get("alex", "SYSTEM"); };
-	
-	for(key in fns)
-		{
-		sfile = paste0("functions-",key,".R");
-		idx = v.which(res$myfiles, sfile);
-	cat("\n QUICK: ", sfile, " with idx: ", idx, "\n");
-		if(!is.null(idx))
-			{
-			source(res$myfullpaths[idx], verbose=verbose);
-			} else { stop("bad idx"); }
-		}
-	}
 	
 	
 
@@ -148,17 +119,53 @@ debug = FALSE;
 ## setwd("C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R")
 ## alex = include.dir(getwd()); View(alex); alex$myerrors[ alex$myerrors != ""]; fn = ls(); str(fn); View(fn);
 
+
+
+
+
+# source( res$
+## assuming res is alive from include.dir
+# get bytecode ... of fun... => name ?
+quick = function(..., character.only = FALSE, res=NULL, verbose=FALSE)
+	{
+	fns = prep.dots(..., collapse=character.only, has.objects=!character.only);
+# dput(fns);
+		################ minvisible(fns, display=none);
+	if(!character.only) { fns = as.character(fns); }
+# dput(fns);
+
+	# we moved our aliases, so quick(utils) doesn't update %TO% 
+	fns = unique( c(fns, "zza-special", "zzz-alias"));
+
+###	if(is.null(res)) { res = memory.get("alex", "SYSTEM"); };
+	if(is.null(res)) { res = alex; }  # GLOBAL at the moment ...
+	
+	for(key in fns)
+		{
+		sfile = paste0("functions-",key,".R");
+		idx = v.which(res$myfiles, sfile);
+	cat("\n QUICK: ", sfile, " with idx: ", idx, "\n");
+		if(!is.null(idx))
+			{
+			source(res$myfullpaths[idx], verbose=verbose);
+			} else { stop("bad idx"); }
+		}
+	}
+
+
+
 quick.dir = function() 
 	{ 
 	setwd("C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R");
 	alex = include.dir(getwd()); # View(alex); 
 	fn = ls(all.names = TRUE, pos=1); # str(fn); View(fn);
 	alex = property.set("fn", alex, fn); 
-	memory.init(); memory.set("alex", "SYSTEM", alex);
+############ 	memory.init(); memory.set("alex", "SYSTEM", alex);
 		"alex" %GLOBAL% alex;
 	
 	print( alex$myerrors[ alex$myerrors != ""]);
-	minvisible(alex); 
+###############	# minvisible(alex);
+	
 	}
 
  

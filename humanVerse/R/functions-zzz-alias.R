@@ -123,6 +123,11 @@ str.endsWith = str.end;
 check.num = check.number; 
 
 
+suppressErrors = suppressError;
+suppressWarning = suppressWarnings;
+
+
+
 dir.name = dirname;
 
 tmp = tmpdir = temp = tempdir;

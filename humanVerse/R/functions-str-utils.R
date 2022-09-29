@@ -607,7 +607,7 @@ str.trimFromAny = function(str, search="#me", side="both")
 						  "both"  	= c(from.left, from.right),
 					c(from.left, from.right)
 					);
-	 
+	  
 		nchar = char;
 		if(!is.null(set)) { nchar = char[-c(set)]; }
 
