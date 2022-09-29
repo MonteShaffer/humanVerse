@@ -10,7 +10,7 @@ is.formula = function() {}
 
 is.defined = function(KEY)
 	{
-	ct = check.type(KEY);
+	ct = check.type(KEY);  # hasn't been evaluated ... 
 	typeof = property.get("typeof", ct);
 	res = as.logical(ct);			# strips attributes of type ...
 	# I could use callbacks and set the property without the object 

@@ -114,7 +114,7 @@ is.windoze = is.windows;
 
 invisilbe = invisible;
 
-"%-%" = str.subtract;
+"%.-%" = str.subtract;
 
 str.diff = str.subtract;
 

@@ -101,6 +101,60 @@ parse.pipeMeta = function(meta.content, meta.sep = VSEP, meta.skip=COMMENT_CHAR,
 	}
 
 	
+check.meta = function(filename)
+	{
+	# DIGITAL CAMERA HEADER ...
+	
+	}
+	
+	
+str.replaceFile = function(key, val, filename, first=true)
+	{
+	# key is the MARKER at the beginning of the LINE ... readlines until ...
+	# replace that line with val ... in a filename
+	# overwriting DESCRIPTION file elements ... 
+	# make a BACKUP ? 
+	# overwriting DOCUMENTATION ...
+	# LOL ... str_trim functions in the package, no stringr ??? WTF 
+	# utils.R
+	# is.ascii ... function(txt) all(charToRaw(txt) <= as.raw(127)),
+	# is.url ... grepl("^(https?|ftp)://\\S+$", str_trim(x))
+	# allTRUE ... vs identical_  (ALL) ... multivariate 
+	# flatten list, sort of ... just unlist ... flatten regex I guess 
+	# is.dir ... file.info(path)$isdir
+	# file.info(getwd()) ... interesting ...
+	# $isdir can be TRUE/FALSE or NA ...
+	# utils.R ... wrapping unicode in <U+1234> only on NON-ASCII 
+	# should benchmark REGEX approaches to str.explode ... 
+	# str_squish ... str.removeWhiteSpace ?
+	# compression speed/size 
+	# https://serverfault.com/questions/5230/which-archive-compression-format
+	# unrar ... right/click ... do 7ZIP from webbrowser in one step for tar.gz# back
+	# but also support other files / algorithms ... C++ ?
+	# https://www.rarlab.com/technote.htm#rarsign
+	# RAR 5.0 signature consists of 8 bytes: 0x52 0x61 0x72 0x21 0x1A 0x07 0x01 0x00. You need to search for this signature in supposed archive from beginning and up to maximum SFX module size. Just for comparison this is RAR 4.x 7 byte length signature: 0x52 0x61 0x72 0x21 0x1A 0x07 0x00.
+	# https://py7zr.readthedocs.io/en/latest/archive_format.html
+	# The first six bytes of a 7-zip file SHALL always contain b'7z\\xbc\\xaf\\x27\\x1c'.
+	# Version number SHALL consist with two bytes. Major version is 0x00, and minor version is 0x04 for now.
+	# Additional info from other bytes ...
+
+	
+	}
+	
+check.gzip = function(filename)
+	{
+	# is it .gz (oeis) 
+	#  ... tar.gz 
+	# 
+	## GET BINARY HEADER, read BYTES ... see package-archives.R in "desc" 
+	# I guess they wrote a dcf.parser 
+	# REGEX ... valid_package_archive_name ???
+	# they seem to have a chk feature ... not general, very specific 
+	# they seem to have CONSTANTS ... 
+	
+	
+	}
+	
 tmp.file = function(stem = "humanVerse.txt", trailing=TRUE)
 	{
 ##########################################################

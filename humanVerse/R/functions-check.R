@@ -310,7 +310,10 @@ check.path = function(path=getwd(), trailing = TRUE, create=FALSE)
 	# memory.logging keeps jamming with prep.dots(...) on df.row 
 	# maybe need to go OLD-SCHOOL with df.row on MANUAL dots ...
 	# how to GET NAMES ... ETC?
-	# df.row NEEDS TO BE FAST ... 
+	## maybe it is the is.defined() function?
+	## what changed ... DID I add a lazy-loading SOMEWHERE BAD?
+	# regardless ... prep.dots needs EASY, MEDIUM, DIFFICULT ... 
+	# a rewrite ... 
 	
 	b 	= basename(path);
 	e 	= check.ext(path);
@@ -328,7 +331,7 @@ check.path = function(path=getwd(), trailing = TRUE, create=FALSE)
 			if(if_ && id_ ) { is_ = c("dir",  "exists");  is__ = TRUE;}
 	
 	# subtract pd - d ... if it contains a SLASH
-	di = pd %-% d;
+	di = pd %.-% d;  # str.subract(a,b)
 			status = "file";
 			if(str.contains(SLASH, di)) { status = "dir"; }
 	

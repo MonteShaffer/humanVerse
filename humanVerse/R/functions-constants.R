@@ -277,7 +277,29 @@ constants.default = function(default.numbers = TRUE, namespace="humanVerse", whi
 						#.U_INF		= "U+E008"    # 57352  
 						
 						OP = "(", 			# OPEN_PARENTHESSDFJlkd
-						CP = ")"
+						CP = ")",
+						# alex amazon buy now ... lol 
+						
+						"\./" 		= list(
+										PRIME_AXIOM = "There are '10' types of people in this world: those that understand mathematics *and* those that do not.",
+										PRIME_DIRECTIVE = "As a semi-sentient being, I am 'intrisically motivated' to *share* =freely= any perspective, understanding, knowledge, experience, or wisdom that I believe I possess.",
+										PRIME_MOTIVATION = "To advance (or restore) the human conditon for the benefit of all.",
+										
+										W 
+										K
+										E 
+										U 
+										P 
+										EKPUW 
+										WE
+										PUKEW 
+										
+										As the right of each sentient species to live in accordance with its normal cultural evolution is considered sacred, no Starfleet personnel may interfere with the normal and healthy development of alien life and culture. Such interference includes introducing superior knowledge, strength, or technology to a world whose society is incapable of handling such advantages wisely. Starfleet personnel may not violate this Prime Directive, even to save their lives and/or their ship, unless they are acting to right an earlier violation or an accidental contamination of said culture. This directive takes precedence over any and all other considerations, and carries with it the highest moral obligation
+										
+										complexity, simplicity, complexity
+										O be wise, what more can I say 
+										same stream twice  
+											)
 					);
 					
 					
