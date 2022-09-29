@@ -8,9 +8,16 @@ is.formula = function() {}
 # is.model?
 
 
-is.defined = function(KEY)
+
+
+is.file = function(path=getwd(), ...) 
+	{ r = path.summary(path, ...); (r$type == "file"); }
+is.dir = function(path=getwd(), ...) 
+	{ r = path.summary(path, ...); (r$type == "dir"); }
+	
+is.defined = function(...)
 	{
-	ct = check.type(KEY);  # hasn't been evaluated ... 
+	ct = check.type(...);  # hasn't been evaluated ... 
 	typeof = property.get("typeof", ct);
 	res = as.logical(ct);			# strips attributes of type ...
 	# I could use callbacks and set the property without the object 
@@ -18,6 +25,9 @@ is.defined = function(KEY)
 	# CHANGE my setters with envir=parent.frame(1);
 	# I don't know, I kinda like it ... procedural not OBJ return 
 	# or sys.functions(-1)?
+	# ONLY append typeof if true ... 
+	# if(is.defined(X) && is.character(X)) ... should work 
+	# if(is.defined(X) && typeof(X) == "double") ... should work 
 	if(res) { res = property.set("typeof", res, typeof); }
 	res;
 	}

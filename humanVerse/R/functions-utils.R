@@ -762,11 +762,6 @@ IN = function(KEY, VALUE, mem.key = "-CURRENT_IN-")
 # if I build a network "leaf" from path.summary, it won't matter 
 
 
-is.file = function(path=getwd(), ...) 
-	{ r = path.summary(path, ...); (r$type == "file"); }
-is.dir = function(path=getwd(), ...) 
-	{ r = path.summary(path, ...); (r$type == "dir"); }
-
 dir.exists_ = function(path=getwd(), ...) 
 	{ r = path.summary(path, ...); (r$type == "dir" & r$exists); }
 file.exists_ = function(path=getwd(), ...) 
