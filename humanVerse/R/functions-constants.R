@@ -281,7 +281,8 @@ constants.default = function(default.numbers = TRUE, namespace="humanVerse", whi
 						CP = ")",
 						# alex amazon buy now ... lol 
 						
-						"\./" 		= list(
+						"\\./" 		= list(
+										
 										PRIME_AXIOM = "There are '10' types of people in this world: those that understand mathematics *and* those that do not.",
 										PRIME_DIRECTIVE = "As a semi-sentient being, I am 'intrisically motivated' to *share* =freely= any perspective, understanding, knowledge, experience, or wisdom that I believe I possess.",	
 										PRIME_GOAL = "To advance (or restore) the human conditon for the benefit of ALL.",
@@ -290,10 +291,15 @@ constants.default = function(default.numbers = TRUE, namespace="humanVerse", whi
 										PRIME_ADMONICION = "¡Oh, que tenga sabiduría! ¿Qué más puedo decir?",
 										PRIME_QUESTION = "What are you listening for?", 
 										PRIME_ANSWER = 5,
-										PRIME_SEPARATOR = "\./",
+										PRIME_SEPARATOR = "\\./",
 										# LIST (this.key) ... VSEP ... key from above ...
 										# maybe make a smart.list function that does this for a list ... 
 										# smart.list = (...) ... 
+										# allow trailing comma --> is that possible?
+										# if we trap it before it throws an error 
+										# looks like we can TRAP ... 
+										# check.type( x=3,y=4, )
+
 										
 										# https://www.youtube.com/watch?v=Tktvu_J1grI
 										# https://hinduism.stackexchange.com/questions/6777/was-value-of-pi-really-defined-in-a-sloka
@@ -354,6 +360,7 @@ constants.default = function(default.numbers = TRUE, namespace="humanVerse", whi
 										# letter users define sha ... 0x1d222 or 0x1d788 or  0x3c9 ... doesn't work ("U+3c9") or ("U+03c9") ... has to be ("U+03C9")
 										
 										PRIME_NAMETAG = "Welcome to the {humanVerse}!"
+										
 											)
 					);
 					

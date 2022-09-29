@@ -412,6 +412,8 @@ prep.evalValue = function(value)
 
 	
 # library(help = "datasets")
+# x = c(getwd(), "C:/dsjkfklj/klsdjf/", "C:\\rtools42\\x86_64-w64-mingw32.static.posix\\bin\\c++.exe");
+
 prep.dir = function(x, trailing = TRUE, force.trailing=FALSE)
 	{
 	z = check.ext(x);
@@ -419,8 +421,15 @@ prep.dir = function(x, trailing = TRUE, force.trailing=FALSE)
 	# you may want to create a directory with stem
 	# force.trailing ... DATA PROVENANCE ... 
 	# "C:/.../Temp/Rtmp2XXr6l/iris.txt" => "C:/.../Temp/Rtmp2XXr6l/iris.txt/"
-	if((trailing && z==EMPTY) || force.trailing) 
-		{ 
+	# if((trailing && z==EMPTY) || force.trailing) 
+	logic = v.test(z, EMPTY);
+	if(trailing)
+		{
+		y[logic] = paste0(y[logic], DIR_LINUX); 
+		y[logic] = str.replace(DOUBLE_SLASH, DIR_LINUX, y[logic]);
+		}
+	if(force.trailing) 
+		{  
 		y = paste0(y, DIR_LINUX); 
 		y = str.replace(DOUBLE_SLASH, DIR_LINUX, y);
 		}

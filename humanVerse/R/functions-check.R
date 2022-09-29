@@ -181,14 +181,7 @@ check.number = function(x)
 	}
 
 
-# create as in create.DIRECTORY
-check.file = function(path, trailing = TRUE, create=TRUE)  
-	{
-	d = check.dir(path, create=create, trailing=trailing);
-	stem = basename(path);  # not filename()	
-	f = paste0(d, stem);
-	f;
-	}
+
 
 
 .NULL = function(x, type=typeof(x))
@@ -206,18 +199,20 @@ check.file = function(path, trailing = TRUE, create=TRUE)
 	# TRAPPING NULLS in VECTORS ... 
 	.NULL_ = .NULL(x, type=type);	
 	v.test(x, .NULL_, invert=invert);
-	}
+	} 
 
 check.ext = function(x, dotless=TRUE)
 	{
 	stem = basename(x);  # not filename()
-	lenstem = str.len(stem);
 	
+	# EXT = "." in CONSTANTS 
 	s = str.pos(EXT, stem);  # hard to use ... but returns NULL
 	# s = str.explode(EXT, stem); # easier to use
 	if(is.null(s)) { return(EMPTY); }  # univariate ...
-	s = check.list(s);  # multivariate 
 	
+	n = length(x);
+	s = check.list(s);  # multivariate 
+	lenstem = str.len(stem);
 	
 		# I have NULL's trapped inside, what will get ELEMENTS DO 
 		# maybe create a bogus NUMBER 
@@ -237,33 +232,70 @@ check.ext = function(x, dotless=TRUE)
 	dot = 1;
 	if(!dotless) { dot = 0; }  # could allow for DOT of any length ...
 	
-	res = EMPTY;  	
+	res = rep(EMPTY, n);  	
 	res[logic] = substring(stem[logic], 
 							dot + vals[logic], 
 							lenstem[logic]
 							);
 	res;
 	}	
+
+
+
 	
 # tempdir()
+# create as in create.DIRECTORY, trailing SLASH 
+# path can be file or [dir]ectory 
+
+	
 check.dir = function(path, trailing = TRUE, create=TRUE)
 	{
 	# if NOT LOCAL, download to TMP location
 	# update filename using %TO% ?  parent.frame(1)
-	d = dirname(path);
-	d = prep.dir(d, trailing=trailing);
+	# d = dirname(path);  # we lose the /second 
+	p = prep.dir(path, trailing=trailing);
+	
+	stem = basename_(path);
+	
+	d = p %-.% stem;  # "right" side str.subtract 
 	
 	if(create)
 		{
-		dir.create( d, 
-					showWarnings = FALSE, 
-					recursive = TRUE
-				);
+		n = length(d);
+		for(i in 1:n)
+			{
+			dir.create( d[i], 
+						showWarnings = FALSE, 
+						recursive = TRUE
+					);
+			}
 		}
 	d;
 	}
 
+# basename doesn't play nice ... 
+basename_ = function(path)
+	{
+	d = prep.dir(path, trailing=trailing);
+	
+	# basename doesn't play nice ... 
+	tmp = str.explode(DIR_LINUX, d);
+	stem = list.getLastElements(tmp);
+	stem;
+	}
 
+# create as in create.DIRECTORY
+check.file = function(path, trailing = TRUE, create=TRUE)  
+	{
+	# this would work, but not CREATE
+	#p = prep.dir(path, trailing=trailing);  
+	d = check.dir(path, create=create, trailing=trailing);
+	
+	# stem = basename(path);  # not filename()	
+	stem = basename_(path);
+	f = paste0(d, stem);
+	f;
+	}
 
 
 	
@@ -280,21 +312,24 @@ check.dir = function(path, trailing = TRUE, create=TRUE)
 # I have a lingering NULL 
 # these were aliases ...
 is.file = function(path=getwd(), ...) 
-	{ r = check.path(path, ...); (r$type == "file"); }
+	{ r = path.summary(path, ...); (r$type == "file"); }
 is.dir = function(path=getwd(), ...) 
-	{ r = check.path(path, ...); (r$type == "dir"); }
+	{ r = path.summary(path, ...); (r$type == "dir"); }
 
 dir.exists_ = function(path=getwd(), ...) 
-	{ r = check.path(path, ...); (r$type == "dir" && r$exists); }
+	{ r = path.summary(path, ...); (r$type == "dir" & r$exists); }
 file.exists_ = function(path=getwd(), ...) 
-	{ r = check.path(path, ...); (r$type == "file" && r$exists); }
+	{ r = path.summary(path, ...); (r$type == "file" & r$exists); }
 	
-
-check.path = function() {}
-check.path = function(path=getwd(), trailing = TRUE, create=FALSE)
+path.exists_ = function(path=getwd(), ...) 
+	{ r = path.summary(path, ...); ( r$exists ); }
+	
+# x = c(getwd(), "C:/dsjkfklj/klsdjf/", "C:\\rtools42\\x86_64-w64-mingw32.static.posix\\bin\\c++.exe");
+# scary ...  openSesame(x[3])
+path.summary = function() {}
+path.summary = function(path=getwd(), trailing = TRUE)
 	{
-	# currently UNIVARIATE ...
-	
+	n = length(path); # multivariate 
 	
 	# is.file and is.dir fails on path=getwd() ... not a file 
 	# fopen(path)  cannot open file 'C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R': Permission denied
@@ -314,52 +349,48 @@ check.path = function(path=getwd(), trailing = TRUE, create=FALSE)
 	## what changed ... DID I add a lazy-loading SOMEWHERE BAD?
 	# regardless ... prep.dots needs EASY, MEDIUM, DIFFICULT ... 
 	# a rewrite ... 
-	
-	b 	= basename(path);
+	b_	= basename_(path);
+	#b 	= basename(path);
 	e 	= check.ext(path);
 	d 	= dirname(path);
-				if(trailing) { d = paste0(d, DIR_LINUX); }
-	pd 	= prep.dir(path, trailing=trailing); 
-	pf 	= check.file(path, trailing=trailing, create=create);
+	d_ 	= d;		# so subtraction works 
+		if(trailing) { d_ = paste0(d_, SLASH); }		
+	pp 	= check.dir(path, trailing=trailing, create=FALSE); # dir 
+	pf 	= prep.dir(path, trailing=trailing); 				# file 
 				if_ = file.exists(pf);  # reserved word 
 				id_ = dir.exists(pf);
 			# I believe these are file.stat[us] and dir.stat[us] functions 
 			# May include R/W forbidden 0777 info ?
-	is_ = c("-UNKNOWN-", "!exists");
-	is__ = FALSE;
-			if(if_ && !id_) { is_ = c("file", "exists");  is__ = TRUE; }
-			if(if_ && id_ ) { is_ = c("dir",  "exists");  is__ = TRUE;}
-	
+			# Actually ... if_ may be `stat` on the INODE 
+			#              id_ is that INODE a directory?
+	 
 	# subtract pd - d ... if it contains a SLASH
-	di = pd %.-% d;  # str.subract(a,b)
-			status = "file";
-			if(str.contains(SLASH, di)) { status = "dir"; }
+	di = pp %.-% d_;  # str.subract(a,b)
+		
+		status = rep("file", n);
+		logic = str.contains(SLASH, di);
+		status[logic] = "dir";
+		
+					
 	
-			
-	# not the best logic, but all I got, I think ...
-	######################  OTHER TESTS ######  OS differences ?
-	ext.test 		= "file"; 
-					if(e == EMPTY) { ext.test 		= "dir"; }
-	trailing.test 	= "file"; 
-					if(pd != pf)   { trailing.test 	= "dir"; } 
-
+	# do I want to REFORMAT to dataframE?
 	info = list("type" 				= status,
-				"exists" 			= is__,
-				"exists.info" 		= is_,
-				"stem" 				= b,
+				"exists" 			= if_,
+				"stem" 				= b_,
 				"ext" 				= e,
-				"path.as.dirname"	= d,
-				"path.as.dir" 		= pd,
-				"path.dir.diff"		= di, # this is ultimately "mytest"
-				"path.as.file" 		= pf,
-				"ext.test" 			= ext.test,
-				"dir.test" 			= trailing.test,
-				
-				"stat.file" 		= if_,  # file.stat means has r/w perms?
-				"stat.dir" 			= id_		# chmod ... run as ADMIN
+				"dir.R"				= d,
+				"dir.humanVerse" 	= pp,
+				# this is ultimately "my type test"	
+				"diff.dir"			= di, 	
+				"inode.file" 		= if_,  
+				"inode.dir" 		= id_,
+				"path.humanVerse"	= pf   # cleansed ... 
 				);
 	# print(str(info));
-	minvisible(info, key="PATH_INFO", display=str);
+	info = property.set("more", info, file.info(pf));
+	
+	# minvisible(info, key="PATH_INFO", display=str);
+	info;
 	}
 
 

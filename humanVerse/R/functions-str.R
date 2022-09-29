@@ -445,6 +445,7 @@ str.unsplit = str.implode;
 #' @export
 #'
 #' @examples
+# repeats a str in a str, n times (not a vector like `rep`)
 #------------------------------------------------#
 str.repeat = function(str, times=1, method="base")
 	{
@@ -809,13 +810,37 @@ str.pos = function(search, str, n=Inf, skip=0)
 	}
 	 
 	 
-str.subtract = function(a, b)
+str.subtract = function(a, b, from="left")
 	{	
-	# substr(string,nchar(string1)+1, nchar(string))
-	# https://stat.ethz.ch/pipermail/r-help/2011-June/281263.html
-	# a = "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/";
-	# b = "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/";
-	substring(a,nchar(b)+1, nchar(a));
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.FROM = check.type(from);
+	if(!ct.FROM || !is.character(from))	
+		{ from = deparse(substitute(from)); } 
+##########################################################
+	FROM = prep.switch(	prep.arg(from, n=1), 
+						c("l","r"), 
+						c("left", "right"), 
+						"left"
+						);
+	
+	
+	if(FROM == "left")
+		{
+		# substr(string,nchar(string1)+1, nchar(string))
+		# https://stat.ethz.ch/pipermail/r-help/2011-June/281263.html
+		# a = "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/";
+		# b = "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/";
+		# THIS is NOT SMART subtraction, doesn't consider they are NOT equal
+		# TODO, make this smart.subtraction ... 
+		substring(a, nchar(b)+1, nchar(a) );
+		} else { 
+		# a = "C:/rtools42/x86_64-w64-mingw32.static.posix/bin/c++.exe";
+		# b = "c++.exe";
+				d = nchar(a) - nchar(b);
+				substring(a, 1, d); # what if misused ... 
+				}
 	}
 	
 	

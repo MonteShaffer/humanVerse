@@ -114,7 +114,7 @@ is.windoze = is.windows;
 
 invisilbe = invisible;
 
-"%.-%" = str.subtract;
+inode.exists = inode.exists_ = path.exists_;
 
 str.diff = str.subtract;
 

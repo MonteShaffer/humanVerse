@@ -348,6 +348,21 @@ list.truncateLength = function(info, n)
 	
 	
 	
+list.getLastElements = function(info)
+	{
+	n = length(info);
+	if(!is.list(info)) { return(info[n]); }
+	if(n == 0) { return(NULL); }
+	idx = list.getLengths(info);
+	res = NULL; # we don't know the type ...
+	for(i in 1:n)
+		{
+		res[i] = info[[i]][  idx[i]  ];  
+		}
+	res; 
+	}
+	
+	
 # https://stackoverflow.com/questions/44176908/
 # get elements at same key
 list.getElements = function(info, n=1)

@@ -132,7 +132,8 @@ str.replaceFile = function(key, val, filename, first=true)
 	# unrar ... right/click ... do 7ZIP from webbrowser in one step for tar.gz# back
 	# but also support other files / algorithms ... C++ ?
 	# https://www.rarlab.com/technote.htm#rarsign
-	# RAR 5.0 signature consists of 8 bytes: 0x52 0x61 0x72 0x21 0x1A 0x07 0x01 0x00. You need to search for this signature in supposed archive from beginning and up to maximum SFX module size. Just for comparison this is RAR 4.x 7 byte length signature: 0x52 0x61 0x72 0x21 0x1A 0x07 0x00.
+	# RAR 5.0 signature consists of 8 bytes: 0x52 0x61 0x72 0x21 0x1A 0x07 0x01 0x00. You need to search for this signature in supposed archive from beginning and up to maximum SFX module size. Just for comparison this is RAR 4.x 7 byte length signature: 0x52 0x61 0x72 0x21 0x1A 0x07 0x00. 
+	# WHERE is ELON's github page with his 'encryption' algorithm 
 	# https://py7zr.readthedocs.io/en/latest/archive_format.html
 	# The first six bytes of a 7-zip file SHALL always contain b'7z\\xbc\\xaf\\x27\\x1c'.
 	# Version number SHALL consist with two bytes. Major version is 0x00, and minor version is 0x04 for now.

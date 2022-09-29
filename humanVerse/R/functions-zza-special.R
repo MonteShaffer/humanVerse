@@ -95,7 +95,8 @@
 "%FIX%" = function(x, r=NULL) { num.toFixed(x); }
 "%ENG%" = function(x, r=NULL) { num.toEngineering(x); }
 
-
+"%.-%" = function(a,b) { str.subtract(a,b, from="left"); }
+"%-.%" = function(a,b) { str.subtract(a,b, from="right"); }
 
 
 

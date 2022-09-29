@@ -11,10 +11,6 @@ fn.distance = function(method="euclidean")
 		{ method = deparse(substitute(method)); } 
 ##########################################################
 
-	ct.METHOD = check.type(method);
-	if(!ct.METHOD || !is.character(method))	
-		{ method = deparse(substitute(method)); } 
-	
 	DISTANCE = list(
 		"euclidean" = function(a,b) { sqrt(sum((a - b)^2)); }, # norm-euclidean?
 		"manhattan" = function(a,b) { sum(abs(a - b)); },
