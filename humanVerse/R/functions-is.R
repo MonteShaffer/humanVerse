@@ -639,3 +639,21 @@ is.wholeNumber = function(..., tol = sqrt(.Machine$double.eps), part="Re")
   abs(x - round(x)) < tol;
   }
   
+
+# what about LAZY loading FORM?
+is.list_ = function(info)
+	{
+	# are there sublists ...
+	# what about dataframes?  why would you call this function on df?
+	# is.list_(iris); 
+	if(is.dataframe(info)) { info = as.list(info); } # dataframe 
+	# columns are not lists, they are vectors, so ... 
+	if(!is.list(info)) { stop("this requires a list"); }
+	n = length(info);
+	res = logical(n);
+	for(i in 1:n)
+		{
+		res[i] = is.list(info[[i]]);
+		}
+	res;	
+	}

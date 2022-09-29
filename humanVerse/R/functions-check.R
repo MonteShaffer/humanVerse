@@ -201,9 +201,14 @@ check.number = function(x)
 	v.test(x, .NULL_, invert=invert);
 	} 
 
+# x = c("C:/_R_/humanVerse/SANDBOX/data/iris", "C:/_R_/humanVerse/SANDBOX/data/iris.txt", "C:/_R_/humanVerse/SANDBOX/data/.iris");
+# all are files, hidden 
 check.ext = function(x, dotless=TRUE)
 	{
+	# if I use basename_ does that create a recursion LOOP?
+	# path.summary is the only one that would create recursion?
 	stem = basename(x);  # not filename()
+	# stem_ = basename_(x);  # doesn't give me what I want ...  
 	
 	# EXT = "." in CONSTANTS 
 	s = str.pos(EXT, stem);  # hard to use ... but returns NULL
@@ -227,7 +232,7 @@ check.ext = function(x, dotless=TRUE)
 	vals = list.getElements(s, 1);  # NA's on NULLs ... 
 	# vlen = str.len(vals);
 	
-	logic = v.test(vals, NA, invert=TRUE);
+	logic = v.test(vals, NA, invert=TRUE) & v.test(vals;
 	
 	dot = 1;
 	if(!dotless) { dot = 0; }  # could allow for DOT of any length ...
@@ -253,7 +258,7 @@ check.dir = function(path, trailing = TRUE, create=TRUE)
 	# if NOT LOCAL, download to TMP location
 	# update filename using %TO% ?  parent.frame(1)
 	# d = dirname(path);  # we lose the /second 
-	p = prep.dir(path, trailing=trailing);
+	p = prep.path(path, trailing=trailing);
 	
 	stem = basename_(path);
 	
@@ -276,7 +281,7 @@ check.dir = function(path, trailing = TRUE, create=TRUE)
 # basename doesn't play nice ... 
 basename_ = function(path)
 	{
-	d = prep.dir(path, trailing=trailing);
+	d = prep.path(path, trailing=trailing);
 	
 	# basename doesn't play nice ... 
 	tmp = str.explode(DIR_LINUX, d);
@@ -294,8 +299,35 @@ check.file = function(path, trailing = TRUE, create=TRUE)
 	# stem = basename(path);  # not filename()	
 	stem = basename_(path);
 	f = paste0(d, stem);
+	# if they don't exist, touch them ...
+	if(create)
+		{
+		n = length(f);
+		for(i in 1:n)
+			{
+			touch(f[i]);
+			}
+		}
+	
+	
 	f;
 	}
+
+
+touch = function(f)
+	{
+	# for now, we assume touch means ... empty ...
+	# just MODIFY the timestamps, create INODE if it doesn't exist
+	# maybe tie-in to system or system2 
+	if(!file.exists_(f))
+		{
+		cat("", file=f, sep="");  # maybe do ftouch with fopen?
+		openSesame(f);
+		}
+	
+	}
+
+check.path = function() {}
 
 
 	

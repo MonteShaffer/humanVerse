@@ -177,6 +177,8 @@ allNA = function(x)
 	}
 
 
+	
+	
 anyTRUE = function(x)
 	{
 	idx = v.which(x, TRUE);

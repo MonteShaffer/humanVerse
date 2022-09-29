@@ -1409,7 +1409,7 @@ strsplit_ = function(str, sep, fixed=TRUE, ...)
 
 	if(!hasResult)
 		{
-		end = str.end(sep, str);
+		end = str.end_(sep, str);
 		if(allFALSE(end)) 
 			{ 
 			hasResult = TRUE;
@@ -1438,3 +1438,23 @@ strsplit_ = function(str, sep, fixed=TRUE, ...)
 	}
 
 
+# recursion-proof for strsplit_
+str.end_ = function(search="</i>", str="<i>hello friend</i>", trim = FALSE )
+	{	
+	strlen = str.len(str);
+	slen = str.len(search);
+		start = strlen - slen + 1;	idx = v.return(which(start < 1));
+		if(!is.null(idx)) { start[idx] = 1; }
+	sub = substring(str, start, strlen);	
+	res = (sub == search);
+	
+	if(!trim) { return(res); }	
+	if(allFALSE(res)) { return(str); }
+	
+	rem = substring(str, 1, (start-1));  # TEST  ... str == paste0(rem,sub)
+		
+	nstr = str;
+	nstr[res] = rem[res];
+	nstr;  
+	}
+	

@@ -29,13 +29,14 @@ list.return = function(res, unlist=FALSE)
 	}
 
 
-
+# part of the str.end_ and strsplit_ WORKAROUND ... 
+# leaf/node tree to clarify would help a lot ... 
 list.removeFillFromEnd = function(info, fill="~")
 	{
 	n = length(info);  # assumes it is a list ... list IN/list OUT
 	nlen = list.getLengths(info);
 	vals = list.getElements(info, nlen);
-	nvals = str.end(fill, vals, trim=TRUE);
+	nvals = str.end_(fill, vals, trim=TRUE);
 	
 	ninfo = list.setElements(info, nlen, nvals);
 	ninfo;
@@ -348,24 +349,45 @@ list.truncateLength = function(info, n)
 	
 	
 	
-list.getLastElements = function(info)
+list.getLastElements = function(info, invert=FALSE)
 	{
 	n = length(info);
-	if(!is.list(info)) { return(info[n]); }
-	if(n == 0) { return(NULL); }
-	idx = list.getLengths(info);
-	res = NULL; # we don't know the type ...
-	for(i in 1:n)
+	if(!invert)
 		{
-		res[i] = info[[i]][  idx[i]  ];  
-		}
-	res; 
+		if(!is.list(info)) { return(info[n]); }
+		if(n == 0) { return(NULL); }
+		
+		res = NULL; # we don't know the type ...
+		idx = list.getLengths(info);
+		for(i in 1:n)
+			{
+			# do I need to update to allow one level of a list here?
+			# currently only a factor depth... for invert I need more ...
+			res[i] = info[[i]][  idx[i]  ];  
+			}
+		return(res);
+		} else {
+				## all but last 
+				if(!is.list(info)) { return(info[-c(n)]); }
+				## can't invert a NULL with NULL
+				if(n == 0) { return(NULL); }
+				
+				res = NULL; # we don't know the type ...
+				idx = list.getLengths(info);
+				for(i in 1:n)
+					{
+					iidx = idx[i]; if(iidx != 1) { iidx = -c(idx[i]); }
+					res[[i]] = info[[i]][  iidx  ];  
+					}	
+				return(res);
+				}
+	stop("how did you get here!");
 	}
 	
 	
 # https://stackoverflow.com/questions/44176908/
 # get elements at same key
-list.getElements = function(info, n=1)
+list.getElements = function(info, n=1, invert=FALSE)
 	{
 	n.info = length(info);
 	if(!is.list(info)) { return(info[n]); }
@@ -473,6 +495,14 @@ list.mapNtoOne = function(info, keys, val)
 		}
 	info;	
 	}
+
+
+
+
+
+
+
+ 
 
 
 list.fromError = function(e)

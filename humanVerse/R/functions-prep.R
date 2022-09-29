@@ -414,7 +414,7 @@ prep.evalValue = function(value)
 # library(help = "datasets")
 # x = c(getwd(), "C:/dsjkfklj/klsdjf/", "C:\\rtools42\\x86_64-w64-mingw32.static.posix\\bin\\c++.exe");
 
-prep.dir = function(x, trailing = TRUE, force.trailing=FALSE)
+prep.path = function(x, trailing = TRUE, force.trailing=FALSE)
 	{
 	z = check.ext(x);
 	y = str.replace(DIR_WINDOZE, DIR_LINUX, x);

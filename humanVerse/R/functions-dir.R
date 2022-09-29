@@ -20,7 +20,7 @@ dir.setSeparator = function(force=NULL)
 # do I need a multivariate normalizePath ... or is that deprecated with what I am doing ... 
 tmp.dir = function()
 	{
-	d = prep.dir( tempdir(check=TRUE) );
+	d = prep.path( tempdir(check=TRUE) );
 	d;
 	}
 

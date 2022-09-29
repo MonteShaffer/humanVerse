@@ -2,17 +2,7 @@
 
 # maybe have a copy/paste file ...
  
-# maybe have openSesame, but this is generally me copying PATH from WINDOWZ into R ...
-pathFromClipboard = function(trailing = TRUE)
-	{
-	x = readClipboard();
-	prep.dir(x);	# prep.dir cleanses .. check.dir verifies it 
-	}
 
-# > y = pathFromClipboard()
-# > y
-# [1] "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/"
-# > openSesame(y)
 
 openSesame = function() {}
 openSesame = function(path=getwd())

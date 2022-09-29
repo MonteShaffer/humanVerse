@@ -827,27 +827,21 @@ str.subtract = function(a, b, from="left")
 	}
 	
 	
+	
 # str.endsWith = str.end
-str.end = function(search="</i>", str="<i>hello friend</i>", trim = FALSE )
-	{
-	# can't do it this way, becuse used within str.explode ... 
+str.end = function(search="</i>", str=c("<i>hello friend</i>", "<i>how are you doing today?</i>", "I am fine <i>[well]</i>, thank you for asking. [fine/well are ambiguous ... --> Estoy bien, gracias a Dios ... <i>TRIOS?</i>]"), trim = FALSE )
+	{ 
 	info = check.list(str.explode(search, str));
+	last = list.getLastElements(info);
 	
-	strlen = str.len(str);
-	slen = str.len(search);
-		start = strlen - slen + 1;	idx = v.return(which(start < 1));
-		if(!is.null(idx)) { start[idx] = 1; }
-	sub = substring(str, start, strlen);	
-	res = (sub == search);
+	logic = v.test(last, EMPTY);
+	if(!trim) { return(logic); }	
 	
-	if(!trim) { return(res); }	
-	if(allFALSE(res)) { return(str); }
-	
-	rem = substring(str, 1, (start-1));  # TEST  ... str == paste0(rem,sub)
-		
-	nstr = str;
-	nstr[res] = rem[res];
-	nstr;  
+	# ALL BUT LAST ... 
+	# we are calling list.getLengths(info) a few times ... three
+	len = list.getLengths(info); 
+	new = list.truncate(info, len);
+	nstr;	  
 	}
 	
 # str.startsWith = str.begin

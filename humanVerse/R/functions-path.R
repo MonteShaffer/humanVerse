@@ -31,7 +31,7 @@ path.summary = function(path=getwd(), trailing = TRUE)
 	d_ 	= d;		# so subtraction works 
 		if(trailing) { d_ = paste0(d_, SLASH); }		
 	pp 	= check.dir(path, trailing=trailing, create=FALSE); # dir 
-	pf 	= prep.dir(path, trailing=trailing); 				# file 
+	pf 	= prep.path(path, trailing=trailing); 				# file 
 				if_ = file.exists(pf);  # reserved word 
 				id_ = dir.exists(pf);
 			# I believe these are file.stat[us] and dir.stat[us] functions 
@@ -46,7 +46,7 @@ path.summary = function(path=getwd(), trailing = TRUE)
 		logic = str.contains(SLASH, di);
 		status[logic] = "dir";
 		
-					
+					# C:\_R_\humanVerse\SANDBOX\data\
 	
 	# do I want to REFORMAT to dataframE?
 	info = list("type" 				= status,
@@ -70,7 +70,17 @@ path.summary = function(path=getwd(), trailing = TRUE)
 
 
 
+# maybe have openSesame, but this is generally me copying PATH from WINDOWZ into R ...
+path.fromClipboard = function(trailing = TRUE)
+	{
+	x = readClipboard();
+	prep.path(x);	# prep.path cleanses .. check.path verifies it 
+	}
 
+# > y = path.fromClipboard()
+# > y
+# [1] "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/"
+# > openSesame(y)
 
 
 

@@ -1,5 +1,6 @@
  
  
+
 v.append = function(vec, val)
 	{
 	if(is.null(vec)) { return( c(val) ); }
@@ -897,9 +898,54 @@ v.sample = function(vec, size, replace=FALSE, prob=NULL, seed=NULL, append=TRUE)
 
 
 
+left.contiguous = function(idx, n)
+	{
+	# n is length(vec) ... not needed for this side
+	from.left = NULL;
+	ilen = length(idx);
+	for(i in 1:ilen)
+		{
+		if(idx[i] == i) { from.left = c(from.left, i); } else { break; }
+		}
+	from.left;
+	}
+	
+right.contiguous = function(idx, n)
+	{
+	# n is length(vec) ... not needed for this side
+	from.right = NULL;
+	for(i in ilen:1)
+		{
+		if(idx[i] == (n)) 
+			{ from.right = c(n, from.right); n %--%.; } else { break; }
+		}
+	from.right;	
+	}
+
 v.trim = function(vec, what="", side="both")
 	{
 	# remove as many empty "" what from beginning or end ... 
+	SIDE = prep.strSide(side, n=1);
+	# contiguous again?
+	n = length(vec);
+	idx = v.which(vec, what);
+	
+	from.left = NULL;
+	from.right = NULL;
+	
+	if((SIDE=="left" || SIDE=="both") && idx[1] == 1)
+		{
+		from.left = left.contiguous(idx, n);
+		}
+	if((SIDE=="right" || SIDE=="both") && IDX[ilen] == nc)
+			{
+			# walk until we are not contiguous ...
+			for(i in ilen:1)
+				{
+				if(IDX[i] == (nc)) { from.right = c(nc, from.right); nc %--%.; } else { break; }
+				}			
+			}
+			
 	
 	}
 
