@@ -176,7 +176,7 @@ minvisible = function(x, key="ANS", display=TRUE)
 	key %GLOBAL% x; 
 	
 	
-	
+	 
 	# "Ans" %GLOBAL% x; 
 	 
 	

@@ -34,7 +34,7 @@ parse.syscall = function(syscall)
 	nstr = str.implode("(", info[-c(1)] );
 	#nstr = str.replace(")", "", nstr);
 	nstr = str.end(")", nstr, trim=TRUE);
-	
+	  
 	ninfo = strsplit(nstr, ",", fixed=TRUE);
 	minfo = strsplit(ninfo[[1]], "=", fixed=TRUE);
 	
