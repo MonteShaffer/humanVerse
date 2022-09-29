@@ -84,6 +84,7 @@ constants.default = function(default.numbers = TRUE, namespace="humanVerse", whi
 	# #https://en.wikipedia.org/wiki/Proto-Sinaitic_script
 	# why we like lower-case omega
 	# https://en.wikipedia.org/wiki/Proto-Sinaitic_script#/media/File:Proto-semiticS-01.svg
+	# UTF8 finder  # https://shapecatcher.com/
 	# https://en.wikipedia.org/wiki/Proto-Sinaitic_script#/media/File:Proto-semiticT-01.svg
 	U = list(
 					U_TIMES		= "U+00D7",
@@ -302,13 +303,55 @@ constants.default = function(default.numbers = TRUE, namespace="humanVerse", whi
 										PRIME_TZU = "Silence is strength.",
 										PRIME_CHANGE = "You and the river are always changing.  For the better.", 
 										PRIME_TREEBEARD = "Break the damns.  Release the rivers.  Let the salmon run home so we can 'fillet' them.",
-										PRIME_LEGEND = "{an ee} {na fee} {a la} {al ma} {ee ma} {mer men}",
+										PRIME_LEGEND = "{an ee} {na fee} {a la} {al ma} {ee ma} {mer men}",  # 12, not 10? ... linguistic lessons WE COULD HAVE LEARNED about language de-evolution (degression)
 										PRIME_GALILEO = "E pur, si muove",
 										PRIME_IDIOT = c("ID-10-T error", "SCSI buffer underrun"),
 										PRIME_READING = "Combine letters to form words.  Combine words to form sentences.  Top to bottom.  Left to right.",
+										PRIME_SPEAKING = "Combine sounds to form words.  Combine words to form ideas.  Beginning to end.",
+										PRIME_BEGINNING = "{ab} {ra} {ωet}",
+										PRIME_WHAT = "sais quoi", # {se} {kwa}
 										# http://billposer.org/Software/tamilconverters.html
-										# where is a transliterator ... 
+										# where is a transliterator ...
+										# I want it as simple ascii SOUNDS ... 
 										PRIME_TAMIL = "எல்லாம் நல்லதே",
+										# {ee lam} {na la de} ? 
+										# ee as in SEE 
+										# de as in DAY (spanish e)
+										# by default, (a e i o u) are SPANISH 
+										# lam is CORRECT 
+										# lAm is LAMB (open the mouth)
+										# keep it simple, based on common language, use AVERAGE to advtange ... 
+										# https://phoible.org/parameters
+										# ONE SOUND, one letter 
+										# che ==> чe ... 
+										# loco ==> lo ko
+										# DOES the "c" disappear or use as s (RUSSIAN)
+										# c => C ... good scaling 
+										# "s" looks like a 5 ... maybe kill it ...
+										# salaam vs shalaam ...
+										# z
+										# sha ... ωa ... 
+										# CASE shouldn't change symbol, just scale it
+										# maybe use a BOLD/BRIGHT feature 
+										# s => S ... GOOD 
+										# a => A ... BAD 
+										# j => J ... good 
+										# 1,1,1 on 9-numerology above ...
+										# avoid dislexisak possibilities 
+										# if (b) ... no (d)
+										# if (d) ... no (b) 
+										# avoid COMBOS that are not possible in child development or for some other linguists
+										# [th]ree ... not a good combo ... [t]ree easier ... RU: tree ... ES: tres ... ee is easier to recognize that SPANISH "i" even though that is the sound ... acute/grave ...
+										# https://www.quora.com/What-is-the-difference-between-e-%C3%A8-%C3%A9-%C3%AA-%C3%AB-%C4%93-%C4%97-and-%C4%99
+										# e_ as ee? where _ is under the e (not above) [e over _ in latex?] ... 
+										# allow accents [syllabization/rhythm] above, symbology below ... wouldn't work for j ... how to address ___ underline ?
+										# 
+										# have optional sounds
+										# [r]ruffles have [r]ridges ... you can roll the r if you want ... your CHOICE ...
+										# 
+										# [a] vs [ɑ] ... typing vs handwriting 
+										# double-storey a and single-storey ɑ. 
+										# letter users define sha ... 0x1d222 or 0x1d788 or  0x3c9 ... doesn't work ("U+3c9") or ("U+03c9") ... has to be ("U+03C9")
 										
 										PRIME_NAMETAG = "Welcome to the {humanVerse}!"
 											)
