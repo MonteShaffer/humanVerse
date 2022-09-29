@@ -673,6 +673,7 @@ str.pad = function(str,
 	}
 
 
+
 # paste0( substring(x[!idx], 1, (cwidth-1) ), trunc.sym);
 str.truncate = function(str, to.length=5, keep="right")
 	{
@@ -829,37 +830,41 @@ str.subtract = function(a, b, from="left")
 	
 	
 # str.endsWith = str.end
+str.end = function() {}
 str.end = function(search="</i>", str=c("<i>hello friend</i>", "<i>how are you doing today?</i>", "I am fine <i>[well]</i>, thank you for asking. [fine/well are ambiguous ... --> Estoy bien, gracias a Dios ... <i>TRIOS?</i>]"), trim = FALSE )
 	{ 
 	info = check.list(str.explode(search, str));
-	last = list.getLastElements(info);
+	# last = list.getLastElements(info);
+	len = list.getLengths(info); 
+	last = list.getElements(info, len);
 	
 	logic = v.test(last, EMPTY);
-	if(!trim) { return(logic); }	
+	if(!trim) { return(logic); }
+
+	len[logic] = len[logic] - 1;
 	
-	# ALL BUT LAST ... 
-	# we are calling list.getLengths(info) a few times ... three
-	len = list.getLengths(info); 
 	new = list.truncate(info, len);
-	nstr;	  
+		  
+	str.implode(search, new);
 	}
 	
 # str.startsWith = str.begin
-str.end = function(search="</i>", str="<i>hello friend</i>", trim = FALSE )
+str.begin = function() {}
+str.begin = function(search="<i>", str=c("<i>hello friend</i>", "<i>how are you doing today?</i>", "I am fine <i>[well]</i>, thank you for asking. [fine/well are ambiguous ... --> Estoy bien, gracias a Dios ... <i>TRIOS?</i>]"), trim = FALSE )
 	{
-	strlen = str.len(str);
-	slen = str.len(search);
-		start = strlen - slen + 1;	idx = v.return(which(start < 1));
-		if(!is.null(idx)) { start[idx] = 1; }
-	sub = substring(str, start, strlen);	
-	res = (sub == search);
+	info = check.list(str.explode(search, str));
+	len = list.getLengths(info); 
+	first = list.getElements(info, 1);
 	
-	if(!trim) { return(res); }	
-	if(allFALSE(res)) { return(str); }
+	logic = v.test(first, EMPTY);
+	if(!trim) { return(logic); }
+
+	len[logic] = len[logic] - 1;
 	
-	rem = substring(str, 1, (start-1));  # TEST  ... str == paste0(rem,sub)
-		
-	nstr = str;
-	nstr[res] = rem[res];
-	nstr;  
+	b = rep(0, length(len));
+	b[logic] = b[logic] + 1;
+	
+	new = list.truncate(info, b, "beginning");  # begin, start , anything but [e]nd ... 
+		  
+	str.implode(search, new);  
 	}

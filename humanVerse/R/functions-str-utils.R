@@ -588,7 +588,7 @@ str.trimFromAny = function(str, search="#me", side="both")
 			# walk until we are not contiguous ...
 			for(i in 1:ilen)
 				{
-				if(IDX[i] == i) { from.left = c(from.left, i); } else { break; }
+				if(IDX[i] == i) { from.left = c(from.left, i); } else { break; } 
 				}			
 			}
 		if((SIDE=="right" || SIDE=="both") && IDX[ilen] == nc)
@@ -607,7 +607,7 @@ str.trimFromAny = function(str, search="#me", side="both")
 						  "both"  	= c(from.left, from.right),
 					c(from.left, from.right)
 					);
-	
+	 
 		nchar = char;
 		if(!is.null(set)) { nchar = char[-c(set)]; }
 

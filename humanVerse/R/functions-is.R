@@ -640,7 +640,7 @@ is.wholeNumber = function(..., tol = sqrt(.Machine$double.eps), part="Re")
   }
   
 
-# what about LAZY loading FORM?
+# what about LAZY loading?
 is.list_ = function(info)
 	{
 	# are there sublists ...

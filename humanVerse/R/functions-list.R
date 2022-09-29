@@ -2,6 +2,23 @@
 
 
 
+# part of the str.end_ and strsplit_ WORKAROUND ... 
+# leaf/node tree to clarify would help a lot ... 
+list.removeFillFromEnd = function(info, fill="~")
+	{
+	n = length(info);  # assumes it is a list ... list IN/list OUT
+	nlen = list.getLengths(info);
+	vals = list.getElements(info, nlen);
+	nvals = str.end_(fill, vals, trim=TRUE);
+	
+	ninfo = list.setElements(info, nlen, nvals);
+	ninfo;
+	}
+
+
+
+
+
 
 
 
@@ -28,19 +45,6 @@ list.return = function(res, unlist=FALSE)
 	if(unlist) { unlist(res); } else { res; }
 	}
 
-
-# part of the str.end_ and strsplit_ WORKAROUND ... 
-# leaf/node tree to clarify would help a lot ... 
-list.removeFillFromEnd = function(info, fill="~")
-	{
-	n = length(info);  # assumes it is a list ... list IN/list OUT
-	nlen = list.getLengths(info);
-	vals = list.getElements(info, nlen);
-	nvals = str.end_(fill, vals, trim=TRUE);
-	
-	ninfo = list.setElements(info, nlen, nvals);
-	ninfo;
-	}
 
 
 # functions.setDefaultValues(list.toString);
@@ -318,76 +322,57 @@ list.append = function(info, val)
 	info;
 	}
 
-list.fill = function() {} 
-list.truncate = function() {}
+list.fill = function() {}
 
-list.truncateLength = function(info, n)
-	{	 
-	dput(info);
-	n.info = length(info);
-	if (!is.list(info)) 
-		{ 
-		# vector 
-		n.t = n.info; 
-		if(n.t > n) { n.t = n;}
-		return(info[1:n.t]); 
-		}
-	# is.list with length of zero
-	if(n.info == 0) { return( list() ); }
-	
-	n.lengths = list.getLengths(info);
-	if(is.null(n.lengths)) { return( list() ); } # shouldn't this be a list?
-	res = NULL;
-	for (i in 1:n.info) 
+ 
+list.truncate = function(info, n, from="end") 
+	{  
+	FROM = prep.arg(from, n=1);
+						
+	# KISS ... no checks ...
+	ni = length(info);
+	if(length(n) != ni) { n = rep(n, length.out=ni); }
+	res = vector("list", ni);
+	for(j in 1:ni)
 		{
-		n.t = n.lengths[i];
-		if(n.t > n) { n.t = n; }
-		res[[i]] = info[[i]][1:n.t];
-		}
-	res;
-	}
-	
-	
-	
-list.getLastElements = function(info, invert=FALSE)
-	{
-	n = length(info);
-	if(!invert)
-		{
-		if(!is.list(info)) { return(info[n]); }
-		if(n == 0) { return(NULL); }
-		
-		res = NULL; # we don't know the type ...
-		idx = list.getLengths(info);
-		for(i in 1:n)
+		nj = n[j];
+		vec = info[[j]];
+		nv = length(vec);
+		if(from == "end")
 			{
-			# do I need to update to allow one level of a list here?
-			# currently only a factor depth... for invert I need more ...
-			res[i] = info[[i]][  idx[i]  ];  
-			}
-		return(res);
-		} else {
-				## all but last 
-				if(!is.list(info)) { return(info[-c(n)]); }
-				## can't invert a NULL with NULL
-				if(n == 0) { return(NULL); }
-				
-				res = NULL; # we don't know the type ...
-				idx = list.getLengths(info);
-				for(i in 1:n)
-					{
-					iidx = idx[i]; if(iidx != 1) { iidx = -c(idx[i]); }
-					res[[i]] = info[[i]][  iidx  ];  
-					}	
-				return(res);
-				}
-	stop("how did you get here!");
+			val = vec[1:nj]; 
+				if(nv == 0) { val = NULL; 	}
+				if(nv == 1) { val = vec[1]; }
+			} else {
+					# nj is the new length ... 
+					idx = 1 + nj;
+					# no elements OR more elements than we have 
+					if( (nv == 0) || (nv <= nj) ) 
+						{ 
+						val == NULL; 
+						} else {
+								# have 2:1 ... make it 2:2 
+								if(nv < idx) { nv = idx; }
+								val = vec[idx:nv];
+								}
+					}
+		res[[j]] = val;		
+		}
+	res;	
 	}
+
+
 	
+list.getLastElements = function(info)
+	{
+	# no checks ... # TODO: cleanup check logic
+	idx = list.getLengths(info);
+	list.getElements(info, idx);
+	}
 	
 # https://stackoverflow.com/questions/44176908/
 # get elements at same key
-list.getElements = function(info, n=1, invert=FALSE)
+list.getElements = function(info, n=1)
 	{
 	n.info = length(info);
 	if(!is.list(info)) { return(info[n]); }
@@ -546,4 +531,38 @@ list.fromError = function(e)
 
 
 
+
+
+
+list.truncateLength = function(info, n)
+	{	 
+	dput(info);
+	n.info = length(info);
+	if (!is.list(info)) 
+		{ 
+		# vector 
+		n.t = n.info; 
+		if(n.t > n) { n.t = n;}
+		return(info[1:n.t]); 
+		}
+	# is.list with length of zero
+	if(n.info == 0) { return( list() ); }
+	
+	n.lengths = list.getLengths(info);
+	if(is.null(n.lengths)) { return( list() ); } # shouldn't this be a list?
+	res = NULL;
+	
+	# allow different n's 
+	if(length(n) != n.info) { n = rep(n, length.out=n.info); }
+	
+	for (i in 1:n.info) 
+		{
+		n.t = n.lengths[i];
+		if(n.t > n[i]) { n.t = n[i]; }
+		res[[i]] = info[[i]][1:n.t];
+		}
+	res;
+	}
+	
+	
 

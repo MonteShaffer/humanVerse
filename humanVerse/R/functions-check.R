@@ -232,7 +232,8 @@ check.ext = function(x, dotless=TRUE)
 	vals = list.getElements(s, 1);  # NA's on NULLs ... 
 	# vlen = str.len(vals);
 	
-	logic = v.test(vals, NA, invert=TRUE) & v.test(vals;
+	
+	logic = ( v.test(vals, NA, invert=TRUE) & !str.begin(EXT, stem) )
 	
 	dot = 1;
 	if(!dotless) { dot = 0; }  # could allow for DOT of any length ...
@@ -321,6 +322,7 @@ touch = function(f)
 	# maybe tie-in to system or system2 
 	if(!file.exists_(f))
 		{
+		# does this work, empty?
 		cat("", file=f, sep="");  # maybe do ftouch with fopen?
 		openSesame(f);
 		}

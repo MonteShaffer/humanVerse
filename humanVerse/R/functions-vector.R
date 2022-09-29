@@ -776,14 +776,8 @@ v.test = function(vec, what="", invert=FALSE)
 					}
 		}
 	if(is.null(logic) && is.character(what) && !is.character(vec))
-		{
-		# could be a string-string number comparison 
-		# I *assume* by default that if they pass 5 or "5" 
-		# on a known vec ... 
-		if(!force.character && check.num(what))
-			{ 
-			logic = (vec == as.numeric(what) ); 
-			} else { logic = (vec == what); }
+		{ 
+		logic = (vec == as.type(what, type=typeof(vec)) );
 		}
 	## DEFAULT
 	if(is.null(logic))
@@ -799,19 +793,25 @@ v.test = function(vec, what="", invert=FALSE)
 # multivariate [what] ... INVERT ?
 # for now ... this 
 # maybe v.testOR ... 
+# AND doesn't make sense on a vector 
 # vec = c(1,2,3,4,5,5,4,3,2,1); what=1:3;
-v.testOR = function(vec, what="")
+v.testOR = function(vec, what="", invert=FALSE)
 	{
 	n = length(what);
-	res = as.integer( v.test(vec, what[[1]]) );
+	res = as.integer( v.test(vec, what[1]) );
 	if(n > 1)
 		{
 		for(i in 2:n)
 			{
-			res %+=% as.integer( v.test(vec, what[[n]]) );
+			# memory is broken right now 
+			# res %+=% as.integer( v.test(vec, what[i]) );
+			res = res + as.integer( v.test(vec, what[i]) );
 			}
 		}
-	v.test(res, ZERO, invert=TRUE);
+		
+	logic = v.test(res, ZERO, invert=TRUE);
+	if(invert) { logic = !logic; }
+	logic;		
 	}
 	
 	
@@ -939,15 +939,20 @@ right.contiguous = function(idx, n)
 	{
 	# n is length(vec) ... not needed for this side
 	from.right = NULL;
+	ilen = length(idx);
 	for(i in ilen:1)
 		{
 		if(idx[i] == (n)) 
-			{ from.right = c(n, from.right); n %--%.; } else { break; }
+			{ 
+			from.right = c(n, from.right); 
+			# n %--%.; 
+			n = n - 1;
+			} else { break; }
 		}
 	from.right;	
 	}
 
-# v.trim(c(1,2,3,4,5,5,4,3,2,1), what=c(1,2,3))
+# v.trim((vec=c(1,2,3,4,5,5,4,3,2,1)), (what=c(1,2,3)))
 
 v.trim = function(vec, what="", side="both")
 	{
@@ -955,7 +960,7 @@ v.trim = function(vec, what="", side="both")
 	SIDE = prep.strSide(side, n=1);
 	# contiguous again?
 	n = length(vec);
-	idx = v.which(vec, what);
+	idx = v.which( v.testOR(vec, what), TRUE );
 	
 	from.left = NULL;
 	from.right = NULL;
@@ -980,6 +985,9 @@ v.trim = function(vec, what="", side="both")
 	if(length(vec) == 0) { vec = NULL; }
 	vec;
 	}
+	
+	
+	
 
 v.fill = function(vec, to.length=5, with=NA)
 	{

@@ -119,7 +119,9 @@ inode.exists = inode.exists_ = path.exists_;
 str.diff = str.subtract;
 
 str.startsWith = str.begin;
-str.endsWith = str.end
+str.endsWith = str.end;
+check.num = check.number; 
+
 
 dir.name = dirname;
 
