@@ -17,11 +17,13 @@ parse.walkTheLine = function(str, COMMENTS=c("#"), continue=NULL)
 	STRING_TYPE 	= NULL;
 
 	nval			= "";
+	oval 			= "";   # this is carryover part ...
 	if(!is.null(continue)) 
 		{
 		IN_STRING 	= continue[["IN_STRING"]];
 		STRING_TYPE = continue[["STRING_TYPE"]];
 		nval 		= continue[["nval"]];
+		oval 		= nval;
 		}
 	
 .cat("HEAD nval: ", nval);
@@ -100,10 +102,10 @@ parse.walkTheLine = function(str, COMMENTS=c("#"), continue=NULL)
 	if(IN_STRING)
 		{
 		if(str.trim(str) == "") { nval = paste0(nval,"\n"); }
-		extra = list("nval" = nval, 
+		more = list("nval" = nval, 
 					"IN_STRING" = IN_STRING, 
 					"STRING_TYPE" = STRING_TYPE);
-		nval = property.set("extra", nval, extra);
+		nval = property.set("more", nval, extra);
 		}
 .cat("FOOT nval: ", nval);
 	nval;

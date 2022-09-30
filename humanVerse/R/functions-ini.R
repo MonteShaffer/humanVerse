@@ -33,6 +33,7 @@ ini.parse = function(lines, verbose=FALSE)
 
 	MEMORY 			= list();
 	RES 			= list();
+	fin 			= NULL;
 	line.no 		= 0;
 	CONTINUE_KEY	= ""; # if NOT empty, we are continuing on multiline 
 	pkey 			= "";		
@@ -79,8 +80,10 @@ gggassign("RES", RES);
 		
 		# WE HAVE A LINE ... LIKELY a KEY/VALUE PAIR 
 		# THIS IS TOUGH???
-		if(str.contains("=", line))  # a continued string may have an equal?
-			{
+		# maybe if COMMENT_KEY == ""
+		#if(str.contains("=", line))  # a continued string may have an equal?
+		if(COMMENT_KEY == "")	
+			{ 
 			info = str.explode("=", line);
 			rkey = str.trim(info[1]);
 			rval = str.trim(info[2]);
@@ -97,10 +100,14 @@ gggassign("RES", RES);
 				hasRcode  = TRUE; 
 				rval = str.trim(str.begin("R", rval, trim=TRUE));
 				}
-				
+		
+normal = function() {} 		
+
 			key = ini.cleanKey(rkey);  # raw key 
 			val = parse.walkTheLine(rval, COMMENTS); 
-			GTG = TRUE; # I am good to go ... multiline may stop this ... 
+			fin = property.get("more", val); # are we finished?
+			GTG = FALSE; # I am good to go ... multiline may stop this ... 
+			if(is.null(fin)) { GTG = TRUE; }
 			if(GTG)
 				{
 				if(hasRcode) 	{ val = eval(parse(text=val)); }
@@ -120,40 +127,37 @@ gggassign("RES", RES);
 		# this will not work on eval?  Or it could if I waited on eval 
 		# if CURRENT_KEY ...
 		
+		# we keep walking lines until the string TERMINATES
+		# we set CURRENT_KEY to ""
+		# we evaluate and move on ...
+multiline = function() {} 		
+		rval = line;  # grab everything (whitespace);
+		
+		# more = "pval";  # pval that grows ... 
+		val = parse.walkTheLine(rval, COMMENTS, fin);
+		fin = property.get("more", val); # are we finished?
 
-
-		
-		here = function() {} 
-		
-		
-		
-		prepKeyVal();
-		
-		nval = parse.walkTheLine(val, COMMENTS, continue=continue);
-		
-		status = updateMultiLine();
-		
-if(verbose)
-	{
-cat("\n\n status: ", status, " key : ", key, " nval : ", nval, "\n\n");
-	}
-		if(status != "normal") { next; }
-		
-		
-		storeKeyVal();
-			
-		pkey = key;
-		pval = nval;
-
-if(verbose)
-	{		
-cat("\n\n\t\t\t ", pkey, " --> ", pval, "\n\n");
-print(str(RES));		
-print(str(MEMORY));
-cat("\n\n MDLFjkdlsj \n\n");
-	}
-		
+			GTG = FALSE; # I am good to go ... multiline may stop this ... 
+			if(is.null(fin)) { GTG = TRUE; }
+			if(GTG)
+				{
+				# maybe do eval(parse in function enclosure
+				# unlist the MEMORY_keys there ... 
+				if(hasRcode) 	{ val = eval(parse(text=val)); }
+				if(hasMemory) 	{ MEMORY[[key]] = val; }
+				
+				RES = ini.assignVal(CONTINUE_KEY, val, cparent, RES);
+				
+				CONTINUE_KEY = "";				
+				pkey = "";
+				pval = val; 
+				next;
+				}
 		}
+
+		
+		
+		
 	RES;
 	}
 

@@ -180,6 +180,10 @@ check.number = function(x)
 	suppressWarning( !is.na(as.numeric(x)) );	
 	}
 
+check.boolean = function(x)
+	{
+	suppressWarning( !is.na(as.logical(x)) );	
+	}
 
 
 

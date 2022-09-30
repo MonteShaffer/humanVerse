@@ -66,7 +66,7 @@ cat.init = function()
 	# <esc custom="a" more="b"></esc>  # a generic ESC event 
 	# COLOR is attached to either <fg> or <bg>
 	}
-
+ 
 
 
 .cat = function(..., sep="\n\n")
