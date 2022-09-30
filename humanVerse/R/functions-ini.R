@@ -71,7 +71,9 @@ gggassign("RES", RES);
 			{
 			info 			= ini.cleanKey(line);
 			cparent 		= info;
-			RES				= ini.checkKey(cparent, RES);
+			# unnecessary to do any assignment 
+			# it won't appear in the STACK if nothing follows, so what?
+			# RES				= ini.checkKey(cparent, RES);
 			pkey 			= "";  # these are not parents ... 
 			pval 			= "";
 			
@@ -162,6 +164,29 @@ multiline = function() {}
 	}
 
 
+ini.evalMe = function(txt, MEMORY)
+	{
+	list.extract(MEMORY);
+	
+# dput(MEMORY);
+# dput(salt);
+	# "%nPr%" ... needs to be "`%nPr%`" into parser ... 
+	#  eval(parse(text = "salt %in% MEMORY" ) ) ; # works fine 
+	
+	# so if %nPr% is an isolate ... we get it to correctly MAP to a function
+	# a second stage of the parser will have to assign the KEYS to VALUES 
+	# alias.add(key, val) ... INTERNAL function, easy-breasy, lemon-eays
+	
+	
+	
+	# eval(parse(text=val));
+	
+	
+	}
+	
+	
+	
+
 # ini.assignVal(key, val, cparent, RES);
 ini.assignVal = function(key, val, cparent, RES)
 	{
@@ -171,11 +196,12 @@ ini.assignVal = function(key, val, cparent, RES)
 	keys = str.explode("|", key);
 	nk = length(keys);
 	
-	all = c(ckeys, keys);  allparent = paste0(all, collapse="|");
-	RES = ini.checkKey(allparent, RES);
+	all = c(ckeys, keys);  
+	#	allparent = paste0(all, collapse="|");
+	# RES = ini.checkKey(allparent, RES);
 	
 	# now here, we will walk and store results, very much like ini.checkKey ...
-	
+	list.smartAssign(RES, all, val);
 	}
 
 ini.checkKey = function(cparent, RES)

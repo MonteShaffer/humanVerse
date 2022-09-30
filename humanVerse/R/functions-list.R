@@ -16,6 +16,18 @@ list.removeFillFromEnd = function(info, fill="~")
 	}
 
 
+# keys are formatted array already ... 		
+# https://stackoverflow.com/a/73905786/184614
+list.smartAssign = function(info, keys, val) 
+	{
+	if(length(keys) > 1) 
+		{
+		info[[ keys[[1]] ]] = Recall(info[[ keys[1] ]], keys[-1], val);
+		} else {
+				info[[ keys ]] = val;
+				}
+	info;
+	}
 
 
 

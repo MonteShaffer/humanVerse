@@ -1,39 +1,18 @@
 
 
-
-
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-#'
-#' memory.init;
-#'
-#' @param purge.memory
-#' @param verbose
-#'
-#' @return
-#' @export
-#'
-#' @examples 
+ 
 memory.init = function(purge.memory = FALSE, verbose = TRUE)
-  {
-  if(!exists(".humanVerse") || purge.memory)
-    {
-    if(verbose)
-      {
-      cat("humanVerse::memory.init; ... initializing HIDDEN list '.humanVerse'", "\n");
-      }
-
-    .GlobalEnv$.humanVerse = list();
+	{
+	if((!exists(".humanVerse") || purge.memory) || (exists(".humanVerse") &&is.null(.humanVerse)))
+		{
+		.GlobalEnv$.humanVerse = list();
+if(verbose)
+	{
+.cat("humanVerse::memory.init; ... initializing HIDDEN list '.humanVerse'");
+	}		
+		}
+	return(TRUE);
 	}
-	# this gets called often 
-	# system...auto save ... with timer HIDDEN/INTERNAL 
-	# ["timers"] as variable ... ["timers-INTERNAL"] 
-  }
-
-
-#' @rdname initMemory
-#' @export
-initMemory = memory.init;
 
 
 
@@ -170,13 +149,13 @@ minvisible = function(x, key="ANS", display=TRUE)
 
 	memory.set(key, "-MINVISIBLE-", x);
 	# also store to ANS variable ... 
-	# I could do ANS = Ans = x;   ANS %GLOBAL%. ; Ans %GLOBAL%. ;
-	# ANS %GLOBAL% x;  # undefined ANS ... treated as "." (dot)
+	# I could do ANS = Ans = x;	 ANS %GLOBAL%. ; Ans %GLOBAL%. ;
+	# ANS %GLOBAL% x;	# undefined ANS ... treated as "." (dot)
 	
 	key %GLOBAL% x; 
 	
 	
-	  
+		
 	# "Ans" %GLOBAL% x; 
 	 
 	
@@ -205,7 +184,7 @@ minvisible = function(x, key="ANS", display=TRUE)
 					# maybe write a print.pip method 
 	if(!has.displayed && display == "print" || display == "pri") 
 					{ has.displayed = TRUE; print(x); }
-	if(!has.displayed &&  display == TRUE) 
+	if(!has.displayed &&	display == TRUE) 
 					{ has.displayed = TRUE; print(x); }
 
 	 

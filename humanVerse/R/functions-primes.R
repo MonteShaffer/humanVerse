@@ -43,9 +43,17 @@ optimus.logic = function(p, n, first=TRUE, optimus=FALSE)
 #' x = primes.bit(100, FALSE, FALSE); length(x);	# gets primes <= 100
 #' x = primes.bit(100, TRUE, TRUE); length(x);
 #' x = primes.bit(100, FALSE, FALSE); length(x);
-primes.bit = function(n, first=TRUE)
+
+#' # sizeof(x)...
+#' x = primes.bit(1000, FALSE, "bits");  # 1000 * 2 /8 (2 = TRUE?FALSE)
+#' y = as.character(as.raw(x)); # seems to append a lot of zeroes at END ... 
+#' z = .hex_b64(y);  ... store that file AS TEXT ... 
+#' 
+
+primes.bit = function(n, first=TRUE, return="primes")
 	{
-# timer.start("bits"); x = prime.bits((1*1000)); length(x); max(x); timer.stop("bits");
+	RETURN = prep.arg(return, n=1);
+# timer.start("bits"); x = prime.bit((1*1000)); length(x); max(x); timer.stop("bits");
 	# you could build a bits-table, and search primes within 
 	if(!is.library_("bit")) { stop("requires library(bit); ... "); }
 	gn = n; if(n > 10^6) { stop("such a large [n] may tax the system"); }
@@ -84,18 +92,23 @@ primes.bit = function(n, first=TRUE)
 		i = 2+i;
 		}
 	
-	save(bits.prime, file=paste0("primes-",n,".RData") );
+	
+	# RETURN "primes" or "bits"
+	if(RETURN != "p") { return(bits.prime); }
+	
+	### save(bits.prime, file=paste0("primes-",n,".RData") );
 	# use save/load ... to keep format?
 	# , file.out=NULL
 	# #' @param file.out {file.path + file.name to save bits as RDS}
 # saveRDS(bits.prime, file=paste0("primes-",n,".rds") );
 		
-	p = which(bits.prime == TRUE); # indexes are primes (zero indexed???)
+	p = which(bits.prime == TRUE); # indexes are primes (R indexed != zero)
 	# gn is upper bound, so ... truncate ... 
 	if(first)  { p = p[1:n];    } 
 	if(!first) { p = p[p <= n]; }
 # OPTIMUS_PRIME not checked here ... in this function 	
 		
+	# we still append bits.prime ... 
 	p = property.set("bits", p, bits.prime);
 	return(p);
 	}

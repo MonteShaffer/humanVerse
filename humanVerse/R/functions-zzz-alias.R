@@ -129,6 +129,9 @@ suppressWarning = suppressWarnings;
 path.pasteFrom = path.fromClipboard;
 
 
+unset = rm;
+
+
 dir.name = dirname;
 
 tmp = tmpdir = temp = tempdir;
