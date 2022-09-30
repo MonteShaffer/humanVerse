@@ -13,7 +13,18 @@ Encoding: UTF-8
 Language: en-US
 LazyData: true
 Suggests:
+	HVcpp,
+	
+	bit,
+	microbenchmark,
 	plotrix,
+	stringi,
+	
+	Rcurl,
+	RMariaDB,
+	rjson, 
+	
+	
 	Rcpp,
 	Matrix,
 	matrixStats,
@@ -23,7 +34,7 @@ Suggests:
 	rjson,
 xml2,
 curl,
-	openssl,	
+	openssl, 	
 	
 	digest,
 	 bits,
@@ -34,17 +45,9 @@ curl,
 	microbenchmark
 	
 Imports:
- # libcurl capability, what version of R 
-	curl,
 	graphics,	
 	grDevices,
-	jsonlite,
-	
-	
 	stats,
-	stringi,
-	utils,
-	
-	
+	utils	
 
 RhV: v001

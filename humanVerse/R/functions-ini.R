@@ -13,7 +13,7 @@ lines = str.explode("\r\n", inistr);
 
 #lines = lines[1:33];
 
-ini.parse = function(lines, verbose=FALSE)
+ini.parse = function(lines, verbose=FALSE, ignore.eval = FALSE)
 	{
 	envir = environment();
 	
@@ -102,7 +102,7 @@ gggassign("RES", RES);
 				hasRcode  = TRUE; 
 				rval = str.trim(str.begin("R", rval, trim=TRUE));
 				}
-		
+		 
 normal = function() {} 		
 
 			key = ini.cleanKey(rkey);  # raw key 
@@ -112,7 +112,8 @@ normal = function() {}
 			if(is.null(fin)) { GTG = TRUE; }
 			if(GTG)
 				{
-				if(hasRcode) 	{ val = eval(parse(text=val)); }
+				#if(hasRcode) 	{ val = eval(parse(text=val)); }
+				if(hasRcode) 	{ val = ini.evalMe(val, MEMORY, ignore.eval = ignore.eval ); }
 				if(hasMemory) 	{ MEMORY[[key]] = val; }
 				
 				RES = ini.assignVal(key, val, cparent, RES);
@@ -145,7 +146,8 @@ multiline = function() {}
 				{
 				# maybe do eval(parse in function enclosure
 				# unlist the MEMORY_keys there ... 
-				if(hasRcode) 	{ val = eval(parse(text=val)); }
+				# if(hasRcode) 	{ val = eval(parse(text=val)); }
+				if(hasRcode) 	{ val = ini.evalMe(val, MEMORY, ignore.eval = ignore.eval ); }
 				if(hasMemory) 	{ MEMORY[[key]] = val; }
 				
 				RES = ini.assignVal(CONTINUE_KEY, val, cparent, RES);
@@ -164,8 +166,9 @@ multiline = function() {}
 	}
 
 
-ini.evalMe = function(txt, MEMORY)
+ini.evalMe = function(txt, MEMORY, ignore.eval = FALSE)
 	{
+	if(ignore.eval) { return(txt); }
 	list.extract(MEMORY);
 	
 # dput(MEMORY);
@@ -176,12 +179,12 @@ ini.evalMe = function(txt, MEMORY)
 	# so if %nPr% is an isolate ... we get it to correctly MAP to a function
 	# a second stage of the parser will have to assign the KEYS to VALUES 
 	# alias.add(key, val) ... INTERNAL function, easy-breasy, lemon-eays
+	# let's SKIP this for now ...
+	# [ALIAS] should just store the keys ...
 	
 	
 	
-	# eval(parse(text=val));
-	
-	
+	eval(parse(text=val));	
 	}
 	
 	

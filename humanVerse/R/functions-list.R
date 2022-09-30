@@ -18,7 +18,7 @@ list.removeFillFromEnd = function(info, fill="~")
 
 # keys are formatted array already ... 		
 # https://stackoverflow.com/a/73905786/184614
-list.smartAssign = function(info, keys, val) 
+list.smartAssign = function(info, keys, val)  
 	{
 	if(length(keys) > 1) 
 		{
