@@ -6,7 +6,7 @@ ini.file 	= "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/sy
 
 inistr 		= readTextFile(ini.file);
 lines 		= str.explode("\r\n", inistr);
-
+# lines		= lines[1:33];
 
 
 ini.parse = function(lines, verbose=FALSE, ignore.eval = FALSE)
@@ -35,7 +35,7 @@ ini.parse = function(lines, verbose=FALSE, ignore.eval = FALSE)
 	RES 			= list();
 	fin 			= NULL;
 	line.no 		= 0;
-	CONTINUE_KEY	= ""; # if NOT empty, we are continuing on multiline 
+	CURRENT_KEY	= ""; # if NOT empty, we are continuing on multiline 
 	pkey 			= "";		
 	pval 			= "";
 	cparent 		= "";
@@ -56,16 +56,67 @@ if(verbose)
 xxx = readline(prompt="Press [enter] to continue, [ESC] to quit");
 gggassign("RES", RES);
 	}
-		
+	
+	
+		{
+				
+		if(CURRENT_KEY != "")	
+			{ 
+			# we jump to the front of the line ...
+			
+			
+			##################################
+			# multiline?
+			# earlier a partially assigned val was assigned ...
+			# I have the CURRENT_KEY stored if partial 
+			# I have the pval, which may stack over multiple lines ...
+			# this will not work on eval?  Or it could if I waited on eval 
+			# if CURRENT_KEY ...
+			
+			# we keep walking lines until the string TERMINATES
+			# we set CURRENT_KEY to ""
+			# we evaluate and move on ...
+.__multiline = function() {} 		
+			rval = line;  # grab everything (whitespace);
+			
+			# more = "pval";  # pval that grows ... 
+			val = parse.walkTheLine(rval, COMMENTS, fin);			
+			
+			
+			fin = property.get("more", val); # are we finished?
+
+.__multiline.GTG = function() {} 	
+			GTG = FALSE; # I am good to go ... multiline may stop this ... 
+			if(is.null(fin)) { GTG = TRUE; }
+			if(GTG)
+				{
+				# maybe do eval(parse in function enclosure
+				# unlist the MEMORY_keys there ... 
+				# if(hasRcode) 	{ val = eval(parse(text=val)); }
+				if(hasRcode) 	{ val = ini.evalMe(val, MEMORY, ignore.eval = ignore.eval ); }
+				if(hasMemory) 	{ MEMORY[[key]] = val; }
+				
+				RES = ini.assignVal(CURRENT_KEY, val, cparent, RES);
+				
+				CURRENT_KEY = "";				
+				pkey = "";
+				pval = val; 
+				next;
+				}
+			# we are still in multiline, `fin` contains what we need ...
+			pval = pkey = "";
+			next; 		
+			}
+
+
 		line_ = str.trim(line);
 		first = charAt(line_,1);
-
-
+		
 .__skip = function() {} 		
 
 		# SKIP LINES ...
 		if(first %in% COMMENTS) { next; }
-		if((CONTINUE_KEY == EMPTY) && (first == EMPTY)) { next; }
+		if((CURRENT_KEY == EMPTY) && (first == EMPTY)) { next; }
 
 
 .__hardstop = function() {} 		
@@ -98,11 +149,49 @@ gggassign("RES", RES);
 			# in this logic space, we should not have ne == 0 ... 
 			if(ne > 1)
 				{
-				rkey = parse.walkTheLine(line, COMMENTS);
+		# # line = '"%~=%" = is.equal;  ;; this "=" is a problem ';	
+				
+		# # line = 'PRIME_CHOICE\t\t\t= "The greatest power members of the {humanVerse} possess is the ability to act as a ==free== agent.",';
+				
+				pos = str.pos("=", line);
+				idx = v.which( pos > 5 , TRUE)[1];
+				
+				rkey = str.before("=", line, idx);  
+				rkey = str.before("=", line, 1);  # 99% of the time ...
+				
+				# minimum length to even have an equal ...
+				# line = '"%=%" = 5,'
+				# pos > 5 ... ignore = before the 5th index ... 
+				# generally, we don't allow = unless special functions 
+				
+				
+				
+				
+				
+				
+				
+				# string before FIRST "="
+				rkeyA = str.before("=", line, 1);				
+				posA = str.pos(rkeyA, line);
+				
+				# string before SECOND "="
+				rkeyB = str.before("=", line, 2);				
+				posB = str.pos(rkeyB, line);
+				
+				rkeyC = str.before("=", line, 3);				
+				posC = str.pos(rkeyC, line);
+				
+				
+				rkeyA = parse.walkTheLine(line, COMMENTS);
+				posA = str.pos(rkeyA, line);
+				
+				posA = str.pos(rkeyA, line);
+				
+	
 .__equal.sign.issue = function() {} 		
 				
-				info = str.remainder(rkey, line);
-				rval = str.remainder("=", info);
+				info = str.after(rkey, line);
+				rval = str.after("=", info);
 				} else {	
 						# ne == 1 ... 
 						info = str.explode("=", line);
@@ -111,6 +200,7 @@ gggassign("RES", RES);
 						}
 			
 			hasMemory = hasRcode = FALSE;
+
 .__memory.eval = function() {} 		
 
 			# allows for a bit of white space between ^ = R 
@@ -133,7 +223,7 @@ gggassign("RES", RES);
 .__normal.GTG = function() {} 				
 			fin = property.get("more", val); # are we finished?
 			GTG = FALSE; # I am good to go ... multiline may stop this ... 
-			if(is.null(fin)) { GTG = TRUE; } else { CONTINUE_KEY = key; }
+			if(is.null(fin)) { GTG = TRUE; } else { CURRENT_KEY = key; }
 			if(GTG)
 				{
 				if(hasRcode) 	{ val = ini.evalMe(val, MEMORY, ignore.eval = ignore.eval ); }
@@ -145,46 +235,19 @@ gggassign("RES", RES);
 			pval = val; 
 			next;
 			}
-##################################
-		# multiline?
-		# earlier a partially assigned val was assigned ...
-		# I have the CURRENT_KEY stored if partial 
-		# I have the pval, which may stack over multiple lines ...
-		# this will not work on eval?  Or it could if I waited on eval 
-		# if CURRENT_KEY ...
 		
-		# we keep walking lines until the string TERMINATES
-		# we set CURRENT_KEY to ""
-		# we evaluate and move on ...
-.__multiline = function() {} 		
-		rval = line;  # grab everything (whitespace);
 		
-		# more = "pval";  # pval that grows ... 
-		val = parse.walkTheLine(rval, COMMENTS, fin);
-		fin = property.get("more", val); # are we finished?
-
-.__multiline.GTG = function() {} 	
-			GTG = FALSE; # I am good to go ... multiline may stop this ... 
-			if(is.null(fin)) { GTG = TRUE; }
-			if(GTG)
-				{
-				# maybe do eval(parse in function enclosure
-				# unlist the MEMORY_keys there ... 
-				# if(hasRcode) 	{ val = eval(parse(text=val)); }
-				if(hasRcode) 	{ val = ini.evalMe(val, MEMORY, ignore.eval = ignore.eval ); }
-				if(hasMemory) 	{ MEMORY[[key]] = val; }
-				
-				RES = ini.assignVal(CONTINUE_KEY, val, cparent, RES);
-				
-				CONTINUE_KEY = "";				
-				pkey = "";
-				pval = val; 
-				next;
-				}
+		
 		}
+	
 
-		
-		
+
+	
+if(verbose)
+	{
+.cat("************ How did we get here!");
+	}
+		}
 		
 	RES;
 	}
@@ -236,6 +299,7 @@ ini.cleanKey = function(key)
 	# in case they put doubles (R vs php)
 	key = str.replace("[[","[", key);  
 	key = str.replace("]]","]", key);
+	
 	key = str.replace(c(SINGLE_QUOTE,DOUBLE_QUOTE), "", key);
 	
 	# str.contains("[]", key);  ??? 

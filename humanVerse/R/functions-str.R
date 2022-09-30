@@ -870,13 +870,26 @@ str.begin = function(search="<i>", str=c("<i>hello friend</i>", "<i>how are you 
 	}
 	
 	
-str.remainder = function(search, str)
+	
+str.before = function(search, str, occurence=1)
+	{	
+	selen = str.len(search);
+	#slen = str.len(str);
+	
+	pos = check.list(str.pos(search, str));
+	idx = list.getElements(pos, occurence);
+	
+	# substring(str, idx+selen, slen);
+	substring(str, 1, idx-selen);
+	}
+	
+str.after = function(search, str, occurence=1)
 	{	
 	selen = str.len(search);
 	slen = str.len(str);
 	
 	pos = check.list(str.pos(search, str));
-	idx = list.getElements(pos, 1);
+	idx = list.getElements(pos, occurence);
 	
 	substring(str, idx+selen, slen);
 	}

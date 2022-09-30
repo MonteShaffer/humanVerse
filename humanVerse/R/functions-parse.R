@@ -17,13 +17,13 @@ parse.walkTheLine = function(str, COMMENTS=c("#"), continue=NULL)
 	STRING_TYPE 	= NULL;
 
 	nval			= "";
-	oval 			= "";   # this is carryover part ...
+	#oval 			= "";   # this is carryover part ...
 	if(!is.null(continue)) 
 		{
 		IN_STRING 	= continue[["IN_STRING"]];
 		STRING_TYPE = continue[["STRING_TYPE"]];
-		nval 		= continue[["nval"]];
-		oval 		= nval;
+		nval 		= paste0(continue[["nval"]], "\n");
+		#oval 		= nval;
 		}
 	
 .cat("HEAD nval: ", nval);
@@ -91,21 +91,21 @@ parse.walkTheLine = function(str, COMMENTS=c("#"), continue=NULL)
 		next;		
 		}
 
-	nval = str.trim(nval);
-	nnum = check.number(nval);
-	if(allTRUE(nnum)) { nval = as.numeric(nval); }
+	# nval = str.trim(nval);
+	nval_ = str.trim(nval);
+	nnum = check.number(nval_);
+	if(allTRUE(nnum)) { nval = as.numeric(nval_); }
 	
-	nbool = check.boolean(nval);
-	if(allTRUE(nbool)) { nval = as.logical(nval); }
+	nbool = check.boolean(nval_);
+	if(allTRUE(nbool)) { nval = as.logical(nval_); }
 	
 	# if we have a multiline, and didn't close the STRING ... 
 	if(IN_STRING)
 		{
-		if(str.trim(str) == "") { nval = paste0(nval,"\n"); }
 		more = list("nval" = nval, 
 					"IN_STRING" = IN_STRING, 
 					"STRING_TYPE" = STRING_TYPE);
-		nval = property.set("more", nval, extra);
+		nval = property.set("more", nval, more);
 		}
 .cat("FOOT nval: ", nval);
 	nval;
