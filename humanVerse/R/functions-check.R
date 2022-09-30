@@ -208,7 +208,7 @@ check.ext = function(x, dotless=TRUE)
 	# if I use basename_ does that create a recursion LOOP?
 	# path.summary is the only one that would create recursion?
 	stem = basename(x);  # not filename()
-	# stem_ = basename_(x);  # doesn't give me what I want ...  
+	# stem_ = basename_(x, trailing=TRUE);  # doesn't give me what I want ...  
 	
 	# EXT = "." in CONSTANTS 
 	s = str.pos(EXT, stem);  # hard to use ... but returns NULL
@@ -261,7 +261,7 @@ check.dir = function(path, trailing = TRUE, create=TRUE)
 	# d = dirname(path);  # we lose the /second 
 	p = prep.path(path, trailing=trailing);
 	
-	stem = basename_(path);
+	stem = basename_(path, trailing=trailing);
 	
 	d = p %-.% stem;  # "right" side str.subtract 
 	
@@ -279,16 +279,7 @@ check.dir = function(path, trailing = TRUE, create=TRUE)
 	d;
 	}
 
-# basename doesn't play nice ... 
-basename_ = function(path)
-	{
-	d = prep.path(path, trailing=trailing);
-	
-	# basename doesn't play nice ... 
-	tmp = str.explode(DIR_LINUX, d);
-	stem = list.getLastElements(tmp);
-	stem;
-	}
+
 
 # create as in create.DIRECTORY
 check.file = function(path, trailing = TRUE, create=TRUE)  
@@ -298,7 +289,7 @@ check.file = function(path, trailing = TRUE, create=TRUE)
 	d = check.dir(path, create=create, trailing=trailing);
 	
 	# stem = basename(path);  # not filename()	
-	stem = basename_(path);
+	stem = basename_(path, trailing=trailing);
 	f = paste0(d, stem);
 	# if they don't exist, touch them ...
 	if(create)
@@ -309,10 +300,31 @@ check.file = function(path, trailing = TRUE, create=TRUE)
 			touch(f[i]);
 			}
 		}
-	
-	
 	f;
 	}
+
+
+
+check.path = function() {}
+check.path = function(path=getwd(), trailing=TRUE, create=TRUE, open=FALSE) 
+	{
+	s = path.summary(path, trailing=trailing);
+	type = s$type;
+	if(type == "dir")
+		{
+		d = check.dir(path, trailing=trailing, create=create);
+		if(open) { openSesame(d); }
+		return(invisible(d));
+		}
+	if(type == "file")
+		{
+		f = check.file(path, trailing=trailing, create=create);
+		if(open) { openSesame(f); }
+		return(invisible(f));
+		}
+	return(NULL);
+	}
+
 
 
 touch = function(f)
@@ -324,12 +336,21 @@ touch = function(f)
 		{
 		# does this work, empty?
 		cat("", file=f, sep="");  # maybe do ftouch with fopen?
-		openSesame(f);
 		}
 	
 	}
 
-check.path = function() {}
+
+# basename doesn't play nice ... 
+basename_ = function(path, trailing=TRUE)
+	{
+	d = prep.path(path, trailing=trailing);
+	
+	# basename doesn't play nice ... 
+	tmp = str.explode(DIR_LINUX, d);
+	stem = list.getLastElements(tmp);
+	stem;
+	}
 
 
 	

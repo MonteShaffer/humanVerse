@@ -2,126 +2,276 @@
 
 # write a new readString function that doesn't require a length ... all of it by default ... 
 
-ini.file = "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/sample.ini";
+ini.file = "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/constants.ini";
+
 # inistr = readChars(ini.file, 8888);
 # inistr = readChars(ini.file, 9999);
-# lines = str.explode("\r\n", inistr);
 
-
+inistr = readTextFile(ini.file);
+lines = str.explode("\r\n", inistr);
 
 
 #lines = lines[1:33];
 
-
-
-parse.walkTheLine = function(){}
-parse.walkTheLine = function(str, COMMENT="#", continue=NULL)
+ini.parse = function(lines, verbose=FALSE)
 	{
-	# I am not dealing with = signs ... just simple parser 
+	envir = environment();
+	
+	EMPTY			= "";
+	COMMA 			= ","; 
+	
+	COMMENT			= "#";
+	COMMENT_INI		= ";";
+	COMMENTS		= c(COMMENT,COMMENT_INI,COMMA);
+	
+	MEMORY_STORE 	= "^=";
+	EVAL_RCODE 		= "=R";
+	BACKTICK		= "`";
+ 	
+	SINGLE_QUOTE 	= "'";
+	DOUBLE_QUOTE 	= '"';
 
-	SINGLE_QUOTE = "'";  # make these constants?
-	DOUBLE_QUOTE = '"';
-	BACKSLASH = "\\";
-	# get to COMMENT or EOL, I stop, have what I need ...
-	IN_STRING 		= FALSE;
-	STRING_TYPE 	= NULL;
-	nval			= "";
-	if(!is.null(continue)) 
+	MEMORY 			= list();
+	RES 			= list();
+	line.no 		= 0;
+	CONTINUE_KEY	= ""; # if NOT empty, we are continuing on multiline 
+	pkey 			= "";		
+	pval 			= "";
+	cparent 		= "";
+	
+	main = function() {}
+############################### MAIN #######################
+	for(line in lines)
 		{
-		IN_STRING 	= continue[["IN_STRING"]];
-		STRING_TYPE = continue[["STRING_TYPE"]];
-		nval 		= continue[["nval"]];
-		}
-	
-#cat("\n\n HEAD nval: ", nval, "\n\n");
-#cat("\n\n str: ", str, "\n\n");	
-
-	str = str.trim(str);
-	strV = str.explode("", str);
-	ns = length(strV);
-	
-	# write a generic str.walk function ... limited to this line ...
+		line.no %++%.;
 		
-	
-	cchar = "";
-	pchar = "";
-	i = 1;
-	while(i <= ns)
-		{
-		pchar = cchar;
-		cchar = strV[i];
-		if(cchar == SINGLE_QUOTE || cchar == DOUBLE_QUOTE)
+if(verbose)
+	{
+cat("\n\n ", line.no, " --> ", line, "\n\n");
+	}
+
+if(verbose)
+	{
+xxx = readline(prompt="Press [enter] to continue, [ESC] to quit");
+gggassign("RES", RES);
+	}
+		
+		line_ = str.trim(line);
+		first = charAt(line_,1);
+		# SKIP LINES ...
+		if(first %in% COMMENTS) { next; }
+		if((CONTINUE_KEY == EMPTY) && (first == EMPTY)) { next; }
+		
+		# stop here ... HARDSTOP =====>
+		if(first == "=") { break;}
+		
+		# WE HAVE A HEADER 
+		if(first == "[")  # not equal to anything ...  
 			{
-			if(IN_STRING)
-				{
-				# already IN_STRING ...
-				if(cchar != STRING_TYPE)
-					{
-					# we have ' in "envir" or " in 'envir' OKEY
-					nval = paste0(nval, cchar);
-					i %++%. ;
-					next;
-					}
-				if(cchar == STRING_TYPE)
-					{
-					if(pchar == BACKSLASH)
-						{
-						# we have \' in 'envir'  or \" in "envir" OKEY
-						nval = paste0(nval, cchar);
-						i %++%. ;
-						next;
-						} else {
-								# can I recover or do I have to stop ...
-								# stop("looks like you have a QUOTE issue on line.no");
-								
-								# wait, this means the string is OVER
-								IN_STRING = FALSE;
-								break;
-								}
-					
-					
-					}
-				
-				}
+			info 			= ini.cleanKey(line);
+			cparent 		= info;
+			RES				= ini.checkKey(cparent, RES);
+			pkey 			= "";  # these are not parents ... 
+			pval 			= "";
 			
-			## just starting the STRING 
-			IN_STRING = TRUE;
-			if(cchar == SINGLE_QUOTE) { STRING_TYPE = SINGLE_QUOTE; } else { STRING_TYPE = DOUBLE_QUOTE; }
-			i %++%. ;
 			next;
 			}
 		
-		if(cchar == COMMENT && !IN_STRING)
+		# WE HAVE A LINE ... LIKELY a KEY/VALUE PAIR 
+		# THIS IS TOUGH???
+		if(str.contains("=", line))  # a continued string may have an equal?
 			{
-			break;
+			info = str.explode("=", line);
+			rkey = str.trim(info[1]);
+			rval = str.trim(info[2]);
+			
+			hasMemory = hasRcode = FALSE;
+			# allows for a bit of white space between ^ = R 
+			if( str.contains(MEMORY_STORE, paste0(rkey,"=")) ) 
+				{ 
+				hasMemory = TRUE; 
+				rkey = str.trim(str.end("^", rkey, trim=TRUE));
+				}
+			if( str.contains(EVAL_RCODE, paste0("=",rval)) ) 	 
+				{ 
+				hasRcode  = TRUE; 
+				rval = str.trim(str.begin("R", rval, trim=TRUE));
+				}
+				
+			key = ini.cleanKey(rkey);  # raw key 
+			val = parse.walkTheLine(rval, COMMENTS); 
+			GTG = TRUE; # I am good to go ... multiline may stop this ... 
+			if(GTG)
+				{
+				if(hasRcode) 	{ val = eval(parse(text=val)); }
+				if(hasMemory) 	{ MEMORY[[key]] = val; }
+				
+				RES = ini.assignVal(key, val, cparent, RES);
+				}
+			pkey = key;
+			pval = val; 
+			next;
 			}
-		# possible to have a missing CLOSING_STRING ... my parser won't care ...
+##################################
+		# multiline?
+		# earlier a partially assigned val was assigned ...
+		# I have the CURRENT_KEY stored if partial 
+		# I have the pval, which may stack over multiple lines ...
+		# this will not work on eval?  Or it could if I waited on eval 
+		# if CURRENT_KEY ...
 		
-		nval = paste0(nval, cchar);
-		i %++%. ;
-		next;
-		
-		}
 
-	nval = str.trim(nval);
-	# is there a use case when this goes wrong?
-	# YEAH, a string with a COMMA inside ... Fort Knox
-	# if(str.contains(COMMA, nval)) { nval = str.explode(COMMA,nval); }
-	nnum = check.number(nval);
-	if(allTRUE(nnum)) { nval = as.numeric(nval); }
-	
-	# if we have a multiline, and didn't close the STRING ... 
-	if(IN_STRING)
-		{
-		if(str.trim(str) == "") { nval = paste0(nval,"\n"); }
-		extra = list("nval" = nval, 
-					"IN_STRING" = IN_STRING, 
-					"STRING_TYPE" = STRING_TYPE);
-		nval = property.set("extra", nval, extra);
-		}
-#cat("\n\n FOOT nval: ", nval, "\n\n");
-	nval;
+
+		
+		here = function() {} 
+		
+		
+		
+		prepKeyVal();
+		
+		nval = parse.walkTheLine(val, COMMENTS, continue=continue);
+		
+		status = updateMultiLine();
+		
+if(verbose)
+	{
+cat("\n\n status: ", status, " key : ", key, " nval : ", nval, "\n\n");
 	}
+		if(status != "normal") { next; }
+		
+		
+		storeKeyVal();
+			
+		pkey = key;
+		pval = nval;
+
+if(verbose)
+	{		
+cat("\n\n\t\t\t ", pkey, " --> ", pval, "\n\n");
+print(str(RES));		
+print(str(MEMORY));
+cat("\n\n MDLFjkdlsj \n\n");
+	}
+		
+		}
+	RES;
+	}
+
+
+# ini.assignVal(key, val, cparent, RES);
+ini.assignVal = function(key, val, cparent, RES)
+	{
+	ckeys = str.explode("|", cparent);
+	nc = length(ckeys);  # let's hardcode this to 5?
+	
+	keys = str.explode("|", key);
+	nk = length(keys);
+	
+	all = c(ckeys, keys);  allparent = paste0(all, collapse="|");
+	RES = ini.checkKey(allparent, RES);
+	
+	# now here, we will walk and store results, very much like ini.checkKey ...
+	
+	}
+
+ini.checkKey = function(cparent, RES)
+	{
+	ckeys = str.explode("|", cparent);
+	nc = length(ckeys);  # let's hardcode this to 5?
+	for(i in 1:nc)
+		{
+		if(i == 1)
+			{
+			if(is.null(RES[[ ckeys[1] ]])) { RES[[ ckeys[1] ]] = list(); }
+			}
+		if(i == 2)
+			{
+			if(is.null(RES[[ ckeys[1] ]][[ ckeys[2] ]])) { RES[[ ckeys[1] ]][[ ckeys[2] ]] = list(); }
+			}
+		if(i == 3)
+			{
+			if(is.null(RES[[ ckeys[1] ]][[ ckeys[2] ]][[ ckeys[3] ]])) { RES[[ ckeys[1] ]][[ ckeys[2] ]][[ ckeys[3] ]] = list(); }
+			}
+		if(i == 4)
+			{
+			if(is.null(RES[[ ckeys[1] ]][[ ckeys[2] ]][[ ckeys[3] ]][[ ckeys[4] ]])) { RES[[ ckeys[1] ]][[ ckeys[2] ]][[ ckeys[3] ]][[ ckeys[4] ]] = list(); }
+			}
+		if(i == 5)
+			{
+			if(is.null(RES[[ ckeys[1] ]][[ ckeys[2] ]][[ ckeys[3] ]][[ ckeys[4] ]][[ ckeys[5] ]])) { RES[[ ckeys[1] ]][[ ckeys[2] ]][[ ckeys[3] ]][[ ckeys[4] ]][[ ckeys[5] ]] = list(); }
+			}
+			
+		if(i == 6)
+			{
+			if(is.null(RES[[ ckeys[1] ]][[ ckeys[2] ]][[ ckeys[3] ]][[ ckeys[4] ]][[ ckeys[5] ]][[ ckeys[6] ]])) { RES[[ ckeys[1] ]][[ ckeys[2] ]][[ ckeys[3] ]][[ ckeys[4] ]][[ ckeys[5] ]][[ ckeys[6] ]] = list(); }
+			}
+			
+		if(i == 7)
+			{
+			if(is.null(RES[[ ckeys[1] ]][[ ckeys[2] ]][[ ckeys[3] ]][[ ckeys[4] ]][[ ckeys[5] ]][[ ckeys[6] ]][[ ckeys[7] ]])) { RES[[ ckeys[1] ]][[ ckeys[2] ]][[ ckeys[3] ]][[ ckeys[4] ]][[ ckeys[5] ]][[ ckeys[6] ]][[ ckeys[7] ]] = list(); }
+			}
+			
+		if(i == 8)
+			{
+			if(is.null(RES[[ ckeys[1] ]][[ ckeys[2] ]][[ ckeys[3] ]][[ ckeys[4] ]][[ ckeys[5] ]][[ ckeys[6] ]][[ ckeys[7] ]][[ ckeys[8] ]])) { RES[[ ckeys[1] ]][[ ckeys[2] ]][[ ckeys[3] ]][[ ckeys[4] ]][[ ckeys[5] ]][[ ckeys[6] ]][[ ckeys[7] ]][[ ckeys[8] ]] = list(); }
+			}
+			
+		if(i == 9)
+			{
+			if(is.null(RES[[ ckeys[1] ]][[ ckeys[2] ]][[ ckeys[3] ]][[ ckeys[4] ]][[ ckeys[5] ]][[ ckeys[6] ]][[ ckeys[7] ]][[ ckeys[8] ]][[ ckeys[9] ]])) { RES[[ ckeys[1] ]][[ ckeys[2] ]][[ ckeys[3] ]][[ ckeys[4] ]][[ ckeys[5] ]][[ ckeys[6] ]][[ ckeys[7] ]][[ ckeys[8] ]][[ ckeys[9] ]] = list(); }
+			}
+			
+		if(i == 10)
+			{
+			if(is.null(RES[[ ckeys[1] ]][[ ckeys[2] ]][[ ckeys[3] ]][[ ckeys[4] ]][[ ckeys[5] ]][[ ckeys[6] ]][[ ckeys[7] ]][[ ckeys[8] ]][[ ckeys[9] ]][[ ckeys[10] ]])) { RES[[ ckeys[1] ]][[ ckeys[2] ]][[ ckeys[3] ]][[ ckeys[4] ]][[ ckeys[5] ]][[ ckeys[6] ]][[ ckeys[7] ]][[ ckeys[8] ]][[ ckeys[9] ]][[ ckeys[10] ]] = list(); }
+			}
+			
+			
+			
+		
+		if(i > 10) { print(ckeys); stop("not implemented");}
+		
+		}
+	
+	RES;		
+	}
+	
+	
+	
+ini.cleanKey = function(key)
+	{
+	# in case they put doubles (R vs php)
+	key = str.replace("[[","[", key);  
+	key = str.replace("]]","]", key);
+	key = str.replace(c(SINGLE_QUOTE,DOUBLE_QUOTE), "", key);
+	
+	# str.contains("[]", key);  ??? 
+	
+	# this is header logic 
+	kvec = str.explode("]", key);
+	logic = str.contains("[", kvec);
+	kvec = unlist(str.explode("[", kvec[logic]));
+	if(!is.null(kvec))
+		{
+		logic = v.test(kvec, "");
+		res = kvec[!logic];
+		return( paste0(res, collapse="|") );
+		}
+	
+	# normal key 
+	key;
+	}
+	
+	
+	
+	
+	
+
+
+
+
+
+
 
 
 
@@ -129,11 +279,22 @@ parse.walkTheLine = function(str, COMMENT="#", continue=NULL)
 
 # multiline logic is messing it up... skip for now ... 
 
-parse.ini = function(lines)
+parse.ini = function(lines, verbose=FALSE)
 	{
-verbose=FALSE;
+# verbose=FALSE;
 	# KISS ... store keys as | = val ...
 
+	COMMA = ","; 
+	COMMENT		= "#";
+	COMMENT_INI	= ";";
+	COMMENTS	= c(COMMENT,COMMENT_INI,COMMA);
+	MEMORY_STORE = "^=";
+	EVAL_RCODE = "=R";
+	
+	SINGLE_QUOTE 		= "'";
+	DOUBLE_QUOTE 		= '"';
+
+	
 	CONTINUE_KEY = "";
 	MEMORY = list();
 	RES = list();
@@ -150,7 +311,7 @@ verbose=FALSE;
 if(verbose)
 	{
 cat("\n\n prepKeyVal() \n\n");
-	}
+	} 
 		if(CONTINUE_KEY == "")
 			{
 			info = str.explode("=", line);
@@ -178,7 +339,7 @@ if(verbose)
 	{
 cat("\n\n doNew() \n\n");
 	}
-		info = parse.walkTheLine(line_, COMMENT=";");
+		info = parse.walkTheLine(line_, COMMENTS);
 			
 		pparent = cparent;				pparent %TO% envir;	
 		cparent = info;					cparent %TO% envir;	
@@ -339,17 +500,22 @@ cat("\n\n ", line.no, " --> ", line, "\n\n");
 if(verbose)
 	{
 xxx = readline(prompt="Press [enter] to continue, [ESC] to quit");
+gggassign("RES", RES);
 	}
 		line_ = str.trim(line);
 		first = charAt(line_,1);
 		# SKIP LINES ...
-		if(is.null(continue) && (first == COMMENT || first == EMPTY)) { next; }
+		if(is.null(continue) && (first %in% COMMENTS || first == EMPTY)) { next; }
 		
 		
 
 # if(line.no > 20) { stop("testing"); }
 
-	
+		if(first == "=")
+			{
+			break;  # stop here ... HARDSTOP =====>
+			}
+		
 		if(first == "[")  # not equal to anything ... 
 			{
 			doNew();
@@ -358,7 +524,7 @@ xxx = readline(prompt="Press [enter] to continue, [ESC] to quit");
 		
 		prepKeyVal();
 		
-		nval = parse.walkTheLine(val, COMMENT=";", continue=continue);
+		nval = parse.walkTheLine(val, COMMENTS, continue=continue);
 		
 		status = updateMultiLine();
 		

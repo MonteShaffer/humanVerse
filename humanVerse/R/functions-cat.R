@@ -69,7 +69,10 @@ cat.init = function()
 
 
 
-
+.cat = function(..., sep="\n\n")
+	{
+	cat(sep);	cat(...);	cat(sep);	
+	}
 
 cat.color = function(str, use.color.if.available=TRUE)
 	{

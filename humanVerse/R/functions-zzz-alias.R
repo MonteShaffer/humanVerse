@@ -126,6 +126,7 @@ check.num = check.number;
 suppressErrors = suppressError;
 suppressWarning = suppressWarnings;
 
+path.pasteFrom = path.fromClipboard;
 
 
 dir.name = dirname;

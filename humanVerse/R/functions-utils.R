@@ -451,7 +451,8 @@ define = function(KEY, VALUE) {}
 	 
 	KEY = deparse(substitute(KEY));
 	assign(KEY, key, envir=WHERE );
-	minvisible(key, key=KEY, display=none);
+	# minvisible(key, key=KEY, display=none);
+	key;
 	}
 	
 .PIPE_EQUAL. = function() {}  # %|=% ==> "|" . THING 
@@ -463,7 +464,8 @@ define = function(KEY, VALUE) {}
 	
 	KEY = deparse(substitute(KEY));
 	assign(KEY, key, envir=WHERE );
-	minvisible(key, key=KEY, display=none);
+	# minvisible(key, key=KEY, display=none);
+	key;
 	}
 
 
@@ -473,7 +475,8 @@ define = function(KEY, VALUE) {}
 	# these functions are much simpler than the one's already written
 	key = KEY; val = VALUE;
 	key = paste0(key, sep, val);
-	minvisible(key, key=KEY, display=none);
+	# minvisible(key, key=KEY, display=none);
+	key;
 	}
 
 
@@ -491,7 +494,8 @@ define = function(KEY, VALUE) {}
 									# DRY ... DO-REPEAT-YOURSELF when R call stack demands it ... 
 	KEY = deparse(substitute(KEY));
 	assign(KEY, key, envir=WHERE );
-	minvisible(key, key=KEY, display=none);
+	# minvisible(key, key=KEY, display=none);
+	key;
 	}
 
 
@@ -502,7 +506,8 @@ define = function(KEY, VALUE) {}
 	# these functions are much simpler than the one's already written
 	key = KEY; val = VALUE;
 	key = paste0(key, sep, val);
-	minvisible(key, key=KEY, display=none);
+	# minvisible(key, key=KEY, display=none);
+	key;
 	}	
 
 .DOT_SPACE. = function() {}		 # %. %  ==>  a . b . c  ... 
@@ -511,7 +516,8 @@ define = function(KEY, VALUE) {}
 	# these functions are much simpler than the one's already written
 	key = KEY; val = VALUE;
 	key = paste0(key, sep, val);
-	minvisible(key, key=KEY, display=none);
+	#minvisible(key, key=KEY, display=none);
+	key;
 	}	
 		
 		
@@ -524,7 +530,8 @@ define = function(KEY, VALUE) {}
 	
 	KEY = deparse(substitute(KEY));
 	assign(KEY, key, envir=WHERE );
-	minvisible(key, key=KEY, display=none);
+	# minvisible(key, key=KEY, display=none);
+	key;
 	}
 
 
@@ -539,7 +546,8 @@ define = function(KEY, VALUE) {}
 	
 	KEY = deparse(substitute(KEY));
 	assign(KEY, key, envir=WHERE );
-	minvisible(key, key=KEY, display=none);
+	# minvisible(key, key=KEY, display=none);
+	key;
 	}
 	
 
@@ -576,8 +584,8 @@ define = function(KEY, VALUE) {}
 		str = paste0(key, " = ", nval, ";");
 # dput(str);
 		eval(parse(text = str), envir=WHERE);
-		# return(nval);
-		return( minvisible(nval, key=PLUS, display=none) );
+		return(nval);
+		# return( minvisible(nval, key=PLUS, display=none) );
 		}
 		
 	# . %++% i
@@ -590,8 +598,8 @@ define = function(KEY, VALUE) {}
 		str = paste0(key, " = ", nval, ";");
 # dput(str);
 		eval(parse(text = str), envir=WHERE);		
-		# return(val);
-		return( minvisible(val, key=PLUS, display=none) );
+		return(val);
+		# return( minvisible(val, key=PLUS, display=none) );
 		}
 	
 	stop("how did you get here");
@@ -618,8 +626,8 @@ define = function(KEY, VALUE) {}
 		str = paste0(key, " = ", nval, ";");
 # dput(str);
 		eval(parse(text = str), envir=WHERE);
-		# return(nval);
-		return( minvisible(nval, key=MINUS, display=none) );
+		return(nval);
+		#return( minvisible(nval, key=MINUS, display=none) );
 		}
 		
 	# . %--% i
@@ -632,8 +640,8 @@ define = function(KEY, VALUE) {}
 		str = paste0(key, " = ", nval, ";");
 # dput(str);
 		eval(parse(text = str), envir=WHERE);		
-		# return(val);		
-		return( minvisible(val, key=MINUS, display=none) );
+		return(val);		
+		# return( minvisible(val, key=MINUS, display=none) );
 		}
 	
 	stop("how did you get here");

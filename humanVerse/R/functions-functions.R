@@ -8,6 +8,8 @@
 
 # pip.info = functions.stepInto(pip); 
 
+# add a feature to scan the function and also load INTERNAL functions 
+# 
 fn.stepInto = function(...)
 	{
 debug = FALSE;

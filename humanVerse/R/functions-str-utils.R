@@ -721,30 +721,36 @@ suppressError( so they have not included it in base R.  It is probably true, but
 #' ^ i.pad # s.pad CONTENT s.pad # $
 
 
-
+str.pipeHeader = function() {}
 str.pipeHeader = function(str="Welcome to the {humanVerse}", 
 							width=72, 
 							ctag="#",
+							stag=ctag,
 							above = 3,
 							below = 3
 							)
 	{
+	ctag = substring(ctag, 1, 1); # forced to length one ...
 	str = as.character(str[1]);
 		lines = str.explode("\n", str);
 		n = length(lines);
 	slen = str.len(lines);  
+		# for centering 
 		half = as.integer( (width-max(slen))/2);
-		brand = "{humanVerse}"; blen = str.len(brand);		
+		
+		brand = "{humanVerse}"; blen = str.len(brand);					
 	bline = paste0( str.rep(ctag, (width-blen-5)),
 					brand,
 					str.rep(ctag, 5) );
-		rand = "{R}"; rlen = str.len(rand);		
-	rline = paste0( str.rep(ctag, 3), 
+					
+		rand = "{R}"; rlen = str.len(rand);	
+	rline = paste0( str.rep(ctag, 3),
 					rand,
 					str.rep(ctag, (width-rlen-3)) );
+	
 	cline = str.rep(ctag, width);
-	clen = str.len(cline);
-	sline = ctag;  # line with just a comment 
+		
+	sline = stag;  # line with just a comment or whatever stag is ...
 	
 	out = character();
 	idx = 1;
@@ -753,12 +759,14 @@ str.pipeHeader = function(str="Welcome to the {humanVerse}",
 							idx %+=% above;
 	for(i in 1:n)
 		{		
-		out[idx] = paste0(ctag, str.rep(" ",half), lines[i]);
+		out[idx] = paste0(stag, str.rep(" ",half), lines[i]);
 							idx %++%.;
 		}
-	for(i in idx:(idx+below)) { out[i] = sline; }
-							idx %+=% below;
-		out[idx] = rline;	
+	for(i in idx:(idx+(below-1))) { out[i] = sline; }
+							idx %+=% (below-1);
+		out[idx] = ctag;	# below - 1... we hardcode one here ... 
+							idx %++%.;
+		out[idx] = rline;
 	res = paste0(out, collapse="\n");
 	res = property.set("more", res, list("rline" = rline, "cline" = cline, "bline" = bline));
 	res;
@@ -1372,13 +1380,18 @@ cat("\n", "CASE 4", "\n");
 	
 	}
 
-strrep_ = function(str, times=1)
+strrep_ = function(str, times=1, as.lengthout=FALSE)
 	{
 	n = length(str);
 	res = character(n);
 	for(i in 1:n)
 		{
-		res[i] = paste( rep(str, times), collapse="");
+		if(as.lengthout)
+			{
+			res[i] = paste( rep(str, length.out = times), collapse="");
+			} else {
+					res[i] = paste( rep(str, times=times), collapse="");
+					}
 		}
 	res;	
 	}

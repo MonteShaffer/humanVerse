@@ -5,10 +5,13 @@
 
 
 openSesame = function() {}
-openSesame = function(path=getwd())
+openSesame = function(path=getwd(), create=TRUE)
 	{
-	d = check.dir(path);  # could be a file or directory 
-	utils::browseURL(path);
+	# should I warn, or just open 
+	# check.path ... and touch if a file ...
+	# a file will open in notepad ... or whatever ... 
+	p = check.path(path, trailing=TRUE, create=create);  
+	utils::browseURL(p);
 	}
 
 
@@ -234,7 +237,7 @@ cat("\n\n", filename, "\n\n");  openSesame(filename);
 			factor.lines[i] = paste0(meta.skip, " " , "FACTOR: ", cname, " with LEVELS: ", paste0( levels(df[[cname]]), collapse = meta.sep));					
 			}				
 		}
-		
+		 
 		if(row.names) { names = c("row.names", names); }
 			names.line = paste0(names, collapse=meta.sep);
 		if(row.names) { types = c("row.names", types); }

@@ -1,5 +1,156 @@
 
 
+parse.walkTheLine = function(){}
+parse.walkTheLine = function(str, COMMENTS=c("#"), continue=NULL)
+	{
+	# I am not dealing with = signs ... just simple parser 
+	# NO GLOBALS HERE, used for .... ini.parse(inistr)
+	SINGLE_QUOTE 	= "'";  # make these constants?
+	DOUBLE_QUOTE 	= '"';
+	
+	BACKTICK		= '`';
+		STRINGS = c(SINGLE_QUOTE, DOUBLE_QUOTE, BACKTICK);
+	
+	BACKSLASH 		= "\\";
+	 
+	IN_STRING 		= FALSE;
+	STRING_TYPE 	= NULL;
+
+	nval			= "";
+	if(!is.null(continue)) 
+		{
+		IN_STRING 	= continue[["IN_STRING"]];
+		STRING_TYPE = continue[["STRING_TYPE"]];
+		nval 		= continue[["nval"]];
+		}
+	
+.cat("HEAD nval: ", nval);
+.cat("\t\t str: ", str);
+ 
+	str = str.trim(str);
+	strV = str.explode("", str);
+	ns = length(strV);
+		
+	cchar = "";
+	pchar = "";
+	i = 1;
+	while(i <= ns)
+		{
+		pchar = cchar;
+		cchar = strV[i];
+		if(cchar %in% STRINGS)
+			{
+			if(IN_STRING)
+				{
+				# already IN_STRING ...
+				if(cchar != STRING_TYPE)
+					{
+					# we have ' in "envir" or " in 'envir' OKEY
+					nval = paste0(nval, cchar);
+					i %++%. ;
+					next;
+					}
+				if(cchar == STRING_TYPE)
+					{
+					if(pchar == BACKSLASH)
+						{
+						# we have \' in 'envir'  or \" in "envir" OKEY
+						nval = paste0(nval, cchar);
+						i %++%. ;
+						next;
+						} else {
+								# this means the string is OVER
+								IN_STRING = FALSE;
+								break;
+								}
+					}				
+				}
+			
+			## just starting the STRING 
+			IN_STRING 	= TRUE;
+			# any previous elements before string start are discarded 
+			nval = "";
+			STRING_TYPE = DOUBLE_QUOTE;
+			if(cchar == SINGLE_QUOTE) 	{ STRING_TYPE = SINGLE_QUOTE; }
+			if(cchar == BACKTICK) 		{ STRING_TYPE = BACKTICK; }
+			i %++%. ;
+			next;
+			}
+		
+		if((cchar %in% COMMENTS) && !IN_STRING)
+			{
+			break;
+			}
+		# ... my parser won't care ...
+		# possible to have a missing CLOSING_QUOTE 
+		
+		nval = paste0(nval, cchar);
+		i %++%. ;
+		next;		
+		}
+
+	nval = str.trim(nval);
+	nnum = check.number(nval);
+	if(allTRUE(nnum)) { nval = as.numeric(nval); }
+	
+	nbool = check.boolean(nval);
+	if(allTRUE(nbool)) { nval = as.logical(nval); }
+	
+	# if we have a multiline, and didn't close the STRING ... 
+	if(IN_STRING)
+		{
+		if(str.trim(str) == "") { nval = paste0(nval,"\n"); }
+		extra = list("nval" = nval, 
+					"IN_STRING" = IN_STRING, 
+					"STRING_TYPE" = STRING_TYPE);
+		nval = property.set("extra", nval, extra);
+		}
+.cat("FOOT nval: ", nval);
+	nval;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #' cleanup.local
 #'
