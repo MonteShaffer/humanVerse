@@ -17,9 +17,17 @@ ini.parse = function(lines, verbose=FALSE, ignore.eval = FALSE)
 	{
 	envir = environment();
 	
+	
+	
+	# if I get multiline string parsing working, adding 
+	# multiline comments should not be difficult .... 
+	# what about // comments ... two characters long , nice to have 
+	
+	
+	
 	EMPTY			= "";
 	COMMA 			= ","; 
-	
+		
 	COMMENT			= "#";
 	COMMENT_INI		= ";";
 	COMMENTS		= c(COMMENT,COMMENT_INI,COMMA);
@@ -64,16 +72,15 @@ gggassign("RES", RES);
 		if((CONTINUE_KEY == EMPTY) && (first == EMPTY)) { next; }
 		
 		# stop here ... HARDSTOP =====>
-		if(first == "=") { break;}
+		# ===========> HARDSTOP 
+		# <=========== HARDSTOP 
+		if(first == "=" || first == "<") { break;}
 		
 		# WE HAVE A HEADER 
 		if(first == "[")  # not equal to anything ...  
 			{
 			info 			= ini.cleanKey(line);
 			cparent 		= info;
-			# unnecessary to do any assignment 
-			# it won't appear in the STACK if nothing follows, so what?
-			# RES				= ini.checkKey(cparent, RES);
 			pkey 			= "";  # these are not parents ... 
 			pval 			= "";
 			
@@ -81,14 +88,28 @@ gggassign("RES", RES);
 			}
 		
 		# WE HAVE A LINE ... LIKELY a KEY/VALUE PAIR 
-		# THIS IS TOUGH???
-		# maybe if COMMENT_KEY == ""
-		#if(str.contains("=", line))  # a continued string may have an equal?
 		if(COMMENT_KEY == "")	
 			{ 
-			info = str.explode("=", line);
-			rkey = str.trim(info[1]);
-			rval = str.trim(info[2]);
+			# "%~=%" = is.equal;  ;; this "=" is a problem 
+			ne = str.count("=", line);
+			# in this logic space, we should not have ne == 0 ... 
+			if(ne > 1)
+				{
+				rkey = parse.walkTheLine(line, COMMENTS);
+				
+				info = str.remainder(rkey, line);
+				rval = str.remainder("=", info);
+				info = str.remaindere(
+				info = str.explode(rkey, line)[2];
+				# walk to first equal ... str.pos / explode ... one function?
+				pos = str.pos("=", info); len = str.len(info);
+				rval = substring(info, pos+1, len);
+				# get special key ... (contains equal)
+				} else {		
+						info = str.explode("=", line);
+						rkey = str.trim(info[1]);
+						rval = str.trim(info[2]);
+						}
 			
 			hasMemory = hasRcode = FALSE;
 			# allows for a bit of white space between ^ = R 
@@ -109,10 +130,9 @@ normal = function() {}
 			val = parse.walkTheLine(rval, COMMENTS); 
 			fin = property.get("more", val); # are we finished?
 			GTG = FALSE; # I am good to go ... multiline may stop this ... 
-			if(is.null(fin)) { GTG = TRUE; }
+			if(is.null(fin)) { GTG = TRUE; } else { CONTINUE_KEY = key; }
 			if(GTG)
 				{
-				#if(hasRcode) 	{ val = eval(parse(text=val)); }
 				if(hasRcode) 	{ val = ini.evalMe(val, MEMORY, ignore.eval = ignore.eval ); }
 				if(hasMemory) 	{ MEMORY[[key]] = val; }
 				
@@ -207,70 +227,6 @@ ini.assignVal = function(key, val, cparent, RES)
 	list.smartAssign(RES, all, val);
 	}
 
-ini.checkKey = function(cparent, RES)
-	{
-	ckeys = str.explode("|", cparent);
-	nc = length(ckeys);  # let's hardcode this to 5?
-	for(i in 1:nc)
-		{
-		if(i == 1)
-			{
-			if(is.null(RES[[ ckeys[1] ]])) { RES[[ ckeys[1] ]] = list(); }
-			}
-		if(i == 2)
-			{
-			if(is.null(RES[[ ckeys[1] ]][[ ckeys[2] ]])) { RES[[ ckeys[1] ]][[ ckeys[2] ]] = list(); }
-			}
-		if(i == 3)
-			{
-			if(is.null(RES[[ ckeys[1] ]][[ ckeys[2] ]][[ ckeys[3] ]])) { RES[[ ckeys[1] ]][[ ckeys[2] ]][[ ckeys[3] ]] = list(); }
-			}
-		if(i == 4)
-			{
-			if(is.null(RES[[ ckeys[1] ]][[ ckeys[2] ]][[ ckeys[3] ]][[ ckeys[4] ]])) { RES[[ ckeys[1] ]][[ ckeys[2] ]][[ ckeys[3] ]][[ ckeys[4] ]] = list(); }
-			}
-		if(i == 5)
-			{
-			if(is.null(RES[[ ckeys[1] ]][[ ckeys[2] ]][[ ckeys[3] ]][[ ckeys[4] ]][[ ckeys[5] ]])) { RES[[ ckeys[1] ]][[ ckeys[2] ]][[ ckeys[3] ]][[ ckeys[4] ]][[ ckeys[5] ]] = list(); }
-			}
-			
-		if(i == 6)
-			{
-			if(is.null(RES[[ ckeys[1] ]][[ ckeys[2] ]][[ ckeys[3] ]][[ ckeys[4] ]][[ ckeys[5] ]][[ ckeys[6] ]])) { RES[[ ckeys[1] ]][[ ckeys[2] ]][[ ckeys[3] ]][[ ckeys[4] ]][[ ckeys[5] ]][[ ckeys[6] ]] = list(); }
-			}
-			
-		if(i == 7)
-			{
-			if(is.null(RES[[ ckeys[1] ]][[ ckeys[2] ]][[ ckeys[3] ]][[ ckeys[4] ]][[ ckeys[5] ]][[ ckeys[6] ]][[ ckeys[7] ]])) { RES[[ ckeys[1] ]][[ ckeys[2] ]][[ ckeys[3] ]][[ ckeys[4] ]][[ ckeys[5] ]][[ ckeys[6] ]][[ ckeys[7] ]] = list(); }
-			}
-			
-		if(i == 8)
-			{
-			if(is.null(RES[[ ckeys[1] ]][[ ckeys[2] ]][[ ckeys[3] ]][[ ckeys[4] ]][[ ckeys[5] ]][[ ckeys[6] ]][[ ckeys[7] ]][[ ckeys[8] ]])) { RES[[ ckeys[1] ]][[ ckeys[2] ]][[ ckeys[3] ]][[ ckeys[4] ]][[ ckeys[5] ]][[ ckeys[6] ]][[ ckeys[7] ]][[ ckeys[8] ]] = list(); }
-			}
-			
-		if(i == 9)
-			{
-			if(is.null(RES[[ ckeys[1] ]][[ ckeys[2] ]][[ ckeys[3] ]][[ ckeys[4] ]][[ ckeys[5] ]][[ ckeys[6] ]][[ ckeys[7] ]][[ ckeys[8] ]][[ ckeys[9] ]])) { RES[[ ckeys[1] ]][[ ckeys[2] ]][[ ckeys[3] ]][[ ckeys[4] ]][[ ckeys[5] ]][[ ckeys[6] ]][[ ckeys[7] ]][[ ckeys[8] ]][[ ckeys[9] ]] = list(); }
-			}
-			
-		if(i == 10)
-			{
-			if(is.null(RES[[ ckeys[1] ]][[ ckeys[2] ]][[ ckeys[3] ]][[ ckeys[4] ]][[ ckeys[5] ]][[ ckeys[6] ]][[ ckeys[7] ]][[ ckeys[8] ]][[ ckeys[9] ]][[ ckeys[10] ]])) { RES[[ ckeys[1] ]][[ ckeys[2] ]][[ ckeys[3] ]][[ ckeys[4] ]][[ ckeys[5] ]][[ ckeys[6] ]][[ ckeys[7] ]][[ ckeys[8] ]][[ ckeys[9] ]][[ ckeys[10] ]] = list(); }
-			}
-			
-			
-			
-		
-		if(i > 10) { print(ckeys); stop("not implemented");}
-		
-		}
-	
-	RES;		
-	}
-	
-	
-	
 ini.cleanKey = function(key)
 	{
 	# in case they put doubles (R vs php)

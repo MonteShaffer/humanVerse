@@ -868,3 +868,17 @@ str.begin = function(search="<i>", str=c("<i>hello friend</i>", "<i>how are you 
 		  
 	str.implode(search, new);  
 	}
+	
+	
+str.remainder = function(search, str)
+	{	
+	selen = str.len(search);
+	slen = str.len(str);
+	
+	pos = check.list(str.pos(search, str));
+	idx = list.getElements(pos, 1);
+	
+	substring(str, idx+selen, slen);
+	}
+	
+	
