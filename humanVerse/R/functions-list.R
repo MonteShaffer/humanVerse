@@ -178,7 +178,7 @@ list.collapse = function(res)
 	# if I have attributes, they get lost on unlist ... but names get dubplicated ... 
 	if(is.list(res))
 		{
-		getInfo = function(re, tol = sqrt(.Machine$double.eps))
+		getInfo = function(re, tol = DEFAULT_TOLERANCE)
 			{
 			prop.re = property.getALL(re); # may have key/pairs			
 			prop.names = names(prop.re);

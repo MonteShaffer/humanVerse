@@ -25,15 +25,19 @@ prep.msg = function(...,  type="msg", out="paste0", sep=" ")
 parse.syscall = function(syscall)
 	{
 	# none of these functions can have dots (...)  ::: prep.dots(...)
-	str = lang2str(syscall);
+	# that wasn't the recursion problme ...
+	str 	= lang2str(syscall);
 ############ dput(str);  # stop("monte");
-	info = strsplit(str, "(", fixed=TRUE)[[1]];
-	fn = trimws(info[1], which="both");			
-			
+	#info 	= strsplit(str, "(", fixed=TRUE)[[1]];
+	#fn 		= trimws(info[1], which="both");			
+	info	= str.explode("(", str);
+	fn		= str.trim(info[1], "BOTH");
+
+	# str.before/str.after would work nicely ... 
 	# put everything back but the function call 
-	nstr = str.implode("(", info[-c(1)] );
+	nstr 	= str.implode("(", info[-c(1)] );
 	#nstr = str.replace(")", "", nstr);
-	nstr = str.end(")", nstr, trim=TRUE);
+	nstr 	= str.end(")", nstr, trim=TRUE);
 	   
 	ninfo = strsplit(nstr, ",", fixed=TRUE);
 	minfo = strsplit(ninfo[[1]], "=", fixed=TRUE);
@@ -133,12 +137,12 @@ if(fn == "CDF") { cat("\n\n key: ", key, " \t pidx :", pidx, " \t pkey :", pkey,
 	# trimws(strsplit(ninfo, "=", fixed=TRUE), which="both");
 	
 	res = list(
-				"fn" = fn, 
+				"fn" 		= fn, 
 				"dot.keys"  = fkeys,
 				"dot.vals"  = dot.vals,
-				"params" = params, 
-				"map" = map, 
-				"formals" = form
+				"params" 	= params, 
+				"map" 		= map, 
+				"formals" 	= form
 				);
 
 # if(fn == "CDF") { print(str(res)); }

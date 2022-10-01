@@ -510,7 +510,7 @@ fn.fromString = function(fstr, ..., envir = parent.frame() )
 	form_ls			= rep(list(bquote()), length(dots));
 	names(form_ls)	= as.character(dots);
 
-	f = function(tol = sqrt(.Machine$double.eps)) {} 
+	f = function(tol = DEFAULT_TOLERANCE) {} 
 		formals(f)		= form_ls;
 		body(f)			= str2lang(fstr);
 		environment(f)	= envir;

@@ -1,5 +1,140 @@
 
 
+
+test = function(df)
+	{
+	.%THIS%.;
+	
+	info = paste0( .now(), "|", 
+				paste0(capture.output(dput(THIS)),collapse="") );
+		
+	# info = list("now" = .now(), "THIS" = THIS);
+	# info = paste0( .now(), "|", JSON.stringify(THIS) );
+dput(info);
+	}
+
+# any filename that contains text ...
+md5.textFile = function(fileTXT)
+	{
+	# tools::md5sum(fileTXT); # these are different ...
+	str.toMD5( readTextFile(fileTXT) );	
+	}
+	
+
+	
+	
+
+path.build = function(partial)
+	{
+	# no leading dot ... part of the SYSTEM 
+	# ./file ... could be anywhere in the cascade 
+	# ./../../file ... could be anywhere in the cascade ...
+	
+	}
+
+# inifilesORDERmatters = c("system/10-constants.ini","system/20-humanVerse.ini","system/30-ascii.ini", "system/40-runtime.ini");
+
+ini.parseFiles = function(inifilesORDERmatters, 
+							master = "cache/ini/humanVerse.rds", 
+							use.cache = TRUE, ...)
+	{
+	mf 		= "C:/_R_/-humanVerse-/SYSTEM/cache/ini/humanVerse.rds";
+	
+	if(use.cache && file.exists_(mf)) { return( readRDS(mf) ); }
+	
+	d 		= check.dir(mf);
+	stem 	= mf %.-% d;
+
+	log 	= paste0(d, "-logs-/", .timestamp("YYYY-MM-DD"), ".log");
+			check.file(log);
+	
+
+
+
+# > as.POSIXlt(Sys.time())
+#[1] "2022-10-01 12:45:23 EDT"
+#> as.POSIXlt(Sys.time(), tz="EDT")
+#  unknown timezone 'EDT'
+# really? BUGZILLA 
+
+
+	cat.log( log, str.commentOneLine("START -INI- LOG ENTRY") );
+	cat.log( log, .timestamp("humanVerse", tz="GMT") );		
+			
+		###	START LOG ENTRY #################
+	
+	# cat.log( log, str.commentOneLine("END -INI- LOG ENTRY", brand="{R}", brand.dir="left") );
+	# ###################### END LOG ENTRY
+	
+			
+	# checksums live here ...
+	backups	= paste0(d, "-backups-/");
+			check.dir(backups);
+
+	
+	nf = length(inifilesORDERmatters);
+	
+	sp =  "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/";
+	spd	= check.dir(sp);
+
+	sources = paste0(spd, inifilesORDERmatters);
+
+	
+	nd = check.dir(mf);
+		MEMORY = list(); RES = list();
+	for(i in 1:n)
+		{
+		
+		}
+	
+	# I want to pass the memory ... 
+	# how to cascade the RES ... will list.merge really work?
+	
+	# also /ini/-backups-/humanVerse-uniqid-md5.rds
+	# most recent gets copied/in this function to [mf]
+	
+	# also /ini/-logs-/YYYY-MM-DD.log 
+	# multiline log entry 
+	# ###################### START LOG ENTRY #################
+	
+	
+	# ###################### END LOG ENTRY ###################
+	
+	mf.log 	= paste0( str.end(".rds", master, trim=TRUE), ".log");
+	# when do I use file checksums?
+	# another function does that ini.rebuild ... has changed?
+	# AT the system level ... at the individual file level, I read the log ... 
+
+# str.toMD5(inistr)
+	
+	if(use.cache && file.exists_(mf)) { return( readRDS(mf) ); }
+	
+	# cache to files only 
+	# d = "C:/_R_/-humanVerse-/SYSTEM/cache/runtime/YYYY-MM-DD/"
+	# CACHE/humanVerse/system/ini/  
+	# CACHE/humanVerse/user/ini/
+	# abcdef.rds   abdefdk.info [cache time, function info]
+	.%THIS%.;
+	# cache keys primes and/or digits of PI ...
+	info = paste0( .now(), "|", 
+				paste0(capture.output(dput(THIS)),collapse="") );
+	
+	logmaster = paste0( str.end(".rds", master, trim=TRUE), ".log");
+
+	
+	# in runtime ... 
+	# ini.log = paste0(filename, "|", info);
+	
+	
+	
+	# cache MASTER and cache children ... 
+	
+
+	
+dput(info);
+	}
+
+
 ini.file 	= "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/constants.ini";
 
 ini.file 	= "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/humanVerse.ini";
@@ -9,9 +144,19 @@ lines 		= str.explode("\r\n", inistr);
 # lines		= lines[1:33];
 
 
-ini.parse = function(lines, verbose=FALSE, ignore.eval = FALSE)
+
+# caching mechanism with md5sum(file);
+# store as a rds file ... 
+# tools::md5sum(ini.file) # "3fc3c980d825dec163e728b8d0217809" 
+# str.toMD5(inistr); # "a7d8d29e8b427e8908d04be574904769"
+
+ini.parse = function(inistr, fname="-file unknown-", 
+							RES = list(), MEMORY = list(),
+				verbose=FALSE, ignore.eval = FALSE)
 	{
-	envir = environment();
+	lines = str.explode("\r\n", inistr);
+	
+	#envir = environment();
 	
 	# if I get multiline string parsing working, adding 
 	# multiline comments should not be difficult .... 
@@ -31,8 +176,8 @@ ini.parse = function(lines, verbose=FALSE, ignore.eval = FALSE)
 	SINGLE_QUOTE 	= "'";
 	DOUBLE_QUOTE 	= '"';
 
-	MEMORY 			= list();
-	RES 			= list();
+	#MEMORY 			= list();
+	#RES 			= list();
 	fin 			= NULL;
 	line.no 		= 0;
 	CURRENT_KEY	= ""; # if NOT empty, we are continuing on multiline 
@@ -96,6 +241,7 @@ gggassign("RES", RES);
 				if(hasRcode) 	{ val = ini.evalMe(val, MEMORY, ignore.eval = ignore.eval ); }
 				if(hasMemory) 	{ MEMORY[[key]] = val; }
 				
+				val = property.set("source", val, paste0(fname, ":", line.no));
 				RES = ini.assignVal(CURRENT_KEY, val, cparent, RES);
 				
 				CURRENT_KEY = "";				
@@ -153,45 +299,26 @@ gggassign("RES", RES);
 				
 		# # line = 'PRIME_CHOICE\t\t\t= "The greatest power members of the {humanVerse} possess is the ability to act as a ==free== agent.",';
 				
+				# line = '"%=%" = 5,'
+				# generally, we don't allow = unless special functions 
 				pos = str.pos("=", line);
+				# first position GREATER THAN 5 ... 
 				idx = v.which( pos > 5 , TRUE)[1];
 				
 				rkey = str.before("=", line, idx);  
-				rkey = str.before("=", line, 1);  # 99% of the time ...
+				#rkey = str.before("=", line, 1);  # 99% of the time ...
 				
 				# minimum length to even have an equal ...
-				# line = '"%=%" = 5,'
 				# pos > 5 ... ignore = before the 5th index ... 
-				# generally, we don't allow = unless special functions 
 				
-				
-				
-				
-				
-				
-				
-				# string before FIRST "="
-				rkeyA = str.before("=", line, 1);				
-				posA = str.pos(rkeyA, line);
-				
-				# string before SECOND "="
-				rkeyB = str.before("=", line, 2);				
-				posB = str.pos(rkeyB, line);
-				
-				rkeyC = str.before("=", line, 3);				
-				posC = str.pos(rkeyC, line);
-				
-				
-				rkeyA = parse.walkTheLine(line, COMMENTS);
-				posA = str.pos(rkeyA, line);
-				
-				posA = str.pos(rkeyA, line);
 				
 	
 .__equal.sign.issue = function() {} 		
 				
 				info = str.after(rkey, line);
 				rval = str.after("=", info);
+				
+				
 				} else {	
 						# ne == 1 ... 
 						info = str.explode("=", line);
@@ -249,6 +376,9 @@ if(verbose)
 	}
 		}
 		
+	# if we are looping through files	
+	# allow memory carryover
+	RES = property.set("MEMORY", RES, MEMORY);  
 	RES;
 	}
 
@@ -271,7 +401,8 @@ ini.evalMe = function(txt, MEMORY, ignore.eval = FALSE)
 	
 	
 	
-	eval(parse(text=val));	
+	eval( parse( text = txt ) );
+	#eval( txt ) ;
 	}
 	
 	
@@ -298,9 +429,10 @@ ini.cleanKey = function(key)
 	{
 	# in case they put doubles (R vs php)
 	key = str.replace("[[","[", key);  
-	key = str.replace("]]","]", key);
+	key = str.replace("]]","]", key); 
 	
 	key = str.replace(c(SINGLE_QUOTE,DOUBLE_QUOTE), "", key);
+	key = str.trim(key);
 	
 	# str.contains("[]", key);  ??? 
 	

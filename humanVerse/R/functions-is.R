@@ -396,7 +396,7 @@ empty = is.empty;
 #' is.wholeNumber(rpois(5,1));
 #'
 is.wholeNumber = function() {}
-is.wholeNumber = function(..., tol = sqrt(.Machine$double.eps), part="Re")
+is.wholeNumber = function(..., tol = DEFAULT_TOLERANCE, part="Re")
   {
   # See ?is.integer
   x = prep.dots(...);
@@ -471,7 +471,7 @@ is.odd = function(..., part="Re")
 #' is.positive( c(-1*1:5,-sin(pi), 0,0, sin(pi), 1:5) );
 #'
 is.positive = function() {}
-is.positive = function(..., tol = sqrt(.Machine$double.eps), part="Re")
+is.positive = function(..., tol = DEFAULT_TOLERANCE, part="Re")
   {
   x = prep.dots(..., default = c(-1*1:5,-sin(pi), 0,0,0, sin(pi), 1:5, NA, NA));
 x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
@@ -496,7 +496,7 @@ x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
 #' is.negative( c(-1*1:5,-sin(pi), 0,0,0, sin(pi), 1:5, NA, NA) );
 #'
 is.negative = function() {}
-is.negative = function(..., tol = sqrt(.Machine$double.eps), part="Re")
+is.negative = function(..., tol = DEFAULT_TOLERANCE, part="Re")
 	{
 	x = prep.dots(..., default = c(-1*1:5,-sin(pi), 0,0,0, sin(pi), 1:5, NA, NA)); 
 	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
@@ -522,7 +522,7 @@ is.negative = function(..., tol = sqrt(.Machine$double.eps), part="Re")
 #' is.zero( c(-1*1:5,-sin(pi), 0,0,0, sin(pi), 1:5, NA, NA) );
 #'
 is.zero = function(x) {}
-is.zero = function(..., tol = sqrt(.Machine$double.eps), part="Re")
+is.zero = function(..., tol = DEFAULT_TOLERANCE, part="Re")
 	{
 	x = prep.dots(..., default = c(-1*1:5,-sin(pi), 0,0,0, sin(pi), 1:5, NA, NA));
 	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
@@ -535,7 +535,7 @@ is.zero = function(..., tol = sqrt(.Machine$double.eps), part="Re")
 
 
 # x `~=` y 
-is.equal = function(x, y, tol = sqrt(.Machine$double.eps), part="Re")
+is.equal = function(x, y, tol = DEFAULT_TOLERANCE, part="Re")
 	{
 	check.isCompatibleLength(x, y);
 	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
@@ -553,7 +553,7 @@ is.equal = function(x, y, tol = sqrt(.Machine$double.eps), part="Re")
 
 # x `~>=` y 
 is.ge = function() {}
-is.ge = function(x, y, tol = sqrt(.Machine$double.eps), part="Re")
+is.ge = function(x, y, tol = DEFAULT_TOLERANCE, part="Re")
 	{
 	check.isCompatibleLength(x, y);
 	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
@@ -566,7 +566,7 @@ is.ge = function(x, y, tol = sqrt(.Machine$double.eps), part="Re")
 
 # x `~<=` y 
 is.le = function(x) {}
-is.le = function(x, y, tol = sqrt(.Machine$double.eps), part="Re")
+is.le = function(x, y, tol = DEFAULT_TOLERANCE, part="Re")
 	{
 	check.isCompatibleLength(x, y);
 	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
@@ -597,7 +597,7 @@ is.le = function(x, y, tol = sqrt(.Machine$double.eps), part="Re")
 
 
 math.countSignChanges = function() {}
-math.countSignChanges = function(..., tol = sqrt(.Machine$double.eps), part="Re")
+math.countSignChanges = function(..., tol = DEFAULT_TOLERANCE, part="Re")
 	{
 	x = prep.dots(...);
 	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }
@@ -613,7 +613,7 @@ math.sign = function() {}
 math.sign = function(..., 
 							return="integer",
 							zero="", neg="-", pos="+",
-							tol = sqrt(.Machine$double.eps), 
+							tol = DEFAULT_TOLERANCE, 
 							part="Re"
 					)
 	{
@@ -631,7 +631,7 @@ math.sign = function(...,
 	}
 	
 is.wholeNumber = function() {}
-is.wholeNumber = function(..., tol = sqrt(.Machine$double.eps), part="Re")
+is.wholeNumber = function(..., tol = DEFAULT_TOLERANCE, part="Re")
   {
   # See ?is.integer
   more = unlist(list(...)); x = c(x, more); 

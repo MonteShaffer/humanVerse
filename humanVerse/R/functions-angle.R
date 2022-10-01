@@ -5,7 +5,7 @@
 
 
 math.cleanup = function() {}
-math.cleanup = function(x, tol = sqrt(.Machine$double.eps), part="Re", method="round")
+math.cleanup = function(x, tol = DEFAULT_TOLERANCE, part="Re", method="round")
 	{
 	# maybe sqrt(3)/2 ... or FRAC/PI ... append as attribute?, go.deep=TRUE
 	# zeros 

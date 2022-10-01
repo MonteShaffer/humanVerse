@@ -30,7 +30,7 @@ md5_ = function(s)
 	
 	
 	
-	is.negative = function(a, tol = sqrt(.Machine$double.eps))
+	is.negative = function(a, tol = DEFAULT_TOLERANCE)
 		{
 		a < ( -1 * tol );
 		}

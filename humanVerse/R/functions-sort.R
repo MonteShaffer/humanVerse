@@ -14,7 +14,7 @@ v.sort = function(vec, method="bubble")
 	# msg THIS is for DEMO purposes 
 	n = length(vec);
 	
-	swapMe = function(a,a.idx, b,b.idx, nvec, tol = sqrt(.Machine$double.eps))
+	swapMe = function(a,a.idx, b,b.idx, nvec, tol = DEFAULT_TOLERANCE)
 		{
 		nvec[b.idx] = a;
 		nvec[a.idx] = b;

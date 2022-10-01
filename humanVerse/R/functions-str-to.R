@@ -136,35 +136,11 @@ str.fromCharacterVector = function(charslist, sep="")
 #'
 #'
 #------------------------------------------------#
-str.int2base64 = function(...)
-	{
-	str = prep.dots(...);
-	n = length(str);
-	res = character(n);
-	for(i in 1:n)
-		{
-		res[i] = b64.enc( charToRaw(str[i]) );
-		}
-	res;
-	}
-	
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-#'
-#' str.base2int64
-#'
-#'
-#------------------------------------------------#
-str.base2int64 = function(...)
-	{
-	bstr = prep.dots(...);
-	n = length(bstr);
-	res = character(n);
-	for(i in 1:n)
-		{
-		res[i] = rawToChar( b64.dec(bstr[i]) );
-		}
-	res;
-	}
+str.int2base64 = function(...) {}
+#		res[i] = b64.enc( charToRaw(str[i]) );
+		
+#		res[i] = rawToChar( b64.dec(bstr[i]) );
+		
 
 
 
@@ -220,9 +196,43 @@ str.HASH = function()
 	minvisible(res, "LAST-HASH");
 	} 
 
-# set a default value in case it doesn't exist ...
-cpp_nano = function() { as.numeric(Sys.time()) * 1000000000; }
-.now = function() { cpp_nano()/1000000000; }
+ 
+.now = function() 
+	{ 
+	# RdH file?  
+	# RhV ... source(R with multiline comments)
+	# Rhelp 
+	
+	if(exists("cpp_nano"))
+		{
+		cpp_nano()/1000000000;
+		} else { as.numeric(Sys.time()); }	
+	}
+
+# POSIXlt seems to work on timezone stuff, ct ... NOPE
+# POSIXct doesn't use timezone info...
+.timestamp = function(type="", tz=DEFAULT_TIMEZONE) 
+	{  
+	now = as.POSIXlt(Sys.time(), tz);
+	if(type == "lt") { return( now );  }
+	if(type == "ct") {	return( as.POSIXct(now, tz) ); }
+	# formatted string ... # https://stackoverflow.com/a/29518651/184614
+	# humanVerse 
+	if(type == "hv" || type=="humanVerse") { return( strftime(now , "%Y-%m-%d\\./%H:%M:%S GMT%z") ); }
+	if(type == "full") { return( strftime(now , "%Y-%m-%d %H:%M:%S %z") ); }
+	
+	if(type == "YYYY-MM-DD") { return( strftime(now , "%Y-%m-%d") ); }
+	
+	# custom formatter (todo) 
+	# datef = .dateFormatter(type);
+	datef = "%Y-%m-%d";
+	
+	
+	
+	#strftime(now , "%Y-%m-%dT%H:%M:%S%z")
+	strftime(now , datef)
+	}
+
 
 time.now = function(method="first")
 	{
@@ -284,7 +294,16 @@ str.guid = function() {}
 
 
 
+str.fromB64 = function(str)
+	{
+	js.b64(str, "decode");	
+	}
 
+
+str.toB64 = function(str)
+	{
+	js.b64(str, "encode");	
+	}
 
 
 

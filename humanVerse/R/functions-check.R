@@ -186,6 +186,66 @@ check.boolean = function(x)
 	}
 
 
+# memory or file caching ...
+cache.get = function(cobj, cache="memory", unused=NULL)
+	{
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.CACHE = check.type(cache);
+	if(!ct.CACHE || !is.character(cache))	
+		{ cache = deparse(substitute(cache)); } 
+##########################################################
+
+	CACHE = prep.switch( prep.arg(cache, n=1), c("m","f"), 
+						c("memory", "filesystem"), "memory");
+		
+	md5 = str.toMD5( JSON.stringify( cobj ) );				
+		
+	if(cache == "memory")
+		{
+		obj = memory.get(md5, "-CACHE-");
+		}
+	if(cache == "filesystem")
+		{
+		d = "C:/_R_/-humanVerse-/SYSTEM/cache/runtime/YYYY-MM-DD/"
+		f = paste0(d, md5, ".rds");
+		obj = NULL;
+		if( file.exists_(f) ) { obj = readRDS(f); }
+		}
+
+	list("md5" = md5,
+		"obj"	= obj
+		);
+	}
+
+# memory or file caching ...
+cache.set = function(nobj, cache="memory", md5="abcdef")
+	{ 
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.CACHE = check.type(cache);
+	if(!ct.CACHE || !is.character(cache))	
+		{ cache = deparse(substitute(cache)); } 
+##########################################################
+
+	CACHE = prep.switch( prep.arg(cache, n=1), c("m","f"), 
+						c("memory", "filesystem"), "memory");
+		
+		 
+	if(cache == "memory")
+		{ 
+		memory.set(md5, "-CACHE-", nobj);
+		}
+	if(cache == "filesystem")
+		{
+		d = "C:/_R_/-humanVerse-/SYSTEM/cache/runtime/YYYY-MM-DD/"
+		f = paste0(d, md5, ".rds");
+		writeRDS(nobj, f);
+		}
+	}
+
 
 
 .NULL = function(x, type=typeof(x))

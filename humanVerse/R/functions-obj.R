@@ -1,7 +1,43 @@
 
 
 
+is.json = function(str)
+	{
+	
+	}
 
+o.unserialize = function(str)
+	{
+	
+	
+	}
+
+o.serialize = function(obj, jsonify=FALSE)
+	{
+	if(!jsonify)
+		{
+		# should be very compact ...
+		os = .serialize(obj);
+		oss = paste0( raw.toString(os), collapse="");
+		b64 = .hex_b64(oss);
+		} else {
+				os = JSON.stringify(obj);
+				b64 = str.toB64(os);
+				}
+	b64;
+	}	
+	
+	
+	
+	
+	
+# x = as.raw(1:10); y = raw.toString(x); 
+# z = raw.fromString(y); identical(x,z);
+
+# x = as.raw(1:10); y = raw.toString(x, collapse=NULL);
+# z = raw.fromString(y, splitN=FALSE); identical(x,z);
+
+	}
  
 .serialize = function(obj)
 	{

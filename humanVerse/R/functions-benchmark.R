@@ -1,8 +1,17 @@
 
 ## display microbenchmark results
-##    mb.res = microbenchmark::microbenchmark();  
-ggg.mb = function(mb.res, show="milliseconds", plot=TRUE, caching=TRUE)
+##    mb.res = microbenchmark::microbenchmark(); 
+## ggg.benchmark  
+ggg.mb = function(mb.res, show="milliseconds", plot=TRUE, cache=NULL)
 	{
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.CACHE = check.type(cache);
+	if(!ct.CACHE || !is.character(cache))	
+		{ cache = deparse(substitute(cache)); } 
+##########################################################
+
 	# maybe write my own ... see Dirk's 
 	# Rput.OUT ?? 
 	# on.exit(return WHAT YOU HAVE) ... 
@@ -37,16 +46,22 @@ ggg.mb = function(mb.res, show="milliseconds", plot=TRUE, caching=TRUE)
 						 "milliseconds (ms)"
 						 );
 	mb.names = levels(mb.res$expr);	
-	
-	mb.md5 = str.toMD5( JSON.stringify( list("data" = mb.res$time, "names" = mb.names, "pshow" = PSHOW, "show" = SHOW) ) );
-	
-dput(PSHOW);
-dput(SHOW);
-dput(mb.md5);
-
-	if(caching) 
-		{ 
-		out = memory.get(mb.md5, "-CACHE-"); 
+	 
+	if(!is.null(cache))
+		{
+		# what is UNIQUE to this function call.... 
+		cobj = list("data" = mb.res$time, 
+					"names" = mb.names, 
+					"pshow" = PSHOW, 
+					"show" = SHOW
+					);
+		# cache may be "memory" or "file" ...
+		# returns md5 and obj as NULL ... 
+		# would I ever cache "NULL" ... 
+		# list("md5"=md5, obj=NULL);
+		cinfo = cache.get(cobj, cache);   # .%THIS%.,
+		
+		out = cinfo$obj;
 		if(!is.null(out))
 			{
 			time.is = paste0("[",PSHOW, "] per call");
@@ -54,7 +69,6 @@ cat("\n\n time.is ... ", time.is, "\n\n");
 			return( minvisible(out, display="print") );			
 			}
 		}
-	
 	
 	
 	out = NULL;
@@ -104,7 +118,14 @@ cat("\n\n time.is ... ", time.is, "\n\n");
 	out = property.set("time.is", out, time.is);
 	
 	# caching at the time level ... new time interval, new cache 
-	if(caching) { memory.set(mb.md5, "-CACHE-", out); }
+	if(!is.null(caching))
+		{
+		cache.set(out, cache=cache, md5=cinfo$md5);
+		}
+		
+	# if(caching) { memory.set(mb.md5, "-CACHE-", out); }
+	#   res = cache.get(cobj, cache);   # .%THIS%., 
+	#  ...  cache.set(out, cache, 
 	# maybe also log the md5 somewhere ...
 	
 	minvisible(out, display="print");

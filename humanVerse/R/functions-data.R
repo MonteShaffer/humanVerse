@@ -86,7 +86,7 @@ FN.INTRO = c(	"name|data.load",
 # num.toFrac = function(..., 
 								# return = "last",
 								# max.depth = 12,  
-								# tol = sqrt(.Machine$double.eps) , 
+								# tol = DEFAULT_TOLERANCE , 
 								# part="Re"
 						# ) 
 						
@@ -117,7 +117,7 @@ FN.PARAM = c(	"x|numeric|",
 				"...|lazy loading of additional x values|",
 				"return|character|[l]ast : returns the last 'good fraction' computed;\n *[e]verything : returns the entire dataframe of info used to make computation (continuous fraction, iteration to build normal fractions, error from TRUE value, etc.);\n [0-9] you can specify a number that represents the maximum size of the denominator, so for `pi` and `return=100/110/120` the result would be interesting ... / indicates separate runs ...  ",
 				"max.depth|12|Passed internally into <fn>num.toCFrac<fn> to computed COntinuous fraction ... beyoned this value is 'mute' as the data is erroneous due to floating-point and system precision, try 'pi' with more digits and compare to TRUE answers.  12 seems like a good stopping point",
-				"tol|sqrt(.Machine$double.eps)|Passed internally into <fn>num.toCFrac<fn> to computed COntinuous fraction ... [insert auto from that fn parameter descrption]",
+				"tol|DEFAULT_TOLERANCE|Passed internally into <fn>num.toCFrac<fn> to computed COntinuous fraction ... [insert auto from that fn parameter descrption]",
 				"part|Re|[Re]al or [Im]aginary part for complex ... TODO recursive call to allow [Bo]th ... if complex, maybe just do an auto detect ... OVERALL, fn seems to be computationally intensive"
 			);
 

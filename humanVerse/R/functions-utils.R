@@ -319,8 +319,10 @@ define = function(KEY, VALUE) {}
 # this = function(...) { print(sys.call(1)); }
 #  .%THIS%.
 .THIS. = function() {}
-.THIS. = function(KEY, VALUE, WHERE = parent.frame(1) ) 
+.THIS. = function(KEY, VALUE, WHERE = parent.frame(1), deparse.call = TRUE ) 
 	{
+	# KEY is FRAME, VALUE is CALL 
+	
  	DEFAULT_FRAME 	= 1;	# parent.frame(n);
 	DEFAULT_CALL 	= 1;	# sys.call(n); 
 		
@@ -360,8 +362,20 @@ define = function(KEY, VALUE) {}
 	fn = sys.calls()[[sys.nframe()-1]];  # close 
 	# parent.call = sys.call(sys.nframe() - 1L);  # equivalent?
 	finfo = parse.syscall(fn);
+	# can we get the df = iris ... 
   
-	res = list("envir" = key, "call" = val, "fn.info" = finfo);
+	if(deparse.call)
+		{
+		res = list("envir" = deparse(key), 
+					"call" = deparse(val), 
+				 "fn.info" = finfo
+					);
+		} else {
+				res = list("envir" = key, 
+							"call" = val, 
+				 		 "fn.info" = finfo
+							);		
+				}
 		
 	# WHERE=parent.frame(1); # or WHERE = env?
 	assign("THIS", res, envir=WHERE );
@@ -1003,7 +1017,7 @@ hexToBase64 = function(hexStr)
 raw.toString = function(raw, collapse="")
 	{
 	paste0(as.character(raw), collapse=collapse);
-	}
+	} 
 	
 raw.fromString = function(str, splitN=TRUE)
 	{

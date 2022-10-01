@@ -275,24 +275,27 @@ bin = function(..., n=2, pad="0")
 	MAP = .map_hexb64();
 	idx = set.match(b, MAP$b64); # there shouldn't be NA/NULL
 	r = tolower(MAP$hex[idx]);  # to match 'raw' format 
-	paste0(r, collapse=collapse);
+	hexstr = paste0(r, collapse=collapse);
+	hexstr;
 	}
 
 
 
-
+ 
 
 .hex_b64 = function(hexstr, collapse="")
 	{
+	MAP = .map_hexb64();
 	# hexstr is one long string, no breaks ...
 	if(length(hexstr) > 1) {  hexstr = paste(hexstr, collapse=""); }
 	# 'raw' seems to be lower case, TRUE hex is upper?
 	b = toupper( bin(hexstr, n=3, pad="0") );   # BXXv[1];
 	nb = length(b);
-	MAP = .map_hexb64();
+	
 	idx = set.match(b, MAP$hex);	# there shouldn't be NA/NULL
 	r = MAP$b64[idx];
-	paste0(r, collapse=collapse);
+	b64str = paste0(r, collapse=collapse);
+	b64str;
 	}
 	
 

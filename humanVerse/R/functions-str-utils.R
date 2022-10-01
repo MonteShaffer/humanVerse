@@ -773,6 +773,49 @@ str.pipeHeader = function(str="Welcome to the {humanVerse}",
 	}
 
 
+str.commentOneLine = function(str = "Start LOG file",
+								width = 72,
+								ctag = "#",
+								ptag = " ",
+								npad = 3,
+								brand = "{humanVerse}",
+								brand.dir = "right"
+								)
+	{
+	str = str[1];
+	slen = strlen(str);
+	
+	clen = strlen(ctag);
+	pad = str.rep(ptag, npad);
+	plen = strlen(pad);
+	
+	blen = strlen(brand);  # brand = "{R}" ... {humanVerse} ... left/right 
+	
+	bpad = str.rep(ctag, 3);
+	
+	tlen = clen + plen + slen + plen + clen +  ( 3*clen + blen + 3*clen );
+	
+	half = ceil( (width-tlen)/2 );  if(half < 0) { half = 0; }
+	# hpad = strrep_(ctag, to.length=half);
+	hpad = strrep_(ctag, half, TRUE);
+
+	
+	if(brand.dir == "right")
+		{
+		res = paste0( ctag, hpad, pad, str, pad, hpad, bpad, brand, bpad, ctag );
+		# may need to check on length 
+		return(res);
+		}
+	if(brand.dir == "left")
+		{
+		res = paste0( ctag, bpad, brand, bpad, hpad, pad, str, pad, hpad, ctag );
+		# may need to check on length 
+		return(res);
+		}
+	}
+	
+	
+
 #------------------------------------------------#
 str.commentWrapper = function() {}   # what about \n in str for "blank vertical space"?
 str.commentWrapper = function(str="Welcome to the {humanVerse}", 

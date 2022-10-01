@@ -475,7 +475,7 @@ hexcolor.round = function(..., n=9, alpha=FALSE, skip.checks=FALSE)
 	RGB = hex2rgb(vecHEX);
 	
 	# # this round "FA" to "FC", "FD" to "FF"
-	mod.round = function(x, tol = sqrt(.Machine$double.eps))
+	mod.round = function(x, tol = DEFAULT_TOLERANCE)
 		{
 		# n is scoped 'lexicologically' ?
 		xMod = x %% n;
@@ -517,7 +517,7 @@ hexcolor.websafe = function(..., skip.checks=FALSE)
 	# convert to RGB 
 	RGB = hex2rgb(vecHEX);
 	
-	mod.websafe = function(x, tol = sqrt(.Machine$double.eps))
+	mod.websafe = function(x, tol = DEFAULT_TOLERANCE)
 		{
 		xMod = x %% 51;
 		# if(xMod <= 25) { floor(x/51) * 51; } else { ceiling(x/51) * 51; }

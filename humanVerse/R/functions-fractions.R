@@ -445,7 +445,7 @@ num.toFrac = function() {}
 num.toFrac = function(..., 
 								return = "last",
 								max.depth = 12,  
-								tol = sqrt(.Machine$double.eps) , 
+								tol = DEFAULT_TOLERANCE , 
 								part="Re"
 						)
 	{
@@ -556,7 +556,7 @@ num.toFrac = function(...,
 num.toCFrac = function() {}
 num.toCFrac = function(..., 
 								max.depth = 12,  
-								tol = sqrt(.Machine$double.eps) , 
+								tol = DEFAULT_TOLERANCE , 
 								part="Re"
 						)
 	{
@@ -714,7 +714,7 @@ egy.lists = function()
 # PI == pi ... TRUE ??!>!?
 
 
-toFrac = function(...,	max.depth=16, tol = sqrt(.Machine$double.eps) , part="Re", return="n/d")	# could return Euclidean nested
+toFrac = function(...,	max.depth=16, tol = DEFAULT_TOLERANCE , part="Re", return="n/d")	# could return Euclidean nested
 	{	
 	x = prep.dots(...);	
 	x = if(part == "Im") { x = Im(x); } else { x = Re(x); }

@@ -67,6 +67,12 @@ cat.init = function()
 	# COLOR is attached to either <fg> or <bg>
 	}
  
+ 
+cat.log = function(file, str, sep="\n", append=TRUE)
+	{
+	# ... logic is lost ... 
+	cat(str, file=file, sep=sep, append=append);		
+	}
 
 
 .cat = function(..., sep="\n\n")
