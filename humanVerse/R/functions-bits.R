@@ -2,16 +2,16 @@
 # a >> b; ... a %>>% b;
 # unsigned ?
 ## multivariate on a 
-.SHIFT_R. = function(a, bits=16, method=DEFAULT_BIT_METHOD) 
+.SHIFT_R. = function(a, bits=16) 
 	{
 	# INTEGER_MAXIMUM		= 2147483647
 	# a = c(1732584193, -1732584193, 2147483647, -2147483647, 4611686018427387904, -4611686018427387904);
 	# bitwShiftR(a, 16);			# 26437 39098 32767 32768 NA NA 
-	# .SHIFT_R.(a, 16);				# 26437 -26438  32767 -32768 0 0 
 	# setwd("C:/_git_/github/MonteShaffer/humanVerse/HVcpp/src/");
 	# Rcpp::sourceCpp('bits.cpp');
 	# cpp_SHIFT_R(a,16);			#  26437 -26438 32767 -32768 70368744177664 -70368744177664
-	# javascript ... 26437 -26438 32767 -32768 0 0 
+	# javascript ... 			# 26437 -26438 32767 -32768 0 0 
+	# .SHIFT_R.(a, 16);			# 26437 -26438 32767 -32768 0 0 
 
 
 	
@@ -42,7 +42,7 @@
 # a << b;   a %<<% b;
 # unsigned ? 
 # multivariate with error checks on R-base ...
-.SHIFT_L. = function(a, bits=8, method=DEFAULT_BIT_METHOD) 
+.SHIFT_L. = function(a, bits=8) 
 	{
 	# INTEGER_MAXIMUM		= 2147483647
 	# a = c(1732584193, -1732584193, 2147483647, -2147483647, 4611686018427387904, -4611686018427387904);
