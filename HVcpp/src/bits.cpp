@@ -4,7 +4,7 @@
 using namespace Rcpp;
 
 // built-in function seems to allow a, b to both be multivariate, some sort of recycling?
-long long b_RShift(long long a, int b) 
+long long s_SHIFT_R(long long a, int b) 
 	{ 
 	return a >> b;
 	}
@@ -16,12 +16,12 @@ long long b_RShift(long long a, int b)
 //' @param b int to shift
 //' @return Updated INTEGER a appropriately shifted
 // [[Rcpp::export]]
-NumericVector bits_RShift(const std::vector<long long int> arr, int b)
+NumericVector cpp_SHIFT_R(const std::vector<long long int> arr, int b)
 	{
 	NumericVector r{};
 	for (auto& element : arr) 
 		{
-		long long int res = b_RShift(element, b);
+		long long int res = s_SHIFT_R(element, b);
 		r.push_back(res);
 		}
 	return r;
@@ -30,7 +30,7 @@ NumericVector bits_RShift(const std::vector<long long int> arr, int b)
 
 
 
-long long b_LShift(long long a, int b) 
+long long s_SHIFT_L(long long a, int b) 
 	{ 
 	return a << b;
 	}
@@ -42,12 +42,12 @@ long long b_LShift(long long a, int b)
 //' @param b int to shift
 //' @return Updated INTEGER a appropriately shifted
 // [[Rcpp::export]]
-NumericVector bits_LShift(const std::vector<long long int> arr, int b)
+NumericVector cpp_SHIFT_L(const std::vector<long long int> arr, int b)
 	{
 	NumericVector r{};
 	for (auto& element : arr) 
 		{
-		long long int res = b_LShift(element, b);
+		long long int res = s_SHIFT_L(element, b);
 		r.push_back(res);
 		}
 	return r;
@@ -58,7 +58,7 @@ NumericVector bits_LShift(const std::vector<long long int> arr, int b)
 // do OR, XOR, AND ... 
 // https://www.geeksforgeeks.org/bitwise-operators-in-c-cpp/
 
-long long b_AND(long long a, long long int b) 
+long long s_AND(long long a, long long int b) 
 	{ 
 	return (a & b);
 	}
@@ -69,13 +69,14 @@ long long b_AND(long long a, long long int b)
 //' @param b INTEGER to be manipulated
 //' @return Updated INTEGER after AND
 // [[Rcpp::export]]
-NumericVector bits_AND(const std::vector<long long int> arr, const std::vector<long long int> brr)
+NumericVector cpp_AND(const std::vector<long long int> arr, const std::vector<long long int> brr)
 	{
 	NumericVector r{};
 	long long int i = 0;
 	for (auto& element : arr) 
 		{
-		long long int res = b_AND(element, brr[i]);
+		// pairwise 
+		long long int res = s_AND(element, brr[i]);
 		r.push_back(res);
 		++i;
 		}
@@ -84,7 +85,7 @@ NumericVector bits_AND(const std::vector<long long int> arr, const std::vector<l
 	
 
 	
-long long b_OR(long long a, long long int b) 
+long long s_OR(long long a, long long int b) 
 	{ 
 	return (a | b);
 	}
@@ -96,20 +97,20 @@ long long b_OR(long long a, long long int b)
 //' @param b INTEGER to be manipulated
 //' @return Updated INTEGER after OR
 // [[Rcpp::export]]
-NumericVector bits_OR(const std::vector<long long int> arr, const std::vector<long long int> brr)
+NumericVector cpp_OR(const std::vector<long long int> arr, const std::vector<long long int> brr)
 	{
 	NumericVector r{};
 	long long int i = 0;
 	for (auto& element : arr) 
 		{
-		long long int res = b_OR(element, brr[i]);
+		long long int res = s_OR(element, brr[i]);
 		r.push_back(res);
 		++i;
 		}
 	return r;
 	}	
 	
-long long b_XOR(long long a, long long int b) 
+long long s_XOR(long long a, long long int b) 
 	{ 
 	return (a ^ b);
 	}
@@ -121,21 +122,21 @@ long long b_XOR(long long a, long long int b)
 //' @param b INTEGER to be manipulated
 //' @return Updated INTEGER after XOR
 // [[Rcpp::export]]
-NumericVector bits_XOR(const std::vector<long long int> arr, const std::vector<long long int> brr)
+NumericVector cpp_XOR(const std::vector<long long int> arr, const std::vector<long long int> brr)
 	{
 	NumericVector r{};
 	long long int i = 0;
 	for (auto& element : arr) 
 		{
-		long long int res = b_XOR(element, brr[i]);
+		long long int res = s_XOR(element, brr[i]);
 		r.push_back(res);
 		++i;
 		}
 	return r;
-	}	
+	}	 
 
 
-long long b_NOT(long long a) 
+long long s_NOT(long long a) 
 	{ 
 	return (~a);
 	}
@@ -145,12 +146,12 @@ long long b_NOT(long long a)
 //' @param a INTEGER to be manipulated
 //' @return Updated INTEGER after NOT
 // [[Rcpp::export]]
-NumericVector bits_NOT(const std::vector<long long int> arr)
+NumericVector cpp_NOT(const std::vector<long long int> arr)
 	{
 	NumericVector r{};
 	for (auto& element : arr) 
 		{
-		long long int res = b_NOT(element);
+		long long int res = s_NOT(element);
 		r.push_back(res);
 		}
 	return r;

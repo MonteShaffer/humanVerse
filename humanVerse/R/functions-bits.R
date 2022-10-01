@@ -1,4 +1,161 @@
 
+# a >> b; ... a %>>% b;
+# unsigned ?
+## multivariate on a 
+.SHIFT_R. = function(a, bits=16, method=DEFAULT_BIT_METHOD) 
+	{
+	# INTEGER_MAXIMUM		= 2147483647
+	# a = c(1732584193, -1732584193, 2147483647, -2147483647, 4611686018427387904, -4611686018427387904);
+	# bitwShiftR(a, 16);			# 26437 39098 32767 32768 NA NA 
+	# .SHIFT_R.(a, 16);				# 26437 -26438  32767 -32768 0 0 
+	# setwd("C:/_git_/github/MonteShaffer/humanVerse/HVcpp/src/");
+	# Rcpp::sourceCpp('bits.cpp');
+	# cpp_SHIFT_R(a,16);			#  26437 -26438 32767 -32768 70368744177664 -70368744177664
+	# javascript ... 26437 -26438 32767 -32768 0 0 
+
+
+	
+	a = suppressWarnings( as.integer(a) );
+	b = check.base(bits);
+	if(is.null(b)) { stop("base issues"); }
+	
+	NA.logic 			= v.test(a, NA);
+	OVERFLOW.logic 		= abs(a) > INTEGER_MAXIMUM;
+	
+	if(exists("cpp_SHIFT_R"))
+		{
+		res 				= a;
+		res[!NA.logic] 		= cpp_SHIFT_R(a[!NA.logic], b);
+		res[OVERFLOW.logic] = 0;
+		return(res);
+		} 
+		
+	NEG.logic 			= is.negative(a) & !NA.logic;
+	res 				= bitwShiftR(a, b);
+	res[NEG.logic] 		= -bitwShiftR(-a[NEG.logic], b) - 1;
+	res[OVERFLOW.logic] = 0;
+	res;
+	} 
+
+
+	
+# a << b;   a %<<% b;
+# unsigned ? 
+# multivariate with error checks on R-base ...
+.SHIFT_L. = function(a, bits=8, method=DEFAULT_BIT_METHOD) 
+	{
+	# INTEGER_MAXIMUM		= 2147483647
+	# a = c(1732584193, -1732584193, 2147483647, -2147483647, 4611686018427387904, -4611686018427387904);
+	# bitwShiftL(a, 16);			# 26437 39098 32767 32768 NA NA 
+	# .SHIFT_L.(a, 16);				# 587268096 -587268096 -65536 65536 0 0 
+	# setwd("C:/_git_/github/MonteShaffer/humanVerse/HVcpp/src/");
+	# Rcpp::sourceCpp('bits.cpp');
+	# cpp_SHIFT_L(a,16);			#  26437 -26438 32767 -32768 70368744177664 -70368744177664
+	# javascript ... 587268096 -587268096 -65536 65536 0 0  
+
+	a = suppressWarnings( as.integer(a) );
+	b = check.base(bits);
+	if(is.null(b)) { stop("base issues"); }
+	
+	NA.logic 			= v.test(a, NA);
+	
+	if(exists("cpp_SHIFT_L"))
+		{
+		res 			= a;
+		res[!NA.logic] 	= cpp_SHIFT_L(a[!NA.logic], b);
+		return(res);
+		} 
+		
+	NEG.logic 		= is.negative(a) & !NA.logic;
+	res 			= bitwShiftL(a, b);	
+	res[NEG.logic] 	= -bitwShiftL(-a[NEG.logic], b);
+	res;
+	} 
+
+
+
+
+
+# (a & b);
+.AND. = function() {}
+"%<<%" = .AND. = function(a, b, method=DEFAULT_BIT_METHOD) 
+	{
+	a = suppressWarnings( as.integer(a) );
+	b = suppressWarnings( as.integer(b) );
+	
+	logic = !anyNA(a) && !anyNA(b);
+	
+	# with NA on both sides, is there any advantage of cpp option?
+	if(logic && exists("cpp_AND"))
+		{
+		return( cpp_AND(a, b) );
+		}
+		
+	bitwAnd(a,b);
+	} 
+
+
+
+
+# (a | b);
+.OR. = function() {}
+"%|%" = .OR. = function(a, b, method=DEFAULT_BIT_METHOD) 
+	{
+	a = suppressWarnings( as.integer(a) );
+	b = suppressWarnings( as.integer(b) );
+	
+	logic = !anyNA(a) && !anyNA(b);
+	
+	# with NA on both sides, is there any advantage of cpp option?
+	if(logic && exists("cpp_OR"))
+		{
+		return( cpp_OR(a, b) );
+		}
+	
+	# for larger/smaller integers, we have a problem ...
+	
+	bitwOr(a,b);
+	} 
+
+
+# (a ^ b);
+.XOR. = function() {}
+"%^%" = .XOR. = function(a, b, method=DEFAULT_BIT_METHOD) 
+	{
+	a = suppressWarnings( as.integer(a) );
+	b = suppressWarnings( as.integer(b) );
+	
+	logic = !anyNA(a) && !anyNA(b);
+	
+	# with NA on both sides, is there any advantage of cpp option?
+	if(logic && exists("cpp_XOR"))
+		{
+		return( cpp_XOR(a, b) );
+		}
+		
+	bitwXor(a,b);
+	} 
+
+
+# (~a);
+.NOT. = function() {}
+"%~%" = .NOT. = function(a, method=DEFAULT_BIT_METHOD) 
+	{
+	logic = !anyNA(a);
+	
+	# with NA on both sides, is there any advantage of cpp option?
+	if(logic && exists("cpp_NOT"))
+		{
+		return( cpp_NOT(a) );
+		}
+		
+	bitwNot(a);
+	} 
+
+
+
+
+
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'

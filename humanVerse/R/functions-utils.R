@@ -1138,7 +1138,33 @@ strip.tags = function(...)
 	
 
 
- 
+
+touch = function(f)
+	{
+	# for now, we assume touch means ... empty ...
+	# just MODIFY the timestamps, create INODE if it doesn't exist
+	# maybe tie-in to system or system2 
+	if(!file.exists_(f))
+		{
+		# does this work, empty?
+		cat("", file=f, sep="");  # maybe do ftouch with fopen?
+		}
+	
+	}
+
+
+# basename doesn't play nice ... 
+basename_ = function(path, trailing=TRUE)
+	{
+	d = prep.path(path, trailing=trailing);
+	
+	# basename doesn't play nice ... 
+	tmp = str.explode(DIR_LINUX, d);
+	stem = list.getLastElements(tmp);
+	stem;
+	}
+
+  
 
 
 dput.one = function(x, ...)
