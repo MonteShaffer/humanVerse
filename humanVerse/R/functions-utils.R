@@ -1138,7 +1138,7 @@ strip.tags = function(...)
 	
 
 
-
+ 
 
 
 dput.one = function(x, ...)
@@ -1147,7 +1147,7 @@ dput.one = function(x, ...)
 	cat("\n\n", str, "\n\n", sep = "");	
 	minvisible(str, print=FALSE);
 	}
-	
+	 
 
 # if a matrix gets to length one in rows (or cols)???
 # for some reason R truncates it to a vector ... 

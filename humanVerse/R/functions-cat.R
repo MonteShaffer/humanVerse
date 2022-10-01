@@ -73,6 +73,19 @@ cat.log = function(file, str, sep="\n", append=TRUE)
 	# ... logic is lost ... 
 	cat(str, file=file, sep=sep, append=append);		
 	}
+	  
+  
+cat.dput = function(obj, file, one.line=FALSE, sep="\n", append=TRUE)
+	{
+	str = capture.output(dput(obj));
+	if(one.line) { str = paste0(str, collapse=""); }
+	cat(str, file=file, sep=sep, append=append);
+	}
+	
+	# cat.dput(THIS, log);
+	# dput( THIS, file=log, append=TRUE);
+	# Error in dput(THIS, file = log, append = TRUE) : 
+  # unused argument (append = TRUE)
 
 
 .cat = function(..., sep="\n\n")

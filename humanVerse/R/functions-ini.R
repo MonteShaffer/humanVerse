@@ -34,114 +34,176 @@ path.build = function(partial)
 
 # inifilesORDERmatters = c("system/10-constants.ini","system/20-humanVerse.ini","system/30-ascii.ini", "system/40-runtime.ini");
 
+# ini.parseFiles(inifilesORDERmatters)
+
 ini.parseFiles = function(inifilesORDERmatters, 
-							master = "cache/ini/humanVerse.rds", 
+							master = "cache/ini/master.rds", 
 							use.cache = TRUE, ...)
 	{
-	mf 		= "C:/_R_/-humanVerse-/SYSTEM/cache/ini/humanVerse.rds";
+	uniqid = str.uniqid();	
+	TIMESTAMP = .timestamp("YYYY-MM-DD");
 	
+	mf 		= "C:/_R_/-humanVerse-/SYSTEM/cache/ini/master.rds";
 	if(use.cache && file.exists_(mf)) { return( readRDS(mf) ); }
 	
 	d 		= check.dir(mf);
 	stem 	= mf %.-% d;
 
-	log 	= paste0(d, "-logs-/", .timestamp("YYYY-MM-DD"), ".log");
+	log 	= paste0(d, "-logs-/", TIMESTAMP, ".log");
 			check.file(log);
 	
 
-
-
-# > as.POSIXlt(Sys.time())
-#[1] "2022-10-01 12:45:23 EDT"
-#> as.POSIXlt(Sys.time(), tz="EDT")
-#  unknown timezone 'EDT'
-# really? BUGZILLA 
-
-
 	cat.log( log, str.commentOneLine("START -INI- LOG ENTRY") );
-	cat.log( log, .timestamp("humanVerse", tz="GMT") );		
-			
-		###	START LOG ENTRY #################
+	cat.log( log, .timestamp("humanVerse", tz="GMT") );	
+	cat.log( log, TIMESTAMP );
+	cat.log( log, uniqid );
 	
-	# cat.log( log, str.commentOneLine("END -INI- LOG ENTRY", brand="{R}", brand.dir="left") );
-	# ###################### END LOG ENTRY
+######	openSesame(log);
 	
-			
-	# checksums live here ...
-	backups	= paste0(d, "-backups-/");
-			check.dir(backups);
-
+	.%THIS%.	
+	cat.log( log, "--FUNCTION_INFO--" );
+	cat.dput(THIS, log);
 	
-	nf = length(inifilesORDERmatters);
+	
+	# chmod(400) on original sources in inst/R/ after INSTALL?
+	
+	
 	
 	sp =  "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/";
 	spd	= check.dir(sp);
-
-	sources = paste0(spd, inifilesORDERmatters);
-
 	
-	nd = check.dir(mf);
-		MEMORY = list(); RES = list();
+	ofiles = inifilesORDERmatters;	
+	
+	cat.log( log, "--FILES--" );
+	cat.dput( ofiles, log);
+
+	insources = paste0(spd, ofiles);
+	
+	oexts 	= check.ext(ofiles, dotless=FALSE);
+	#ostem = (outs %.-% d) %-.% exts;
+	opaths = ofiles %-.% exts;
+	
+	opos = check.list(str.pos("/", opaths));
+	ons = list.getLengths(opos);
+	
+	opartials 	= str.before("/", opaths, ons);
+	ostems 		= str.after("/", opaths, ons);
+
+
+	outs = paste0(d, opartials, "/", ostems, ".rds");
+		check.dir(outs);
+
+	# checksums live here ...
+	backups	= paste0(d, "-backups-/", TIMESTAMP , "/");
+		check.dir(backups);
+			
+	outs.copy = paste0(backups, opartials, "/", uniqid, "_", ostems, ".rds");
+	# if exists in the date ... append a str.uniqid-md5 ...
+	
+	ochecksums = paste0(d, "-backups-/", opartials, "/", ostems, "_");
+
+	# this stem still has .rds ... FINE ... it's different 
+	mfchecksum = paste0(d, "-backups-/", stem , "_");
+	mfcopy = paste0(backups, opartials, "/", uniqid, "_", stem);
+	
+	
+	MEMORY = list();# RES = list();
+	# FINAL = list();  
+	OUT = list();
+	
+	n = length(outs);	
 	for(i in 1:n)
 		{
 		
+		ostem		= ostems[i];
+		insource 	= insources[i];
+		out 		= outs[i];
+		out.copy 	= outs.copy[i];
+
+		# if we have to parse, we need the file anyway ...
+		instring	= readTextFile(insource);
+		checksum		= str.toMD5(instring);
+		# checksum 	= md5.textFile(insource);
+		
+		ochecksum 	= paste0(ochecksums[i], checksum, ".info");
+		
+		logic = file.exists_(ochecksum);
+		
+		ns = .now();
+		msg = paste0("LOOP [i] :", i, "\n\t\t", "now.start : ", ns ,"\n\t\t", "stem : ", ostem, "\n\t\t", "source : ", insource,"\n\t\t", "out : ", out,"\n\t\t", "out.copy : ", out.copy, "\n\t\t", "checksum : ", checksum,  "\n\t\t", "checksum.file : ", ochecksum,   "\n\t\t", "checksum.exists : ", logic, "\n");
+		
+.cat(msg); flush.console();
+
+		cat.log( log, msg );	
+	
+		
+		
+										# nonsensical ... 
+										# checksum matches, so GOOD 
+		if(!logic)    #  || !use.cache)
+			{
+			# FINAL[[i]] = res; 
+			# detach(package:HVcpp,unload=TRUE)
+					# instring	= readTextFile(insource);
+
+			RES = ini.parse(instring, fname = ostem, MEMORY = MEMORY);  
+			
+			# log it, backup, and so on ...
+				check.dir(out.copy);
+			writeRDS(RES, out.copy);
+				check.dir(out);
+			writeRDS(RES, out);	
+				check.dir(ochecksum);
+			cat.log( ochecksum, out.copy );					
+					
+			} else {
+					RES = readRDS(out);
+					# get MEMORY and pass on to NEXT ...					
+					}
+
+		ne = .now();
+		nt = ne - ns;
+		msg = paste0("\n\t\t\t", "now.end : ", ne , "\n\t\t\t", "parse.time [secs] : ", nt , "\n");
+		
+		cat.log( log, msg );
+		
+		
+		MEMORY 	= list.merge(MEMORY, property.get("MEMORY", RES) );
+		OUT 	= list.merge(OUT, RES);
+		# FINAL[[i]] = RES;		
 		}
 	
-	# I want to pass the memory ... 
-	# how to cascade the RES ... will list.merge really work?
 	
-	# also /ini/-backups-/humanVerse-uniqid-md5.rds
-	# most recent gets copied/in this function to [mf]
+	# this stem still has .rds ... FINE ... it's different 
+	#	ochecksum 	= paste0(ochecksums[i], checksum, ".info");
 	
-	# also /ini/-logs-/YYYY-MM-DD.log 
-	# multiline log entry 
-	# ###################### START LOG ENTRY #################
+	# mfchecksum = paste0(d, "-backups-/", stem , "_");
+	mfcopy = paste0(backups, uniqid, "_", stem);
+		check.dir(mfcopy);
+			writeRDS(OUT, mfcopy);
+		check.dir(mf);
+			writeRDS(OUT, mf);	
 	
+	cat.log ( log, mfcopy);
+	cat.log ( log, mf);
+	cat.log ( log, "\n\n");
 	
-	# ###################### END LOG ENTRY ###################
+	cat.log( log, str.commentOneLine("END -INI- LOG ENTRY", brand="{R}", brand.dir="left") );
+	cat.log ( log, "\n\n");
 	
-	mf.log 	= paste0( str.end(".rds", master, trim=TRUE), ".log");
-	# when do I use file checksums?
-	# another function does that ini.rebuild ... has changed?
-	# AT the system level ... at the individual file level, I read the log ... 
+######	openSesame(log);
 
-# str.toMD5(inistr)
-	
-	if(use.cache && file.exists_(mf)) { return( readRDS(mf) ); }
-	
-	# cache to files only 
-	# d = "C:/_R_/-humanVerse-/SYSTEM/cache/runtime/YYYY-MM-DD/"
-	# CACHE/humanVerse/system/ini/  
-	# CACHE/humanVerse/user/ini/
-	# abcdef.rds   abdefdk.info [cache time, function info]
-	.%THIS%.;
-	# cache keys primes and/or digits of PI ...
-	info = paste0( .now(), "|", 
-				paste0(capture.output(dput(THIS)),collapse="") );
-	
-	logmaster = paste0( str.end(".rds", master, trim=TRUE), ".log");
-
-	
-	# in runtime ... 
-	# ini.log = paste0(filename, "|", info);
-	
-	
-	
-	# cache MASTER and cache children ... 
-	
-
-	
-dput(info);
+	OUT;
 	}
 
 
-ini.file 	= "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/constants.ini";
+# # # # # # ini.file 	= "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/constants.ini";
 
-ini.file 	= "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/humanVerse.ini";
+# # # # # # ini.file 	= "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/humanVerse.ini";
 
-inistr 		= readTextFile(ini.file);
-lines 		= str.explode("\r\n", inistr);
-# lines		= lines[1:33];
+# # # # # # inistr 		= readTextFile(ini.file);
+# # # # # # lines 		= str.explode("\r\n", inistr);
+# # # # # # # lines		= lines[1:33];
 
 
 
@@ -150,9 +212,10 @@ lines 		= str.explode("\r\n", inistr);
 # tools::md5sum(ini.file) # "3fc3c980d825dec163e728b8d0217809" 
 # str.toMD5(inistr); # "a7d8d29e8b427e8908d04be574904769"
 
+ini.parse = function() {} 
 ini.parse = function(inistr, fname="-file unknown-", 
 							RES = list(), MEMORY = list(),
-				verbose=FALSE, ignore.eval = FALSE)
+				verbose=TRUE, ignore.eval = FALSE)
 	{
 	lines = str.explode("\r\n", inistr);
 	
@@ -198,7 +261,7 @@ cat("\n\n ", line.no, " --> ", line, "\n\n");
 
 if(verbose)
 	{
-xxx = readline(prompt="Press [enter] to continue, [ESC] to quit");
+# xxx = readline(prompt="Press [enter] to continue, [ESC] to quit");
 gggassign("RES", RES);
 	}
 	
@@ -242,6 +305,7 @@ gggassign("RES", RES);
 				if(hasMemory) 	{ MEMORY[[key]] = val; }
 				
 				val = property.set("source", val, paste0(fname, ":", line.no));
+				
 				RES = ini.assignVal(CURRENT_KEY, val, cparent, RES);
 				
 				CURRENT_KEY = "";				
@@ -355,6 +419,8 @@ gggassign("RES", RES);
 				{
 				if(hasRcode) 	{ val = ini.evalMe(val, MEMORY, ignore.eval = ignore.eval ); }
 				if(hasMemory) 	{ MEMORY[[key]] = val; }
+				
+				val = property.set("source", val, paste0(fname, ":", line.no));
 				
 				RES = ini.assignVal(key, val, cparent, RES);
 				}

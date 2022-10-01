@@ -771,11 +771,12 @@ str.pipeHeader = function(str="Welcome to the {humanVerse}",
 	res = property.set("more", res, list("rline" = rline, "cline" = cline, "bline" = bline));
 	res;
 	}
-
-
+ 
+ 
 str.commentOneLine = function(str = "Start LOG file",
 								width = 72,
 								ctag = "#",
+								htag = ".",
 								ptag = " ",
 								npad = 3,
 								brand = "{humanVerse}",
@@ -795,26 +796,28 @@ str.commentOneLine = function(str = "Start LOG file",
 	
 	tlen = clen + plen + slen + plen + clen +  ( 3*clen + blen + 3*clen );
 	
-	half = ceil( (width-tlen)/2 );  if(half < 0) { half = 0; }
+	half = floor( (width-tlen)/2 );  if(half < 0) { half = 0; }
 	# hpad = strrep_(ctag, to.length=half);
-	hpad = strrep_(ctag, half, TRUE);
+	hpad = strrep_(htag, half, TRUE);
 
 	
 	if(brand.dir == "right")
 		{
 		res = paste0( ctag, hpad, pad, str, pad, hpad, bpad, brand, bpad, ctag );
-		# may need to check on length 
-		return(res);
+		res = substring(res, 1, width);
+		res = str.pad(res, width, ctag, "RIGHT");
 		}
 	if(brand.dir == "left")
 		{
 		res = paste0( ctag, bpad, brand, bpad, hpad, pad, str, pad, hpad, ctag );
-		# may need to check on length 
-		return(res);
-		}
+		res = substring(res, 1, width);
+		res = str.pad(res, width, ctag, "LEFT");
+		}	
+	
+	res;
 	}
 	
-	
+	 
 
 #------------------------------------------------#
 str.commentWrapper = function() {}   # what about \n in str for "blank vertical space"?

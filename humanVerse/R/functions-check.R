@@ -205,9 +205,9 @@ cache.get = function(cobj, cache="memory", unused=NULL)
 	if(cache == "memory")
 		{
 		obj = memory.get(md5, "-CACHE-");
-		}
+		}  
 	if(cache == "filesystem")
-		{
+		{ 
 		d = "C:/_R_/-humanVerse-/SYSTEM/cache/runtime/YYYY-MM-DD/"
 		f = paste0(d, md5, ".rds");
 		obj = NULL;
@@ -340,7 +340,7 @@ check.dir = function(path, trailing = TRUE, create=TRUE)
 					);
 			}
 		}
-	d;
+	d; 
 	}
 
 
