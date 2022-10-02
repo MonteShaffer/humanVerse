@@ -1,3 +1,59 @@
+# WINDOZE
+# mac_addr<- system("getmac", intern = TRUE)
+# DEBIAN 
+# mac_addr<- system("ifconfig -a | grep -Po 'HWaddr \K.*$'", intern = TRUE)
+# // ifconfig, ip, or ipconfig
+# system("ipconfig /all", intern = TRUE)
+# system("wmic bios", intern=TRUE);
+# wmic bios
+# wmic bios get serialnumber  ... windoze
+# ioreg -l | grep IOPlatformSerialNumber ... mac 
+# sudo dmidecode -t system | grep Serial ... debian 
+# https://kb.mit.edu/confluence/pages/viewpage.action?pageId=152578725
+# cat /proc/cpuinfo
+# cat /proc/meminfo
+
+# MAC ... system_profiler SPSoftwareDataType SPHardwareDataType
+# https://osxdaily.com/2012/04/28/get-extended-cpu-information-from-the-command-line/
+# https://osxdaily.com/2022/02/02/find-mac-system-info-terminal-system-profiler/
+# RAM ... wmic memorychip get devicelocator, manufacturer
+# wmic memorychip get devicelocator, partnumber
+# wmic memorychip get devicelocator, partnumber, manufacturer,banklabel, serialnumber, capacity, speed 
+# https://www.windowscentral.com/how-get-full-memory-specs-speed-size-type-part-number-form-factor-windows-10
+# system("wmic memorychip get devicelocator, partnumber, manufacturer,banklabel, serialnumber, capacity, speed, memorytype, formfactor", intern=TRUE);
+
+# system("wmic logicaldisk list full", intern=TRUE);
+# system("wmic physicaldisk list full", intern=TRUE);
+
+
+# RAM = list("formfactor" = list("0" =  "Unknown", "1" =  "Other", "2" =  "SIP", "3" =  "DIP", "4" =  "ZIP", "5" =  "SOJ", "6" =  "Proprietary", "7" =  "SIMM", "8" =  "DIMM", "9" =  "TSOP", "10" =  "PGA", "11" =  "RIMM", "12" =  "SODIMM", "13" =  "SRIMM", "14" =  "SMD", "15" =  "SSMP", "16" =  "QFP", "17" =  "TQFP", "18" =  "SOIC", "19" =  "LCC", "20" =  "PLCC", "21" =  "BGA", "22" =  "FPBGA", "23" =  "LGA", "24" =  "FB-DIMM"), "memorytype" = list("0" = "Unknown", "1" = "Other", "2" = "DRAM", "3" = "Synchronous DRAM", "4" = "Cache DRAM", "5" = "EDO", "6" = "EDRAM", "7" = "VRAM", "8" = "SRAM", "9" = "RAM", "10" = "ROM", "11" = "Flash", "12" = "EEPROM", "13" = "FEPROM", "14" = "EPROM", "15" = "CDRAM", "16" = "3DRAM", "17" = "SDRAM", "18" = "SGRAM", "19" = "RDRAM", "20" = "DDR", "21" = "DDR2", "22" = "DDR2 FB-DIMM", "24" = "DDR3", "25" = "FBD2", "26" = "DDR4"));
+
+# RAM = list("memorytype" = list(names = as.character(unlist(x$memorytype)), codes = as.integer(names(x$memorytype))), "formfactor" = list(names = as.character(unlist(x$formfactor)), codes = as.integer(names(x$formfactor))));
+
+# RAM = list(memorytype = list(names = c("Unknown", "Other", "DRAM", "Synchronous DRAM", "Cache DRAM", "EDO", "EDRAM", "VRAM", "SRAM", "RAM", "ROM", "Flash", "EEPROM", "FEPROM", "EPROM", "CDRAM", "3DRAM", "SDRAM", "SGRAM", "RDRAM", "DDR", "DDR2", "DDR2 FB-DIMM", "DDR3", "FBD2", "DDR4"), codes = c(0L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L, 16L, 17L, 18L, 19L, 20L, 21L, 22L, 24L, 25L, 26L)), formfactor = list(names = c("Unknown", "Other", "SIP", "DIP", "ZIP", "SOJ", "Proprietary", "SIMM", "DIMM", "TSOP", "PGA", "RIMM", "SODIMM", "SRIMM", "SMD", "SSMP", "QFP", "TQFP", "SOIC", "LCC", "PLCC", "BGA", "FPBGA", "LGA", "FB-DIMM"), codes = 0:24))
+
+# https://winaero.com/get-cpu-information-via-command-prompt-in-windows-10/
+#  wmic cpu get caption, deviceid, name, numberofcores, maxclockspeed, status
+#  wmic diskdrive get model,serialNumber,size,mediaType
+# wmic diskdrive list full
+# wmic logicaldisk get name
+# wmic logicaldisk list full
+
+# https://stackoverflow.com/questions/31510432/running-a-powershell-script-from-r-using-system2-rather-than-system
+# system2("powershell", args=c("-file", "C:\\directoryName\\coolScript.ps1"))
+
+
+# DeviceID         Size BusType MediaType model                     serialnumber
+# --------         ---- ------- --------- -----                     ------------
+# 0        500107862016 RAID    SSD       Samsung SSD 850 EVO 500GB S3R3NF1JB22176L
+# $Drives=0 ; $TotalSize=0
+# get-physicaldisk | 
+  # ForEach {$_;$Drives+=1;$TotalSize+=$_.Size}|
+    # Format-Table -auto DeviceID,Size,BusType,MediaType,model,serialnumber
+# "Drives       TotalSize"
+# "------- --------------"
+# "{0,-6} {1,15}" -f $Drives,$TotalSize
+
 
 
 check.internet = function(domain="8.8.8.8", count=1)

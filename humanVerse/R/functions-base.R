@@ -516,7 +516,7 @@ bin = function(..., n=2, pad="0")
 				}
 	
 	} 
- 
+   
 base.convert = function(..., from=5, to=16, decimal.numeric=TRUE)
 	{
 	FROM = check.base(from);

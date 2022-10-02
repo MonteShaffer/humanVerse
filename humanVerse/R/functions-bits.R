@@ -177,7 +177,7 @@
 
 
 # (~a);
-.NOT. = function() {}
+.NOT. = function() {} 
 .NOT. = function(a, b=NULL) 
 	{
 	# INTEGER_MAXIMUM		= 2147483647

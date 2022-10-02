@@ -43,7 +43,7 @@ check.list = function(input)
 	}
 	
 check.base = function(base = 10)
-	{ 
+	{  
 	base = as.integer(base);
 	if(base == 64) { return(base); }  # base64 will work as string/int
 	if(base > 36 || base < 2) 

@@ -120,7 +120,7 @@ long long s_XOR(long long a, long long int b)
 
 //' Pairwise XOR operations
 //'
-//' @param a INTEGER to be manipulated
+//' @param a INTEGER to be manipulated 
 //' @param b INTEGER to be manipulated
 //' @return Updated INTEGER after XOR
 // [[Rcpp::export]]
@@ -128,7 +128,7 @@ NumericVector cpp_XOR(const std::vector<long long int> arr, const std::vector<lo
 	{
 	NumericVector r{};
 	long long int i = 0;
-	for (auto& element : arr) 
+	for (auto& element : arr)  
 		{
 		long long int res = s_XOR(element, brr[i]);
 		r.push_back(res);

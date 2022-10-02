@@ -1163,7 +1163,7 @@ basename_ = function(path, trailing=TRUE)
 	stem = list.getLastElements(tmp);
 	stem;
 	}
-  
+   
   
 
 

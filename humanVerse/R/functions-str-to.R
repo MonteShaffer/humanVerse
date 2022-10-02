@@ -381,7 +381,7 @@ is.uuid = function(str=c("abcdef", "3b53a5c6-fe8a-44eb-9192-f51e80c370a2"))
 	grepl(REGEX_UUID, str);	
 	}
 
-
+ 
 str.fromB64 = function(b64str)
 	{
 	base64.decode(b64str);

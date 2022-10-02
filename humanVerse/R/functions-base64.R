@@ -52,7 +52,7 @@ base64.decode = function(b64str)
 	}
 	
 base64.encode = function(str)
-	{  
+	{   
 	n = length(str);
 	res = character(n);
 	for(i in 1:n) 
@@ -87,7 +87,7 @@ js.b64 = function(input, method="encode")
 	enc1 = enc2 = enc3 = enc4 = "";
 	i = 0;	
 	 
-	encode = function(tol=c()) 
+	encode = function(humanVerse=c("welcomeTo")) 
 		{	
 		input.charCodes	 = charCode(input); 
 		n = str.len(input); 
@@ -98,15 +98,11 @@ js.b64 = function(input, method="encode")
 			chr2 = input.charCodes[ i %++%. ];	
 			chr3 = input.charCodes[ i %++%. ];	
 				 
-					# chr1 >> 2;
-					# CREATE "%>>%" function ... "%+=" ... "%|%" .. "%&%"
-			enc1 = bitShiftR(chr1,2); 
-					# ((chr1 & 3) << 4) | (chr2 >> 4);
-			enc2 = bitwOr( bitShiftL(bitwAnd(chr1,3),4), bitShiftR(chr2,4) );			
-					# ((chr2 & 15) << 2) | (chr3 >> 6);
-			enc3 = bitwOr( bitShiftL(bitwAnd(chr2,15),2), bitShiftR(chr3,6) );
-					# chr3 & 63;
-			enc4 = bitwAnd(chr3,63);
+					
+			enc1 = chr1 %>>% 2;
+			enc2 = ((chr1 %&% 3) %<<% 4) %|% (chr2 %>>% 4);
+			enc3 = ((chr2 %&% 15) %<<% 2) %|% (chr3 %>>% 6);
+			enc4 = chr3 %&% 63;
 
 			# is.na or is.nan?
 			if (is.na(chr2) || is.nan(chr2)) 
@@ -127,7 +123,7 @@ js.b64 = function(input, method="encode")
 		return(output);
 		}
 
-	decode = function(tol=c()) 
+	decode = function(humanVerse=c("welcomeTo")) 
 		{
 		#// remove all characters that are not A-Z, a-z, 0-9, +, /, or =
 		#input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
@@ -145,12 +141,10 @@ js.b64 = function(input, method="encode")
 			enc3 = v.which(B64v, input.vec[ i %++%. ])-1;
 			enc4 = v.which(B64v, input.vec[ i %++%. ])-1;
 
-					# (enc1 << 2) | (enc2 >> 4);
-			chr1 = bitwOr( bitShiftL(enc1,2), bitShiftR(enc2,4) );				
-					# ((enc2 & 15) << 4) | (enc3 >> 2);
-			chr2 = bitwOr( bitShiftL(bitwAnd(enc2,15),4), bitShiftR(enc3,2) );
-					# ((enc3 & 3) << 6) | enc4;
-			chr3 = bitwOr( bitShiftL(bitwAnd(enc3,3),6), (enc4) );
+
+			chr1 = (enc1 %<<% 2) %|% (enc2 %>>% 4);	
+			chr2 = ((enc2 %&% 15) %<<% 4) %|% (enc3 %>>% 2);
+			chr3 = ((enc3 %&% 3) %<<% 6) | enc4;
 					
 			# can I trap String.fromCharCode 0 to AA==	... \x00 NULL ???	
 			output = paste0(output, String.fromCharCode(chr1));

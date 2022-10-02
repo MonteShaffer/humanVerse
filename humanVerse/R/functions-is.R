@@ -640,7 +640,7 @@ is.wholeNumber = function(..., tol = DEFAULT_TOLERANCE, part="Re")
   }
   
 
-
+ 
 	
 	
 # what about LAZY loading?
