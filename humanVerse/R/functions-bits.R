@@ -18,17 +18,8 @@
 	b = check.base(bits);
 	if(is.null(b)) { stop("base issues"); }
 	
-	NA.logic 			= v.test(a, NA);
 	OVERFLOW.logic 		= abs(a_) > INTEGER_MAXIMUM;
 	
-	if(exists("cpp_SHIFT_R"))
-		{
-		res 				= a;
-		res[!NA.logic] 		= cpp_SHIFT_R(a[!NA.logic], b);
-		res[OVERFLOW.logic] = 0;
-		return(res);
-		} 
-		
 	NEG.logic 			= is.negative(a_)
 	res 				= bitwShiftR(a, b);
 	res[NEG.logic] 		= -bitwShiftR(-a[NEG.logic], b) - 1;
@@ -61,14 +52,7 @@
 	NA.logic 			= v.test(a, NA);
 	OVERFLOW.logic 		= abs(a_) > INTEGER_MAXIMUM;
 	
-	# # # # # if(exists("cpp_SHIFT_L"))
-		# # # # # {
-		# # # # # res 			= a;
-		# # # # # res[!NA.logic] 	= cpp_SHIFT_L(a[!NA.logic], b);
-		# # # # # return(res);
-		# # # # # } 
-		
-	NEG.logic 			= is.negative(a) & !NA.logic;
+	NEG.logic 			= is.negative(a_) & !NA.logic;
 	res 				= bitwShiftL(a, b);	
 	res[NEG.logic] 		= -bitwShiftL(-a[NEG.logic], b);
 	res[OVERFLOW.logic] = 0;
@@ -92,20 +76,14 @@
 	# .AND.(a, 16);		# 0 16 16 0 0 0 
 	# bitwAnd(a, 16);	# 0 16 16 0 NA NA 
 	#   
-
+	
+	a_ = a; b_ = b;
 	a = suppressWarnings( as.integer(a) );
 	b = suppressWarnings( as.integer(b) );
 	
-	# # # # # logic = !anyNA(a) && !anyNA(b);
-	
-	# # # # # # with NA on both sides, is there any advantage of cpp option?
-	# # # # # if(logic && exists("cpp_AND"))
-		# # # # # {
-		# # # # # return( cpp_AND(a, b) );
-		# # # # # }
 		
 	
-	OVERFLOW.logic 		= abs(a) > INTEGER_MAXIMUM;
+	OVERFLOW.logic 		= abs(a_) > INTEGER_MAXIMUM;
 	
 	res = suppressWarnings( bitwAnd(a,b));
 	res[OVERFLOW.logic] = 0;
@@ -130,25 +108,16 @@
  
 	# bitwOr(a, 16);	# 1732584209 -1732584193 2147483647 -2147483631 NA NA
 	
-	a_ = a; 
+	a_ = a; b_ = b;
 	a = suppressWarnings( as.integer(a) );
-	alen = length(a);
-	b_ = b;
-	b = suppressWarnings( as.integer(b) );
-	blen = length(b);
+	b = suppressWarnings( as.integer(b) );	
+	alen = length(a); blen = length(b);
 	if(blen < alen) 
 		{ 
+		# have to be same length for replacement logic at end 
 		b 	= rep(b,  length.out=alen); 
 		b_ 	= rep(b_, length.out=alen);
 		}
-	
-	# # # # # logic = !anyNA(a) && !anyNA(b);
-	
-	# # # # # # with NA on both sides, is there any advantage of cpp option?
-	# # # # # if(logic && exists("cpp_OR"))
-		# # # # # {
-		# # # # # return( cpp_OR(a, b) );
-		# # # # # }
 	
 	res = suppressWarnings( bitwOr(a,b));
 		
@@ -181,25 +150,16 @@
  
 	# bitwXor(a, 16);	# 1732584209 -1732584209  2147483631 -2147483631 NA NA
 	
-	a_ = a; 
+	a_ = a; b_ = b;
 	a = suppressWarnings( as.integer(a) );
-	alen = length(a);
-	b_ = b;
-	b = suppressWarnings( as.integer(b) );
-	blen = length(b);
+	b = suppressWarnings( as.integer(b) );	
+	alen = length(a); blen = length(b);
 	if(blen < alen) 
 		{ 
+		# have to be same length for replacement logic at end 
 		b 	= rep(b,  length.out=alen); 
 		b_ 	= rep(b_, length.out=alen);
 		}
-	
-	# # # # # logic = !anyNA(a) && !anyNA(b);
-	
-	# # # # # # with NA on both sides, is there any advantage of cpp option?
-	# # # # # if(logic && exists("cpp_XOR"))
-		# # # # # {
-		# # # # # return( cpp_XOR(a, b) );
-		# # # # # }
 	
 	res = suppressWarnings( bitwXor(a,b));
 		
@@ -207,8 +167,7 @@
 	OVERFLOW.logicA 	= (abs(a_) > INTEGER_MAXIMUM);
 	OVERFLOW.logicB 	= (abs(b_) > INTEGER_MAXIMUM);
 	OVERFLOW 			= OVERFLOW.logicA & OVERFLOW.logicB;
-	
-	
+		
 	res[OVERFLOW.logicA] 	= b_[OVERFLOW.logicA];   # (a + b);
 	res[OVERFLOW.logicB] 	= a_[OVERFLOW.logicB];   # (a + b);
 	res[OVERFLOW.logicB]	= 0;
@@ -228,21 +187,21 @@
 	# cpp_NOT(a);		#   -1732584194 1732584192 -2147483646 2147483646 -4611686018427387904  4611686018427387904
 
 	# javascript ... 	# -1732584194 1732584192 -2147483648 2147483646 -1 -1 
-	# .NOT.(a);			# 
- 
+	# .NOT.(a);			# -1732584194 1732584192 -2147483648  2147483646 -1 -1 
 	# bitwNot(a);		# -1732584194 1732584192 NA 2147483646 NA NA
 	
 	a_ = a;
 	a = suppressWarnings( as.integer(a) );
 	
 	res = suppressWarnings( bitwNot(a) );
+	NA.logic = is.na(res);
 	
-
 	OVERFLOW.logic 	= (abs(a_) > INTEGER_MAXIMUM);
-	NEG.logic 		= is.negative(a_);
+	OVERFLOW.border = (a_ == INTEGER_MAXIMUM);
+	# NEG.logic 		= is.negative(a_);
 
-	res[NEG.logic] 		= res[NEG.logic] - 1;
-	res[OVERFLOW.logic] = -1;
+	res[NA.logic & OVERFLOW.border] = -1*(a_[NA.logic & OVERFLOW.border] + 1);
+	res[NA.logic & OVERFLOW.logic] 	= -1;
 	res;	
 	} 
 
