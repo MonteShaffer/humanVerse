@@ -154,7 +154,7 @@ quick = function(..., character.only = FALSE, res=NULL, verbose=FALSE)
 		}
 	}
 
-
+cpp = "C:/_git_/github/MonteShaffer/humanVerse/HVcpp/scr/";
 
 quick.dir = function() 
 	{ 

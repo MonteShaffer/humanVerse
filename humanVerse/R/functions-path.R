@@ -16,7 +16,7 @@ path.summary = function(path=getwd(), trailing = TRUE)
 	# I HAVE LOST a / somewhere.
 	# is.null(ext) vs is.empty(ext) ... ext == EMPTY ...
 	# b/c I updated check.ext and made it multivariate 
-	# quick.dir() broke?  is.dir ??? NODE overflow ... 
+	
 	# memory.logging keeps jamming with prep.dots(...) on df.row 
 	# maybe need to go OLD-SCHOOL with df.row on MANUAL dots ...
 	# how to GET NAMES ... ETC?
@@ -71,10 +71,23 @@ path.summary = function(path=getwd(), trailing = TRUE)
 
 
 # maybe have openSesame, but this is generally me copying PATH from WINDOWZ into R ...
-path.fromClipboard = function(trailing = TRUE)
+path.pasteFrom = function(trailing = TRUE)
 	{
 	x = readClipboard();
-	prep.path(x);	# prep.path cleanses .. check.path verifies it 
+	# prep.path cleanses .. check.path verifies it 
+	d = prep.path(x, trailing=trailing);
+	d;
+	}
+	
+pasteWD = function(trailing = TRUE)
+	{
+	x = readClipboard();
+	# prep.path cleanses .. 
+	# check.dir verifies it (creates if necessary)
+	# , strips a filepath to DIRECTORY
+	d = check.dir(x, trailing=trailing);	
+	setwd( d );
+	d;
 	}
 
 # > y = path.fromClipboard()

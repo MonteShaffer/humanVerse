@@ -265,3 +265,465 @@ unsigned matrix_rank_complex(const Eigen::MatrixXd& Re,
 	}
 */
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+// [[Rcpp::export]]
+MatrixXd matrix_add(Map<MatrixXd> A, Map<MatrixXd> B)
+	{
+	// Therefore, the instruction a = a.transpose() does not replace a with its transpose, as one would expect:
+	return A + B;
+	}
+	
+// [[Rcpp::export]]
+MatrixXd matrix_subtract(Map<MatrixXd> A, Map<MatrixXd> B)
+	{
+	return A.transpose();
+	}
+	
+// [[Rcpp::export]]
+MatrixXd matrix_multiply(Map<MatrixXd> A, Map<MatrixXd> B)
+	{
+	//  Eigen treats matrix multiplication as a special case and takes care of introducing a temporary here, so it will compile m=m*m as:
+	// tmp = m*m; m = tmp;
+
+	return A.transpose();
+	}
+
+
+
+
+
+
+// [[Rcpp::export]]
+MatrixXd matrix_multiplyN(MatrixXd& A, int n=2, int type=1)
+	{	
+	int nrow = A.rows();
+	int ncol = A.cols();
+	
+	MatrixXd B;
+		
+	if(n == 0) 	{ return B.Identity(nrow, ncol);}
+	if(n <  0) 	{ B = matrix_inverse(A, type);	}
+	if(n >  0) 	{ B = A;						}
+	
+	/*
+	int an = abs(n) - 1;
+	for(i = 0; i < an; i++)
+		{
+		// B = B * B;
+		}
+		
+	return B;  // literally R went away ... 
+	*/
+	return A;
+	}
+
+
+
+	
+// [[Rcpp::export]]
+MatrixXd matrix_determinant(Map<MatrixXd> A, int type=1)
+	{
+	// https://eigen.tuxfamily.org/dox/group__TutorialLinearAlgebra.html
+/* 
+	if(type == 1) { return A.determinant(); 				}
+	if(type == 2) { return A.PartialPivLU.determinant();	}
+	if(type == 3) { return A.FullPivLU.determinant();		}
+	 */ // const MatrixXd& A)
+	return A.determinant();
+	}
+	
+// [[Rcpp::export]]
+MatrixXd matrix_inverse(Map<MatrixXd> A, int type=1, double tol=0)
+	{
+	// diagonal size times machine epsilon.
+	// NumTraits<Scalar>::epsilon()
+	// If you want to come back to the default behavior, call setThreshold(Default_t)
+	// https://eigen.tuxfamily.org/dox/group__TutorialLinearAlgebra.html
+/* 
+	if(type == 1) { return A.inverse(); 				}
+	if(type == 2) { return A.PartialPivLU.inverse();	}
+	if(type == 3) { return A.FullPivLU.inverse();		}
+	 */ // const MatrixXd& A)
+	return A.inverse();
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	#include <RcppEigen.h>
+// [[Rcpp::depends(RcppEigen)]]
+
+using Eigen::Map;		// 'maps' rather than copies 
+using Eigen::MatrixXd;	// variable size matrix, double precision
+using Eigen::MatrixXcd;	// ABOVE, complex 
+using Eigen::VectorXd;	// variable size vector, double precision
+using Eigen::VectorXcd;	// ABOVE, complex 
+
+// [[Rcpp::export]]
+VectorXd matrix_diagonal(Map<MatrixXd> M)
+	{
+	return M.diagonal();
+	}
+
+// [[Rcpp::export]]
+double matrix_trace(Map<MatrixXd> M)
+	{
+	return M.diagonal().sum();
+	}
+
+// [[Rcpp::export]]
+MatrixXd matrix_transpose(Map<MatrixXd> M)
+	{
+	// Rcpp::sourceCpp("matrix.cpp", verbose=TRUE);
+	// https://eigen.tuxfamily.org/dox/group__TutorialMatrixArithmetic.html
+	// Therefore, the instruction a = a.transpose() does not replace a with its transpose, as one would expect:
+	// For in-place transposition, as for instance in a = a.transpose(), simply use the transposeInPlace() function:
+	// There is also the adjointInPlace() function for complex matrices.
+	// return M.transpose();
+	// return M.transposeInPlace();
+	return M.transpose();  // I am not doing any additional STUFF
+	}
+
+	
+// [[Rcpp::export]]
+MatrixXd matrix_add(Map<MatrixXd> A, Map<MatrixXd> B)
+	{
+	return A + B;
+	}
+	
+// [[Rcpp::export]]
+MatrixXd matrix_subtract(Map<MatrixXd> A, Map<MatrixXd> B)
+	{
+	return A - B;
+	}
+
+// [[Rcpp::export]]
+MatrixXd matrix_zero(int row=5, int col=-1 )
+	{
+	// https://eigen.tuxfamily.org/dox/group__TutorialAdvancedInitialization.html
+	if(col <= -1) { col = row; }
+	MatrixXd B;
+	return B.Zero(row, col);
+	}
+
+	
+// [[Rcpp::export]]
+MatrixXd matrix_multiply(Map<MatrixXd> A, Map<MatrixXd> B)
+	{
+	return A * B;
+	}	
+
+// [[Rcpp::export]]
+MatrixXd matrix_multiplyT(Map<MatrixXd> A)
+	{
+	return A * A.transpose();
+	}
+	
+
+
+// [[Rcpp::export]]
+MatrixXd matrix_identity(int size=5)
+	{
+	MatrixXd B;
+	return B.Identity(size, size);
+	}
+
+
+/*
+
+// [[Rcpp::export]]
+MatrixXd matrix_determinant(Map<MatrixXd> A, int type=1)
+	{
+	// While inverse and determinant are fundamental mathematical concepts, in numerical linear algebra they are not as useful as in pure mathematics.
+	/* 
+	if(type == 1) { return A.determinant(); 				}
+	if(type == 2) { return A.PartialPivLU.determinant();	}
+	if(type == 3) { return A.FullPivLU.determinant();		}
+	 */
+	return A.determinant();
+	}
+
+// [[Rcpp::export]]
+MatrixXd matrix_inverse(Map<MatrixXd> A, int type=1)
+	{
+	// diagonal size times machine epsilon.  // , double eps=0)
+	// NumTraits<Scalar>::epsilon()
+	// If you want to come back to the default behavior, call setThreshold(Default_t)
+	// https://eigen.tuxfamily.org/dox/group__TutorialLinearAlgebra.html
+/* 
+	if(type == 1) { return A.inverse(); 				}
+	if(type == 2) { return A.PartialPivLU.inverse();	}
+	if(type == 3) { return A.FullPivLU.inverse();		}
+	 */ // const MatrixXd& A)
+	return A.inverse();
+	}
+
+
+
+
+
+
+
+
+
+	
+
+ 	
+	
+	
+	
+// /********************** COMPLEX PAIRS **********************/	
+	
+	
+// [[Rcpp::export]]
+VectorXcd matrix_diagonal_complex(const MatrixXcd& Mc)
+	{
+	/* VectorXcd RES 	= Mc.diagonal();
+	return RES; */
+	return Mc.diagonal();
+	}
+	
+// [[Rcpp::export]]
+std::complex<double> matrix_trace_complex(const MatrixXcd& Mc)
+	{
+	/* // return MC.diagonal().sum() // doesn't seem to work ...
+	VectorXcd RES 					= Mc.diagonal();
+	std::complex<double> res 		= RES.sum();	
+	return res; */
+	return Mc.diagonal().sum();
+	}
+
+// [[Rcpp::export]]
+MatrixXcd matrix_transpose_complex(const MatrixXcd& Mc)
+	{
+	// https://eigen.tuxfamily.org/dox/group__TutorialMatrixArithmetic.html
+	// Therefore, the instruction a = a.transpose() does not replace a with its transpose, as one would expect:
+	// For in-place transposition, as for instance in a = a.transpose(), simply use the transposeInPlace() function:
+	// There is also the adjointInPlace() function for complex matrices.
+	// return Mc.transpose();
+	// return Mc.adjointInPlace();
+	return Mc.transpose();  // I am not doing any additional STUFF
+	}
+	
+	
+// [[Rcpp::export]]
+MatrixXcd matrix_add_complex(const MatrixXcd& Ac, const MatrixXcd& Bc)
+	{
+	return Ac + Bc;
+	}
+	
+// [[Rcpp::export]]
+MatrixXcd matrix_subtract_complex(const MatrixXcd& Ac, const MatrixXcd& Bc)
+	{
+	return Ac - Bc;
+	}
+	
+	
+
+// [[Rcpp::export]]
+MatrixXcd matrix_zero_complex(int row=5, int col=-1 )
+	{
+	// https://eigen.tuxfamily.org/dox/group__TutorialAdvancedInitialization.html
+	if(col <= -1) { col = row; }
+	MatrixXcd B;
+	return B.Zero(row, col);
+	}
+	
+	
+// [[Rcpp::export]]
+MatrixXcd matrix_multiply_complex(const MatrixXcd& Ac, const MatrixXcd& Bc)
+	{
+	return Ac * Bc;
+	}		
+
+// [[Rcpp::export]]
+MatrixXcd matrix_multiplyT_complex(const MatrixXcd& Ac)
+	{
+	return Ac * Ac.transpose();
+	}
+	
+
+// [[Rcpp::export]]
+MatrixXcd matrix_identity_complex(int size=5)
+	{
+	MatrixXcd B;
+	return B.Identity(size, size);
+	}
+
+	
+// [[Rcpp::export]]
+MatrixXcd matrix_determinant(const MatrixXcd& Ac, int type=1)
+	{
+	// While inverse and determinant are fundamental mathematical concepts, in numerical linear algebra they are not as useful as in pure mathematics.
+	/* 
+	if(type == 1) { return Ac.determinant(); 				}
+	if(type == 2) { return Ac.PartialPivLU.determinant();	}
+	if(type == 3) { return Ac.FullPivLU.determinant();		}
+	 */
+	return Ac.determinant();
+	}
+
+
+// [[Rcpp::export]]
+MatrixXcd matrix_inverse_complex(const MatrixXcd& Ac, int type=1)
+	{
+	// https://eigen.tuxfamily.org/dox/group__TutorialLinearAlgebra.html
+/* 
+	if(type == 1) { return Ac.inverse(); 				}
+	if(type == 2) { return Ac.PartialPivLU.inverse();	}
+	if(type == 3) { return Ac.FullPivLU.inverse();		}
+	 */ // const MatrixXd& A)
+	return Ac.inverse();
+	}
+	
+
+
+ 	
+ 
