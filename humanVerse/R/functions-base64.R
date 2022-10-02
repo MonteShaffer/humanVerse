@@ -39,26 +39,54 @@
 # 'RmHDp2FkZQ=='
 
 
+
+base64.decode = function(b64str)
+	{
+	n = length(b64str);
+	res = character(n);
+	for(i in 1:n)
+		{
+		res[i] = js.b64(b64str[i], "decode");
+		}		
+	res;
+	}
+	
+base64.encode = function(str)
+	{  
+	n = length(str);
+	res = character(n);
+	for(i in 1:n) 
+		{
+		res[i] = js.b64(str[i], "encode");
+		}		
+	res;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
 ## this is too complicated, make it SIMPLE
 ## // maybe port http://c.mshaffer.com/js/monte/base64.js
 ## originally it was STRING <==> B64STRING
 ## we need JSON for STRING <==> OBJECT 
 ## keep them separate ....
 
+# univariate 
 js.b64 = function(input, method="encode") 
 	{
-CURRENT_BIT_METHOD = DEFAULT_BIT_METHOD;
-DEFAULT_BIT_METHOD = "base";
-on.exit(DEFAULT_BIT_METHOD = CURRENT_BIT_METHOD);
-
 	output = "";
 	chr1 = chr2 = chr3 = "";
 	enc1 = enc2 = enc3 = enc4 = "";
 	i = 0;	
 	 
-	# this is univariate function	
-	if(!is.defined(B64)) { constants.default(); }
-	
 	encode = function(tol=c()) 
 		{	
 		input.charCodes	 = charCode(input); 

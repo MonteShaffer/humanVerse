@@ -43,10 +43,15 @@ check.list = function(input)
 	}
 	
 check.base = function(base = 10)
-	{
+	{ 
 	base = as.integer(base);
 	if(base == 64) { return(base); }  # base64 will work as string/int
-	if(base > 36 || base < 2) { stop("'base' must be between 2 and 36."); }
+	if(base > 36 || base < 2) 
+		{ 
+		
+		cat.warning("'base' must be between 2 and 36."); 
+		return(NULL);
+		}
 	base; 
 	}
 
@@ -391,32 +396,6 @@ check.path = function(path=getwd(), trailing=TRUE, create=TRUE, open=FALSE)
 
 
 
-touch = function(f)
-	{
-	# for now, we assume touch means ... empty ...
-	# just MODIFY the timestamps, create INODE if it doesn't exist
-	# maybe tie-in to system or system2 
-	if(!file.exists_(f))
-		{
-		# does this work, empty?
-		cat("", file=f, sep="");  # maybe do ftouch with fopen?
-		}
-	
-	}
-
-
-# basename doesn't play nice ... 
-basename_ = function(path, trailing=TRUE)
-	{
-	d = prep.path(path, trailing=trailing);
-	
-	# basename doesn't play nice ... 
-	tmp = str.explode(DIR_LINUX, d);
-	stem = list.getLastElements(tmp);
-	stem;
-	}
-
-
 	
 # check.path("C:/garba/dkfj/")
 # check.path(tmp.file("sldsfeep.txt"))
@@ -461,6 +440,12 @@ check.isCompatibleLength = function(x, y,
 
 
 
+# https://github.com/douglascrockford/JSON-js/blob/master/json2.js
+check.json = function(str)
+	{
+	# returns NULL if NOT, otherwise JSON.parse ...
+	
+	}
 
 
 

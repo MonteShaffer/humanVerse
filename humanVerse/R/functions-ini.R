@@ -205,8 +205,8 @@ ini.parseFiles = function(inifilesORDERmatters,
 # # # # # # lines 		= str.explode("\r\n", inistr);
 # # # # # # # lines		= lines[1:33];
 
-
-
+ 
+ 
 # caching mechanism with md5sum(file);
 # store as a rds file ... 
 # tools::md5sum(ini.file) # "3fc3c980d825dec163e728b8d0217809" 

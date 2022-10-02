@@ -1,10 +1,8 @@
 
 
 
-is.json = function(str)
-	{
-	
-	}
+ 
+
 
 o.unserialize = function(str)
 	{

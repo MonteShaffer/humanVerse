@@ -1,4 +1,4 @@
-
+  
 # a >> b; ... a %>>% b;
 # unsigned ?
 ## multivariate on a 
@@ -178,7 +178,7 @@
 
 # (~a);
 .NOT. = function() {}
-.NOT. = function(a) 
+.NOT. = function(a, b=NULL) 
 	{
 	# INTEGER_MAXIMUM		= 2147483647
 	# a = c(1732584193, -1732584193, 2147483647, -2147483647, 4611686018427387904, -4611686018427387904);

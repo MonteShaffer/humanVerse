@@ -289,20 +289,108 @@ str.uniqid = function(prefix = "", sep=".")
 	
 
  	
-str.guid = function() {}
-
-
-
-
-str.fromB64 = function(str)
+str.uuid = function(n=5, mode="basic-v4") 
 	{
-	js.b64(str, "decode");	
+	MODE = prep.switch( prep.arg(mode, n=2, keep="-"), 
+						c("ba","ba-v4"), 
+						c("basic", "basic-v4"), "basic-v4");
+	
+	CPP = list("basic-v4" = 
+				list("fn.name" = "cpp_uuid_basic_v4",
+					"FN" = function() { cpp_uuid_basic_v4(n); } 
+					),
+				"basic" = 
+				list("fn.name" = "cpp_uuid_basic",
+					"FN" = function() { cpp_uuid_basic(n); } 
+					)
+				);
+				
+	cpp = CPP[[MODE]];
+	if(exists(cpp$fn.name))
+		{
+		return( cpp$FN() );
+		}
+	
+	if(MODE == "basic")
+		{
+		V = str.explode("", "0123456789abcdef");
+		S = c(0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0);
+		D = v.test(S, 1);
+		RNG = function() { rand(1, 16); }
+		
+		res = character(n);
+		for(j in 1:n)
+			{
+			one = "";
+			for(i in 1:16)
+				{
+				if (D[i]) { one %.=% "-"; }
+				one %.=% V[RNG()];
+				one %.=% V[RNG()];
+				}
+			
+			res[j] = one;
+			}
+		return(res);
+		}
+		
+	if(MODE == "basic-v4")
+		{
+		V = str.explode("", "0123456789abcdef");
+		D = function()  { rand(1, 16); }
+		D2 = function() { rand(9, 12); }
+		
+		res = character(n);
+		for(j in 1:n)
+			{
+			one = "";
+			for(i in 1:8)
+				{
+				one %.=% V[D()];
+				}
+			one %.=% "-";
+			for(i in 1:4)
+				{
+				one %.=% V[D()];
+				}
+			one %.=% "-4";
+			for(i in 1:3)
+				{
+				one %.=% V[D()];
+				}
+			one %.=% "-";
+			one %.=% V[D2()];
+			for(i in 1:3)
+				{
+				one %.=% V[D()];
+				}
+			one %.=% "-";
+			for(i in 1:12)
+				{
+				one %.=% V[D()];
+				}
+			res[j] = one;
+			}
+		return(res);
+		}
 	}
 
 
+is.uuid = function(str=c("abcdef", "3b53a5c6-fe8a-44eb-9192-f51e80c370a2"))
+	{
+	grepl(REGEX_UUID, str);	
+	}
+
+
+str.fromB64 = function(b64str)
+	{
+	base64.decode(b64str);
+	}
+ 
+
 str.toB64 = function(str)
 	{
-	js.b64(str, "encode");	
+	base64.encode(str);
 	}
 
 

@@ -52,6 +52,7 @@ base2int = function(..., base=16, method="first")
 #dput(xstr);
 	xstr = cleanup.base(xstr);
 	b = check.base(base);
+	if(is.null(b)) { stop("base issues"); }
 	
 	METHOD = prep.arg(method, n=1);
 		keys = c("c","b"); 
@@ -114,6 +115,7 @@ int2base = function(..., base=16, to.length=NULL, method="first")
 				);
 #dput(x);
 	b = check.base(base);
+	if(is.null(b)) { stop("base issues"); }
 	
 	METHOD = prep.arg(method, n=1);
 			keys = c("c","b"); 
@@ -514,11 +516,13 @@ bin = function(..., n=2, pad="0")
 				}
 	
 	} 
-
+ 
 base.convert = function(..., from=5, to=16, decimal.numeric=TRUE)
 	{
 	FROM = check.base(from);
+		if(is.null(FROM)) { stop("base issues"); }
 	TO = check.base(to);
+		if(is.null(TO)) { stop("base issues"); }
 	x = prep.dots(..., default=int2base(0:(FROM*FROM), base=FROM) );
 	x = as.character(x);
 

@@ -772,7 +772,7 @@ str.pipeHeader = function(str="Welcome to the {humanVerse}",
 	res;
 	}
  
- 
+   
 str.commentOneLine = function(str = "Start LOG file",
 								width = 72,
 								ctag = "#",
