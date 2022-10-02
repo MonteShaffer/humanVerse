@@ -4,6 +4,7 @@
 using namespace Rcpp;
 
 // built-in function seems to allow a, b to both be multivariate, some sort of recycling?
+// [[Rcpp::export]]
 long long s_SHIFT_R(long long a, int b) 
 	{ 
 	return a >> b;
@@ -29,7 +30,7 @@ NumericVector cpp_SHIFT_R(const std::vector<long long int> arr, int b)
 
 
 
-
+// [[Rcpp::export]]
 long long s_SHIFT_L(long long a, int b) 
 	{ 
 	return a << b;
@@ -57,7 +58,7 @@ NumericVector cpp_SHIFT_L(const std::vector<long long int> arr, int b)
 
 // do OR, XOR, AND ... 
 // https://www.geeksforgeeks.org/bitwise-operators-in-c-cpp/
-
+// [[Rcpp::export]]
 long long s_AND(long long a, long long int b) 
 	{ 
 	return (a & b);
@@ -84,7 +85,7 @@ NumericVector cpp_AND(const std::vector<long long int> arr, const std::vector<lo
 	}
 	
 
-	
+// [[Rcpp::export]]
 long long s_OR(long long a, long long int b) 
 	{ 
 	return (a | b);
@@ -110,6 +111,7 @@ NumericVector cpp_OR(const std::vector<long long int> arr, const std::vector<lon
 	return r;
 	}	
 	
+// [[Rcpp::export]]
 long long s_XOR(long long a, long long int b) 
 	{ 
 	return (a ^ b);
@@ -135,7 +137,7 @@ NumericVector cpp_XOR(const std::vector<long long int> arr, const std::vector<lo
 	return r;
 	}	 
 
-
+// [[Rcpp::export]]
 long long s_NOT(long long a) 
 	{ 
 	return (~a);
