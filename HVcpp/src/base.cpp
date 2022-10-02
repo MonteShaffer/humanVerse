@@ -82,8 +82,9 @@ NumericVector cpp_base2int(const std::vector<std::string> str, int base=16)
 //' @param num INTEGER to be converted
 //' @param base INTEGER of base (2,32)
 //' @return string of integer in the new base 
-// [[Rcpp::export]]
+
 // https://codescracker.com/cpp/program/cpp-program-convert-octal-to-binary.htm
+// [[Rcpp::export]]
 std::string s_base2base(std::string s, int from=16, int to=2)
 	{
 	// from (2,32) ... to (2,32)
@@ -97,7 +98,7 @@ std::string s_base2base(std::string s, int from=16, int to=2)
 	}
 
 
-
+// [[Rcpp::export]]
 CharacterVector cpp_base2base(const std::vector<std::string> str, int from=16, int to=2)
 {
 	CharacterVector r{};

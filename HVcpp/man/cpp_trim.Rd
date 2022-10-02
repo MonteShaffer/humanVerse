@@ -2,9 +2,9 @@
 % Please edit documentation in R/RcppExports.R
 \name{cpp_trim}
 \alias{cpp_trim}
-\title{String Trim}
+\title{String  Trim}
 \usage{
-cpp_trim(str, t = " \\t\\n\\r\\f\\v")
+cpp_trim(str, side = "both", t = " \\t\\n\\r\\f\\v")
 }
 \arguments{
 \item{t}{Trimming elements}
@@ -15,5 +15,5 @@ cpp_trim(str, t = " \\t\\n\\r\\f\\v")
 Updated String s, trimmed (both left and right)
 }
 \description{
-String Trim
+String  Trim
 }

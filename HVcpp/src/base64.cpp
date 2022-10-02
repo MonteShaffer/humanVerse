@@ -91,7 +91,7 @@ const std::string b64_dec_(const void* data, const size_t &len)
 // b64_enc_js_ ... maybe this is my internal R-base version ...
 
 
-
+// [[Rcpp::export]]
 std::string s_base64_enc(const std::string str)
 {
 	return b64_enc_(str.c_str(), str.size());

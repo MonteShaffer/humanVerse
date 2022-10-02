@@ -10,74 +10,285 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// bits_RShift
-NumericVector bits_RShift(const std::vector<long long int> arr, int b);
-RcppExport SEXP _HVcpp_bits_RShift(SEXP arrSEXP, SEXP bSEXP) {
+// s_int2base
+std::string s_int2base(long long int num, int base);
+RcppExport SEXP _HVcpp_s_int2base(SEXP numSEXP, SEXP baseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< long long int >::type num(numSEXP);
+    Rcpp::traits::input_parameter< int >::type base(baseSEXP);
+    rcpp_result_gen = Rcpp::wrap(s_int2base(num, base));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_int2base
+CharacterVector cpp_int2base(const std::vector<long long int> num, int base);
+RcppExport SEXP _HVcpp_cpp_int2base(SEXP numSEXP, SEXP baseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::vector<long long int> >::type num(numSEXP);
+    Rcpp::traits::input_parameter< int >::type base(baseSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_int2base(num, base));
+    return rcpp_result_gen;
+END_RCPP
+}
+// s_base2int
+long long int s_base2int(std::string s, int base);
+RcppExport SEXP _HVcpp_s_base2int(SEXP sSEXP, SEXP baseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type s(sSEXP);
+    Rcpp::traits::input_parameter< int >::type base(baseSEXP);
+    rcpp_result_gen = Rcpp::wrap(s_base2int(s, base));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_base2int
+NumericVector cpp_base2int(const std::vector<std::string> str, int base);
+RcppExport SEXP _HVcpp_cpp_base2int(SEXP strSEXP, SEXP baseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::vector<std::string> >::type str(strSEXP);
+    Rcpp::traits::input_parameter< int >::type base(baseSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_base2int(str, base));
+    return rcpp_result_gen;
+END_RCPP
+}
+// s_base2base
+std::string s_base2base(std::string s, int from, int to);
+RcppExport SEXP _HVcpp_s_base2base(SEXP sSEXP, SEXP fromSEXP, SEXP toSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type s(sSEXP);
+    Rcpp::traits::input_parameter< int >::type from(fromSEXP);
+    Rcpp::traits::input_parameter< int >::type to(toSEXP);
+    rcpp_result_gen = Rcpp::wrap(s_base2base(s, from, to));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_base2base
+CharacterVector cpp_base2base(const std::vector<std::string> str, int from, int to);
+RcppExport SEXP _HVcpp_cpp_base2base(SEXP strSEXP, SEXP fromSEXP, SEXP toSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::vector<std::string> >::type str(strSEXP);
+    Rcpp::traits::input_parameter< int >::type from(fromSEXP);
+    Rcpp::traits::input_parameter< int >::type to(toSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_base2base(str, from, to));
+    return rcpp_result_gen;
+END_RCPP
+}
+// s_base64_enc
+std::string s_base64_enc(const std::string str);
+RcppExport SEXP _HVcpp_s_base64_enc(SEXP strSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::string >::type str(strSEXP);
+    rcpp_result_gen = Rcpp::wrap(s_base64_enc(str));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_base64_enc
+CharacterVector cpp_base64_enc(const std::vector<std::string> str);
+RcppExport SEXP _HVcpp_cpp_base64_enc(SEXP strSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::vector<std::string> >::type str(strSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_base64_enc(str));
+    return rcpp_result_gen;
+END_RCPP
+}
+// s_base64_dec
+std::string s_base64_dec(const std::string str64);
+RcppExport SEXP _HVcpp_s_base64_dec(SEXP str64SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::string >::type str64(str64SEXP);
+    rcpp_result_gen = Rcpp::wrap(s_base64_dec(str64));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_base64_dec
+CharacterVector cpp_base64_dec(const std::vector<std::string> str64);
+RcppExport SEXP _HVcpp_cpp_base64_dec(SEXP str64SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::vector<std::string> >::type str64(str64SEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_base64_dec(str64));
+    return rcpp_result_gen;
+END_RCPP
+}
+// say_hello
+RawVector say_hello(std::string msg);
+RcppExport SEXP _HVcpp_say_hello(SEXP msgSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type msg(msgSEXP);
+    rcpp_result_gen = Rcpp::wrap(say_hello(msg));
+    return rcpp_result_gen;
+END_RCPP
+}
+// print_hello
+std::string print_hello(RawVector raw);
+RcppExport SEXP _HVcpp_print_hello(SEXP rawSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< RawVector >::type raw(rawSEXP);
+    rcpp_result_gen = Rcpp::wrap(print_hello(raw));
+    return rcpp_result_gen;
+END_RCPP
+}
+// s_SHIFT_R
+long long s_SHIFT_R(long long a, int b);
+RcppExport SEXP _HVcpp_s_SHIFT_R(SEXP aSEXP, SEXP bSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< long long >::type a(aSEXP);
+    Rcpp::traits::input_parameter< int >::type b(bSEXP);
+    rcpp_result_gen = Rcpp::wrap(s_SHIFT_R(a, b));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_SHIFT_R
+NumericVector cpp_SHIFT_R(const std::vector<long long int> arr, int b);
+RcppExport SEXP _HVcpp_cpp_SHIFT_R(SEXP arrSEXP, SEXP bSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::vector<long long int> >::type arr(arrSEXP);
     Rcpp::traits::input_parameter< int >::type b(bSEXP);
-    rcpp_result_gen = Rcpp::wrap(bits_RShift(arr, b));
+    rcpp_result_gen = Rcpp::wrap(cpp_SHIFT_R(arr, b));
     return rcpp_result_gen;
 END_RCPP
 }
-// bits_LShift
-NumericVector bits_LShift(const std::vector<long long int> arr, int b);
-RcppExport SEXP _HVcpp_bits_LShift(SEXP arrSEXP, SEXP bSEXP) {
+// s_SHIFT_L
+long long s_SHIFT_L(long long a, int b);
+RcppExport SEXP _HVcpp_s_SHIFT_L(SEXP aSEXP, SEXP bSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< long long >::type a(aSEXP);
+    Rcpp::traits::input_parameter< int >::type b(bSEXP);
+    rcpp_result_gen = Rcpp::wrap(s_SHIFT_L(a, b));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_SHIFT_L
+NumericVector cpp_SHIFT_L(const std::vector<long long int> arr, int b);
+RcppExport SEXP _HVcpp_cpp_SHIFT_L(SEXP arrSEXP, SEXP bSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::vector<long long int> >::type arr(arrSEXP);
     Rcpp::traits::input_parameter< int >::type b(bSEXP);
-    rcpp_result_gen = Rcpp::wrap(bits_LShift(arr, b));
+    rcpp_result_gen = Rcpp::wrap(cpp_SHIFT_L(arr, b));
     return rcpp_result_gen;
 END_RCPP
 }
-// bits_AND
-NumericVector bits_AND(const std::vector<long long int> arr, const std::vector<long long int> brr);
-RcppExport SEXP _HVcpp_bits_AND(SEXP arrSEXP, SEXP brrSEXP) {
+// s_AND
+long long s_AND(long long a, long long int b);
+RcppExport SEXP _HVcpp_s_AND(SEXP aSEXP, SEXP bSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< long long >::type a(aSEXP);
+    Rcpp::traits::input_parameter< long long int >::type b(bSEXP);
+    rcpp_result_gen = Rcpp::wrap(s_AND(a, b));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_AND
+NumericVector cpp_AND(const std::vector<long long int> arr, const std::vector<long long int> brr);
+RcppExport SEXP _HVcpp_cpp_AND(SEXP arrSEXP, SEXP brrSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::vector<long long int> >::type arr(arrSEXP);
     Rcpp::traits::input_parameter< const std::vector<long long int> >::type brr(brrSEXP);
-    rcpp_result_gen = Rcpp::wrap(bits_AND(arr, brr));
+    rcpp_result_gen = Rcpp::wrap(cpp_AND(arr, brr));
     return rcpp_result_gen;
 END_RCPP
 }
-// bits_OR
-NumericVector bits_OR(const std::vector<long long int> arr, const std::vector<long long int> brr);
-RcppExport SEXP _HVcpp_bits_OR(SEXP arrSEXP, SEXP brrSEXP) {
+// s_OR
+long long s_OR(long long a, long long int b);
+RcppExport SEXP _HVcpp_s_OR(SEXP aSEXP, SEXP bSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< long long >::type a(aSEXP);
+    Rcpp::traits::input_parameter< long long int >::type b(bSEXP);
+    rcpp_result_gen = Rcpp::wrap(s_OR(a, b));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_OR
+NumericVector cpp_OR(const std::vector<long long int> arr, const std::vector<long long int> brr);
+RcppExport SEXP _HVcpp_cpp_OR(SEXP arrSEXP, SEXP brrSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::vector<long long int> >::type arr(arrSEXP);
     Rcpp::traits::input_parameter< const std::vector<long long int> >::type brr(brrSEXP);
-    rcpp_result_gen = Rcpp::wrap(bits_OR(arr, brr));
+    rcpp_result_gen = Rcpp::wrap(cpp_OR(arr, brr));
     return rcpp_result_gen;
 END_RCPP
 }
-// bits_XOR
-NumericVector bits_XOR(const std::vector<long long int> arr, const std::vector<long long int> brr);
-RcppExport SEXP _HVcpp_bits_XOR(SEXP arrSEXP, SEXP brrSEXP) {
+// s_XOR
+long long s_XOR(long long a, long long int b);
+RcppExport SEXP _HVcpp_s_XOR(SEXP aSEXP, SEXP bSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< long long >::type a(aSEXP);
+    Rcpp::traits::input_parameter< long long int >::type b(bSEXP);
+    rcpp_result_gen = Rcpp::wrap(s_XOR(a, b));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_XOR
+NumericVector cpp_XOR(const std::vector<long long int> arr, const std::vector<long long int> brr);
+RcppExport SEXP _HVcpp_cpp_XOR(SEXP arrSEXP, SEXP brrSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::vector<long long int> >::type arr(arrSEXP);
     Rcpp::traits::input_parameter< const std::vector<long long int> >::type brr(brrSEXP);
-    rcpp_result_gen = Rcpp::wrap(bits_XOR(arr, brr));
+    rcpp_result_gen = Rcpp::wrap(cpp_XOR(arr, brr));
     return rcpp_result_gen;
 END_RCPP
 }
-// bits_NOT
-NumericVector bits_NOT(const std::vector<long long int> arr);
-RcppExport SEXP _HVcpp_bits_NOT(SEXP arrSEXP) {
+// s_NOT
+long long s_NOT(long long a);
+RcppExport SEXP _HVcpp_s_NOT(SEXP aSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< long long >::type a(aSEXP);
+    rcpp_result_gen = Rcpp::wrap(s_NOT(a));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_NOT
+NumericVector cpp_NOT(const std::vector<long long int> arr);
+RcppExport SEXP _HVcpp_cpp_NOT(SEXP arrSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::vector<long long int> >::type arr(arrSEXP);
-    rcpp_result_gen = Rcpp::wrap(bits_NOT(arr));
+    rcpp_result_gen = Rcpp::wrap(cpp_NOT(arr));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -117,6 +328,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// s_md5
+std::string s_md5(const std::string str);
+RcppExport SEXP _HVcpp_s_md5(SEXP strSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::string >::type str(strSEXP);
+    rcpp_result_gen = Rcpp::wrap(s_md5(str));
+    return rcpp_result_gen;
+END_RCPP
+}
 // cpp_md5
 CharacterVector cpp_md5(const std::vector<std::string> str, int times);
 RcppExport SEXP _HVcpp_cpp_md5(SEXP strSEXP, SEXP timesSEXP) {
@@ -126,6 +348,57 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const std::vector<std::string> >::type str(strSEXP);
     Rcpp::traits::input_parameter< int >::type times(timesSEXP);
     rcpp_result_gen = Rcpp::wrap(cpp_md5(str, times));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_nano
+uint64_t cpp_nano();
+RcppExport SEXP _HVcpp_cpp_nano() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(cpp_nano());
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_micro
+uint64_t cpp_micro();
+RcppExport SEXP _HVcpp_cpp_micro() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(cpp_micro());
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_milli
+uint64_t cpp_milli();
+RcppExport SEXP _HVcpp_cpp_milli() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(cpp_milli());
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_now
+uint64_t cpp_now(std::string precision);
+RcppExport SEXP _HVcpp_cpp_now(SEXP precisionSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type precision(precisionSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_now(precision));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_time
+double cpp_time();
+RcppExport SEXP _HVcpp_cpp_time() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(cpp_time());
     return rcpp_result_gen;
 END_RCPP
 }
@@ -163,6 +436,28 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type partial(partialSEXP);
     Rcpp::traits::input_parameter< std::string >::type dir(dirSEXP);
     rcpp_result_gen = Rcpp::wrap(cpp_sort_numeric(arr, partial, dir));
+    return rcpp_result_gen;
+END_RCPP
+}
+// s_str_reverse
+std::string s_str_reverse(std::string s);
+RcppExport SEXP _HVcpp_s_str_reverse(SEXP sSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type s(sSEXP);
+    rcpp_result_gen = Rcpp::wrap(s_str_reverse(s));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_str_reverse
+CharacterVector cpp_str_reverse(const std::vector<std::string> str);
+RcppExport SEXP _HVcpp_cpp_str_reverse(SEXP strSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::vector<std::string> >::type str(strSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_str_reverse(str));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -238,27 +533,53 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// s_trim
-std::string s_trim(std::string s, std::string t);
-RcppExport SEXP _HVcpp_s_trim(SEXP sSEXP, SEXP tSEXP) {
+// s_btrim
+std::string s_btrim(std::string s, std::string t);
+RcppExport SEXP _HVcpp_s_btrim(SEXP sSEXP, SEXP tSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string >::type s(sSEXP);
     Rcpp::traits::input_parameter< std::string >::type t(tSEXP);
-    rcpp_result_gen = Rcpp::wrap(s_trim(s, t));
+    rcpp_result_gen = Rcpp::wrap(s_btrim(s, t));
     return rcpp_result_gen;
 END_RCPP
 }
-// cpp_trim
-CharacterVector cpp_trim(const std::vector<std::string> str, std::string t);
-RcppExport SEXP _HVcpp_cpp_trim(SEXP strSEXP, SEXP tSEXP) {
+// cpp_btrim
+CharacterVector cpp_btrim(const std::vector<std::string> str, std::string t);
+RcppExport SEXP _HVcpp_cpp_btrim(SEXP strSEXP, SEXP tSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::vector<std::string> >::type str(strSEXP);
     Rcpp::traits::input_parameter< std::string >::type t(tSEXP);
-    rcpp_result_gen = Rcpp::wrap(cpp_trim(str, t));
+    rcpp_result_gen = Rcpp::wrap(cpp_btrim(str, t));
+    return rcpp_result_gen;
+END_RCPP
+}
+// s_trim
+std::string s_trim(std::string s, std::string side, std::string t);
+RcppExport SEXP _HVcpp_s_trim(SEXP sSEXP, SEXP sideSEXP, SEXP tSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type s(sSEXP);
+    Rcpp::traits::input_parameter< std::string >::type side(sideSEXP);
+    Rcpp::traits::input_parameter< std::string >::type t(tSEXP);
+    rcpp_result_gen = Rcpp::wrap(s_trim(s, side, t));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_trim
+CharacterVector cpp_trim(const std::vector<std::string> str, std::string side, std::string t);
+RcppExport SEXP _HVcpp_cpp_trim(SEXP strSEXP, SEXP sideSEXP, SEXP tSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::vector<std::string> >::type str(strSEXP);
+    Rcpp::traits::input_parameter< std::string >::type side(sideSEXP);
+    Rcpp::traits::input_parameter< std::string >::type t(tSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_trim(str, side, t));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -406,29 +727,99 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// s_uuid_basic
+std::string s_uuid_basic();
+RcppExport SEXP _HVcpp_s_uuid_basic() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(s_uuid_basic());
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_uuid_basic
+CharacterVector cpp_uuid_basic(int n);
+RcppExport SEXP _HVcpp_cpp_uuid_basic(SEXP nSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_uuid_basic(n));
+    return rcpp_result_gen;
+END_RCPP
+}
+// s_uuid_basic_v4
+std::string s_uuid_basic_v4();
+RcppExport SEXP _HVcpp_s_uuid_basic_v4() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(s_uuid_basic_v4());
+    return rcpp_result_gen;
+END_RCPP
+}
+// cpp_uuid_basic_v4
+CharacterVector cpp_uuid_basic_v4(int n);
+RcppExport SEXP _HVcpp_cpp_uuid_basic_v4(SEXP nSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    rcpp_result_gen = Rcpp::wrap(cpp_uuid_basic_v4(n));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_HVcpp_bits_RShift", (DL_FUNC) &_HVcpp_bits_RShift, 2},
-    {"_HVcpp_bits_LShift", (DL_FUNC) &_HVcpp_bits_LShift, 2},
-    {"_HVcpp_bits_AND", (DL_FUNC) &_HVcpp_bits_AND, 2},
-    {"_HVcpp_bits_OR", (DL_FUNC) &_HVcpp_bits_OR, 2},
-    {"_HVcpp_bits_XOR", (DL_FUNC) &_HVcpp_bits_XOR, 2},
-    {"_HVcpp_bits_NOT", (DL_FUNC) &_HVcpp_bits_NOT, 1},
+    {"_HVcpp_s_int2base", (DL_FUNC) &_HVcpp_s_int2base, 2},
+    {"_HVcpp_cpp_int2base", (DL_FUNC) &_HVcpp_cpp_int2base, 2},
+    {"_HVcpp_s_base2int", (DL_FUNC) &_HVcpp_s_base2int, 2},
+    {"_HVcpp_cpp_base2int", (DL_FUNC) &_HVcpp_cpp_base2int, 2},
+    {"_HVcpp_s_base2base", (DL_FUNC) &_HVcpp_s_base2base, 3},
+    {"_HVcpp_cpp_base2base", (DL_FUNC) &_HVcpp_cpp_base2base, 3},
+    {"_HVcpp_s_base64_enc", (DL_FUNC) &_HVcpp_s_base64_enc, 1},
+    {"_HVcpp_cpp_base64_enc", (DL_FUNC) &_HVcpp_cpp_base64_enc, 1},
+    {"_HVcpp_s_base64_dec", (DL_FUNC) &_HVcpp_s_base64_dec, 1},
+    {"_HVcpp_cpp_base64_dec", (DL_FUNC) &_HVcpp_cpp_base64_dec, 1},
+    {"_HVcpp_say_hello", (DL_FUNC) &_HVcpp_say_hello, 1},
+    {"_HVcpp_print_hello", (DL_FUNC) &_HVcpp_print_hello, 1},
+    {"_HVcpp_s_SHIFT_R", (DL_FUNC) &_HVcpp_s_SHIFT_R, 2},
+    {"_HVcpp_cpp_SHIFT_R", (DL_FUNC) &_HVcpp_cpp_SHIFT_R, 2},
+    {"_HVcpp_s_SHIFT_L", (DL_FUNC) &_HVcpp_s_SHIFT_L, 2},
+    {"_HVcpp_cpp_SHIFT_L", (DL_FUNC) &_HVcpp_cpp_SHIFT_L, 2},
+    {"_HVcpp_s_AND", (DL_FUNC) &_HVcpp_s_AND, 2},
+    {"_HVcpp_cpp_AND", (DL_FUNC) &_HVcpp_cpp_AND, 2},
+    {"_HVcpp_s_OR", (DL_FUNC) &_HVcpp_s_OR, 2},
+    {"_HVcpp_cpp_OR", (DL_FUNC) &_HVcpp_cpp_OR, 2},
+    {"_HVcpp_s_XOR", (DL_FUNC) &_HVcpp_s_XOR, 2},
+    {"_HVcpp_cpp_XOR", (DL_FUNC) &_HVcpp_cpp_XOR, 2},
+    {"_HVcpp_s_NOT", (DL_FUNC) &_HVcpp_s_NOT, 1},
+    {"_HVcpp_cpp_NOT", (DL_FUNC) &_HVcpp_cpp_NOT, 1},
     {"_HVcpp_cpp_gcd_lcm", (DL_FUNC) &_HVcpp_cpp_gcd_lcm, 2},
     {"_HVcpp_cpp_gcd", (DL_FUNC) &_HVcpp_cpp_gcd, 2},
     {"_HVcpp_cpp_lcm", (DL_FUNC) &_HVcpp_cpp_lcm, 2},
+    {"_HVcpp_s_md5", (DL_FUNC) &_HVcpp_s_md5, 1},
     {"_HVcpp_cpp_md5", (DL_FUNC) &_HVcpp_cpp_md5, 2},
+    {"_HVcpp_cpp_nano", (DL_FUNC) &_HVcpp_cpp_nano, 0},
+    {"_HVcpp_cpp_micro", (DL_FUNC) &_HVcpp_cpp_micro, 0},
+    {"_HVcpp_cpp_milli", (DL_FUNC) &_HVcpp_cpp_milli, 0},
+    {"_HVcpp_cpp_now", (DL_FUNC) &_HVcpp_cpp_now, 1},
+    {"_HVcpp_cpp_time", (DL_FUNC) &_HVcpp_cpp_time, 0},
     {"_HVcpp_cpp_primes", (DL_FUNC) &_HVcpp_cpp_primes, 2},
     {"_HVcpp_cpp_sort_numeric_works", (DL_FUNC) &_HVcpp_cpp_sort_numeric_works, 2},
     {"_HVcpp_cpp_sort_numeric", (DL_FUNC) &_HVcpp_cpp_sort_numeric, 3},
+    {"_HVcpp_s_str_reverse", (DL_FUNC) &_HVcpp_s_str_reverse, 1},
+    {"_HVcpp_cpp_str_reverse", (DL_FUNC) &_HVcpp_cpp_str_reverse, 1},
     {"_HVcpp_s_str_repeat", (DL_FUNC) &_HVcpp_s_str_repeat, 2},
     {"_HVcpp_cpp_str_repeat", (DL_FUNC) &_HVcpp_cpp_str_repeat, 2},
     {"_HVcpp_s_rtrim", (DL_FUNC) &_HVcpp_s_rtrim, 2},
     {"_HVcpp_cpp_rtrim", (DL_FUNC) &_HVcpp_cpp_rtrim, 2},
     {"_HVcpp_s_ltrim", (DL_FUNC) &_HVcpp_s_ltrim, 2},
     {"_HVcpp_cpp_ltrim", (DL_FUNC) &_HVcpp_cpp_ltrim, 2},
-    {"_HVcpp_s_trim", (DL_FUNC) &_HVcpp_s_trim, 2},
-    {"_HVcpp_cpp_trim", (DL_FUNC) &_HVcpp_cpp_trim, 2},
+    {"_HVcpp_s_btrim", (DL_FUNC) &_HVcpp_s_btrim, 2},
+    {"_HVcpp_cpp_btrim", (DL_FUNC) &_HVcpp_cpp_btrim, 2},
+    {"_HVcpp_s_trim", (DL_FUNC) &_HVcpp_s_trim, 3},
+    {"_HVcpp_cpp_trim", (DL_FUNC) &_HVcpp_cpp_trim, 3},
     {"_HVcpp_s_tolower", (DL_FUNC) &_HVcpp_s_tolower, 2},
     {"_HVcpp_cpp_strtolower", (DL_FUNC) &_HVcpp_cpp_strtolower, 2},
     {"_HVcpp_s_toupper", (DL_FUNC) &_HVcpp_s_toupper, 2},
@@ -441,6 +832,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_HVcpp_cpp_implode", (DL_FUNC) &_HVcpp_cpp_implode, 2},
     {"_HVcpp_s_str_replace", (DL_FUNC) &_HVcpp_s_str_replace, 3},
     {"_HVcpp_cpp_str_replace", (DL_FUNC) &_HVcpp_cpp_str_replace, 3},
+    {"_HVcpp_s_uuid_basic", (DL_FUNC) &_HVcpp_s_uuid_basic, 0},
+    {"_HVcpp_cpp_uuid_basic", (DL_FUNC) &_HVcpp_cpp_uuid_basic, 1},
+    {"_HVcpp_s_uuid_basic_v4", (DL_FUNC) &_HVcpp_s_uuid_basic_v4, 0},
+    {"_HVcpp_cpp_uuid_basic_v4", (DL_FUNC) &_HVcpp_cpp_uuid_basic_v4, 1},
     {NULL, NULL, 0}
 };
 
