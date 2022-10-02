@@ -133,23 +133,34 @@ double calculateTolerance(Map<MatrixXd> A, double new_factor,
 
 
 // [[Rcpp::export]]	
-bool is_symmetric(Map<MatrixXd> M, double tol_factor = -1, bool compound = true, bool verbose = true)
+bool is_symmetric(Map<MatrixXd> M, double prec = -1)
 	{
+	if(prec <= 0) { return M.isApprox( M.transpose() );	}
 	// update TOLERANCE ??? 
+	// prec vs tolerance ... 
+	// A dummy_precision() function returning a weak epsilon value. It is mainly used as a default value by the fuzzy comparison operators.
 	// https://stackoverflow.com/a/71827895/184614
-	return M.isApprox( M.transpose() );		
+	return M.isApprox( M.transpose(), prec );		
 	}
 
 
 	
 // [[Rcpp::export]]	
-bool is_positive_semi_definite(Map<MatrixXd> M, double tol_factor = -1, bool compound = true, bool verbose = true)
+bool is_positive_semi_definite(Map<MatrixXd> M, double prec = -1)
 	{
-	bool symm = is_symmetric(M, tol_factor, compound, verbose);
+	bool symm = is_symmetric(M, prec);
 	if(!symm) { return false; }
+	
+	// need to be "selfAdjuoinded"?
 
 	LDLT<MatrixXd> 	ldlt(M); // constructor 
-	
+	// https://stackoverflow.com/a/71827895/184614
+	// npd = as.matrix(structure(c(1, 2, 2, 3), .Dim = c(2L, 2L)));
+	// psd = as.matrix(structure(c(1, 2, 2, 3), .Dim = c(2L, 2L)));
+	// two = as.matrix(structure(c(2, 2, 2, 2), .Dim = c(2L, 2L)));
+
+	// not getting the answer ... 
+	// https://scicomp.stackexchange.com/a/26223
 	if (ldlt.info() == Eigen::NumericalIssue || !ldlt.isPositive()) 
 		{
 		return false;
@@ -159,38 +170,18 @@ bool is_positive_semi_definite(Map<MatrixXd> M, double tol_factor = -1, bool com
 	}
 		
 // [[Rcpp::export]]	
-bool is_positive_definite(Map<MatrixXd> M, double tol_factor = -1, bool compound = true, bool verbose = true)
+bool is_positive_definite(Map<MatrixXd> M, double prec = -1)
 	{
-	bool symm = is_symmetric(M, tol_factor, compound, verbose);
+	bool symm = is_symmetric(M, prec);
 	if(!symm) { return false; }
 
 	LDLT<MatrixXd> 	ldlt(M); // constructor 
 	
 	return ldlt.isPositive();
- 	
-	/*
-
-LLT<MatrixXd> 	llt(A); // constructor 
-
-selfadjointView<Eigen::Upper>().ldlt();	
-
-if (ldlt.info() == Eigen::NumericalIssue || !ldlt.isPositive()) 
-		{
-		return false;
-		}
-	return true;
-	
-Eigen::LLT<Eigen::MatrixXd> A_llt(A);
-
-	const auto ldlt = A.template selfadjointView<Eigen::Upper>().ldlt();
-  if (ldlt.info() == Eigen::NumericalIssue || !ldlt.isPositive()) {
-    return false;
-  }
-  
-  */
-	
 	}
 	
+	
+	 
 	
 // for SOLVE ... https://dirk.eddelbuettel.com/papers/RcppEigen-intro.pdf
 
@@ -335,6 +326,18 @@ MatrixXd matrix_multiplyN(Map<MatrixXd> A, int n=2, int type = 1, double tol_fac
 		}		
 	return B;
 	}
+
+
+
+// TODO ... rank(M) ... eigen(M) ... solve(A, B) 
+// linear-solver types, wrapped into one function ...
+// maybe do ... fixed.intercept herein ... so column of 1's not needed
+// if fixed.int , subtract fixed.intercept from given y ... 
+// multinomial? ... return NAMED list ... 
+
+// ... svd(M) ... U,V,S everything
+
+
 
 
 // make other functions cmatrix_diagonal ... etc. 

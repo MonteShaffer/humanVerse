@@ -152,9 +152,11 @@ quick = function(..., character.only = FALSE, res=NULL, verbose=FALSE)
 			source(res$myfullpaths[idx], verbose=verbose);
 			} else { stop("bad idx"); }
 		}
-	}
+	} 
 
-cpp = "C:/_git_/github/MonteShaffer/humanVerse/HVcpp/scr/";
+cpp = "C:/_git_/github/MonteShaffer/humanVerse/HVcpp/src/";
+# Rcpp::sourceCpp("matrix.cpp");
+# C:\_git_\github\MonteShaffer\humanVerse\HVcpp\src
 
 quick.dir = function() 
 	{ 
