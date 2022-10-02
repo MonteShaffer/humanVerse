@@ -2,6 +2,13 @@
 // #include <RcppEigen.h>
 
 
+// [[Rcpp::export]]
+SEXP matrix_diagonal(Eigen::MatrixXd A)
+	{
+	Eigen::MatrixXd C = A.diagonal();
+	return Rcpp::wrap(C);
+	}
+	
 
 // https://gist.github.com/pshriwise/67c2ae78e5db3831da38390a8b2a209f
 /*
@@ -27,12 +34,7 @@ _Matrix_Type_ pseudoInverse(const _Matrix_Type_ &a, double epsilon = std::numeri
 
 
 /*
-// [[Rcpp::export]]
-SEXP matrix_diagonal(Eigen::MatrixXd A)
-	{
-	Eigen::MatrixXd C = A.diagonal();
-	return Rcpp::wrap(C);
-	}
+
 	
 
 // [[Rcpp::export]]

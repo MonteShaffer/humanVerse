@@ -5,6 +5,21 @@
 # show convergence using matrixPower(dissertation) ... demo 						
 
 
+# m = as.matrix(structure(c(1, 0, 4, 0, 3, 0, 2, 0, 5), .Dim = c(3L, 3L)));
+
+
+matrix.transpose = function(m)
+	{
+	m %^T%.
+	
+	t(m);  # TM 
+	}
+	
+matrix.ptranspose = function(m)
+	{
+	m %*% m%^T%.
+	
+	}
 
 
 

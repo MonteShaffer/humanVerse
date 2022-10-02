@@ -9,8 +9,7 @@ Description: Faster, more standards, more accurate ...
 License: MIT + file LICENSE
 URL: https://github.com/MonteShaffer/humanVerse/HVcpp
 BugReports: https://github.com/MonteShaffer/humanVerse/issues
-Imports: Rcpp (>= 1.0.9)
-  RcppEigen
+Imports: Rcpp (>= 1.0.9), RcppEigen
 LinkingTo: Rcpp
 Encoding: UTF-8
 RoxygenNote: 7.2.1
