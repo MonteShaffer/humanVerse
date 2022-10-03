@@ -276,7 +276,7 @@ ini.parse = function(inistr, fname="-file unknown-",
 	{
 	lines = str.explode("\r\n", inistr);
 	
-	#envir = environment();
+	envir = environment();
 	
 	# if I get multiline string parsing working, adding 
 	# multiline comments should not be difficult .... 
@@ -305,6 +305,10 @@ ini.parse = function(inistr, fname="-file unknown-",
 	pval 			= ""; 
 	cparent 		= "";
 	
+	KEY_ARRAY = "";
+	kidx = 1;
+	midx = 0;  # index of multiline when started ...
+	 
 .__main__. = function() {}
 ############################### MAIN #######################
 if(test.mode)
@@ -330,6 +334,10 @@ if(test.mode)
 	gggassign("line_", line_);
 	gggassign("first", first);
 	gggassign("cparent", cparent);
+	gggassign("pkey", pkey);
+	gggassign("pval", pval);
+	
+	
 	gggassign("fin", fin); 
 	
 	if(line.no < test.skip)
@@ -389,15 +397,20 @@ gggassign("RES", RES);
 			if(is.null(fin)) { GTG = TRUE; }
 			if(GTG)
 				{
+if(verbose)
+	{
+.cat("MULTILINE ended on line: ", line.no);
+	}
 				# maybe do eval(parse in function enclosure
 				# unlist the MEMORY_keys there ... 
 				# if(hasRcode) 	{ val = eval(parse(text=val)); }
 				if(hasRcode) 	{ val = ini.evalMe(val, MEMORY, ignore.eval = ignore.eval ); }
 				if(hasMemory) 	{ MEMORY[[key]] = val; }
 				
-				val = property.set("source", val, paste0(fname, ":", line.no));
-				  
-				RES = ini.assignVal(CURRENT_KEY, val, cparent, RES, test.mode=test.mode);
+				# val = property.set("source", val, paste0(fname, ":", line.no));
+				val = property.set("source", val, paste0(fname, ":", midx,"-",line.no));
+				   
+				RES = ini.assignVal(CURRENT_KEY, val, cparent, RES, hasRcode = hasRcode, test.mode=test.mode);
 				
 				CURRENT_KEY = "";				
 				pkey = "";
@@ -430,7 +443,8 @@ gggassign("RES", RES);
 		# WE HAVE A HEADER 
 		if(first == "[")  # not equal to anything ...  
 			{
-			info 			= ini.cleanKey(line);
+			info 			= ini.cleanKey(line, "", kidx,
+										KEY_ARRAY, envir, MEMORY);
 			cparent 		= info;
 			pkey 			= "";  # these are not parents ... 
 			pval 			= "";
@@ -487,7 +501,7 @@ gggassign("RES", RES);
 			# allows for a bit of white space between ^ = R 
 			#if( str.contains(MEMORY_STORE, paste0(rkey,"=")) ) 
 			if( str.ends(MEMORY_STORE, paste0(rkey,"=")) )
-				{ 
+				{  
 				hasMemory = TRUE; 
 				rkey = str.trim(str.ends("^", rkey, trim=TRUE));
 				}
@@ -500,14 +514,23 @@ gggassign("RES", RES);
 				}
 		 
 	
-
-			key = ini.cleanKey(rkey);  # raw key 
-			val = ini.walkTheLine(rval, COMMENTS, smart.num = smart.num);
-
+			val = ini.walkTheLine(rval, COMMENTS, smart.num = smart.num);  # in case we want to use in key?
+			
+			key = ini.cleanKey(rkey, val, kidx,
+								KEY_ARRAY, envir, MEMORY);
+								
+			
 .__normal.GTG = function() {} 				
 			fin = property.get("more", val); # are we finished?
 			GTG = FALSE; # I am good to go ... multiline may stop this ... 
-			if(is.null(fin)) { GTG = TRUE; } else { CURRENT_KEY = key; }
+			if(is.null(fin)) { GTG = TRUE; } 
+				else { 
+						CURRENT_KEY = key; midx = line.no; 
+if(verbose)
+	{
+.cat("MULTILINE started on line: ", line.no);
+	}
+						}
 			if(GTG)
 				{
 				if(hasRcode) 	{ val = ini.evalMe(val, MEMORY, ignore.eval = ignore.eval ); }
@@ -515,7 +538,7 @@ gggassign("RES", RES);
 				
 				val = property.set("source", val, paste0(fname, ":", line.no));
 				
-				RES = ini.assignVal(key, val, cparent, RES, test.mode=test.mode);
+				RES = ini.assignVal(key, val, cparent, RES,  hasRcode = hasRcode, test.mode=test.mode);
 				}
 			pkey = key;
 			pval = val; 
@@ -565,10 +588,10 @@ ini.evalMe = function(txt, MEMORY, ignore.eval = FALSE)
 	}
 	
 	
-	
+	  
 
 # ini.assignVal(key, val, cparent, RES);
-ini.assignVal = function(key, val, cparent, RES, test.mode=test.mode)
+ini.assignVal = function(key, val, cparent, RES, hasRcode = hasRcode, test.mode=test.mode)
 	{
 	ckeys = str.explode("|", cparent);
 	nc = length(ckeys);  # let's hardcode this to 5?
@@ -606,7 +629,10 @@ ini.assignVal = function(key, val, cparent, RES, test.mode=test.mode)
 		# { val = paste0(DOUBLE_QUOTE,val,DOUBLE_QUOTE); }
 
 # already passed through EVAL() filter, so should be fine ...
-	val = ini.wrapSpecial(val);
+	if(!hasRcode)
+		{
+		val = ini.wrapSpecial(val);
+		}
 
 
 
@@ -634,27 +660,49 @@ ini.unwrapSpecial = function(str)
 	 
 ini.wrapSpecial = function(str)
 	{
+# dput(str); 	
+	
 	# if(str.isWrapped("%", str)) 
-	if(str.contains("%", str) || str.contains("^", str) || str.contains("=", str) || str.contains("+", str) || str.contains("/", str) )
+	# ^ is my memory device .... 
+	if(str.contains("%", str) || str.contains("`", str) || str.contains("\\", str) || str.contains("+", str) || str.contains("|", str) ) 
 		{ 
 		# SPECIAL ... for transport "|" PIPE breaks ...		
 		# ke = str.unwrap("%", str);
 		# str = str.wrap("%", base64.encode(ke) );
 		str = str.wrap("%", base64.encode(str) );
 		}
-	str;
+	str;  
 	}
- 
-ini.cleanKey = function(key)
+  
+ini.cleanKey = function(key, val="", kidx=1, KEY_ARRAY = "", envir=envir, MEMORY)
 	{
 	# in case they put doubles (R vs php)
 	key = str.replace("[[","[", key);  
 	key = str.replace("]]","]", key); 
 	
 	key = str.replace(c(SINGLE_QUOTE,DOUBLE_QUOTE), "", key);
-	key = str.trim(key);
+	key = str.trim(key); 
 	
-dput(key);
+	
+	## memory key 
+	# auto.save[^save.key][when]
+	
+	if(str.contains("^", key))
+		{
+		nkey = key;
+		# multiple?
+		tmp = str.between("[^", key, "]"); 
+		rtmp = paste0("[^", tmp, "]"); 
+		
+dput(MEMORY);
+		if(!is.null(MEMORY[[tmp]]))
+			{
+			nkva = paste0("[", MEMORY[[tmp]], "]"); 
+			nkey = str.replace(rtmp, nkva, key);
+			} else { nkey = str.replace("^", "__^__", key); }
+		# not found, let them know somehow ....
+		key = nkey;		 
+		} 
   
 	######## %SPECIAL%
 	
@@ -662,19 +710,33 @@ dput(key);
 	 
 	
 	
-	 
 	# str.contains("[]", key);  ??? 
+	isArray = (str.ends("[]", key));
+	 
 	
-	# this is header logic 
+	# this is header logic && pkg[]
 	kvec = str.explode("]", key);
 	logic = str.contains("[", kvec);
 	kvec = unlist(str.explode("[", kvec[logic]));
 	if(!is.null(kvec))
 		{
+		## pkg[] # ... lives here ...
 		logic = v.test(kvec, "");
 		res = kvec[!logic];
+		rlast = v.last(res);
+		
+		if(isArray && rlast == KEY_ARRAY) 
+			{ res = c(res, kidx); kidx %++%.; }
+		if(isArray && rlast != KEY_ARRAY) 
+			{ res = c(res, 1); kidx = 2; KEY_ARRAY = rlast; }
+		if(isArray)
+			{ kidx %TO% envir; KEY_ARRAY %TO% envir; }
 		return( paste0(res, collapse="|") );
 		}
+	
+
+dput(key);
+	
 	
 	# normal key 
 	key;

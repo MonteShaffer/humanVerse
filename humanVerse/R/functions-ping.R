@@ -123,10 +123,10 @@ cat("\n\n", lines[1], "\n\n");
 			if(str.contains("Pinging", line))
 				{ 
 				# doesn't work if IP is passed in 
-				# IP = str.between(line, keys=c("[", "]"));
-				IP = str.trim(str.between(line, keys=c("Pinging", "with")));
+				# IP = str.between("[", line, "]");
+				IP = str.trim(str.between("Pinging", line, "with"));
 				IP = str.trim(str.replace( c("[", "]"), "", IP)); # in case was [IP]
-				bytes = str.trim(str.between(line, keys=c("with", "bytes")));
+				bytes = str.trim(str.between("with", line, "bytes"));
 				
 				result$IP = IP;
 				result$bytes = as.numeric(bytes);
@@ -140,11 +140,11 @@ cat("\n\n", lines[1], "\n\n");
 			{
 			if(str.contains("Reply from", line))
 				{
-				IP = str.between(line, keys=c("Reply from ", ":"));
-				bytes = str.trim(str.between(line, keys=c("bytes=", " ")));
+				IP = str.between("Reply from ",line, ":");
+				bytes = str.trim(str.between("bytes=",line, " ") );
 				## 'ASS-U-ME' milliseconds
-				time = str.trim(str.between(line, keys=c("time=", "ms")));
-				TTL = str.trim(str.between(line, keys=c("TTL=", "")));
+				time = str.trim(str.between("time=", line, "ms"));
+				TTL = str.trim(str.between("TTL=", line, ""));
 				
 				
 				what = "reply";
@@ -155,11 +155,11 @@ cat("\n\n", lines[1], "\n\n");
 						if(str.contains("Ping statistics", line))
 							{
 							next;  # nothing NEW in this data 
-							}
+							}  
 						if(str.contains("Packets: Sent", line))
 							{
-							n = str.trim(str.between(line, keys=c("Sent = ", ",")));
-							s = str.trim(str.between(line, keys=c("Received = ", ",")));
+							n = str.trim(str.between("Sent = ",line, ",")); 
+							s = str.trim(str.between("Received = ", line, ","));
 							
 							result$bernoulli = list("n" = as.numeric(n), "s" = as.numeric(s), "f" = (as.numeric(n) - as.numeric(s)) );
 							

@@ -56,15 +56,16 @@ str.count = function(what="|", str)
 #'
 #------------------------------------------------#
 str.between = function() {}
-str.between = function(str, keys=c("__B64_", "_B64__"))
-	{
-	info = str.explode(keys[1], str);
-	if(keys[2] == "") 
+# str.between = function(str, keys=c("__B64_", "_B64__"))
+str.between = function(L = "__B64_", str=str, R = "_B64__")
+	{  
+	info = str.explode(L, str);
+	if(R == "") 
 		{
 		# we are at the END of the string ...
 		return( list.getElements(info, 2) );
 		}
-	info2 = str.explode(keys[2], list.getElements(info, 2) );
+	info2 = str.explode(R, list.getElements(info, 2) );
 	list.getElements(info2, 1);
 	}
 

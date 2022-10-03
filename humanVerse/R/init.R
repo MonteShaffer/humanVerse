@@ -1,10 +1,35 @@
 
-init.settings = function(use.cache=TRUE)
+init.settings = function(use.cache=TRUE, force.reload=FALSE)
 	{
+	init.constants();
+	
 	# load system.INI and add to namespace 
 ##############
 return(NULL);
 ##############
+
+# maybe set a flag in Sys.setenv() ... status of init ...
+# if complete, don't run again, unlese force ...
+	alias.init(recursive=FALSE);
+	system.init(recursive=FALSE);
+	#secret.init(recursive=FALSE);
+	runtime.init(recursive=FALSE);
+	number.init(recursive=FALSE, format="BOTH");
+	# PIc ... append lower case c for character ... 
+	
+	
+
+	alias.init(recursive=TRUE);
+	system.init(recursive=TRUE);
+	#secret.init(recursive=TRUE);
+	runtime.init(recursive=TRUE);
+	number.init(recursive=TRUE, format="BOTH");
+	# PIc ... append lower case c for character ... 
+	
+
+	## append user-settings now 
+	##alias.init(recursive=TRUE);
+
 	# inifilesORDERmatters = c("system/10-constants.ini","system/20-humanVerse.ini","system/30-ascii.ini", "system/40-runtime.ini");
 	
 	inifilesORDERmatters = c("system/10-constants.ini","system/20-humanVerse.ini","system/30-ascii.ini");
@@ -125,6 +150,44 @@ return(NULL);
 	
 	}
 
+
+init.constants = function()
+	{
+	# basic constants that can't pass through well into R from a 'parsed' INI file ...
+	
+	BASIC = list(
+				BACKSLASH 			= "\\",
+				DOUBLE_BACKSLASH 	= "\\\\",
+				SINGLE_QUOTE 		= "'",
+				SQ 					= "'",
+				ESC_SQ 				= '\'',
+				DOUBLE_QUOTE 		= '"',
+				DQ 					= '"',
+				ESC_DQ 				= "\"",
+				TAB 				= "\t",
+				NEWLINE 			= "\n",
+				EOL 				= "\r\n",
+				VSEP 				= "\\./",
+				HUMANVERSE_SEP		= "\\./"
+				);
+	
+	n = length(BASIC);
+	bnames = names(b)
+	for(i in 1:n)
+		{
+		bkey = bnames[i];
+		bval = BASIC[[bkey]];
+		
+		## namespace assign ...
+		
+		gggassign(bkey,bval);		
+		}
+	
+	invisible(BASIC);
+	}
+	
+	
+	
 # onload
 init = function() 
 	{
@@ -140,8 +203,8 @@ init = function()
 	
 	# maybe add wrapper for formals athat allows base::as.POSIXct for clarity
 	# doesn't seem to work ... 
-	formals(as.POSIXct) = alist(x = , tz="UTC", ... = );
-	formals(as.POSIXlt) = alist(x = , tz="UTC", ... = );
+	##### formals(as.POSIXct) = alist(x = , tz="UTC", ... = );
+	##### formals(as.POSIXlt) = alist(x = , tz="UTC", ... = );
 	# formalArgs(as.Date)
 	# getFunction(name, generic=TRUE, mustFind=TRUE, where)
 	# functionBody
