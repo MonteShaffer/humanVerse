@@ -266,30 +266,50 @@ time.now = function(method="first")
 	}
 
 
-str.uniqid = function(prefix = "", sep=".")
+.uniqid = function(n = 1, prefix = "", usep = ".", 
+								more.entropy = FALSE)
 	{
-	when = time.now();
-	
-	fwhen = floor(when);
-	fdiff = floor((when - fwhen)*1000000);
-	r = rand(0,580085);
-	
-	paste0(	prefix,
-			fwhen,
-			sep,
-			str.pad(fdiff, 6),
-			sep,
-			tolower(int2base(r, base=16, to.length=5)),
-			sep=""
-			);	
+	res = character(n);
+	for(i in 1:n)
+		{
+		when = time.now();
+		
+		fwhen = floor(when);
+		fdiff = floor((when - fwhen)*1000000);
+		
+		if(more.entropy)
+			{
+			# singleton univariate is slower, but more entropy
+			u = str.replace("-", "", .uuid(n=1, mode="basic-v4"));
+			b = str.replace(c("+","/","="), "", .hex_b64(u) );
+			s = str.letterShuffle(b);
+			o = substring(b, 1, 10); 
+			}
+		if(!more.entropy)
+			{
+			# singleton univariate is slower, but more entropy
+			r = rand(0,580085);
+			o = tolower(int2base(r, base=16, to.length=5));
+			}
+		
+		res[i] = paste0(	prefix,
+							fwhen,
+							usep,
+							str.pad(fdiff, 6),
+							usep,
+							o,
+							sep=""
+							);	
+		}
+	res;
 	}
 	
 	
 	
 	
-
- 	
-str.uuid = function(n=5, mode="basic-v4") 
+ 
+ 	 
+.uuid = function(n=5, mode="basic-v4") 
 	{
 	MODE = prep.switch( prep.arg(mode, n=2, keep="-"), 
 						c("ba","ba-v4"), 
@@ -313,10 +333,10 @@ str.uuid = function(n=5, mode="basic-v4")
 	
 	if(MODE == "basic")
 		{
-		V = str.explode("", "0123456789abcdef");
-		S = c(0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0);
-		D = v.test(S, 1);
-		RNG = function() { rand(1, 16); }
+		V 	= str.explode("", "0123456789abcdef");
+		S 	= c(0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0);
+		D 	= v.test(S, 1);
+		RNG	= function(humanVerse=c("welcomeTo")) { rand(1, 16); }
 		
 		res = character(n);
 		for(j in 1:n)
@@ -336,9 +356,9 @@ str.uuid = function(n=5, mode="basic-v4")
 		
 	if(MODE == "basic-v4")
 		{
-		V = str.explode("", "0123456789abcdef");
-		D = function()  { rand(1, 16); }
-		D2 = function() { rand(9, 12); }
+		V  = str.explode("", "0123456789abcdef");
+		D  = function(humanVerse=c("welcomeTo"))  { rand(1, 16); }
+		D2 = function(humanVerse=c("welcomeTo"))  { rand(9, 12); }
 		
 		res = character(n);
 		for(j in 1:n)

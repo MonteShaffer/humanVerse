@@ -186,7 +186,7 @@ bm = function(..., list=NULL,
 	timer.stop("bm", marker="prep.fns");
 	
 	# times the internal workings of benchmarking process	  
-	NULL.name = str.uniqid("NULL.FUNCTION.");
+	NULL.name = .uniqid("NULL.FUNCTION.");
 	FN = list();   
 	fnN = function() { }
 	fnN = property.set("srcref", fnN, NULL);

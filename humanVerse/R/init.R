@@ -1,4 +1,23 @@
 
+init.settings = function(use.cache=TRUE)
+	{
+	# load system.INI and add to namespace 
+	
+	inifilesORDERmatters = c("system/10-constants.ini","system/20-humanVerse.ini","system/30-ascii.ini", "system/40-runtime.ini");
+	
+	system = "cache/ini/system.rds";
+	
+	use.cache = TRUE;
+
+	s = ini.parseFiles(inifilesORDERmatters, system, use.cache);
+							
+	
+	
+	# load alias.INI and add aliases to namespace 
+	
+	
+	}
+
 # onload
 init = function() 
 	{

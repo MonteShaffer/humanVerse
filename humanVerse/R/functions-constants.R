@@ -16,7 +16,7 @@
 
 
 
-constants.default = function(default.numbers = TRUE, namespace="humanVerse", which="ALL")
+constants.defaultDEPRECATED = function(default.numbers = TRUE, namespace="humanVerse", which="ALL")
 	{
 	# TODO which ... ALL, NUMBERS, STRING, TIME, TEMP 
 	

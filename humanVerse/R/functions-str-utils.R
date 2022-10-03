@@ -457,11 +457,12 @@ str.wordReverse = function(str, sep=" ")
 	
 	
 
+
 str.letterShuffle = function(str, sep="")
 	{
 	strs = check.list(str);  # multivariate 
 	n = length(strs);
-	out = list("vector", n);
+	out = vector("list", n);
 	for(i in 1:n)
 		{
 		str = strs[[i]];

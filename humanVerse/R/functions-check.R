@@ -256,7 +256,7 @@ cache.set = function(nobj, cache="memory", md5="abcdef")
 .NULL = function(x, type=typeof(x))
 	{
 	# TRAPPING NULLS in VECTORS ... 
-	if(!is.defined(NULL_INT)) { constants.default(); }
+	## if(!is.defined(NULL_INT)) { constants.default(); }
 	.NULL_ = NULL_CHAR; # default 
 	if(type == "integer") { .NULL_ = NULL_INT; }
 	if(type == "double")  { .NULL_ = NULL_NUM; }

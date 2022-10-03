@@ -152,6 +152,8 @@ quick = function(..., character.only = FALSE, res=NULL, verbose=FALSE)
 			source(res$myfullpaths[idx], verbose=verbose);
 			} else { stop("bad idx"); }
 		}
+	
+	init.settings();
 	} 
 
 cpp = "C:/_git_/github/MonteShaffer/humanVerse/HVcpp/src/";
@@ -169,7 +171,9 @@ quick.dir = function()
 	
 	print( alex$myerrors[ alex$myerrors != ""]);
 ###############	# minvisible(alex);
-	
+
+
+	init.settings();
 	}
 
  

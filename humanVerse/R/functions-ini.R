@@ -40,7 +40,7 @@ ini.parseFiles = function(inifilesORDERmatters,
 							master = "cache/ini/master.rds", 
 							use.cache = TRUE, ...)
 	{
-	uniqid = str.uniqid();	
+	uniqid = .uniqid();	
 	TIMESTAMP = .timestamp("YYYY-MM-DD");
 	
 	mf 		= "C:/_R_/-humanVerse-/SYSTEM/cache/ini/master.rds";
@@ -98,7 +98,7 @@ ini.parseFiles = function(inifilesORDERmatters,
 		check.dir(backups);
 			
 	outs.copy = paste0(backups, opartials, "/", uniqid, "_", ostems, ".rds");
-	# if exists in the date ... append a str.uniqid-md5 ...
+	# if exists in the date ... append a .uniqid-md5 ...
 	
 	ochecksums = paste0(d, "-backups-/", opartials, "/", ostems, "_");
 

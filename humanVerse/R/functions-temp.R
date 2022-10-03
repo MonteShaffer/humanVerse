@@ -1,8 +1,8 @@
 
 
 temp.init = function()
-	{
-	if(!is.defined(ABS_ZERO_F)) { constants.default(); }
+	{ 
+	#########if(!is.defined(ABS_ZERO_F)) { constants.default(); }
 	# can we get this check to happen here, so we don't have to constantly check?
 	
 	

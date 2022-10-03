@@ -1,5 +1,11 @@
 
 
+str.onlyAlphaNumeric = function(str)
+	{
+	gsub(REGEX_NOT_ALPHA_NUMERIC, "", str);	
+	}
+
+
 # https://stackoverflow.com/a/43775302/184614
 # You may remove any 1+ non-ASCII symbols with a [^ -~]+ regex:
 #> gsub("[^ -~]+", "", "I mean totally \xed\xa0\xbd\xed\xb8\x8a")

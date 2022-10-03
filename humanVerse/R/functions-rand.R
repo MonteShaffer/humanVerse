@@ -25,7 +25,7 @@
 #' rand(1,10, n=5, method="sample", sample.replace=FALSE); # min, max, n must be comformable "with replacement = FALSE"
 #' rand(1,10, n=5, seed=10);  # fixed seed requires the min/max to be known
 rand = function() {}
-rand = function(min = as.integer(-1*10^5*as.numeric(Sys.time())), max = as.integer(1*10^5*as.numeric(Sys.time())), n = 1, method = "high-low", sample.replace = TRUE, seed = NULL, attributes=NULL, to.integer=TRUE) 
+rand = function(min = as.integer(-1*as.numeric(Sys.time())), max = as.integer(1*as.numeric(Sys.time())), n = 1, method = "high-low", sample.replace = TRUE, seed = NULL, attributes=NULL, to.integer=TRUE) 
     {
 ##########################################################
 ##### I can't wrap this into a function check.string #####

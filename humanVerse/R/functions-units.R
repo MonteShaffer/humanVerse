@@ -8,8 +8,8 @@ SI.prepKey = function(key="micro")
 	{
 	# multivariate ? 
 	search = NULL;
-	# num.constants();
-	if(!is.defined(SI_PREFIX)) { constants.default(); }
+	# num.constants();  
+	######### if(!is.defined(SI_PREFIX)) { constants.default(); }
 	
 	KEY	= prep.arg(key, n=3, case="lower");
 	

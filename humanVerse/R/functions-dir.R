@@ -2,7 +2,7 @@
 
 dir.setSeparator = function(force=NULL)
 	{
-	if(!is.defined(DIR_SEPARATOR)) { constants.default(); }
+	### if(!is.defined(DIR_SEPARATOR)) { constants.default(); }
 	if(is.null(force))
 		{	
 		DIR_SEPARATOR = DIR_LINUX;

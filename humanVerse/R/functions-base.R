@@ -2,7 +2,7 @@
 
 base.init = function()
 	{
-	if(!is.defined(BXXv)) { constants.default(); }
+	## if(!is.defined(BXXv)) { constants.default(); }
 	# can we get this check to happen here, so we don't have to constantly check?
 	
 	
@@ -83,7 +83,7 @@ base2int = function(..., base=16, method="first")
 
 
 
-
+ 
 .int2base = function(num, base=16)
 	{
 	# univariate, no checks 
@@ -113,7 +113,7 @@ int2base = function(..., base=16, to.length=NULL, method="first")
 		x = prep.dots(..., 	default = c(0, 2748, 59912, 
 								13107340, 180071644,  2^31 - 1) 
 				);
-#dput(x);
+dput(x); 
 	b = check.base(base);
 	if(is.null(b)) { stop("base issues"); }
 	

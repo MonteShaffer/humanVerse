@@ -494,7 +494,7 @@ file.readFromPipe = readFromPipe;
 # fp as file-pointer 
 fopen = function(filename, mode="rb", use.include.path = FALSE, ... )
 	{
-	if(!is.defined(SEEK_CURRENT)) { constants.default(); }
+	######if(!is.defined(SEEK_CURRENT)) { constants.default(); }
  
 	# maybe do smart filename if use.include.path 
 	if(!file.exists(filename)) { return(FALSE); }
