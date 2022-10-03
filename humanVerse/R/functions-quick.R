@@ -153,7 +153,7 @@ debug = FALSE;
 ## assuming res is alive from include.dir
 # get bytecode ... of fun... => name ?
 quick = function(..., character.only = FALSE, res=NULL, verbose=FALSE)
-	{ 
+	{  
 	
 	fns = prep.dots(..., collapse=character.only, has.objects=!character.only);
 # dput(fns);
@@ -199,7 +199,7 @@ quick.dir = function()
 ###############	# minvisible(alex);
 
 
-	init.settings(); 
+	quick(quick);  # load "defaults" AFTER ... which will load init(); 
 	}
 
  

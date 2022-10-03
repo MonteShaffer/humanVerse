@@ -14,7 +14,9 @@ dput(info);
 	}
 
 # any filename that contains text ...
-md5.textFile = function(fileTXT)
+# passes through readChars ... 
+# obj (raw) are all derived from TXT 
+checksum.textFile = function(fileTXT)
 	{
 	# tools::md5sum(fileTXT); # these are different ...
 	str.toMD5( readTextFile(fileTXT) );	
@@ -36,9 +38,36 @@ path.build = function(partial)
 
 # ini.parseFiles(inifilesORDERmatters)
 
+
+# C:\_git_\github\MonteShaffer\humanVerse\humanVerse\inst\R\config
+
+ini.parseUserFiles = function(keys = "", user = "", use.cache = TRUE, smart.num = TRUE)
+	{
+	# this is a two-pass ... 
+	# one for generic 'user'
+	# one for specific user 'mshaffer' ... if (user != "")
+	
+	
+	}
+
+ini.parseSystemFiles = function(keys = "", use.cache = TRUE, smart.num = TRUE)
+	{
+	# keys = c("alias", "system", "number", "runtime")
+	# key == "" ... will scan and do all ... 
+	## this just parses, doesn't run them ... 
+	# scan folders in /inst/R/config/ ... not starting with "-"
+	# the folder is the master.name = "alias" ...
+	# create reserved words ALIAS = ... parsed object 
+	# scan files in 'master' folder, sortby ASC so 10 goes first 
+	
+	
+	
+	}
+
+ 
 ini.parseFiles = function(inifilesORDERmatters, 
 							master = "cache/ini/master.rds", 
-							use.cache = TRUE, ...)
+							use.cache = TRUE, smart.num = TRUE, ...)
 	{
 	uniqid = .uniqid();	 
 	TIMESTAMP = .timestamp("YYYY-MM-DD");
@@ -125,8 +154,8 @@ ini.parseFiles = function(inifilesORDERmatters,
 
 		# if we have to parse, we need the file anyway ...
 		instring	= readTextFile(insource);
-		checksum		= str.toMD5(instring);
-		# checksum 	= md5.textFile(insource);
+		checksum	= str.toMD5(instring);
+		# checksum 	= checksum.textFile(insource);
 		
 		ochecksum 	= paste0(ochecksums[i], checksum, ".info");
 		
@@ -203,7 +232,7 @@ ini.parseFiles = function(inifilesORDERmatters,
 # # # # # # ini.file 	= "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/constants.ini";
 
 # # # # # # ini.file 	= "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/humanVerse.ini";
-
+ 
 # # # # # # inistr 		= readTextFile(ini.file);
 # # # # # # lines 		= str.explode("\r\n", inistr);
 # # # # # # # lines		= lines[1:33];
@@ -218,7 +247,7 @@ ini.parseFiles = function(inifilesORDERmatters,
 ini.parse = function() {} 
 ini.parse = function(inistr, fname="-file unknown-", 
 							RES = list(), MEMORY = list(),
-				verbose=TRUE, ignore.eval = FALSE)
+				verbose=TRUE, smart.num = TRUE, ignore.eval = FALSE)
 	{
 	lines = str.explode("\r\n", inistr);
 	
@@ -291,7 +320,7 @@ gggassign("RES", RES);
 			rval = line;  # grab everything (whitespace);
 			
 			# more = "pval";  # pval that grows ... 
-			val = parse.walkTheLine(rval, COMMENTS, fin);			
+			val = ini.walkTheLine(rval, COMMENTS, fin, smart.num = smart.num);			
 			
 			
 			fin = property.get("more", val); # are we finished?
@@ -412,7 +441,7 @@ gggassign("RES", RES);
 	
 
 			key = ini.cleanKey(rkey);  # raw key 
-			val = parse.walkTheLine(rval, COMMENTS);
+			val = ini.walkTheLine(rval, COMMENTS, smart.num = smart.num);
 
 .__normal.GTG = function() {} 				
 			fin = property.get("more", val); # are we finished?
@@ -522,3 +551,124 @@ ini.cleanKey = function(key)
 	
 	
 	
+
+ini.walkTheLine = function(){}
+ini.walkTheLine = function(str, COMMENTS=c("#"), continue=NULL, smart.num = TRUE)
+	{
+	# MULTILINE comments ... pass flag, just looking for END 
+	# allow for two-character comment "//" DOUBLE_SLASH 
+	# IN_MULTILINE_COMMENT ... TYPE = "/*"  "*/"
+	
+	# I am not dealing with = signs ... just simple parser 
+	# NO GLOBALS HERE, used for .... ini.parse(inistr)
+	SINGLE_QUOTE 	= "'";  # make these constants?
+	DOUBLE_QUOTE 	= '"';
+	
+	BACKTICK		= '`';
+		STRINGS = c(SINGLE_QUOTE, DOUBLE_QUOTE, BACKTICK);
+	
+	BACKSLASH 		= "\\";
+	 
+	IN_STRING 		= FALSE;
+	STRING_TYPE 	= NULL;
+
+	nval			= "";
+	#oval 			= "";   # this is carryover part ...
+	if(!is.null(continue)) 
+		{
+		IN_STRING 	= continue[["IN_STRING"]];
+		STRING_TYPE = continue[["STRING_TYPE"]];
+		nval 		= paste0(continue[["nval"]], "\n");
+		#oval 		= nval;
+		}
+	
+.cat("HEAD nval: ", nval);
+.cat("\t\t str: ", str);
+ 
+	str = str.trim(str);
+	strV = str.explode("", str);
+	ns = length(strV);
+		
+	cchar = "";
+	pchar = "";
+	i = 1;
+	while(i <= ns)
+		{
+		pchar = cchar;
+		cchar = strV[i];
+		if(cchar %in% STRINGS)
+			{
+			if(IN_STRING)
+				{
+				# already IN_STRING ...
+				if(cchar != STRING_TYPE)
+					{
+					# we have ' in "envir" or " in 'envir' OKEY
+					nval = paste0(nval, cchar);
+					i %++%. ;
+					next;
+					}
+				if(cchar == STRING_TYPE)
+					{
+					if(pchar == BACKSLASH)
+						{
+						# we have \' in 'envir'  or \" in "envir" OKEY
+						nval = paste0(nval, cchar);
+						i %++%. ;
+						next;
+						} else {
+								# this means the string is OVER
+								IN_STRING = FALSE;
+								break;
+								}
+					}				
+				}
+			
+			## just starting the STRING 
+			IN_STRING 	= TRUE;
+			# any previous elements before string start are discarded 
+			nval = "";
+			STRING_TYPE = DOUBLE_QUOTE;
+			if(cchar == SINGLE_QUOTE) 	{ STRING_TYPE = SINGLE_QUOTE; }
+			if(cchar == BACKTICK) 		{ STRING_TYPE = BACKTICK; }
+			i %++%. ;
+			next;
+			}
+		
+		if((cchar %in% COMMENTS) && !IN_STRING)
+			{
+			break;
+			}
+		# ... my parser won't care ...
+		# possible to have a missing CLOSING_QUOTE 
+		
+		nval = paste0(nval, cchar);
+		i %++%. ;
+		next;		
+		}
+
+	# nval = str.trim(nval);
+	nval_ = str.trim(nval);
+	if(smart.num)
+		{
+		# allows for NUMBERS PI to be CHARS with FLAG
+		nnum = check.number(nval_);
+		if(allTRUE(nnum)) { nval = as.numeric(nval_); }
+		}
+	
+	nbool = check.boolean(nval_);
+	if(allTRUE(nbool)) { nval = as.logical(nval_); }
+	
+	# if we have a multiline, and didn't close the STRING ... 
+	if(IN_STRING)
+		{
+		more = list("nval" = nval, 
+					"IN_STRING" = IN_STRING, 
+					"STRING_TYPE" = STRING_TYPE);
+		nval = property.set("more", nval, more);
+		}
+.cat("FOOT nval: ", nval);
+	nval;
+	}
+
+

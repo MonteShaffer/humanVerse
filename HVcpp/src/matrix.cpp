@@ -1,20 +1,25 @@
 #include <RcppEigen.h>
 // [[Rcpp::depends(RcppEigen)]]
 
+using Eigen::NumTraits;			// eigen prec/eps/measures 
+
 using Eigen::Map;				// 'maps' rather than copies 
 using Eigen::MatrixXd;			// variable size matrix, double precision
 using Eigen::MatrixXcd;			// ABOVE, complex 
 using Eigen::VectorXd;			// variable size vector, double precision
 using Eigen::VectorXcd;			// ABOVE, complex 
-using Eigen::PartialPivLU;
-using Eigen::FullPivLU;
 
-using Eigen::LLT;
-using Eigen::LDLT;
+using Eigen::PartialPivLU;						// type = 2
+using Eigen::FullPivLU;							// type = 3
 
+using Eigen::HouseholderQR;						// type = 4
+using Eigen::ColPivHouseholderQR;				// type = 5
+using Eigen::FullPivHouseholderQR;				// type = 6
+using Eigen::CompleteOrthogonalDecomposition;	// type = 7
 
+using Eigen::LLT;								// type = 8
+using Eigen::LDLT;								// type = 9
 
-//  Rcpp::sourceCpp("matrix.cpp", verbose=TRUE);
 
 // [[Rcpp::export]]
 VectorXd matrix_diagonal(Map<MatrixXd> M, int idx=0)
@@ -35,10 +40,6 @@ MatrixXd matrix_transpose(Map<MatrixXd> M)
 	// return M.transposeInPlace();
 	return M.transpose();  
 	}
-	
-
-	
-	
 
 	
 // [[Rcpp::export]]
@@ -56,7 +57,7 @@ MatrixXd matrix_subtract(Map<MatrixXd> A, Map<MatrixXd> B)
 // [[Rcpp::export]]
 MatrixXd matrix_zero(int row = 5, int col = -1 )
 	{
-	if(col <= -1) { col = row; }
+	if(col < 0) { col = row; }
 	MatrixXd B;
 	return B.Zero(row, col);
 	}
@@ -83,10 +84,34 @@ MatrixXd matrix_identity(int size = 5)
 	}
 
 
+
+//  Rcpp::sourceCpp("matrix.cpp", verbose=TRUE);
+
+// [[Rcpp::export]]
+double get_epsilon()
+{
+	std::numeric_limits<double>::epsilon();
+}
+
+// [[Rcpp::export]]
+double get_precision()
+{
+	
+}
+
+/*
+NumTraits<Real>::epsilon(); }
+   EIGEN_DEVICE_FUNC EIGEN_CONSTEXPR
+   static inline Real dummy_precision() { return NumTraits<Real>::dummy_precision(); }
+   EIGEN_DEVICE_FUNC EIGEN_CONSTEXPR
+   static inline int digits10() { return NumTraits<Real>::digits10(); }
+   *
+   */
+
 double calculateTolerance(Map<MatrixXd> A, double new_factor, 
 							bool compound = true, bool verbose = true)
 {
-	double eps 			= std::numeric_limits<double>::epsilon();
+	double eps 			= get_epsilon();
 	int old_factor 		= A.diagonalSize(); 
 	std::string msg 	= "RTM: *matrix eps* it is defined as 'diagonal size times machine epsilon' \n\t\t\t\t[ setThreshold( ... NumTraits<Scalar>::epsilon() ]";
 	std::string more 	= ""; 

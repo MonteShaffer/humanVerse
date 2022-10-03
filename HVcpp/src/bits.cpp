@@ -120,7 +120,7 @@ long long s_XOR(long long a, long long int b)
 
 //' Pairwise XOR operations
 //'
-//' @param a INTEGER to be manipulated 
+//' @param a INTEGER to be manipulated  
 //' @param b INTEGER to be manipulated
 //' @return Updated INTEGER after XOR
 // [[Rcpp::export]]
