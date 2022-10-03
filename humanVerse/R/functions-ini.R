@@ -40,10 +40,13 @@ ini.parseFiles = function(inifilesORDERmatters,
 							master = "cache/ini/master.rds", 
 							use.cache = TRUE, ...)
 	{
-	uniqid = .uniqid();	
+	uniqid = .uniqid();	 
 	TIMESTAMP = .timestamp("YYYY-MM-DD");
-	
+	 
 	mf 		= "C:/_R_/-humanVerse-/SYSTEM/cache/ini/master.rds";
+	
+	mf = str.replace("cache/ini/master.rds", master, mf);
+	
 	if(use.cache && file.exists_(mf)) { return( readRDS(mf) ); }
 	
 	d 		= check.dir(mf);
@@ -81,7 +84,7 @@ ini.parseFiles = function(inifilesORDERmatters,
 	
 	oexts 	= check.ext(ofiles, dotless=FALSE);
 	#ostem = (outs %.-% d) %-.% exts;
-	opaths = ofiles %-.% exts;
+	opaths = ofiles %-.% oexts; 
 	
 	opos = check.list(str.pos("/", opaths));
 	ons = list.getLengths(opos);
@@ -95,7 +98,7 @@ ini.parseFiles = function(inifilesORDERmatters,
 
 	# checksums live here ...
 	backups	= paste0(d, "-backups-/", TIMESTAMP , "/");
-		check.dir(backups);
+		check.dir(backups); 
 			
 	outs.copy = paste0(backups, opartials, "/", uniqid, "_", ostems, ".rds");
 	# if exists in the date ... append a .uniqid-md5 ...
@@ -352,7 +355,7 @@ gggassign("RES", RES);
 		# WE HAVE A LINE ... LIKELY a KEY/VALUE PAIR 
 .__normal = function() {} 		
 
-		if(COMMENT_KEY == "")	
+		if(CURRENT_KEY == "")	
 			{ 
 			# "%~=%" = is.equal;  ;; this "=" is a problem 
 			ne = str.count("=", line);

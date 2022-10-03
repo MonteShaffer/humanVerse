@@ -435,10 +435,10 @@ str.letterReverse = function(strs)
 # https://www.r-bloggers.com/2019/05/four-ways-to-reverse-a-string-in-r/
 # str = c("monte says hi", "alex you're awesome", "mama is amazing")
 str.wordReverse = function(str, sep=" ")
-	{
+	{  
 	strs = check.list(str);  # multivariate 
 	n = length(strs);
-	out = list("vector", n);
+	out = vector("list", n);
 	for(i in 1:n)
 		{
 		str = strs[[i]];
@@ -485,7 +485,7 @@ str.wordShuffle = function(str, sep=" ")
 	{
 	strs = check.list(str);  # multivariate 
 	n = length(strs);
-	out = list("vector", n);
+	out = vector("list", n);
 	for(i in 1:n)
 		{ 
 		str = strs[[i]];

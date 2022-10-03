@@ -35,7 +35,7 @@ rand = function(min = as.integer(-1*as.numeric(Sys.time())), max = as.integer(1*
 		{ method = deparse(substitute(method)); } 
 ##########################################################
 	METHOD = prep.rand(method);
-	
+	 
 	n = as.integer ( n );
 	# min/max can be non-integer, but 'rand' is generally considered an integer operation
 	if(is.na(n) || n < 1)

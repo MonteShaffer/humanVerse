@@ -73,6 +73,7 @@ memory.start = function(	key="timer",
 # log to file ... 
 memory.log = function(key, MEMORY, action="get")
 	{
+	return(NULL);  # TODO :: update this 
 	# manual set the value so no recursion 
 	# we are logging timestamps, not values ... 
 		now = as.POSIXct(Sys.time());

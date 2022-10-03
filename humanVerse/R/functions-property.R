@@ -125,7 +125,7 @@ system.restoreState = function(key="DEFAULT")
 	
 system.saveInitialState = function()
 	{
-	mhash = str.HASH();  # rainbow table?! nO 
+	mhash = .HASH();  # rainbow table?! nO 
 	memory.set("system.INITIAL", "-SYSTEM-", mhash);
 	system.saveState(mhash);
 	}
@@ -266,7 +266,7 @@ property.getAll = property.getALL;
 
 property.saveInitialState = function()
 	{
-	mhash = str.HASH();  # rainbow table?! nO 
+	mhash = .HASH();  # rainbow table?! nO 
 	memory.set("property.INITIAL", "-SYSTEM-", mhash);
 	property.saveState(mhash);
 	}
@@ -398,7 +398,7 @@ option.restoreState = options.restoreState;
 
 options.saveInitialState = function()
 	{
-	mhash = str.HASH();  # rainbow table?! nO 
+	mhash = .HASH();  # rainbow table?! nO 
 	memory.set("options.INITIAL", "-SYSTEM-", mhash);
 	options.saveState(mhash);
 	}
@@ -561,7 +561,7 @@ par.getAll = par.getALL;
 	
 par.saveInitialState = function()
 	{
-	mhash = str.HASH();  # rainbow table?! nO 
+	mhash = .HASH();  # rainbow table?! nO 
 	memory.set("par.INITIAL", "-SYSTEM-", mhash);
 	par.saveState(mhash);
 	}

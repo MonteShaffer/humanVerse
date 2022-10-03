@@ -174,28 +174,78 @@ str.fromSymbol = function(symb.obj)
 
 
 
+# .HASH(n=5, TRUE, rand(15,25, n=5))
+
+ # > .HASH(n=5, TRUE, rand(15,25, n=5))
+# c(2, 3, 5, 7, 11, 13)
+# c(2, 3, 5, 7, 11, 13, 17, 19, 23)
+# c(2, 3, 5, 7, 11, 13)
+# c(2L, 3L, 5L, 7L, 11L, 13L, 17L, 19L, 23L, 29L, 31L, 37L, 41L, 
+# 43L, 47L, 53L, 59L, 61L, 67L, 71L)
+# c(2, 3, 5, 7, 11, 13)
+# [1] "zkAtSSMRlyqcCfYNXY5j" "WQYOYL58TIM5Rd8gDHwB" "nqdv3Ivof1iCUOPe6"    "xcuxoeAVhWS4bLW8L2"   "elX4qUExpxALVkCMC"   
+# > x = c("zkAtSSMRlyqcCfYNXY5j", "WQYOYL58TIM5Rd8gDHwB", "nqdv3Ivof1iCUOPe6",    "xcuxoeAVhWS4bLW8L2" ,  "elX4qUExpxALVkCMC"  )
+# > x
+# [1] "zkAtSSMRlyqcCfYNXY5j" "WQYOYL58TIM5Rd8gDHwB" "nqdv3Ivof1iCUOPe6"    "xcuxoeAVhWS4bLW8L2"   "elX4qUExpxALVkCMC"   
+# > strlen(x)
+# [1] 20 20 17 18 17
+
+# [1] "TIXlSrCyEM25ZHO4yYR"       "tfDgzzXAcHAzPPg1zkfnkV5um" "GLyZCqEP3b2gBg33mGnZLmAbn" "NwMLZzZ3fAdwNW3gLsLAabbBk" "aBDuC7TvzrNCvIx8AqHwN"    
+#  
+
+# > .HASH(b64=TRUE)
+# c(2L, 3L, 5L, 7L, 11L, 13L, 17L, 19L, 23L, 29L, 31L, 37L, 41L, 
+# 43L, 47L, 53L, 59L, 61L, 67L)
+# [1] "CUTiJBSWjzdmJTBDcc7CtitDBbbz"
+# > .HASH(1, TRUE)
+# c(2L, 3L, 5L, 7L, 11L, 13L, 17L, 19L, 23L, 29L, 31L, 37L, 41L, 
+# 43L)
+# [1] "llFWUQYBlubzFY5zlShkgboEQ"
+# > .HASH(1, TRUE, 22)
+# c(2, 3, 5, 7, 11)
+# [1] "Y4W8SD6LU2BGzivUWTTZX5"
+# > .HASH(1, TRUE, rand(15,25))
+# c(2L, 3L, 5L, 7L, 11L, 13L, 17L, 19L, 23L, 29L, 31L, 37L, 41L, 
+# 43L)
+# [1] "DDHetDEECatDCVa8QSB81QW"
 
 
-
-
-str.HASH = function()
+.HASH = function(n=1, b64=FALSE, to.length = NULL)
 	{
-	str = NULL;
-	str = c(str, rand() );
-	str = c(str, sample(letters, rand(1, rand(1,100)), replace=TRUE) );
-	str = c(str, rnorm( rand(1, rand(1,55) )) );
-	str = c(str, primes.get( rand(1, rand(1,33) ) ) );
-	colls = sample(LETTERS, rand(1, rand(1,5)));
-	for(i in 1: rand(1, rand(1, 22)))
+	tlen = 32;
+	if(!is.null(to.length)) { tlen = to.length; }
+	tlen = rep(tlen, length.out=n);
+	
+	res = character(n);
+	for(i in 1:n)
 		{
-		str = sample(str);
-		colls = sample(colls);
+		str = NULL;
+		str = c(str, rand() );
+		str = c(str, sample(letters, rand(1, rand(1,100)), replace=TRUE) );
+		str = c(str, rnorm( rand(1, rand(1,55) )) );
+		str = c(str, int2base( primes.get( rand(5, rand(10,33) ) ) , base = rand(5, 25) ) );
+		colls = sample(LETTERS, rand(1, rand(1,5)));
+		for(j in 1: rand(1, rand(1, 22)))
+			{
+			str = sample(str);
+			colls = sample(colls);
+			}
+		coll = paste0(colls, collapse="");
+		col_ = paste0(str, collapse=coll)
+		r = str.toMD5( col_, times=rand(1, rand(14,92)) );
+		blen = rand( 18, 28 );
+		if(!is.null(to.length)) { blen = tlen[i]; }
+		if(b64) { r = .b64hash(r, to.length = blen ); }
+		res[i] = substring(r, 1, tlen[i]);
 		}
-	coll = paste0(coll, collapse="");
-	res = str.toMD5( paste0(str, collapse=coll), times=rand(1, rand(1,5)) );
-	minvisible(res, "LAST-HASH");
+	# minvisible(res, "LAST-HASH");
+	res;
 	} 
 
+ 
+# > .b64hash(x, to.length=23)
+# [1] "D5SayT3ZbJZJxJ5aJ9yfcwc"
+ 
  
 .now = function() 
 	{ 
@@ -266,6 +316,41 @@ time.now = function(method="first")
 	}
 
 
+# > .b64hash(x)
+# [1] "ppAY9sFnD0"
+# attr(,"seeds")
+# [1] 1418347555
+# > .b64hash(x, to.length=23)
+# [1] "9aGyNG585oT9QVanvaoNaiX"
+
+
+.b64hash = function(hex, to.length=10, pre.shuffle=TRUE)
+	{
+	e = hex;
+	if(pre.shuffle) { e = str.letterShuffle(hex); }
+	h = .hex_b64(e);
+	b = str.replace(c("+","/","="), "", h );
+	
+	blen = str.len(b);  ti = (blen / to.length);
+	# TODO ... str.rep have to.length function ...
+	if(ti < 1) { b = str.rep(b, ceil(1/ti));}
+	
+	s = str.letterShuffle(b);
+	
+	o = substring(s, 1, to.length); 
+	o;	
+	}
+	
+# > y = .b64hash(x)
+# > y
+# [1] "AhmSav4MX8"
+
+# > .b64hash(x)
+# [1] "AMpXa4fWYv"
+# attr(,"seeds")
+# [1] -377716774
+
+
 .uniqid = function(n = 1, prefix = "", usep = ".", 
 								more.entropy = FALSE)
 	{
@@ -281,9 +366,11 @@ time.now = function(method="first")
 			{
 			# singleton univariate is slower, but more entropy
 			u = str.replace("-", "", .uuid(n=1, mode="basic-v4"));
-			b = str.replace(c("+","/","="), "", .hex_b64(u) );
+			e = str.letterShuffle(u);
+			h = .hex_b64(e);
+			b = str.replace(c("+","/","="), "", h );
 			s = str.letterShuffle(b);
-			o = substring(b, 1, 10); 
+			o = substring(s, 1, 10); 
 			}
 		if(!more.entropy)
 			{
@@ -305,10 +392,12 @@ time.now = function(method="first")
 	}
 	
 	
-	
-	
+## > .uniqid(more.entropy=TRUE)
+## [1] "1664770438.443703.BeInAqJ3BL"
+
+
  
- 	 
+ 	  
 .uuid = function(n=5, mode="basic-v4") 
 	{
 	MODE = prep.switch( prep.arg(mode, n=2, keep="-"), 

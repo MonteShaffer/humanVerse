@@ -280,7 +280,7 @@ primes.get = function(n, first=TRUE, optimus=FALSE, method="first")
 
 	FNS = list(
 			"cpp" 		= function() { cpp_primes(n, first); } ,
-			"bit" 		= function() { primes.bit(n, first=first, optimus=optimus); },
+			"bit" 		= function() { primes.bit(n, first=first); },
 			"hack" 		= function() { primes.pracma(n, first); },
 			"pracma" 	= function() { pracma::primes(gn); } ,
 			"sfsmisc" 	= function() { sfsmisc::primes(gn); }			

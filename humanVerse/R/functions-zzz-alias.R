@@ -126,7 +126,7 @@ check.num = check.number;
 suppressErrors = suppressError;
 suppressWarning = suppressWarnings;
 
-path.pasteFrom = path.fromClipboard;
+path.fromClipboard = path.pasteFrom;
 
 
 unset = rm;

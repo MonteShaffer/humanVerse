@@ -1,6 +1,32 @@
 
+"%GLOBAL%" 	= .GLOBAL.;
+B64			= "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+B64v		= str.explode("", B64);
+BXX			= "0123456789ABCDEFGHIJKLMNOPQRSTUV";
+BXXv		= str.explode("", BXX);
+Bits64		= int2base(0:63, base=2);
+
+ATTRIBUTE_KEY = "@";
+DEFAULT_TOLERANCE = sqrt(.Machine$double.eps);
+DEFAULT_TIMEZONE = "UTC";
+EXT = ".";
+DIR_WINDOZE = "\\";
+DOUBLE_SLASH = "//";
+SLASH = "/";
+DIR_LINUX = "/";
+
+INTEGER_MAXIMUM = 2147483647;
+
+BUFFER 				= 1024
+SEEK_START 			= "start"
+SINGLE_QUOTE 		= "'"
+DOUBLE_QUOTE 		= '"'
 
 
+
+EMPTY 	= "";
+"%++%" 	= .PLUS_PLUS.;
+"%--%" 	= .MINUS_MINUS.;
 
 # mytype = suppressError( 
 # may be different for tryCatch(
@@ -131,13 +157,13 @@ quick = function(..., character.only = FALSE, res=NULL, verbose=FALSE)
 	
 	fns = prep.dots(..., collapse=character.only, has.objects=!character.only);
 # dput(fns);
-	if(!is.defined(EMPTY)) { constants.default(); }
+	#####if(!is.defined(EMPTY)) { constants.default(); }
 		################ minvisible(fns, display=none);
 	if(!character.only) { fns = as.character(fns); }
-# dput(fns);
+dput(fns);
 
 	# we moved our aliases, so quick(utils) doesn't update %TO% 
-	fns = unique( c(fns, "zza-special", "zzz-alias"));
+#	fns = unique( c(fns, "zza-special", "zzz-alias"));
 
 ###	if(is.null(res)) { res = memory.get("alex", "SYSTEM"); };
 	if(is.null(res)) { res = alex; }  # GLOBAL at the moment ...
@@ -173,7 +199,7 @@ quick.dir = function()
 ###############	# minvisible(alex);
 
 
-	init.settings();
+	init.settings(); 
 	}
 
  
