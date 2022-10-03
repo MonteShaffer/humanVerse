@@ -2,14 +2,14 @@
 
 
 
-# part of the str.end_ and strsplit_ WORKAROUND ... 
+# part of the str.ends_ and strsplit_ WORKAROUND ... 
 # leaf/node tree to clarify would help a lot ... 
 list.removeFillFromEnd = function(info, fill="~")
 	{
 	n = length(info);  # assumes it is a list ... list IN/list OUT
 	nlen = list.getLengths(info);
 	vals = list.getElements(info, nlen);
-	nvals = str.end_(fill, vals, trim=TRUE);
+	nvals = str.ends_(fill, vals, trim=TRUE);
 	
 	ninfo = list.setElements(info, nlen, nvals);
 	ninfo;

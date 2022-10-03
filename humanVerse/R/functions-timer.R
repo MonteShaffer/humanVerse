@@ -178,7 +178,7 @@ timer.stop = function(..., marker="STOP-{n}",
 		i = 1 + i;
 		if(is.null(timer[[key]]))
 			{
-			warning.cat("Nothing to stop as timer.start for key: ", key, " not called yet!");
+			cat.warning("Nothing to stop as timer.start for key: ", key, " not called yet!");
 			next;
 			}
 		

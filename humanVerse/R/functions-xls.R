@@ -963,14 +963,14 @@ xls.TRENDLINE = function(x, y, type="Linear", set.intercept=FALSE, intercept.val
 		
 	TYPE = prep.arg(type, n=3, case="upper");
 dput(TYPE);
-	if(TYPE == "MOV") { warning.cat("MOVING AVERAGE changes the dataframe, reducing it in size.  It is an important function and R has many ways to deal with lags() and rolling averages (or medians) in other functions.  Sorry, for now, it will not be implemented here.  As I believe it doesn't have an R^2 or FIT formula in EXCEL.  It can be developed, just not right now.  Don't see the benefit."); stop("Have a nice day!");}
+	if(TYPE == "MOV") { cat.warning("MOVING AVERAGE changes the dataframe, reducing it in size.  It is an important function and R has many ways to deal with lags() and rolling averages (or medians) in other functions.  Sorry, for now, it will not be implemented here.  As I believe it doesn't have an R^2 or FIT formula in EXCEL.  It can be developed, just not right now.  Don't see the benefit."); stop("Have a nice day!");}
 	
 	if(!set.intercept) { INT = 1; } else { INT = 0; }
 	if(set.intercept && (TYPE=="POW" || TYPE == "EXP") )
 		{
 		INT = 1;
 		intercept.val = 0; # so it doesn't change the Y - values 
-		warning.cat("\n FOR the type: [",type,"] you can't set the intersept to a fixed value.  Resetting to default 'set.intercept=FALSE' and proceeding. \n");
+		cat.warning("\n FOR the type: [",type,"] you can't set the intersept to a fixed value.  Resetting to default 'set.intercept=FALSE' and proceeding. \n");
 		}
 		
 	# if(any == 0 in certain TYPES ... warning (data for y has 0 ln ... x has ln ) ... POLITE directon on what is wrong 

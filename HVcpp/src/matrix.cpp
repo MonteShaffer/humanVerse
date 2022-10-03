@@ -353,6 +353,7 @@ MatrixXd matrix_multiplyN(Map<MatrixXd> A, int n=2, int type = 1, double tol_fac
 	}
 
 
+// install.packages
 
 // TODO ... rank(M) ... eigen(M) ... solve(A, B) 
 // linear-solver types, wrapped into one function ...

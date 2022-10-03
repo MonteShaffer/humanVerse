@@ -79,6 +79,12 @@ base64.encode = function(str)
 ## we need JSON for STRING <==> OBJECT 
 ## keep them separate ....
 
+
+# > js.b64("monte")
+# [1] "bW9udGNA="
+# > js.b64("Monte")
+# [1] "TW9udGNA="
+
 # univariate 
 js.b64 = function(input, method="encode") 
 	{
@@ -87,31 +93,33 @@ js.b64 = function(input, method="encode")
 	enc1 = enc2 = enc3 = enc4 = "";
 	i = 0;	
 	 
+.__encode__. = function() {}  	 
 	encode = function(humanVerse=c("welcomeTo")) 
 		{	
-		input.charCodes	 = charCode(input); 
-		n = str.len(input); 
+		# input.charCodes	 = charCode(input); 
+		icc = charCode(input);  
+		n = str.len(input);  
 		
-		while (i < n)
+		while (i < n)  # 3 characters at a time ... 
 			{		# this worked without zero index ... increment THEN
-			chr1 = input.charCodes[ i %++%. ];	
-			chr2 = input.charCodes[ i %++%. ];	
-			chr3 = input.charCodes[ i %++%. ];	
-				 
+			chr1 = icc[ i %++%. ];
+			chr2 = icc[ i %++%. ];
+			chr3 = icc[ i %++%. ];	
+			### javascript works with NaN
+			### R throws errors with NA ...
+				NA2 = is.na(chr2);
+			chr2 = v.TO(chr2, NA, 0);
+				NA3 = is.na(chr3);
+			chr3 = v.TO(chr3, NA, 0);
 					
 			enc1 = chr1 %>>% 2;
 			enc2 = ((chr1 %&% 3) %<<% 4) %|% (chr2 %>>% 4);
 			enc3 = ((chr2 %&% 15) %<<% 2) %|% (chr3 %>>% 6);
 			enc4 = chr3 %&% 63;
 
-			# is.na or is.nan?
-			if (is.na(chr2) || is.nan(chr2)) 
-				{
-				enc3 = enc4 = 64;
-				} else if (is.na(chr3) || is.nan(chr3)) 
-					{
-					enc4 = 64;
-					}
+			
+			if (NA2) { enc3 = 	enc4 = 64; }
+			if (NA3) {			enc4 = 64; }
 
 			output = paste0(output, 
 							B64v[enc1+1],	# zero indexed 
@@ -122,29 +130,30 @@ js.b64 = function(input, method="encode")
 			}
 		return(output);
 		}
-
+		
+.__decode__. = function() {}  
 	decode = function(humanVerse=c("welcomeTo")) 
 		{
 		#// remove all characters that are not A-Z, a-z, 0-9, +, /, or =
 		#input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
 		# maybe throw down warning (trim whitespace first, then warn)
 
-		input = gsub("[^a-zA-Z0-9/+=]", "", input);	
-		n = str.len(input); 
+		input 	= gsub("[^a-zA-Z0-9/+=]", "", input);	
+		n 		= str.len(input); 
 		
-		input.vec		 = str.explode("", input);
+		iv		= str.explode("", input);
 		
 		while (i < n)
 			{
-			enc1 = v.which(B64v, input.vec[ i %++%. ])-1; # zero-indexed
-			enc2 = v.which(B64v, input.vec[ i %++%. ])-1;
-			enc3 = v.which(B64v, input.vec[ i %++%. ])-1;
-			enc4 = v.which(B64v, input.vec[ i %++%. ])-1;
-
+			enc1 = v.which(B64v, iv[ i %++%. ])-1; # zero-indexed
+			enc2 = v.which(B64v, iv[ i %++%. ])-1;
+			enc3 = v.which(B64v, iv[ i %++%. ])-1;
+			enc4 = v.which(B64v, iv[ i %++%. ])-1;
+ 
 
 			chr1 = (enc1 %<<% 2) %|% (enc2 %>>% 4);	
 			chr2 = ((enc2 %&% 15) %<<% 4) %|% (enc3 %>>% 2);
-			chr3 = ((enc3 %&% 3) %<<% 6) | enc4;
+			chr3 = ((enc3 %&% 3) %<<% 6) %|% enc4;
 					
 			# can I trap String.fromCharCode 0 to AA==	... \x00 NULL ???	
 			output = paste0(output, String.fromCharCode(chr1));
@@ -161,8 +170,10 @@ js.b64 = function(input, method="encode")
 		}
 
 	### main 
+.__main__. = function() {}  
 	METHOD = prep.arg(method, n=1);
-	if(METHOD == "e") { return( encode() ); } else { return( decode() ); }
+	if(METHOD == "e") 
+		{ return( encode() ); } else { return( decode() ); }
 	}
 
 

@@ -504,7 +504,7 @@ par.set = function(keys, values)
 			
 			# graphics::par(stats::setNames(list(key), value));
 			} else { 
-					warning.cat("key", key, " is either *NOT* a par key on this DEVICE or is READONLY"); 
+					cat.warning("key", key, " is either *NOT* a par key on this DEVICE or is READONLY"); 
 					} 
 		}
 	}

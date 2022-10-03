@@ -8,16 +8,32 @@
 # m = as.matrix(structure(c(1, 0, 4, 0, 3, 0, 2, 0, 5), .Dim = c(3L, 3L)));
 
 
+# default in BASE, we have to package up into 
+# COMPLEX and REAL as necessary ... two functions
+# in C++ .. REAL only, COMPLEX as alternative 
+
+
+
+
+
+m.XT = function(m) {}
+
+m.XXT = function(m) {}
+
+m.XTX = function(m) {}
+
 matrix.transpose = function(m)
 	{
 	m %^T%.
 	
-	t(m);  # TM 
+	t(m);  # TM  
 	}
 	
 matrix.ptranspose = function(m)
 	{
-	m %*% m%^T%.
+	# m %*% m%^T%.
+	
+	m %*% t(m);
 	
 	}
 
@@ -148,22 +164,6 @@ matrix.trace = function(square)
   }
 
 
-#' matrix.transpose
-#'
-#' @param mat a matrix
-#'
-#' @return matrix, updated
-#' @export
-#' @aliases transposeMatrix matrixTranspose
-#'
-#' @examples
-#' m = as.matrix(structure(c(1, 0, 4, 0, 3, 0, 2, 0, 5), .Dim = c(3L, 3L)));
-#' transposeMatrix(m);
-#'
-matrix.transpose = function(mat)
-	{
-	t(mat);
-	}
 
 
 

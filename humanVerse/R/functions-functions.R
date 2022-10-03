@@ -457,9 +457,9 @@ debug = FALSE;
 		{ 
 		if(!auto.attach)
 			{
-			warning.cat("\n", "The package [", pkg, "] is not attached via library() or require() or humanVerse::include() ... private will show all functions, but not distinguish from public", "\n"); 
+			cat.warning("\n", "The package [", pkg, "] is not attached via library() or require() or humanVerse::include() ... private will show all functions, but not distinguish from public", "\n"); 
 			} else {
-					warning.cat("\n", "Attaching package [", pkg, "] as it is currently NOT attached", "\n"); 
+					cat.warning("\n", "Attaching package [", pkg, "] as it is currently NOT attached", "\n"); 
 					library( as.character(pkg), character.only=TRUE );  # strings allowed on library ... WEIRD...
 					public = ls( pp, all.names = TRUE);
 					}

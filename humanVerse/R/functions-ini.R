@@ -72,15 +72,20 @@ ini.parseFiles = function(inifilesORDERmatters,
 	uniqid = .uniqid();	 
 	TIMESTAMP = .timestamp("YYYY-MM-DD");
 	 
-	mf 		= "C:/_R_/-humanVerse-/SYSTEM/cache/ini/master.rds";
+	## full paths at this level 
 	
-	mf = str.replace("cache/ini/master.rds", master, mf);
+	mf = master; 
+	# mf 		= "C:/_R_/-humanVerse-/SYSTEM/cache/ini/master.rds";
+	
+	# mf = str.replace("cache/ini/master.rds", master, mf);
 	
 	if(use.cache && file.exists_(mf)) { return( readRDS(mf) ); }
 	
 	d 		= check.dir(mf);
 	stem 	= mf %.-% d;
-
+######################
+# THIS NEEDS TO MOVE # 
+######################
 	log 	= paste0(d, "-logs-/", TIMESTAMP, ".log");
 			check.file(log);
 	
@@ -100,16 +105,21 @@ ini.parseFiles = function(inifilesORDERmatters,
 	# chmod(400) on original sources in inst/R/ after INSTALL?
 	
 	
+	ofiles = inifilesORDERmatters;	
 	
-	sp =  "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/";
+	# sp =  "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/";
+	
+	sp = ofiles[1]; 
+	
 	spd	= check.dir(sp);
 	
-	ofiles = inifilesORDERmatters;	
+	
 	
 	cat.log( log, "--FILES--" );
 	cat.dput( ofiles, log);
 
-	insources = paste0(spd, ofiles);
+	# insources = paste0(spd, ofiles);
+	insources = ofiles;
 	
 	oexts 	= check.ext(ofiles, dotless=FALSE);
 	#ostem = (outs %.-% d) %-.% exts;
@@ -121,23 +131,36 @@ ini.parseFiles = function(inifilesORDERmatters,
 	opartials 	= str.before("/", opaths, ons);
 	ostems 		= str.after("/", opaths, ons);
 
+opartials = "";
 
 	outs = paste0(d, opartials, "/", ostems, ".rds");
-		check.dir(outs);
+	outs = prep.path(outs);  # cleans up at the same time 
+
 
 	# checksums live here ...
 	backups	= paste0(d, "-backups-/", TIMESTAMP , "/");
-		check.dir(backups); 
+	backups = check.dir(backups); 
 			
 	outs.copy = paste0(backups, opartials, "/", uniqid, "_", ostems, ".rds");
+	outs.copy = prep.path(outs.copy); 
 	# if exists in the date ... append a .uniqid-md5 ...
 	
 	ochecksums = paste0(d, "-backups-/", opartials, "/", ostems, "_");
+	ochecksums = prep.path(ochecksums, trailing=FALSE);
 
 	# this stem still has .rds ... FINE ... it's different 
 	mfchecksum = paste0(d, "-backups-/", stem , "_");
+	mfchecksum = prep.path(mfchecksum, trailing=FALSE);
+	 
 	mfcopy = paste0(backups, opartials, "/", uniqid, "_", stem);
-	
+	mfcopy = prep.path(mfcopy, trailing=FALSE);
+		check.dir(mfcopy);
+		
+	# # mfchecksum = paste0(d, "-backups-/", stem , "_");
+	# mfcopy = paste0(backups, uniqid, "_", stem);
+	# mfcopy = prep.path(mfcopy, trailing=FALSE);
+		# check.dir(mfcopy);
+		
 	
 	MEMORY = list();# RES = list();
 	# FINAL = list();  
@@ -151,7 +174,7 @@ ini.parseFiles = function(inifilesORDERmatters,
 		insource 	= insources[i];
 		out 		= outs[i];
 		out.copy 	= outs.copy[i];
-
+ 
 		# if we have to parse, we need the file anyway ...
 		instring	= readTextFile(insource);
 		checksum	= str.toMD5(instring);
@@ -209,12 +232,12 @@ ini.parseFiles = function(inifilesORDERmatters,
 	# this stem still has .rds ... FINE ... it's different 
 	#	ochecksum 	= paste0(ochecksums[i], checksum, ".info");
 	
-	# mfchecksum = paste0(d, "-backups-/", stem , "_");
-	mfcopy = paste0(backups, uniqid, "_", stem);
-		check.dir(mfcopy);
+	
+	
 			writeRDS(OUT, mfcopy);
-		check.dir(mf);
 			writeRDS(OUT, mf);	
+
+
 	
 	cat.log ( log, mfcopy);
 	cat.log ( log, mf);
@@ -247,7 +270,9 @@ ini.parseFiles = function(inifilesORDERmatters,
 ini.parse = function() {} 
 ini.parse = function(inistr, fname="-file unknown-", 
 							RES = list(), MEMORY = list(),
-				verbose=TRUE, smart.num = TRUE, ignore.eval = FALSE)
+							smart.num = TRUE, ignore.eval = FALSE,verbose=TRUE, 
+							test.mode=FALSE, test.skip = 0
+					)
 	{
 	lines = str.explode("\r\n", inistr);
 	
@@ -277,24 +302,58 @@ ini.parse = function(inistr, fname="-file unknown-",
 	line.no 		= 0;
 	CURRENT_KEY	= ""; # if NOT empty, we are continuing on multiline 
 	pkey 			= "";		
-	pval 			= "";
+	pval 			= ""; 
 	cparent 		= "";
 	
 .__main__. = function() {}
 ############################### MAIN #######################
+if(test.mode)
+	{
+	gggassign("lines", lines);
+	gggassign("COMMENTS", COMMENTS);
+	
+	
+	}
+
 	for(line in lines)
 		{
 		line.no %++%.;
+		
+		line_ = str.trim(line);
+		first = charAt(line_,1);
+
+		
+if(test.mode)
+	{
+	gggassign("CURRENT_KEY", CURRENT_KEY);
+	gggassign("line", line); 
+	gggassign("line_", line_);
+	gggassign("first", first);
+	gggassign("cparent", cparent);
+	gggassign("fin", fin); 
+	
+	if(line.no < test.skip)
+		{
+		next;
+		} 	
+	}
 		
 if(verbose)
 	{
 cat("\n\n ", line.no, " --> ", line, "\n\n");
 	}
 
-if(verbose)
+
+if(test.mode)
 	{
-# xxx = readline(prompt="Press [enter] to continue, [ESC] to quit");
+	if(verbose)
+		{
+		xxx = readline(prompt="Press [enter] to continue, [ESC] to quit");
+		} 
 gggassign("RES", RES);
+	
+	# tinfo = list("line.no" = line.no);
+	
 	}
 	
 	
@@ -337,8 +396,8 @@ gggassign("RES", RES);
 				if(hasMemory) 	{ MEMORY[[key]] = val; }
 				
 				val = property.set("source", val, paste0(fname, ":", line.no));
-				
-				RES = ini.assignVal(CURRENT_KEY, val, cparent, RES);
+				  
+				RES = ini.assignVal(CURRENT_KEY, val, cparent, RES, test.mode=test.mode);
 				
 				CURRENT_KEY = "";				
 				pkey = "";
@@ -351,8 +410,6 @@ gggassign("RES", RES);
 			}
 
 
-		line_ = str.trim(line);
-		first = charAt(line_,1);
 		
 .__skip = function() {} 		
 
@@ -397,6 +454,7 @@ gggassign("RES", RES);
 				
 				# line = '"%=%" = 5,'
 				# generally, we don't allow = unless special functions 
+				
 				pos = str.pos("=", line);
 				# first position GREATER THAN 5 ... 
 				idx = v.which( pos > 5 , TRUE)[1];
@@ -427,15 +485,18 @@ gggassign("RES", RES);
 .__memory.eval = function() {} 		
 
 			# allows for a bit of white space between ^ = R 
-			if( str.contains(MEMORY_STORE, paste0(rkey,"=")) ) 
+			#if( str.contains(MEMORY_STORE, paste0(rkey,"=")) ) 
+			if( str.ends(MEMORY_STORE, paste0(rkey,"=")) )
 				{ 
 				hasMemory = TRUE; 
-				rkey = str.trim(str.end("^", rkey, trim=TRUE));
+				rkey = str.trim(str.ends("^", rkey, trim=TRUE));
 				}
-			if( str.contains(EVAL_RCODE, paste0("=",rval)) ) 	 
+				  
+			#if( str.contains(EVAL_RCODE, paste0("=",rval)) )
+			if( str.starts(EVAL_RCODE, paste0("=",rval)) )
 				{ 
 				hasRcode  = TRUE; 
-				rval = str.trim(str.begin("R", rval, trim=TRUE));
+				rval = str.trim(str.starts("R", rval, trim=TRUE));
 				}
 		 
 	
@@ -454,7 +515,7 @@ gggassign("RES", RES);
 				
 				val = property.set("source", val, paste0(fname, ":", line.no));
 				
-				RES = ini.assignVal(key, val, cparent, RES);
+				RES = ini.assignVal(key, val, cparent, RES, test.mode=test.mode);
 				}
 			pkey = key;
 			pval = val; 
@@ -507,22 +568,83 @@ ini.evalMe = function(txt, MEMORY, ignore.eval = FALSE)
 	
 
 # ini.assignVal(key, val, cparent, RES);
-ini.assignVal = function(key, val, cparent, RES)
+ini.assignVal = function(key, val, cparent, RES, test.mode=test.mode)
 	{
 	ckeys = str.explode("|", cparent);
 	nc = length(ckeys);  # let's hardcode this to 5?
 	
 	keys = str.explode("|", key);
 	nk = length(keys);
+	  
+
+	  
+	all = c(ckeys, keys);
+
+	# encoding issue ... taken care of in ini.cleanKey
+	# all = c(cparent, key);
+	# all = str.toHEX(all);
 	
-	all = c(ckeys, keys);  
+	# [1] "UNNAMED" "%=|%"   
+# > all = str.toHEX(all);
+# > all
+# [1] "554e4e414d4544" "253d7c25"      
+# > 
+# Error in rawToChar(ttr) : embedded nul in string: 'U\0\0A\0ED'
+# In addition: Warning message:
+# In str.fromHEX(all) : out-of-range values treated as 0 in coercion to raw
+
+
+	# all = str.wrap(wrap, all);
+	
 	#	allparent = paste0(all, collapse="|");
 	# RES = ini.checkKey(allparent, RES);
 	
 	# now here, we will walk and store results, very much like ini.checkKey ...
-	list.smartAssign(RES, all, val);
-	}
+	
+	### encapsulate special ...
+	# if(str.isWrapped("%", val)) 
+		# { val = paste0(DOUBLE_QUOTE,val,DOUBLE_QUOTE); }
 
+# already passed through EVAL() filter, so should be fine ...
+	val = ini.wrapSpecial(val);
+
+
+
+if(test.mode)
+	{
+tkey = paste0(cparent, " ::: ", key, " .........       \t ", val);
+.cat(tkey);		
+	}
+ 	
+	list.smartAssign(RES, all, val);
+	}   
+
+
+ini.unwrapSpecial = function(str)
+	{
+	if(str.isWrapped("%", str))
+		{ 
+		# SPECIAL ... for transport "|" PIPE breaks ...		
+		ke = str.unwrap("%", str);
+		# str = str.wrap("%", base64.decode(ke) );	
+		str = base64.decode(ke);
+		}	
+	str;
+	}
+	 
+ini.wrapSpecial = function(str)
+	{
+	# if(str.isWrapped("%", str)) 
+	if(str.contains("%", str) || str.contains("^", str) || str.contains("=", str) || str.contains("+", str) || str.contains("/", str) )
+		{ 
+		# SPECIAL ... for transport "|" PIPE breaks ...		
+		# ke = str.unwrap("%", str);
+		# str = str.wrap("%", base64.encode(ke) );
+		str = str.wrap("%", base64.encode(str) );
+		}
+	str;
+	}
+ 
 ini.cleanKey = function(key)
 	{
 	# in case they put doubles (R vs php)
@@ -532,6 +654,15 @@ ini.cleanKey = function(key)
 	key = str.replace(c(SINGLE_QUOTE,DOUBLE_QUOTE), "", key);
 	key = str.trim(key);
 	
+dput(key);
+  
+	######## %SPECIAL%
+	
+	key = ini.wrapSpecial(key);
+	 
+	
+	
+	 
 	# str.contains("[]", key);  ??? 
 	
 	# this is header logic 
@@ -649,7 +780,7 @@ ini.walkTheLine = function(str, COMMENTS=c("#"), continue=NULL, smart.num = TRUE
 
 	# nval = str.trim(nval);
 	nval_ = str.trim(nval);
-	if(smart.num)
+	if(smart.num) 
 		{
 		# allows for NUMBERS PI to be CHARS with FLAG
 		nnum = check.number(nval_);
@@ -672,3 +803,24 @@ ini.walkTheLine = function(str, COMMENTS=c("#"), continue=NULL, smart.num = TRUE
 	}
 
 
+
+
+
+
+
+ 
+ini.test = function(f = "", skip=0)
+	{
+	f = "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/--.old.--/ZZ-test.ini";
+	fstr = readTextFile(f);
+	
+	RES = ini.parse(fstr, test.mode=TRUE, test.skip=skip);
+ 
+	print(str(RES));
+	
+	invisible(RES);
+	
+	}
+	
+	
+	

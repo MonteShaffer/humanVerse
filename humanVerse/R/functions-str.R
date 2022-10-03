@@ -674,6 +674,9 @@ str.pad = function(str,
 
 
 
+ 
+
+
 # paste0( substring(x[!idx], 1, (cwidth-1) ), trunc.sym);
 str.truncate = function(str, to.length=5, keep="right")
 	{
@@ -829,9 +832,9 @@ str.subtract = function(a, b, from="left")
 	
 	
 	
-# str.endsWith = str.end
-str.end = function() {}
-str.end = function(search="</i>", str=c("<i>hello friend</i>", "<i>how are you doing today?</i>", "I am fine <i>[well]</i>, thank you for asking. [fine/well are ambiguous ... --> Estoy bien, gracias a Dios ... <i>TRIOS?</i>]"), trim = FALSE )
+# str.endsWith = str.ends
+str.ends = function() {}
+str.ends = function(search="</i>", str=c("<i>hello friend</i>", "<i>how are you doing today?</i>", "I am fine <i>[well]</i>, thank you for asking. [fine/well are ambiguous ... --> Estoy bien, gracias a Dios ... <i>TRIOS?</i>]"), trim = FALSE )
 	{ 
 	info = check.list(str.explode(search, str));
 	# last = list.getLastElements(info);
@@ -848,9 +851,9 @@ str.end = function(search="</i>", str=c("<i>hello friend</i>", "<i>how are you d
 	str.implode(search, new);
 	}
 	
-# str.startsWith = str.begin 
-str.begin = function() {}
-str.begin = function(search="<i>", str=c("<i>hello friend</i>", "<i>how are you doing today?</i>", "I am fine <i>[well]</i>, thank you for asking. [fine/well are ambiguous ... --> Estoy bien, gracias a Dios ... <i>TRIOS?</i>]"), trim = FALSE )
+# str.startsWith = str.starts 
+str.starts = function() {}
+str.starts = function(search="<i>", str=c("<i>hello friend</i>", "<i>how are you doing today?</i>", "I am fine <i>[well]</i>, thank you for asking. [fine/well are ambiguous ... --> Estoy bien, gracias a Dios ... <i>TRIOS?</i>]"), trim = FALSE )
 	{
 	info = check.list(str.explode(search, str));
 	len = list.getLengths(info); 

@@ -689,6 +689,42 @@ str.fromObjectName = function(objname)
 
 
 
+str.wrap = function(wrapper = "__", str)
+	{
+	paste0(wrapper, str, wrapper, sep="");	  
+	} 
+	
+str.isWrapped = function(wrapper = "__", str)
+	{
+	wlen = strlen(wrapper);
+	slen = strlen(str);	
+	
+	logicB = str.starts(wrapper, str);
+	logicE = str.ends(wrapper, str);
+	
+	both 	= logicB & logicE;
+	both; 
+	}
+	
+str.unwrap = function(wrapper = "__", str)
+	{
+	wlen = strlen(wrapper);
+	slen = strlen(str);	
+	res = str;
+	logicB = str.starts(wrapper, str);
+	logicE = str.ends(wrapper, str);
+	
+	both 	= logicB & logicE;
+	first 	= logicB & !logicE;
+	last 	= !logicB & logicE;
+	 
+	res[both] 	= substring(str[both],  1+wlen, slen-wlen);
+	res[first] 	= substring(str[first], 1+wlen, slen);
+	res[last] 	= substring(str[last],  1, 		slen-wlen);
+
+	res;
+	}
+
 
 
 

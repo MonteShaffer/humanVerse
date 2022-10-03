@@ -738,6 +738,16 @@ v.return = function(res)
 	res;	
 	}
 
+v.first = function(vec, skip = 0)
+	{
+	vec[1 + skip];
+	}
+v.last = function(vec, skip = 0)
+	{
+	n = length(vec);
+	vec[n - skip];
+	}
+
 v.test = function(vec, what="", invert=FALSE)
 	{
 	# v.test returns BOOLEAN (TRUE/FALSE) of length(vec)

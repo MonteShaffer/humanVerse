@@ -37,7 +37,7 @@ parse.syscall = function(syscall)
 	# put everything back but the function call 
 	nstr 	= str.implode("(", info[-c(1)] );
 	#nstr = str.replace(")", "", nstr);
-	nstr 	= str.end(")", nstr, trim=TRUE);
+	nstr 	= str.ends(")", nstr, trim=TRUE);
 	   
 	ninfo = strsplit(nstr, ",", fixed=TRUE);
 	minfo = strsplit(ninfo[[1]], "=", fixed=TRUE);
@@ -440,6 +440,6 @@ prep.path = function(x, trailing = TRUE, force.trailing=FALSE)
 	y = str.replace(DOUBLE_SLASH, DIR_LINUX, y);  # ONE more, just in CASE 
 	# minvisible(y, display=print, key="DIR");	
 	# Error in eval(parse(text = objstr)) :  trying to get slot "original" from an object of a basic class ("list") with no slots
-
+ 
 	y;
 	}

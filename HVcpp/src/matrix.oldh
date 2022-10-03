@@ -12,7 +12,7 @@ VectorXd matrix_diagonal(Map<MatrixXd> M)
 	{
 	VectorXd RES 	= M.diagonal();
 	return RES;
-	}
+	} 
 	
 	
 // [[Rcpp::export]]

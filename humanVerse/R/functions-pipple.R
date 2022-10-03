@@ -635,7 +635,7 @@ pip.formatter = function(x, TEMPLATE)
 #dput(clist);	
 	if(!is.null(idx)) 
 		{ 
-		warning.cat("\n KEY->VAL pairs don't match, calling fn.name with DEFAULT params \n");
+		cat.warning("\n KEY->VAL pairs don't match, calling fn.name with DEFAULT params \n");
 		return( do.call(fn.name, clist) ); 
 		}
 	 

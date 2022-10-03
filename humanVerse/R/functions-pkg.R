@@ -1,5 +1,8 @@
 
 
+# .libPaths( c( "~/userLibrary" , .libPaths() ) )
+
+
 pkg.help = function()
 	{
 	

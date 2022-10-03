@@ -302,7 +302,7 @@ check.ext = function(x, dotless=TRUE)
 	# vlen = str.len(vals);
 	
 	
-	logic = ( v.test(vals, NA, invert=TRUE) & !str.begin(EXT, stem) )
+	logic = ( v.test(vals, NA, invert=TRUE) & !str.starts(EXT, stem) )
 	
 	dot = 1;
 	if(!dotless) { dot = 0; }  # could allow for DOT of any length ...
@@ -350,7 +350,7 @@ check.dir = function(path, trailing = TRUE, create=TRUE)
 
 
 
-# create as in create.DIRECTORY
+# create as in create.DIRECTORY and create.FILE (touch)
 check.file = function(path, trailing = TRUE, create=TRUE)  
 	{
 	# this would work, but not CREATE

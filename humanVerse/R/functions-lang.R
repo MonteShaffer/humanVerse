@@ -135,7 +135,7 @@ language = function(str, locale="en-us")
 	
 	# maybe a list of functions I am scanning
 	# warning/stop/notice ... no notice, called message
-	# cat.warning/warning.cat 
+	# cat.warning/cat.warning 
 	# str.wrapper 
 	# silent would be wrap.lang(str) ... e.g., within PIP ... part of cat, but only what I want to make translatable ...
 	# str.commentWrapper

@@ -145,7 +145,7 @@ str.splitN = function(..., n=2, insert.a.sep="`c80^08c`", from="end")
 	pattern = paste0("(.{", n, "})");
 	
 	s.str = gsub(pattern, paste0("\\1", insert.a.sep), str);
-	s.str = str.end(insert.a.sep, s.str, trim=TRUE);
+	s.str = str.ends(insert.a.sep, s.str, trim=TRUE);
 	
 	# we have to go from right/left (hex/binary padding) ... 
 	# rev(str) ... do the above, rev(str) again ...
@@ -414,21 +414,27 @@ str.replaceFromList = function(mylist, mysubject, ...)
 # str = c("monte says hi", "alex you're awesome", "mama is amazing")
 str.letterReverse = function(strs)
 	{
-	strs = check.list(strs);
+	# strs = check.list(strs);
 	ni = length(strs);
-	res = vector("list", ni);
+	# res = vector("list", ni);
+	res = character(ni);
 	for(j in 1:ni)
 		{
 		str = strs[j];
-		n = length(str);
-		out = character(n);
-		for(i in 1:n)
-			{
-			out[i] = int.u8(rev(u8.int(str[i])));
-			}
-		res[[j]] = out;
+		# n = length(str);
+		# out = character(n);
+		# for(i in 1:n)
+			# {
+			# # maybe just ord ... chr 
+			# # out[i] = int.u8(rev(u8.int(str[i])));
+			# out[i] = chr( rev ( ord (str[i]) ) );
+			# }   
+		# res[[j]] = out;
+		##########   int.u8 ... u8.int ... will keep multibyte chars together ...  
+		res[j] = chr( rev ( ord (str) ) );
 		}
-	list.return(res);
+	# list.return(res);
+	res;
 	}
 
 # maybe speed up  
@@ -1469,7 +1475,7 @@ strsplit_ = function(str, sep, fixed=TRUE, ...)
 
 	if(!hasResult)
 		{
-		end = str.end_(sep, str);
+		end = str.ends_(sep, str);
 		if(allFALSE(end)) 
 			{ 
 			hasResult = TRUE;
@@ -1499,7 +1505,7 @@ strsplit_ = function(str, sep, fixed=TRUE, ...)
 
 
 # recursion-proof for strsplit_
-str.end_ = function(search="</i>", str="<i>hello friend</i>", trim = FALSE )
+str.ends_ = function(search="</i>", str="<i>hello friend</i>", trim = FALSE )
 	{	
 	strlen = str.len(str);
 	slen = str.len(search);
