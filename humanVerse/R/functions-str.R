@@ -819,34 +819,24 @@ str.subtract = function(a, b, from="left")
 		# a = "monte says hello my friend"; b = "monte eats apples with his friend";
 		# contiguous elements that are the same from the left ...
 		avec = str.explode("", a);
-		alen = length(avec);
+			alen = length(avec);
 		bvec = str.explode("", b);
 		
 		idx = set.match(avec, bvec);
 		left = left.contiguous(idx, alen);
-		mtrim = 0; if(!is.null(left)) { mtrim = v.last(left); }
+		mtrim = 0; 
+		if(!is.null(left)) { mtrim = v.last(left); }
 		return( substring(a, 1+mtrim, alen) );
-		# substr(string,nchar(string1)+1, nchar(string))
-		# https://stat.ethz.ch/pipermail/r-help/2011-June/281263.html
-		# a = "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/";
-		# b = "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/";
-		# THIS is NOT SMART subtraction, doesn't consider they are NOT equal
-		# TODO, make this smart.subtraction ... 
-		substring(a, nchar(b)+1, nchar(a) );
 		} else { 
 				avec = str.explode("", a);
-				alen = length(avec);
+					alen = length(avec);
 				bvec = str.explode("", b);
 				# reverse the array
 				idx = set.match(rev(avec), rev(bvec));
 				left = left.contiguous(idx, alen);
-				mtrim = 0; if(!is.null(left)) { mtrim = v.last(left); }
+				mtrim = 0; 
+				if(!is.null(left)) { mtrim = v.last(left); }
 				return( substring(a, 1, alen-mtrim) );
-		
-		# a = "C:/rtools42/x86_64-w64-mingw32.static.posix/bin/c++.exe";
-		# b = "c++.exe";
-				d = nchar(a) - nchar(b);
-				substring(a, 1, d); # what if misused ... 
 				}
 	}
 	
