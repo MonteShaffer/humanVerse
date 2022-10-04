@@ -6,7 +6,9 @@ init.settings = function(use.cache=TRUE, force.reload=FALSE)
 	# load system.INI and add to namespace 
 ##############
 return(NULL);
-##############
+############## 
+
+# JSON walk ... walk start("[" ... walk until ... "]" ... but you have to transverse each and make certain others are not found ... or use REGEX ... streaming idea is a "walk" .... could use str.between("[", line, "]" ... if result has another "[", keep going with a longer offset or "skip" ... skip as in pos .... 
 
 # maybe set a flag in Sys.setenv() ... status of init ...
 # if complete, don't run again, unlese force ...

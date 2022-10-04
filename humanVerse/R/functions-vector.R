@@ -935,6 +935,7 @@ v.sample = function(vec, size, replace=FALSE, prob=NULL, seed=NULL, append=TRUE)
 
 left.contiguous = function(idx, n)
 	{
+	idx = v.TO(idx, NA, -1);  # -1 won't match, no error
 	# n is length(vec) ... not needed for this side
 	from.left = NULL;
 	ilen = length(idx);
@@ -947,7 +948,8 @@ left.contiguous = function(idx, n)
 	
 right.contiguous = function(idx, n)
 	{
-	# n is length(vec) ... not needed for this side
+	idx = v.TO(idx, NA, -1);  # -1 won't match, no error
+	# n is length(vec) ... needed for this side
 	from.right = NULL;
 	ilen = length(idx);
 	for(i in ilen:1)
