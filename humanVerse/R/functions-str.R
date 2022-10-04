@@ -597,6 +597,8 @@ str.translate = function(str, to="latin-ascii")
 
 str.subtract = function(a, b, from="left")
 	{	
+	if(b == EMPTY) { return (a); }
+# .cat( "a = ", a, "\n", "b = ", b, "\n\t", from );
 ##########################################################
 ##### I can't wrap this into a function check.string #####
 ##########################################################	
@@ -619,8 +621,14 @@ str.subtract = function(a, b, from="left")
 			alen = length(avec);
 		bvec = str.explode("", b);
 		
-		idx = set.match(avec, bvec);
-		left = left.contiguous(idx, alen);
+		# idx = set.match(avec, bvec);
+		# left = left.contiguous(idx, alen);
+		
+		logic = suppressWarnings((avec) == (bvec));
+		idx   = v.which(logic, TRUE);
+		left  = left.contiguous(idx, alen);
+				
+				
 		mtrim = 0; 
 		if(!is.null(left)) { mtrim = v.last(left); }
 		return( substring(a, 1+mtrim, alen) );
@@ -629,8 +637,13 @@ str.subtract = function(a, b, from="left")
 					alen = length(avec);
 				bvec = str.explode("", b);
 				# reverse the array
-				idx = set.match(rev(avec), rev(bvec));
+				# idx = set.match(rev(avec), rev(bvec));
+				# left = left.contiguous(idx, alen);
+				
+				logic = suppressWarnings(rev(avec) == rev(bvec));
+				idx   = v.which(logic, TRUE);
 				left = left.contiguous(idx, alen);
+				
 				mtrim = 0; 
 				if(!is.null(left)) { mtrim = v.last(left); }
 				return( substring(a, 1, alen-mtrim) );
@@ -694,7 +707,11 @@ str.ends = function(search="</i>", str=c("<i>hello friend</i>", "<i>how are you 
 	
 	
 str.before = function(search, str, occurence=1)
-	{	
+	{
+	n = length(str);
+	if(length(occurence) != n) 
+		{ occurrence = rep(occurence, out.length = n); }
+	 
 	selen = str.len(search);
 	#slen = str.len(str);
 	
@@ -706,14 +723,18 @@ str.before = function(search, str, occurence=1)
 	}
 	
 str.after = function(search, str, occurence=1)
-	{	
+	{	  
+	n = length(str);
+	if(length(occurence) != n) 
+		{ occurrence = rep(occurence, out.length = n); }
+	
 	selen = str.len(search);
 	slen = str.len(str);
 	
-	pos = check.list(str.pos(search, str));
-	idx = list.getElements(pos, occurence);
+	pos  = check.list(str.pos(search, str));
+	sidx = list.getElements(pos, occurence);
 	
-	substring(str, idx+selen, slen);
+	substring(str, sidx+selen, slen);
 	}
 	
 	

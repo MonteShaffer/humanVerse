@@ -409,3 +409,22 @@ CharacterVector cpp_md5(const std::vector<std::string> str, int times=1)
 
 
 
+/*
+// https://codereview.stackexchange.com/a/104968/120274
+// doesn't consider byte order ...
+// tools::md5sum() is GOOD code ...    
+uint32_t checksum(std::ifstream& file) 
+{
+	uint32_t checksum 	= 0;
+	unsigned shift 		= 0;
+	for (uint32_t ch = file.get(); file; ch = file.get()) 
+		{
+		checksum 	+= (ch << shift);
+		shift 		+= 8;
+		if (shift == 32) { shift = 0; }
+		}
+	return checksum;
+}
+*/
+
+

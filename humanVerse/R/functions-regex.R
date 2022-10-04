@@ -2,7 +2,7 @@
 
 str.onlyAlphaNumeric = function(str)
 	{
-	gsub(REGEX_NOT_ALPHA_NUMERIC, "", str);	
+	gsub(REGEX_ALPHA_NUMERIC_NOT, "", str);	
 	}
 
 

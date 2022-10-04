@@ -13,12 +13,13 @@ Encoding: UTF-8
 Language: en-US
 LazyData: true
 Suggests:
-	HVcpp,
-	
+	HVcpp,  # doesn't this imply Rcpp ... # comments allowed HERE?
 	bit,
 	microbenchmark,
 	plotrix,
 	stringi,
+
+	rjson,
 	
 	Rcurl,
 	RMariaDB,
@@ -48,6 +49,7 @@ Imports:
 	graphics,	
 	grDevices,
 	stats,
+	tools,
 	utils	
 
 RhV: v001

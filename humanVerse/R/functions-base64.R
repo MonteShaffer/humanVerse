@@ -218,6 +218,10 @@ js.b64 = function(input, method="encode")
 
 
  
+# base conversions are easy if  base = 2^n
+# we are living in a base-2 world ... easy as PIE ... PROTO-INDO-EURO
+## we could do "streams" in that world ... 
+## 2, 4, 8, 16, 32, 64, 128, 256, ... 
 
 .hex_b64 = function(hexstr, collapse="")
 	{
@@ -295,4 +299,20 @@ js.b64 = function(input, method="encode")
 
 
 
+# this buckets or 'bins' hexstr in 2 or 3 ... 
+#  to do converion 16 / 24 (base 64)
+# buckets any string of numbers in a base to buckets 
+# useful with binary strings ... n=4, n=8, n=16
+bin = function(..., n=2, pad="0")
+	{
+	str = prep.dots(..., default="c8008c");
+	bins = check.list(str.splitN(str, n=n)); 
+	first = list.getElements(bins, 1);
+	first = str.pad(first, n, pad, "LEFT"); 
+		# defaults of function 
+		# str.pad(first, n);  # equivalent 
+	list.return( list.setElements(bins, 1, first) );	
+	}
+	
+	
 

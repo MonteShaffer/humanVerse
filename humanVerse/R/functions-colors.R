@@ -303,7 +303,7 @@ hexcolor.wheel = function(..., steps=12, base.names=FALSE, alpha=FALSE, skip.che
 		{
 		# up to, but not 7, will work ...
 		cat.warning("wheel steps must be evenly divisible into 360, ... updating with a nearby value that meets that criteria.");
-		steps = num.round(steps, by=6, how="integer");
+		steps = int.round(steps, by=6, how="integer");
 		}
 		
 	one.step = 360 / steps;	

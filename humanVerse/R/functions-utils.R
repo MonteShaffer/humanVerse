@@ -892,6 +892,8 @@ charCodeAt = function(str,idx)
   }
 
 
+
+
 #' charCode
 #'
 #' @param svec A vector of characters
@@ -1124,3 +1126,35 @@ str2symb = function(str="alex")
 	}
 
 
+
+
+# any filename that contains text ...
+# passes through readChars ... 
+# obj (raw) are all derived from TXT 
+checksum.textInFile = function(path.to.files.TXT)
+	{
+	# tools::md5sum(fileTXT); # are these different ??? ...
+	# identical(checksum.textInFile( c(f,f) ), tools::md5sum( c(f,f) ) );  # [1] TRUE
+	# f = "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/--.old.--/ZZ-test.ini"
+	# "c183a00977d8605add80976979cc5cbf" 
+	# THIS depends on readChars ... binary ---> TXT ... 
+
+	n = length(path.to.files.TXT);
+	res = character(n);
+	for(i in 1:n)
+		{
+		res[i] = str.toMD5( readTextFile(path.to.files.TXT[i]) );
+		}
+	names(res) = path.to.files.TXT;
+	res;
+	}
+	
+checksum.file = function(path.to.files)
+	{
+	# C function ... obfuscated ... .Call(C_Rmd5, files),
+	# https://unix.stackexchange.com/questions/343900/
+	# \R-4.2.1\src\library\tools\src\Rmd5.c and md5.c (stream)
+	# very well-written code ... 
+	tools::md5sum(path.to.files); 	
+	}
+	

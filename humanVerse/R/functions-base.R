@@ -1,36 +1,58 @@
  
 
-base.init = function()
-	{
-	## if(!is.defined(BXXv)) { constants.default(); }
-	# can we get this check to happen here, so we don't have to constantly check?
-	
-	
-	}
-		
-
-	
 cleanup.base = function(xstr)
 	{
 	xstr = as.character(xstr);
+	# res = gsub(REGEX_BASE32_NOT, "", xstr);
+	
+	# gsub("[^[0-9a-vA-V]]", "", xstr);  # doesn't work 
+	# gsub("[^[0-9A-Va-v]", "", xstr);   # works, notice unbalanced brackets???
+	
+	# DOESN'T carefully account for "0x" ... could do after ...
+	
+	# return(res);
+	
 	# left trim any non-elements ... maybe REGEX replace 0-9A-V
 	# HEX 
 	xstr = str.trim(str.replace(c("#","0x","0X"), "", xstr) );
+	
+	# xstr = gsub("[^[0-9A-Va-v]", "", xstr);
+	
 	xstr;
 	}
+
+
+
+# use base.convert for "unnamed" conversion 
+# strings only , passes through INTEGER MAX 2^31
+base.convert = function(..., from=10, to=7)
+	{
+	x = prep.dots(...);
+	x = as.character(x);
+	
+	xfrom 	= base2int(x, 		base=from);
+	xto 	= int2base(xfrom, 	base=to);
+	xto;
+	}
+
+
+
+
+
+
 
 
 .base2int = function(xstri, base=16)
 	{
 	# univariate, no checks 
 	xstri = as.character(xstri[1]);
-	base.init();
+	
 	MAP = BXXv[1:base];	
-	# update to allow base64 
+	
 	# update to allow base64 
 	if(base == 64) { MAP = B64v; }
 	
-	# xstri = toupper(xstri);
+	# xstri = toupper(xstri); # bad news on B64 
 	xv = str.explode("",xstri);
 	idx = set.match(xv, MAP) - 1;
 	n = length(xv);
@@ -38,33 +60,28 @@ cleanup.base = function(xstr)
 	
 	sum( idx * p ); 	
 	}
+	 
 	
-	
-# fromBase 
-# base2int to an INTEGER 
 base2int = function(..., base=16, method="first")
 	{
 	xstr = prep.dots(..., default=c("0", "abc", "EA08", 
 								"c8008c", "abbacdc", "7FFFFFFF") 
 					);
-	
-		
-#dput(xstr);
+
 	xstr = cleanup.base(xstr);
 	b = check.base(base);
 	if(is.null(b)) { stop("base issues"); }
 	
-	METHOD = prep.arg(method, n=1);
-		keys = c("c","b"); 
-		vals = c("cpp", "base");
 		# NOTICE 'default' doesn't have to be in key/val map ...
-		default = "first";	
-	METHOD = prep.switch(METHOD, keys, vals, default);
-		
-		
-	if((METHOD == "cpp" || METHOD == "first") && exists("cpp_int2base") && b != 64) 
+	METHOD = prep.switch( prep.arg(method, n=1),
+							keys = c("c","b"),
+							vals = c("cpp", "base"),
+							default = "first");
+
+	if((METHOD == "cpp" || METHOD == "first") 
+			&& exists("cpp_int2base") && b != 64) 
 			{
-			res = cpp_base2int(xstr,b);
+			res = cpp_base2int(xstr, b);
 			return( v.return(res) );
 			}
 	
@@ -88,7 +105,6 @@ base2int = function(..., base=16, method="first")
 	{
 	# univariate, no checks 
 	num = as.integer(num[1]);
-	base.init();
 	MAP = BXXv[1:base];
 	# update to allow base64 
 	if(base == 64) { MAP = B64v; }
@@ -105,26 +121,25 @@ base2int = function(..., base=16, method="first")
 	}
 
 
-# toBase
-# an [POSITIVE] INTEGER to a base as a string 
-# cpp_int2base(cpp_base2int(c("abc", "def"))) ... in primes.cpp for now ...  
+
 int2base = function(..., base=16, to.length=NULL, method="first")
 	{
 		x = prep.dots(..., 	default = c(0, 2748, 59912, 
 								13107340, 180071644,  2^31 - 1) 
 				);
-dput(x); 
+
 	b = check.base(base);
 	if(is.null(b)) { stop("base issues"); }
 	
-	METHOD = prep.arg(method, n=1);
-			keys = c("c","b"); 
-			vals = c("cpp", "base");
-			# NOTICE 'default' doesn't have to be in key/val map ...
-			default = "first";	
-	METHOD = prep.switch(METHOD, keys, vals, default);
+			# NOTICE 'default' doesn't have to be in key/val map 
+	METHOD = prep.switch( prep.arg(method, n=1),
+							keys = c("c","b"),
+							vals = c("cpp", "base"),
+							default = "first");
+	
 		
-	if((METHOD == "cpp" || METHOD == "first") && exists("cpp_int2base") && b != 64) 
+	if((METHOD == "cpp" || METHOD == "first") 
+			&& exists("cpp_int2base") && b != 64) 
 			{ 
 			res = cpp_int2base(x,b);
 			return( v.return(v.toNA(res, (res==""))) );
@@ -136,21 +151,22 @@ dput(x);
 		{			
 		res[i] = .int2base(x[i], base);	
 		}
-	# str.pad("LEFT");
 	if(!is.null(to.length)) 
 		{ res = str.pad(res, to.length, "0", "LEFT"); }
 	res;
 	}
 
-base.to = int2base;
 
+
+
+# these are the "named" CONVENTIONAL conversions ... bin = 2^1, oct = 2^3, hex = 2^4 ... 
 # must be in range of allowed integers 2^31 - 1:
 int.convert = function(..., from="binary", to="octal", to.length=NULL)
 	{
 	x = prep.dots(...);
 	# first to decimal (integer) 
-	FROM = prep.arg(from, n=1, case="upper");
-	TO = prep.arg(to, n=1, case="upper");
+	FROM 	= prep.arg(from, n=1, case="upper");
+	TO 		= prep.arg(to, n=1, case="upper");
 	 
 	xINT = switch(FROM,					  			
 					  "B" 	= base2int(x, base=2), 	# BINARY
@@ -192,301 +208,6 @@ oct2dec = function(...) { int.convert(..., from="oct", to="dec"); }
 oct2hex = function(...) { int.convert(..., from="oct", to="hex"); } 
 
 oct2bin = function(...) { int.convert(..., from="oct", to="bin"); } 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# what about string to string conversion (no limitations on number)
-# str(table.bin2hex)
-# str(list.mapInvert(table.bin2hex))
-
-# this buckets or 'bins' hexstr in 2 or 3 ... 
-#  to do converion 16 / 24 (base 64)
-# buckets any string of numbers in a base to buckets 
-# useful with binary strings ... n=4, n=8, n=16
-bin = function(..., n=2, pad="0")
-	{
-	str = prep.dots(..., default="c8008c");
-	bins = check.list(str.splitN(str, n=n)); 
-	first = list.getElements(bins, 1);
-	first = str.pad(first, n, pad, "LEFT"); 
-		# defaults of function 
-		# str.pad(first, n);  # equivalent 
-	list.return( list.setElements(bins, 1, first) );	
-	}
-	
-	
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	
-	
-
-
-
-
-
-
-	
-	
-
-# these are string-to-string conversions ... no INTEGER checks 
-# see int.convert for those 
-# this works for "bin" and "hex" only ... 
-# bin(base.convert())
-# no matter what, let's cast to "binary" strings of a length appropriate to do the lookup ...
-
-# base.convert = function(..., from="binary", to="hex", decimal.numeric=TRUE)
-
-
-.baseTrim = function(x, pad="0")
-	{
-	# 
-	# maybe do something smart with base ... bin ( repeat myself ?)
-	# convolutins is BAD ... 
-	y = str.trimFromAny(x, pad, "LEFT");
-	y[y==""] = "0";
-	y;	
-	}
-
-
-# FROM = 16; TO = 32; a = int2base(0:(FROM*FROM), base=FROM);
-# b = .base2bin(a, FROM);	c = .bin2base(b, TO);
-# d = .base2bin(c, TO); 	e = .bin2base(d, FROM);
-# identical(a,e);
-
-
-# FROM = 16; TO = 64; a = int2base(0:(FROM*FROM), base=FROM);
-# b = .base2bin(a, FROM);	c = .bin2base(b, TO);
-# d = .base2bin(c, TO); 	e = .bin2base(d, FROM);
-# identical(a,e); 
-
-	# this is limited by the ^power operator ... 
-	# let's do it by singletons ...
-# x = int2base(0:(FROM*FROM), base=FROM)
-## STOPPING POINT, MAYBE WORKING 
-.base2bin = function(x, FROM=5, left.trim=TRUE) 
-	{
-	num.init();  # verify CONSTANTS are available ...
-	# assume I have a vec x 
-	n = length(x);
-	res = character(n);
-	
-
-	mapFROM = BXXv[1:FROM];
-	if(FROM == 64) { mapFROM = B64v; }
-	
-	b = log(FROM, 2);  # are we in a base-2 subset 
-	b_ = as.integer(b);
-	bn = NULL;
-	if(b != b_) { bn = 1 + b_; }
-	
-	if(is.null(bn))
-		{
-		# we are living in a base-2 world ... easy as PIE ... PROTO-INDO-EURO
-		mapTO = bin(Bits64[1:FROM], n=b_);
-		for(i in 1:n)
-			{
-			xi = x[i];
-			xiv = str.explode("", xi);  #  xiv			
-			idx = set.match(xiv, mapFROM);
-			res[i] = paste0(mapTO[idx], collapse="");
-			}
-		if(left.trim) { res = .baseTrim(res); }
-		return(res);			
-		} else {
-				# THIS is NOT WORKING, carryover issues TODO
-				mapTO.lower = bin(Bits64[1:FROM], n=b_);
-				mapTO.upper = bin(Bits64[1:FROM], n=bn);
-				slen = list.getLengths(mapTO.lower);
-				# should exist here 
-				# may be a few ... 
-				# logic = v.test(slen, 1, invert=TRUE); 
-				idx = v.which(slen, 1, invert=TRUE); 
-				
-				map.was = list.getByIDX(mapTO.lower, idx);
-				map.is  = list.getByIDX(mapTO.upper, idx); # maybe a list    
-				mapTO = list.setByIDX(mapTO.lower, idx, vals);
-				# mapTO[[idx]] = mapTO.upper[[idx]]
-				# if idx is BOOLEAN, above would work, NOT!
-				# mapTO[[logic]] = mapTO.upper[[logic]];
-				for(i in 1:n)
-					{
-					xi = x[i];
-					xiv = str.explode("", xi);  #  xiv			
-					idx = set.match(xiv, mapFROM);
-					res[i] = paste0(mapTO[idx], collapse="");
-					}
-				if(left.trim) { res = .baseTrim(res); }
-		
-				return(res);
-				}
-	}
-
-
-.bin2base = function(y, TO=16, left.trim=TRUE) 
-	{
-	# in general, we want to trim 
-	# should be simple enough if 2^n form 
-	num.init();  # verify CONSTANTS are available ...
-	# assume I have a vec x 
-	n = length(y);
-	res = character(n);
-
-	mapTO = BXXv[1:TO];
-	if(TO == 64) { mapTO = B64v; }
-	 
-	b = log(TO, 2);  # are we in a base-2 subset 
-	b_ = as.integer(b);
-	bn = NULL;
-	if(b != b_) { bn = 1 + b_; }
-	
-	if(is.null(bn))
-		{
-		# we are living in a base-2 world ... easy as PIE ... PROTO-INDO-EURO
-		mapFROM = unlist( bin(Bits64[1:TO], n=b_) );
-		
-		for(i in 1:n)
-			{
-			yi = y[i];
-				# this needs to be another b_ ... 
-				# log(FROM, 2)
-			yiv = bin(yi, n=b_);		
-			idx = set.match(yiv, mapFROM);
-			res[i] = paste0(mapTO[idx], collapse="");
-			}
-		if(left.trim) { res = .baseTrim(res); }
-		
-		return(res);			
-		} else {
-				# THIS is NOT WORKING, carryover issues TODO
-				stop("non trivial with partial bits, TODO");
-				if(left.trim) { res = .baseTrim(res); }
-		
-				}
-	
-	} 
-   
-base.convert = function(..., from=5, to=16, decimal.numeric=TRUE)
-	{
-	FROM = check.base(from);
-		if(is.null(FROM)) { stop("base issues"); }
-	TO = check.base(to);
-		if(is.null(TO)) { stop("base issues"); }
-	x = prep.dots(..., default=int2base(0:(FROM*FROM), base=FROM) );
-	x = as.character(x);
-
-	y = .base2bin(x, FROM=FROM);
-	res = .base2bin(y, TO=TO);
-	
-	maps = list(
-			"hex" = list("hex" = c("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"),
-						"n" = 4,
-						"bin" = c("0000", "0001", "0010", "0011", "0100", "0101", "0110", "0111", "1000", "1001", "1010", "1011", "1100", "1101", "1110", "1111")
-						),
-			"oct" = list("oct" = c("0", "1", "2", "3", "4", "5", "6", "7"),
-						"n" = 3,
-						"bin" = c("000", "001", "010", "011", "100", "101", "110", "111")
-						)
-			);
-			
-	key = FROM; 
-	if(FROM == "bin") { key = TO; }		
-	
-			
-	x = prep.dots(..., default=paste0(maps[[key]][[FROM]],collapse="") );
-	x = as.character(x);
-dput(x);
-	if(FROM == "bin") 
-		{ 
-		x = bin(x, n=maps[[key]]$n);
-		idx = set.match(x, maps[[key]][[FROM]]);
-		res = paste0(maps[[key]][[TO]][idx], collapse="");
-		return(res);
-		} else { 
-				x = str.explode("", x); 
-				# map to binary ... paste and re-bin to new "n"
-				idx = set.match(x, maps[[key]][[FROM]]);
-				b = paste0(maps[[key]][["bin"]][idx], collapse="");
-				if(TO == "bin") { return(b); }
-				
-				y = bin(b, n=maps[[TO]]$n);
-				idx = set.match(y, maps[[TO]][["bin"]]);
-				res = paste0(maps[[TO]][[TO]][idx], collapse="");
-				return(res);				
-				}
-	}	
-
-
-
-# choices = c("dec", "hex", "bin", "oct");
-# n = length(choices);
-# for(i in 1:n)
-	# {
-	# for(j in 1:n)
-		# {
-		# f = tolower(choices[i]); F = toupper(f);
-		# s = tolower(choices[j]); S = toupper(s);
-		# if(f != s)
-			# {
-			# row = '{f}2{s} = function(...) { base.convert(..., from="{f}", to="{f}"); }';
-			
-			# row = str.replace(c("{f}", "{s}", "{F}", "{S}"), c(f,s,F,S), row);
-			# cat(row, "\n\n");	
-			# }
-		
-		# }
-	# }
-
-
-
-
-
-
 
 
 

@@ -294,7 +294,7 @@ options(op);
 		if(is.numeric(force.scale))
 			{
 			b = as.integer(force.scale); # this needs to be a multiple of 3
-			b = num.round(b, 3, "integer");
+			b = int.round(b, 3, "integer");
 			de = as.integer(ex - b); # this is delta							
 			# if currently is 0 and needs to be 6, much smaller 
 			nwh = wh*10^(de);
@@ -401,9 +401,10 @@ options(op);
 
 
 # integer rounding ... floor/ceiling/integer 
-num.round = function(x, by=3, how="integer")
+int.round = function(x, by=3, how="integer")
 	{
-	# round vs up vs down ... 
+	# x should be INTEGER, but *DOES NOT* have to be ... 
+	# round vs up vs down ...	
 	# integer rounding to the nearest 3 or something ... 
 	# "r"ound, "i"nteger, "c"eiling, "f"loor
 	h = prep.arg(how, n=1);
@@ -440,7 +441,9 @@ int.fromHexInt = function(...)
 
 
 
-
+# x = pi + 2*PI/2i
+# num.toFrac(Re(x),Im(x));
+# something weird in the part = "Im" with negative numbers ... 
 num.toFrac = function() {}
 num.toFrac = function(..., 
 								return = "last",
@@ -555,6 +558,7 @@ num.toFrac = function(...,
 # 		3   7  15   1 292   1   1   1   2   1   3   1  14   3   3  23  NA
 num.toCFrac = function() {}
 num.toCFrac = function(..., 
+								return = "unused",
 								max.depth = 12,  
 								tol = DEFAULT_TOLERANCE , 
 								part="Re"
@@ -586,6 +590,7 @@ num.toCFrac = function(...,
 			j = 1 + j;
 			}
 		#	NA analagous to ... (continues), marker that we stopped manually.
+		## INTENTIONAL ... 
 		if(j > max.depth) { e[[i]] = c(e[[i]], NA); } 	
 		}
 	e = list.return(e);

@@ -13,14 +13,7 @@ test = function(df)
 dput(info);
 	}
 
-# any filename that contains text ...
-# passes through readChars ... 
-# obj (raw) are all derived from TXT 
-checksum.textFile = function(fileTXT)
-	{
-	# tools::md5sum(fileTXT); # these are different ...
-	str.toMD5( readTextFile(fileTXT) );	
-	}
+
 	
 
 	
@@ -123,6 +116,7 @@ ini.parseFiles = function(inifilesORDERmatters,
 	
 	oexts 	= check.ext(ofiles, dotless=FALSE);
 	#ostem = (outs %.-% d) %-.% exts;
+#.cat( "MONTE ... ",  opaths ,"\n\n", oexts );
 	opaths = ofiles %-.% oexts; 
 	
 	opos = check.list(str.pos("/", opaths));
@@ -130,6 +124,7 @@ ini.parseFiles = function(inifilesORDERmatters,
 	
 	opartials 	= str.before("/", opaths, ons);
 	ostems 		= str.after("/", opaths, ons);
+	fstems 		= str.after("/", ofiles, ons); # with .ini 
 
 opartials = "";
 
@@ -144,8 +139,8 @@ opartials = "";
 	outs.copy = paste0(backups, opartials, "/", uniqid, "_", ostems, ".rds");
 	outs.copy = prep.path(outs.copy); 
 	# if exists in the date ... append a .uniqid-md5 ...
-	
-	ochecksums = paste0(d, "-backups-/", opartials, "/", ostems, "_");
+	 
+	ochecksums = paste0(d, "-backups-/", opartials, "/", ostems, "_"); 
 	ochecksums = prep.path(ochecksums, trailing=FALSE);
 
 	# this stem still has .rds ... FINE ... it's different 
@@ -169,7 +164,7 @@ opartials = "";
 	n = length(outs);	
 	for(i in 1:n)
 		{
-		
+		fstem 		= fstems[i];
 		ostem		= ostems[i];
 		insource 	= insources[i];
 		out 		= outs[i];
@@ -201,7 +196,9 @@ opartials = "";
 			# detach(package:HVcpp,unload=TRUE)
 					# instring	= readTextFile(insource);
 
-			RES = ini.parse(instring, fname = ostem, MEMORY = MEMORY);  
+._____main = function() {}
+			# ostem is wrong ... 80-number.i ... subtraction?
+			RES = ini.parse(instring, fname = fstem, MEMORY = MEMORY, smart.num=smart.num);  
 			
 			# log it, backup, and so on ...
 				check.dir(out.copy);
@@ -220,6 +217,7 @@ opartials = "";
 		nt = ne - ns;
 		msg = paste0("\n\t\t\t", "now.end : ", ne , "\n\t\t\t", "parse.time [secs] : ", nt , "\n");
 		
+		.cat(msg);
 		cat.log( log, msg );
 		
 		
@@ -336,6 +334,8 @@ if(test.mode)
 	gggassign("cparent", cparent);
 	gggassign("pkey", pkey);
 	gggassign("pval", pval);
+	
+	gggassign("MEMORY", MEMORY);
 	
 	
 	gggassign("fin", fin); 
@@ -645,7 +645,7 @@ tkey = paste0(cparent, " ::: ", key, " .........       \t ", val);
 	list.smartAssign(RES, all, val);
 	}   
 
-
+ 
 ini.unwrapSpecial = function(str)
 	{
 	if(str.isWrapped("%", str))
@@ -748,6 +748,8 @@ dput(key);
 ini.walkTheLine = function(){}
 ini.walkTheLine = function(str, COMMENTS=c("#"), continue=NULL, smart.num = TRUE)
 	{
+dput(smart.num);
+
 	# MULTILINE comments ... pass flag, just looking for END 
 	# allow for two-character comment "//" DOUBLE_SLASH 
 	# IN_MULTILINE_COMMENT ... TYPE = "/*"  "*/"
@@ -871,17 +873,25 @@ ini.walkTheLine = function(str, COMMENTS=c("#"), continue=NULL, smart.num = TRUE
 
 
  
-ini.test = function(f = "", skip=0)
+ini.test = function(f = "", skip=0, ...)
 	{
-	f = "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/--.old.--/ZZ-test.ini";
+	# usage ... find the line number of a [HEADER]
+	# call ini.test("", 26);  # 26 is line number of a [HEADER]
+	# hit [ESC] when you want to exit ... review
+	# line ... lines ... RES ... MEMORY ... etc.
+	if(f == "") 
+		{
+		# make this a system.path in library ... 
+		f = "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/--.old.--/ZZ-test.ini";
+		}
 	fstr = readTextFile(f);
 	
-	RES = ini.parse(fstr, test.mode=TRUE, test.skip=skip);
+	RES = ini.parse(fstr, verbose = TRUE, test.mode=TRUE, 		
+										test.skip=skip, ...);
  
 	print(str(RES));
 	
-	invisible(RES);
-	
+	invisible(RES);	
 	}
 	
 	

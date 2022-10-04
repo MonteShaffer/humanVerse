@@ -20,6 +20,11 @@ using Eigen::CompleteOrthogonalDecomposition;	// type = 7
 using Eigen::LLT;								// type = 8
 using Eigen::LDLT;								// type = 9
 
+// setwd("C:/_git_/github/MonteShaffer/humanVerse/HVcpp/src/");
+// Rcpp::sourceCpp("matrix.cpp", verbose=TRUE);
+// m 	= as.matrix(structure(c(1, 0, 4, 0, 3, 0, 2, 0, 5), .Dim = c(3L, 3L)));
+// sourceCpp has a checksum caching mechanism ...
+// based on file changes ... 
 
 // [[Rcpp::export]]
 VectorXd matrix_diagonal(Map<MatrixXd> M, int idx=0)
@@ -85,28 +90,26 @@ MatrixXd matrix_identity(int size = 5)
 
 
 
-//  Rcpp::sourceCpp("matrix.cpp", verbose=TRUE);
-
 // [[Rcpp::export]]
 double get_epsilon()
 {
-	std::numeric_limits<double>::epsilon();
+	// return std::numeric_limits<double>::epsilon();
+	return NumTraits<double>::epsilon();
 }
 
 // [[Rcpp::export]]
 double get_precision()
 {
-	
+	return NumTraits<double>::dummy_precision();	
 }
 
-/*
-NumTraits<Real>::epsilon(); }
-   EIGEN_DEVICE_FUNC EIGEN_CONSTEXPR
-   static inline Real dummy_precision() { return NumTraits<Real>::dummy_precision(); }
-   EIGEN_DEVICE_FUNC EIGEN_CONSTEXPR
-   static inline int digits10() { return NumTraits<Real>::digits10(); }
-   *
-   */
+// [[Rcpp::export]]
+double get_digits10()
+{
+	return NumTraits<double>::digits10();	
+}
+
+
 
 double calculateTolerance(Map<MatrixXd> A, double new_factor, 
 							bool compound = true, bool verbose = true)
@@ -207,66 +210,7 @@ bool is_positive_definite(Map<MatrixXd> M, double prec = -1)
 	
 	
 	 
-	
-// for SOLVE ... https://dirk.eddelbuettel.com/papers/RcppEigen-intro.pdf
 
-/*
-https://eigen.tuxfamily.org/dox/group__TopicLinearAlgebraDecompositions.html
-
-type ... decomposition types 
-
-type == 1 is default  Matrix::inverse() ... base forumula  
-
-2 .... PartialPivLU	Invertible	Fast	Depends on condition number	-	-	Yes	Excellent	
-Blocking, Implicit MT
-
-3 ... FullPivLU	-	Slow	Proven	Yes	-	Yes	Excellent	
--
-
-4 ... HouseholderQR	-	Fast	Depends on condition number	-	Orthogonalization	Yes	Excellent	
-Blocking
-
-5 ... ColPivHouseholderQR	-	Fast	Good	Yes	Orthogonalization	Yes	Excellent	
--
-
-6 ... FullPivHouseholderQR	-	Slow	Proven	Yes	Orthogonalization	Yes	Average	
--
-
-7 ... CompleteOrthogonalDecomposition	-	Fast	Good	Yes	Orthogonalization	Yes	Excellent	
--
-
-8 ... LLT	Positive definite	Very fast	Depends on condition number	-	-	Yes	Excellent	
-Blocking
-
-9 ... LDLT
-
-Rank revealing ... 3, 5, 6, 7 
-
-
-svd/solvers types ... start at 21
-
-
-
-21 ... BDCSVD (divide & conquer)	-	One of the fastest SVD algorithms	Excellent	Yes	Singular values/vectors, least squares	Yes (and does least squares)	Excellent	
-Blocked bidiagonalization
-
-22 ... JacobiSVD (two-sided)	-	Slow (but fast for small matrices)	Proven3	Yes	Singular values/vectors, least squares	Yes (and does least squares)	Excellent	
-R-SVD
-
-23 ... SelfAdjointEigenSolver	Self-adjoint	Fast-average2	Good	Yes	Eigenvalues/vectors	-	Excellent	
-Closed forms for 2x2 and 3x3
-
-24 ... ComplexEigenSolver	Square	Slow-very slow2	Depends on condition number	Yes	Eigenvalues/vectors	-	Average	
--
-
-25 ... EigenSolver	Square and real	Average-slow2	Depends on condition number	Yes	Eigenvalues/vectors	-	Average	
--
-
-26 ... GeneralizedSelfAdjointEigenSolver	Square	Fast-average2	Depends on condition number	-	Generalized eigenvalues/vectors	-	Good	
--
-
-
-*/
 
 // [[Rcpp::export]]
 MatrixXd matrix_inverse(Map<MatrixXd> A, int type = 1, double tol_factor = -1, bool compound = true, bool verbose = true)
@@ -353,6 +297,19 @@ MatrixXd matrix_multiplyN(Map<MatrixXd> A, int n=2, int type = 1, double tol_fac
 	}
 
 
+
+/* 
+
+
+*/
+
+
+/*
+void c___________ommments____() {} 
+
+
+
+
 // install.packages
 
 // TODO ... rank(M) ... eigen(M) ... solve(A, B) 
@@ -368,3 +325,71 @@ MatrixXd matrix_multiplyN(Map<MatrixXd> A, int n=2, int type = 1, double tol_fac
 
 // make other functions cmatrix_diagonal ... etc. 
 
+NumTraits<Real>::epsilon(); }
+   EIGEN_DEVICE_FUNC EIGEN_CONSTEXPR
+   static inline Real dummy_precision() { return NumTraits<Real>::dummy_precision(); }
+   EIGEN_DEVICE_FUNC EIGEN_CONSTEXPR
+   static inline int digits10() { return NumTraits<Real>::digits10(); }
+   *
+   */
+   
+   
+  // for SOLVE ... https://dirk.eddelbuettel.com/papers/RcppEigen-intro.pdf
+
+/*
+https://eigen.tuxfamily.org/dox/group__TopicLinearAlgebraDecompositions.html
+
+type ... decomposition types 
+
+type == 1 is default  Matrix::inverse() ... base forumula  
+
+2 .... PartialPivLU	Invertible	Fast	Depends on condition number	-	-	Yes	Excellent	
+Blocking, Implicit MT
+
+3 ... FullPivLU	-	Slow	Proven	Yes	-	Yes	Excellent	
+-
+
+4 ... HouseholderQR	-	Fast	Depends on condition number	-	Orthogonalization	Yes	Excellent	
+Blocking
+
+5 ... ColPivHouseholderQR	-	Fast	Good	Yes	Orthogonalization	Yes	Excellent	
+-
+
+6 ... FullPivHouseholderQR	-	Slow	Proven	Yes	Orthogonalization	Yes	Average	
+-
+
+7 ... CompleteOrthogonalDecomposition	-	Fast	Good	Yes	Orthogonalization	Yes	Excellent	
+-
+
+8 ... LLT	Positive definite	Very fast	Depends on condition number	-	-	Yes	Excellent	
+Blocking
+
+9 ... LDLT
+
+Rank revealing ... 3, 5, 6, 7 
+
+
+svd/solvers types ... start at 21
+
+
+
+21 ... BDCSVD (divide & conquer)	-	One of the fastest SVD algorithms	Excellent	Yes	Singular values/vectors, least squares	Yes (and does least squares)	Excellent	
+Blocked bidiagonalization
+
+22 ... JacobiSVD (two-sided)	-	Slow (but fast for small matrices)	Proven3	Yes	Singular values/vectors, least squares	Yes (and does least squares)	Excellent	
+R-SVD
+
+23 ... SelfAdjointEigenSolver	Self-adjoint	Fast-average2	Good	Yes	Eigenvalues/vectors	-	Excellent	
+Closed forms for 2x2 and 3x3
+
+24 ... ComplexEigenSolver	Square	Slow-very slow2	Depends on condition number	Yes	Eigenvalues/vectors	-	Average	
+-
+
+25 ... EigenSolver	Square and real	Average-slow2	Depends on condition number	Yes	Eigenvalues/vectors	-	Average	
+-
+
+26 ... GeneralizedSelfAdjointEigenSolver	Square	Fast-average2	Depends on condition number	-	Generalized eigenvalues/vectors	-	Good	
+-
+
+
+*/
