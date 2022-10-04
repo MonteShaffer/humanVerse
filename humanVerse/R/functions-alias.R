@@ -58,9 +58,11 @@ alias.process = function(ALIAS=list())
 			fkey = fas[j];
 			fval = aa[[j]];
 			Aname = na[i];
+			
+.cat("================> ", "i = ", i, "\t j = ", j)
 		
 # broken PIPE ... parser 		
-if(fkey %in% c("%","%=")) { next; } 
+# if(fkey %in% c("%","%=")) { next; } 
 			
 			.cat(Aname, " ::: ", fkey, " = ", fval);
 	
@@ -91,24 +93,26 @@ if(str.contains(":::", fval)) { colons = ":::"; }
 		} else { fvalnew = fval; }
 	
 	### WRAP IT ON THE OTHER SIDE
-	# if(str.contains("%", fvalnew))
-	if(str.isWrapped(fvalnew, "%")) 
+	fvalnew = ini.unwrapSpecial(fvalnew);
+	
+
+	if(str.isWrapped("%", fvalnew)) 
 		{
-		# reverse .... #  nPr  =  %nPr%
+		# quotes for eval ...
 		fvalnew = paste0('"', fvalnew, '"');
 		}
 	 
 	
 	### WRAP IT ON THE OTHER SIDE
-	fkeynew = fkey;
-	# if(str.contains("%", fkey))
-	if(str.isWrapped(fkey, "%")) 
+	fkeynew = ini.unwrapSpecial(fkey);
+	if(str.isWrapped("%", fkeynew)) 
 		{
-		fkeynew = paste0('"', fkey, '"');
+		# quotes for eval 
+		fkeynew = paste0('"', fkeynew, '"');
 		}
 	
 	
-			.cat(Aname, " ::: ", fkeynew, " = ", fvalnew);
+			.cat(Aname, " ------> ", fkeynew, " = ", fvalnew);
 	
 alias.set(to = fkeynew, from = fvalnew);
 		

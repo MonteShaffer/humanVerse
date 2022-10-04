@@ -240,38 +240,23 @@ js.b64 = function(input, method="encode")
 	res = memory.get("map", "-B64_HEX-");
 	if(is.null(res))
 		{
-		n 	= .lcm.bits(64, 16);
+		n 	= .lcm.bits(64, 16);	# 4096 in map 
 		w64 = .lcm.width(64, n);  	# 2 wide
 		wH 	= .lcm.width(16, n);	# 3 wide
 		
-		raw64 = memory.get("raw64", "-B64_HEX-");
-		if(is.null(raw64))
-			{
-			info = int2base(0:(n-1), base=64);
-			raw64 = str.pad(info, w64, "A", "LEFT");
-			memory.set("raw64", "-B64_HEX-", raw64);
-			}
-		rawH = memory.get("rawH", "-B64_HEX-");
-		if(is.null(rawH))
-			{
-			info = int2base(0:(n-1), base=16);
-			rawH = str.pad(info, wH, "0", "LEFT");
-			memory.set("rawH", "-B64_HEX-", rawH);
-			}
-		### FOR SETS this is rather meaningless
-		# if(keys == "hex")
-			# {
-			# res = list.create(rawH, raw64);
-			# memory.set(keys, "-B64_HEX-", res);
-			# } else {
-					# res = list.create(raw64, rawH);
-					# memory.set("b64", "-B64_HEX-", res);
-					# }		
+		binfo = int2base(0:(n-1), base=64);
+		raw64 = str.pad(binfo, w64, "A", "LEFT");
+
+		hinfo = int2base(0:(n-1), base=16);
+		rawH = str.pad(hinfo, wH, "0", "LEFT");
+		
+		# parallel vectors, easiest for set.match 
 		res = list("b64" = raw64, "hex" = rawH);
 		memory.set("map", "-B64_HEX-", res);
 		}
 	res;	
 	}
+	
 	
 .lcm.width = function(a=64, n=4096)
 	{
@@ -280,26 +265,9 @@ js.b64 = function(input, method="encode")
 	
 .lcm.bits = function(a=64, b=16)
 	{
-	# if a = 16, b=64 ... both 2^n form 
-	# 2^( gcd.lcm( log2(16), log2(64) )$lcm );
-	# a=5; b=16;
-	# 2^( gcd.lcm( ceiling(log2(5)), ceiling(log2(16)) )$lcm );
-	# lcm = gcd.lcm(5,16)$lcm;  # 80 
-	# set.match( 16^(1:80), 5^(1:80) )  # will they match?
-	# > set.match( 16^(1:20), 64^(1:10) )
-	# [1] NA NA  2 NA NA  4 NA NA  6 NA NA  8 NA NA 10 NA NA NA NA NA
-	# getting to floating.point issue on set.match 
-	# how to wrap it in is.equal ... 
 	2^( gcd.lcm( ceiling(log2(a)), ceiling(log2(b)) )$lcm );
 	}
-	 
-	
-# notice the gcd/lcm of 16, 64 would get me to 4096 somehow 
-# how to apply to any base 5, 17 ... just build maps ...
-#  gcd.lcm( log2(16), log2(64) ) ... 12 
-# gcd.lcm( log2(5), log2(16) ) ,,, 2.32
-# how to find ... 16*16*16 = 64*64 
-#  5*5*
+
 
 
 

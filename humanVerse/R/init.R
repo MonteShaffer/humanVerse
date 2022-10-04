@@ -174,7 +174,7 @@ init.constants = function()
 				);
 	
 	n = length(BASIC);
-	bnames = names(b)
+	bnames = names(BASIC);
 	for(i in 1:n)
 		{
 		bkey = bnames[i];
