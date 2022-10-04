@@ -324,7 +324,7 @@ time.now = function(method="first")
 # [1] "9aGyNG585oT9QVanvaoNaiX"
 
 
-.b64hash = function(hex, to.length=10, pre.shuffle=TRUE)
+.b64hash = function(hex, to.length=22, pre.shuffle=TRUE)
 	{
 	e = hex;
 	if(pre.shuffle) { e = str.letterShuffle(hex); }

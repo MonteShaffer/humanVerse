@@ -178,3 +178,128 @@ js.b64 = function(input, method="encode")
 
 
 
+
+# a = .serialize(iris); b = 
+
+# x = as.raw(1:10); y = raw.toString(x); 
+# z = raw.fromString(y); identical(x,z);
+
+# x = as.raw(1:10); y = raw.toString(x, collapse=NULL);
+# z = raw.fromString(y, splitN=FALSE); identical(x,z);
+
+# a = .serialize(iris); b = raw.toString(a);  strlen(b);
+# c = cpp_base64_enc(b); strlen(c);
+# d = cpp_base64_dec(c); e = raw.fromString(d); f = .unserialize(e);
+# identical(f, iris);
+
+
+
+
+
+
+# > .hex_b64("abcdef")
+# [1] "q83v"
+# > .b64_hex("q83v")
+# [1] "abcdef"
+	
+.b64_hex = function(b64str, collapse="")
+	{
+	# b64str is one long string, no breaks ...
+	if(length(b64str) > 1) {  b64str = paste(b64str, collapse=""); }
+	b = bin(b64str, n=2, pad="A");   # B64v[1];
+	nb = length(b);
+	MAP = .map_hexb64();
+	idx = set.match(b, MAP$b64); # there shouldn't be NA/NULL
+	r = tolower(MAP$hex[idx]);  # to match 'raw' format 
+	hexstr = paste0(r, collapse=collapse);
+	hexstr;
+	}
+
+
+
+ 
+
+.hex_b64 = function(hexstr, collapse="")
+	{
+	MAP = .map_hexb64();
+	# hexstr is one long string, no breaks ...
+	if(length(hexstr) > 1) {  hexstr = paste(hexstr, collapse=""); }
+	# 'raw' seems to be lower case, TRUE hex is upper?
+	b = toupper( bin(hexstr, n=3, pad="0") );   # BXXv[1];
+	nb = length(b);
+	
+	idx = set.match(b, MAP$hex);	# there shouldn't be NA/NULL
+	r = MAP$b64[idx];
+	b64str = paste0(r, collapse=collapse);
+	b64str;
+	}
+	
+
+.map_hexb64 = function()
+	{
+	res = memory.get("map", "-B64_HEX-");
+	if(is.null(res))
+		{
+		n 	= .lcm.bits(64, 16);
+		w64 = .lcm.width(64, n);  	# 2 wide
+		wH 	= .lcm.width(16, n);	# 3 wide
+		
+		raw64 = memory.get("raw64", "-B64_HEX-");
+		if(is.null(raw64))
+			{
+			info = int2base(0:(n-1), base=64);
+			raw64 = str.pad(info, w64, "A", "LEFT");
+			memory.set("raw64", "-B64_HEX-", raw64);
+			}
+		rawH = memory.get("rawH", "-B64_HEX-");
+		if(is.null(rawH))
+			{
+			info = int2base(0:(n-1), base=16);
+			rawH = str.pad(info, wH, "0", "LEFT");
+			memory.set("rawH", "-B64_HEX-", rawH);
+			}
+		### FOR SETS this is rather meaningless
+		# if(keys == "hex")
+			# {
+			# res = list.create(rawH, raw64);
+			# memory.set(keys, "-B64_HEX-", res);
+			# } else {
+					# res = list.create(raw64, rawH);
+					# memory.set("b64", "-B64_HEX-", res);
+					# }		
+		res = list("b64" = raw64, "hex" = rawH);
+		memory.set("map", "-B64_HEX-", res);
+		}
+	res;	
+	}
+	
+.lcm.width = function(a=64, n=4096)
+	{
+	log2(n)/log2(a);	
+	}
+	
+.lcm.bits = function(a=64, b=16)
+	{
+	# if a = 16, b=64 ... both 2^n form 
+	# 2^( gcd.lcm( log2(16), log2(64) )$lcm );
+	# a=5; b=16;
+	# 2^( gcd.lcm( ceiling(log2(5)), ceiling(log2(16)) )$lcm );
+	# lcm = gcd.lcm(5,16)$lcm;  # 80 
+	# set.match( 16^(1:80), 5^(1:80) )  # will they match?
+	# > set.match( 16^(1:20), 64^(1:10) )
+	# [1] NA NA  2 NA NA  4 NA NA  6 NA NA  8 NA NA 10 NA NA NA NA NA
+	# getting to floating.point issue on set.match 
+	# how to wrap it in is.equal ... 
+	2^( gcd.lcm( ceiling(log2(a)), ceiling(log2(b)) )$lcm );
+	}
+	 
+	
+# notice the gcd/lcm of 16, 64 would get me to 4096 somehow 
+# how to apply to any base 5, 17 ... just build maps ...
+#  gcd.lcm( log2(16), log2(64) ) ... 12 
+# gcd.lcm( log2(5), log2(16) ) ,,, 2.32
+# how to find ... 16*16*16 = 64*64 
+#  5*5*
+
+
+

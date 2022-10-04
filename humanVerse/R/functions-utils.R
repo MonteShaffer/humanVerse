@@ -236,7 +236,7 @@ gggassign = function(key, val)
 # TODO
 # constants ... flood GLOBAL space or quietly 
 # how does pi work 
-define = function(KEY, VALUE) {}
+## define = function(KEY, VALUE) {}
 # http://127.0.0.1:11303/library/base/html/Constants.html
 ## John Machin (ca 1706) computed pi to over 100 decimal places # [how many correct?]
 ## using the Taylor series expansion of the second term of
@@ -920,99 +920,6 @@ charCode = function(s)
 	
 
 
-
-# a = .serialize(iris); b = 
-
-# x = as.raw(1:10); y = raw.toString(x); 
-# z = raw.fromString(y); identical(x,z);
-
-# x = as.raw(1:10); y = raw.toString(x, collapse=NULL);
-# z = raw.fromString(y, splitN=FALSE); identical(x,z);
-
-# a = .serialize(iris); b = raw.toString(a);  strlen(b);
-# c = cpp_base64_enc(b); strlen(c);
-# d = cpp_base64_dec(c); e = raw.fromString(d); f = .unserialize(e);
-# identical(f, iris);
-
-
-
-
-
-
-# > hexstr = "ABCDEF"; # 03984092384092830948"
-# > h = bin(toupper(hexstr), n=3)
-# [1] "ABC" "DEF"
-# > 16*16*16  ... 4096
-# > 64*64     ... 4096
-
-# a = base64.fromHEX(hexstr);
-# b = base64.toHEX(a);
-### LOOKUP WORKS ... 
-base64.fromHEX = function(hexstr)
-	{
-	h = bin(toupper(hexstr), n=3);	
-	nh = length(h);
-	res = "";
-	for(i in 1:nh)
-		{
-		res = paste0(res, lookupHEXB64[[ h[i] ]], collapse="");
-		}
-	res;
-	}
-
-base64.toHEX = function(b64str)
-	{
-	b = bin(b64str, n=2);
-	nb = length(b);
-	res = "";
-	for(i in 1:nb)
-		{
-		# would blocks of similar with "set.match" be faster?
-		res = paste0(res, lookupB64HEX[[ b[i] ]], collapse="");
-		}
-	res;
-	}
-	
- 
-hexToBase64 = function(hexStr) 
-	{
-	base64 = "";
-	nh = str.len(hexStr);
-	for(i in 0:(nh-1))
-		{
-		if(i %% 2 == 1)
-			{
-			h = as.integer(as.hexmode(substring(hexStr, i, i+1)));
-			s = String.fromCharCode(h);
-			# if(s == "") { s = ".NULL"; } # null not allowed ... \x00
-			base64 = paste0(base64, s);
-			}
-		}
-	# I would have to hack .NULL in the function after ... 
-	# benchmarks would be interesting ... 
-	return(js.b64(base64));
-	}
-
-	
-
-#  H = "0123456789ABCDEF"
-#  Hv = str.explode("", H)
-#  B = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-#  Bv = str.explode("", B)
-
-# https://en.wikipedia.org/wiki/Base64
-# 
-
-
-
-# https://stackoverflow.com/questions/23190056/hex-to-base64-converter-for-javascript
-# function hexToBase64(hexStr) {
- # let base64 = "";
- # for(let i = 0; i < hexStr.length; i++) {
-   # base64 += !(i - 1 & 1) ? String.fromCharCode(parseInt(hexStr.substring(i - 1, i + 1), 16)) : ""
- # }
- # return btoa(base64);
-# }
 
 raw.toString = function(raw, collapse="")
 	{

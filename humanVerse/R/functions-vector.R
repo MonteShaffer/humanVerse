@@ -947,7 +947,7 @@ left.contiguous = function(idx, n)
 	}
 	
 right.contiguous = function(idx, n)
-	{
+	{  
 	idx = v.TO(idx, NA, -1);  # -1 won't match, no error
 	# n is length(vec) ... needed for this side
 	from.right = NULL;

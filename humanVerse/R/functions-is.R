@@ -98,22 +98,6 @@ is.Date = function(x)		{ inherits(x, "Date"); }
 
 # is.name EQUIVALENT to is.symbol
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-#'
-#' is.substring
-#'
-#'
-#' @param needle (substring is UNI-VARIATE)
-#' @param haystack (is MULTI-VARIATE)
-#'
-#' @return TRUE or FALSE (Logical VECTOR of length(haystack)
-#' @export 
-#' 
-#' @examples
-is.substring = function(needle, haystack)
-	{
-	grepl(needle, haystack, fixed = TRUE);
-	}
 
 
 

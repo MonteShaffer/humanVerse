@@ -28,24 +28,6 @@ str.compare = function(a, b=NULL, methods="all")
 # maybe gr.
 
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-#'
-#' str.count
-#'
-#'
-#------------------------------------------------#
-str.count = function(what="|", str) 
-	{ 
-	# count occurrence of "what" in a string 
-	# n.pipes = str.count(lines, what="|");
-	info = str.explode(what, str);
-# dput(info);
-	res = list.getLengths(info);
-	if(is.null(res)) { return(0*length(str)); }	
-	res-1;  # 2 splits = 1 occurrence; ... 3 splits = 2 occurrences ... 
-	}
-	
-
 	
 
 
@@ -288,151 +270,6 @@ trimMe = str.trim;
 #' @export
 str_trim = str.trim;
 
-
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-#'
-#' str.explode
-#'
-#' Similar to javascript.split and php.explode
-#'
-#' @param sep [separator] character(s) to delimit the split
-#' @param str a character string to be split [NOT a vector]
-#' @param n if NULL, return ALL of THEM ... otherwise just single element
-#'
-#' @return a character vector
-#' @export
-#'
-#' @examples
-#------------------------------------------------# 
-# BASE is broken ... 
-str.explode = function(sep = " ", str = "hello friend", method="first")
-	{
-##########################################################
-##### I can't wrap this into a function check.string #####
-##########################################################	
-	ct.METHOD = check.type(method);
-	if(!ct.METHOD || !is.character(method))	
-		{ method = deparse(substitute(method)); } 
-##########################################################
-	METHOD = prep.strMethod(method, n=1);
- 
-	FNS = list(
-			"cpp" 		= function() { cpp_explode(sep, str); } , 
-			"stringi" 	= function() { stringi::stri_split_fixed(str, sep); } ,
-			"base" 		= function() { strsplit_(str, sep, fixed=TRUE); }
-			);
-			
-	if(METHOD != "first")
-		{
-		# AS-IS, no checks 
-		return(  list.return( FNS[[METHOD]]() ) );
-		}
-
-	# CASCADING, first-one to meet criteria 
-	hasResult = FALSE;
-	if(!hasResult && exists("cpp_explode"))
-		{
-		# must not have exported it ... 
-		hasResult = TRUE;
-		res = FNS[["cpp"]]();
-		}
-		
-	if(!hasResult && is.library_("stringi") && sep != "" )
-		{
-		hasResult = TRUE;
-		res = FNS[["stringi"]]();		
-		}
-		
-	if(!hasResult)
-		{
-		res = FNS[["base"]]();
-		}
-
-	# will be collapsed into CharacterVector if len == 1
-	list.return(res);
-	}
-
-#++++++++++++++++++++++++#
-#'
-#' @rdname explodeMe
-#' @export
-explodeMe = str.explode;
-
-#++++++++++++++++++++++++#
-#'
-#' @rdname str.split
-#' @export
-str.split = str.explode;
-
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-#'
-#' str.implode
-#'
-#'
-#------------------------------------------------#
-str.implode = function(sep=" ", str, method="base")
-	{
-	str = check.list(str);  # maybe redundant of a check from another function
-##########################################################
-##### I can't wrap this into a function check.string #####
-##########################################################	
-	ct.METHOD = check.type(method);
-	if(!ct.METHOD || !is.character(method))	
-		{ method = deparse(substitute(method)); } 
-##########################################################
-	METHOD = prep.strMethod(method, n=1);
-
-	FNS = list(
-			"cpp" 		= function() { cpp_implode(sep, str); } , 
-			"stringi" 	= function() { stop("stringi implemented?"); } ,
-			"base" 		= function() { strunsplit_(str, sep); }
-			);
-			
-	if(METHOD != "first")
-		{
-		# AS-IS, no checks 
-		return(  FNS[[METHOD]]() );
-		}
-
-	# CASCADING, first-one to meet criteria 
-	hasResult = FALSE;
-	if(!hasResult && exists("cpp_implode"))
-		{
-		# must not have exported it ... 
-		hasResult = TRUE;
-		res = FNS[["cpp"]]();
-		}
-		
-	# if(!hasResult && is.library_("stringi"))
-		# {
-		# hasResult = TRUE;
-		# res = FNS[["stringi"]]();		
-		# }
-		
-	if(!hasResult)
-		{
-		res = FNS[["base"]]();
-		}
-
-	# will be collapsed into CharacterVector if len == 1
-	# unnecessary (takes a list, returns a charVec)
-	res;
-	}
-
-
-#++++++++++++++++++++++++#
-#'
-#' @rdname implodeMe
-#' @export
-implodeMe = str.implode;
-
-#++++++++++++++++++++++++#
-#'
-#' @rdname str.unsplit
-#' @export
-str.unsplit = str.implode;
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -683,19 +520,24 @@ str.truncate = function(str, to.length=5, keep="right")
 	{
 	# str.pad in stringi FAVORS the right ... 
 	#   "1"   "12"  "123" ==> "010" "120" "123"
-	KEEP = prep.arg(keep, n=1);
-	if(KEEP == "l")
+	KEEP = prep.switch(	prep.arg(keep, n=1), 
+						c("l","r","i","o"), 
+						c("left", "right", "inner", "outer"), 
+						"right"
+						);
+
+	if(KEEP == "left")
 		{
 		res = substring(str, 1, to.length);
 		}
-	if(KEEP == "r")
+	if(KEEP == "right")
 		{
 		slen = str.len(str);
 		from = slen-to.length+1; 
 		ifelse( {from < 1} , { from = 1; }, { from = from; });
 		res = substring(str, from, slen);
 		}
-	if(KEEP == "o")  # outer ... opposite of inner 
+	if(KEEP == "outer")  # outer ... opposite of inner 
 		{
 		# str = c("123000456", "ABC000DEF")
 
@@ -717,7 +559,7 @@ str.truncate = function(str, to.length=5, keep="right")
 		res = paste0(resL,resR);
 		res;
 		}
-	if(KEEP == "i")  # "i"nner 
+	if(KEEP == "inner")  # "i"nner 
 		{
 		# str=c("000123000", "00123000", "00012300");
 
@@ -752,6 +594,129 @@ str.translate = function(str, to="latin-ascii")
 
 
 
+
+str.subtract = function(a, b, from="left")
+	{	
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.FROM = check.type(from);
+	if(!ct.FROM || !is.character(from))	
+		{ from = deparse(substitute(from)); } 
+##########################################################
+	FROM = prep.switch(	prep.arg(from, n=1), 
+						c("l","r"), 
+						c("left", "right"), 
+						"left"
+						);
+	
+	
+	if(FROM == "left")
+		{
+		# a = "monte says hello my friend"; b = "monte eats apples with his friend";
+		# contiguous elements that are the same from the left ...
+		avec = str.explode("", a);
+			alen = length(avec);
+		bvec = str.explode("", b);
+		
+		idx = set.match(avec, bvec);
+		left = left.contiguous(idx, alen);
+		mtrim = 0; 
+		if(!is.null(left)) { mtrim = v.last(left); }
+		return( substring(a, 1+mtrim, alen) );
+		} else { 
+				avec = str.explode("", a);
+					alen = length(avec);
+				bvec = str.explode("", b);
+				# reverse the array
+				idx = set.match(rev(avec), rev(bvec));
+				left = left.contiguous(idx, alen);
+				mtrim = 0; 
+				if(!is.null(left)) { mtrim = v.last(left); }
+				return( substring(a, 1, alen-mtrim) );
+				}
+	}
+	
+
+#############################################
+#  THESE are 'action' functions on strings  #
+#   action element is first, str is second  #
+#############################################
+
+str.contains = function(needle, haystack)
+	{
+	grepl(needle, haystack, fixed = TRUE);
+	}
+
+
+	
+# str.startsWith = str.starts 
+str.starts = function() {}
+str.starts = function(search="<i>", str=c("<i>hello friend</i>", "<i>how are you doing today?</i>", "I am fine <i>[well]</i>, thank you for asking. [fine/well are ambiguous ... --> Estoy bien, gracias a Dios ... <i>TRIOS?</i>]"), trim = FALSE )
+	{
+	info = check.list(str.explode(search, str));
+	len = list.getLengths(info); 
+	first = list.getElements(info, 1);
+	
+	logic = v.test(first, EMPTY);
+	if(!trim) { return(logic); }
+
+	len[logic] = len[logic] - 1;
+	
+	b = rep(0, length(len));
+	b[logic] = b[logic] + 1;
+	
+	new = list.truncate(info, b, "beginning");  # begin, start , anything but [e]nd ... 
+		  
+	str.implode(search, new);  
+	}
+	
+	
+# str.endsWith = str.ends
+str.ends = function() {}
+str.ends = function(search="</i>", str=c("<i>hello friend</i>", "<i>how are you doing today?</i>", "I am fine <i>[well]</i>, thank you for asking. [fine/well are ambiguous ... --> Estoy bien, gracias a Dios ... <i>TRIOS?</i>]"), trim = FALSE )
+	{ 
+	info = check.list(str.explode(search, str));
+	# last = list.getLastElements(info);
+	len = list.getLengths(info); 
+	last = list.getElements(info, len);
+	
+	logic = v.test(last, EMPTY);
+	if(!trim) { return(logic); }
+
+	len[logic] = len[logic] - 1;
+	
+	new = list.truncate(info, len);
+		  
+	str.implode(search, new);
+	}
+	
+	
+	
+str.before = function(search, str, occurence=1)
+	{	
+	selen = str.len(search);
+	#slen = str.len(str);
+	
+	pos = check.list(str.pos(search, str));
+	idx = list.getElements(pos, occurence);
+	
+	# substring(str, idx+selen, slen);
+	substring(str, 1, idx-selen);
+	}
+	
+str.after = function(search, str, occurence=1)
+	{	
+	selen = str.len(search);
+	slen = str.len(str);
+	
+	pos = check.list(str.pos(search, str));
+	idx = list.getElements(pos, occurence);
+	
+	substring(str, idx+selen, slen);
+	}
+	
+	
 
 
 # STRPOS() returns the index of the first occurence of its second argument (“needle”) in its first argument (“haystack”), or -1 if there are no occurrences.
@@ -798,113 +763,149 @@ str.pos = function(search, str, n=Inf, skip=0)
 	}
 	 
 	 
-str.subtract = function(a, b, from="left")
-	{	
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#'
+#' str.count
+#'
+#'
+#------------------------------------------------#
+str.count = function(what="|", str) 
+	{ 
+	# count occurrence of "what" in a string 
+	# n.pipes = str.count(lines, what="|");
+	info = str.explode(what, str);
+# dput(info);
+	res = list.getLengths(info);
+	if(is.null(res)) { return(0*length(str)); }	
+	res-1;  # 2 splits = 1 occurrence; ... 3 splits = 2 occurrences ... 
+	}
+	
+
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#'
+#' str.explode
+#'
+#' Similar to javascript.split and php.explode
+#'
+#' @param sep [separator] character(s) to delimit the split
+#' @param str a character string to be split [NOT a vector]
+#' @param n if NULL, return ALL of THEM ... otherwise just single element
+#'
+#' @return a character vector
+#' @export
+#'
+#' @examples
+#------------------------------------------------# 
+# BASE is broken ... 
+str.explode = function(sep = " ", str = "hello friend", method="first")
+	{
 ##########################################################
 ##### I can't wrap this into a function check.string #####
 ##########################################################	
-	ct.FROM = check.type(from);
-	if(!ct.FROM || !is.character(from))	
-		{ from = deparse(substitute(from)); } 
+	ct.METHOD = check.type(method);
+	if(!ct.METHOD || !is.character(method))	
+		{ method = deparse(substitute(method)); } 
 ##########################################################
-	FROM = prep.switch(	prep.arg(from, n=1), 
-						c("l","r"), 
-						c("left", "right"), 
-						"left"
-						);
-	
-	
-	if(FROM == "left")
+	METHOD = prep.strMethod(method, n=1);
+ 
+	FNS = list(
+			"cpp" 		= function() { cpp_explode(sep, str); } , 
+			"stringi" 	= function() { stringi::stri_split_fixed(str, sep); } ,
+			"base" 		= function() { strsplit_(str, sep, fixed=TRUE); }
+			);
+			
+	if(METHOD != "first")
 		{
-		# a = "monte says hello my friend"; b = "monte eats apples with his friend";
-		# contiguous elements that are the same from the left ...
-		avec = str.explode("", a);
-			alen = length(avec);
-		bvec = str.explode("", b);
+		# AS-IS, no checks 
+		return(  list.return( FNS[[METHOD]]() ) );
+		}
+
+	# CASCADING, first-one to meet criteria 
+	hasResult = FALSE;
+	if(!hasResult && exists("cpp_explode"))
+		{
+		# must not have exported it ... 
+		hasResult = TRUE;
+		res = FNS[["cpp"]]();
+		}
 		
-		idx = set.match(avec, bvec);
-		left = left.contiguous(idx, alen);
-		mtrim = 0; 
-		if(!is.null(left)) { mtrim = v.last(left); }
-		return( substring(a, 1+mtrim, alen) );
-		} else { 
-				avec = str.explode("", a);
-					alen = length(avec);
-				bvec = str.explode("", b);
-				# reverse the array
-				idx = set.match(rev(avec), rev(bvec));
-				left = left.contiguous(idx, alen);
-				mtrim = 0; 
-				if(!is.null(left)) { mtrim = v.last(left); }
-				return( substring(a, 1, alen-mtrim) );
-				}
-	}
-	
-	
-	
-# str.endsWith = str.ends
-str.ends = function() {}
-str.ends = function(search="</i>", str=c("<i>hello friend</i>", "<i>how are you doing today?</i>", "I am fine <i>[well]</i>, thank you for asking. [fine/well are ambiguous ... --> Estoy bien, gracias a Dios ... <i>TRIOS?</i>]"), trim = FALSE )
-	{ 
-	info = check.list(str.explode(search, str));
-	# last = list.getLastElements(info);
-	len = list.getLengths(info); 
-	last = list.getElements(info, len);
-	
-	logic = v.test(last, EMPTY);
-	if(!trim) { return(logic); }
+	if(!hasResult && is.library_("stringi") && sep != "" )
+		{
+		hasResult = TRUE;
+		res = FNS[["stringi"]]();		
+		}
+		
+	if(!hasResult)
+		{
+		res = FNS[["base"]]();
+		}
 
-	len[logic] = len[logic] - 1;
-	
-	new = list.truncate(info, len);
-		  
-	str.implode(search, new);
+	# will be collapsed into CharacterVector if len == 1
+	list.return(res);
 	}
-	
-# str.startsWith = str.starts 
-str.starts = function() {}
-str.starts = function(search="<i>", str=c("<i>hello friend</i>", "<i>how are you doing today?</i>", "I am fine <i>[well]</i>, thank you for asking. [fine/well are ambiguous ... --> Estoy bien, gracias a Dios ... <i>TRIOS?</i>]"), trim = FALSE )
+
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#'
+#' str.implode
+#'
+#'
+#------------------------------------------------#
+str.implode = function(sep=" ", str, method="base")
 	{
-	info = check.list(str.explode(search, str));
-	len = list.getLengths(info); 
-	first = list.getElements(info, 1);
-	
-	logic = v.test(first, EMPTY);
-	if(!trim) { return(logic); }
+	str = check.list(str);  # maybe redundant of a check from another function
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.METHOD = check.type(method);
+	if(!ct.METHOD || !is.character(method))	
+		{ method = deparse(substitute(method)); } 
+##########################################################
+	METHOD = prep.strMethod(method, n=1);
 
-	len[logic] = len[logic] - 1;
-	
-	b = rep(0, length(len));
-	b[logic] = b[logic] + 1;
-	
-	new = list.truncate(info, b, "beginning");  # begin, start , anything but [e]nd ... 
-		  
-	str.implode(search, new);  
+	FNS = list(
+			"cpp" 		= function() { cpp_implode(sep, str); } , 
+			"stringi" 	= function() { stop("stringi implemented?"); } ,
+			"base" 		= function() { strunsplit_(str, sep); }
+			);
+			
+	if(METHOD != "first")
+		{
+		# AS-IS, no checks 
+		return(  FNS[[METHOD]]() );
+		}
+
+	# CASCADING, first-one to meet criteria 
+	hasResult = FALSE;
+	if(!hasResult && exists("cpp_implode"))
+		{
+		# must not have exported it ... 
+		hasResult = TRUE;
+		res = FNS[["cpp"]]();
+		}
+		
+	# if(!hasResult && is.library_("stringi"))
+		# {
+		# hasResult = TRUE;
+		# res = FNS[["stringi"]]();		
+		# }
+		
+	if(!hasResult)
+		{
+		res = FNS[["base"]]();
+		}
+
+	# will be collapsed into CharacterVector if len == 1
+	# unnecessary (takes a list, returns a charVec)
+	res;
 	}
-	
-	
-	
-str.before = function(search, str, occurence=1)
-	{	
-	selen = str.len(search);
-	#slen = str.len(str);
-	
-	pos = check.list(str.pos(search, str));
-	idx = list.getElements(pos, occurence);
-	
-	# substring(str, idx+selen, slen);
-	substring(str, 1, idx-selen);
-	}
-	
-str.after = function(search, str, occurence=1)
-	{	
-	selen = str.len(search);
-	slen = str.len(str);
-	
-	pos = check.list(str.pos(search, str));
-	idx = list.getElements(pos, occurence);
-	
-	substring(str, idx+selen, slen);
-	}
-	
-	
+
+
+
+
+
+
