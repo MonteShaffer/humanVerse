@@ -246,59 +246,11 @@ js.b64 = function(input, method="encode")
 ## .lcm.bits(9, 2:32)
 
 ### map everything to/from "2" ... smallest but changes 
+## #not going to work 
 ## .lcm.bits(2, c(2:32, 64))
 ## x = c(`-2-` = 2, `-3-` = 4, `-4-` = 4, `-5-` = 8, `-6-` = 8, `-7-` = 8, `-8-` = 8, `-9-` = 16, `-10-` = 16, `-11-` = 16, `-12-` = 16, `-13-` = 16, `-14-` = 16, `-15-` = 16, `-16-` = 16, `-17-` = 32, `-18-` = 32, `-19-` = 32, `-20-` = 32, `-21-` = 32, `-22-` = 32, `-23-` = 32, `-24-` = 32, `-25-` = 32, `-26-` = 32, `-27-` = 32, `-28-` = 32, `-29-` = 32, `-30-` = 32, `-31-` = 32, `-32-` = 32, `-64-` = 64)
 
 
-
-
-.bXX_bin = function(bXXstr, x=7, collapse="")
-	{
-	MAP = .map_bin2xx(x);
-		bins = property.get("bins", MAP);
-	# bXXstr is one long string, no breaks ...
-	if(length(bXXstr) > 1) 
-		{  bXXstr = paste(bXXstr, collapse=""); }
-	# 'raw' seems to be lower case, TRUE hex is upper?
-	b = toupper( bin(bXXstr, n=bins[[2]], pad="0") );   # BXXv[1];
-	nb = length(b);
-	
-	idx = set.match(b, MAP[[2]]);
-	r = MAP[[1]][idx];
-	binstr = paste0(r, collapse=collapse);
-	binstr;
-	}
-
-
-.map_bin2xx = function(x=7)
-	{
-	mkey = paste0("-BIN_", str.pad(x, 2, "0", "LEFT"), "-");
-	res = memory.get(mkey, "-BASE_CONVERSION_MAPS-");
-	if(is.null(res))
-		{
-		n 	= .lcm.bits(x, 2);	# 8 in map (for 7)
-				# fraction is problem ... 
-		wX  = as.integer(ceil(.lcm.width(x, n))); 
-				# 3 wide (for 7)
-		wB 	= as.integer(.lcm.width(2, n));	
-						# 000, 001, 010, 011, 100, 101, 110, 111
-						#  0,   1,   2,   3,   4,   5,   6,   10
-						# theres the problem ... floor => ceil 
-						#  00   01   02   03   04   05   06   10 
-		binfo = int2base(0:(n-1), base=2);
-		rawBIN = str.pad(binfo, wB, "0", "LEFT");
-
-		xinfo = int2base(0:(n-1), base=x);
-		rawXX = str.pad(xinfo, wX, "0", "LEFT");
-		
-		# parallel vectors, easiest for set.match 
-		res = list("bin" = rawBIN, x = rawXX);
-		res = property.set("bins", res, list("bin" = wB, x = wX) )
-		memory.set(mkey, "-BASE_CONVERSION_MAPS-", res);
-		}
-	res;	
-	}
-		
 .map_hexb64 = function()
 	{
 	res = memory.get("-HEX_B64-", "-BASE_CONVERSION_MAPS-");
