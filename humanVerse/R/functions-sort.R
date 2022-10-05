@@ -167,7 +167,7 @@ cat("\n\t", " ... FROM: ", from, " ==> TO: ",	to , "\n");
  
 
 
-		if(allNA(vec)) { break; }
+		if(.allNA(vec)) { break; }
 
 
 		} # end of j 

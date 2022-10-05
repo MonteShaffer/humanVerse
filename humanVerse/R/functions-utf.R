@@ -111,7 +111,7 @@ u.pad8 = function(...)
 	bu = b;	
 	for(i in 1:4)
 		{
-		if(anyTRUE(idxs[[i]]))
+		if(.anyTRUE(idxs[[i]]))
 			{
 			b[ idxs[[i]] ] = str.pad( b[ idxs[[i]] ], 
 								to.length = pads[i], side="LEFT");

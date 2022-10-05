@@ -869,11 +869,11 @@ if(test.mode)
 		{
 		# allows for NUMBERS PI to be CHARS with FLAG
 		nnum = check.number(nval_);
-		if(allTRUE(nnum)) { nval = as.numeric(nval_); }
+		if(.allTRUE(nnum)) { nval = as.numeric(nval_); }
 		}
 	
 	nbool = check.boolean(nval_);
-	if(allTRUE(nbool)) { nval = as.logical(nval_); }
+	if(.allTRUE(nbool)) { nval = as.logical(nval_); }
 	
 	# is this multivariate ... on NULL, not possible ...
 	# if they wanted the string "NULL", they lost it ... 

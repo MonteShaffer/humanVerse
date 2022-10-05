@@ -8,7 +8,7 @@ smart.sep = function(x, search.order=c("'", "-", ":", ",", "^", ".", "ft", "f"))
 	for(i in 1:n)
 		{
 		sep = search.order[i];
-		if(allTRUE(str.contains( sep , x )))	{ return ( sep ); }		
+		if(.allTRUE(str.contains( sep , x )))	{ return ( sep ); }		
 		}
 	o;
 	}
@@ -166,11 +166,16 @@ access = function(str)
 	}
 	 
 
-	
-
-
-allNA = function(x)
+## extending base PRIMITIVE
+.anyNA = function(..., recursive=FALSE)
 	{
+	x = prep.dots(...);
+	base::anyNA(x, recursive=recursive);	
+	}
+
+.allNA = function(...)
+	{
+	x = prep.dots(...);
 	idx = v.which(x, NA);
 	if(is.null(idx)) { return(FALSE); }
 	return( length(idx) == length(x) );
@@ -179,29 +184,33 @@ allNA = function(x)
 
 	
 	
-anyTRUE = function(x)
+.anyTRUE = function(...)
 	{
+	x = prep.dots(...);
 	idx = v.which(x, TRUE);
 	if(is.null(idx)) { return(FALSE); }
 	return(TRUE);
 	}
 	
-allTRUE = function(x)
+.allTRUE = function(...)
 	{
+	x = prep.dots(...);
 	idx = v.which(x, TRUE);
 	if(is.null(idx)) { return(FALSE); }
 	return( length(idx) == length(x) );
 	}
 
-anyFALSE = function(x)
+.anyFALSE = function(...)
 	{
+	x = prep.dots(...);
 	idx = v.which(x, FALSE);
 	if(is.null(idx)) { return(FALSE); }
 	return(TRUE);
 	}
 	
-allFALSE = function(x)
+.allFALSE = function(...)
 	{
+	x = prep.dots(...);
 	idx = v.which(x, FALSE);
 	if(is.null(idx)) { return(FALSE); }
 	return( length(idx) == length(x) );

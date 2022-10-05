@@ -586,7 +586,7 @@ str.trimFromAny = function(str, search="#me", side="both")
 		# maybe set.intersect? ... gives vals not idx 
 		IDX = sort(unique(set.match(search,char)));
 		# nothing to do 
-		if(allNA(IDX) || length(IDX) == 0) { res[j] = str.implode("", char); next; }
+		if(.allNA(IDX) || length(IDX) == 0) { res[j] = str.implode("", char); next; }
 		# will be at least length of search ...		
 		IDX = IDX[ !is.na(IDX) ];  
 		ilen = length(IDX);  
@@ -1476,7 +1476,7 @@ strsplit_ = function(str, sep, fixed=TRUE, ...)
 	if(!hasResult)
 		{
 		end = str.ends_(sep, str);
-		if(allFALSE(end)) 
+		if(.allFALSE(end)) 
 			{ 
 			hasResult = TRUE;
 			res = strsplit(str, sep, fixed=fixed, ...);
@@ -1515,7 +1515,7 @@ str.ends_ = function(search="</i>", str="<i>hello friend</i>", trim = FALSE )
 	res = (sub == search);
 	
 	if(!trim) { return(res); }	
-	if(allFALSE(res)) { return(str); }
+	if(.allFALSE(res)) { return(str); }
 	
 	rem = substring(str, 1, (start-1));  # TEST  ... str == paste0(rem,sub)
 		

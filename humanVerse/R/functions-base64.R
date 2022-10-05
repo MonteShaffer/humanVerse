@@ -96,6 +96,14 @@ base64.encode = function(str)
 # univariate 
 js.b64 = function(input, method="encode") 
 	{
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.METHOD = check.type(method);
+	if(!ct.METHOD || !is.character(method))	
+		{ method = deparse(substitute(method)); } 
+##########################################################
+	
 	output = "";
 	chr1 = chr2 = chr3 = "";
 	enc1 = enc2 = enc3 = enc4 = "";
@@ -151,9 +159,6 @@ js.b64 = function(input, method="encode")
 		
 		iv		= str.explode("", input);
 		
-		  # zero - indexed ...
-		# keyed index ... DUH!
-		
 		while (i < n)
 			{
 			## four bstrings at a time
@@ -162,6 +167,22 @@ js.b64 = function(input, method="encode")
 			enc2 = B64LIST[[ iv[ i %++%. ] ]];
 			enc3 = B64LIST[[ iv[ i %++%. ] ]];
 			enc4 = B64LIST[[ iv[ i %++%. ] ]];
+			
+## only necessary on BAD inputs?  js.b64("monte", "decode");
+				NULL2 = is.null(enc2);
+			# if(NULL2) { enc2 = 0; }
+				NULL3 = is.null(enc3);
+			# if(NULL3) { enc3 = 0; }
+				NULL4 = is.null(enc4);
+			# if(NULL4) { enc4 = 0; }
+				
+			if(.anyTRUE(NULL2,NULL3,NULL4))
+				{
+				# basically same as javascript error ...
+				# cpp_base64_dec just returns GARBAGE ... 
+				# no error checks ... 
+				stop("The string to be decoded is not correctly encoded.");
+				}
 			
 			chr1 = (enc1 %<<% 2) %|% (enc2 %>>% 4);	
 			chr2 = ((enc2 %&% 15) %<<% 4) %|% (enc3 %>>% 2);
