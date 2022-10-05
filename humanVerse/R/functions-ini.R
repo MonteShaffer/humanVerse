@@ -285,7 +285,12 @@ ini.parse = function(inistr, fname="-file unknown-",
 		
 	COMMENT			= "#";
 	COMMENT_INI		= ";";
+	COMMENT_CPP		= "//";
+	COMMENT_MULTI	= c("/*", "*/");
 	COMMENTS		= c(COMMENT,COMMENT_INI,COMMA);
+	
+	COMMENT_KEY		= "";  # for multiline ... 
+	
 	
 	MEMORY_STORE 	= "^=";
 	EVAL_RCODE 		= "=R";
@@ -297,6 +302,7 @@ ini.parse = function(inistr, fname="-file unknown-",
 	#MEMORY 			= list();
 	#RES 			= list();
 	fin 			= NULL;
+	cmin			= NULL;  # this is multiline comments 
 	line.no 		= 0;
 	CURRENT_KEY	= ""; # if NOT empty, we are continuing on multiline 
 	pkey 			= "";		
@@ -323,6 +329,8 @@ if(test.mode)
 		
 		line_ = str.trim(line);
 		first = charAt(line_,1);
+		
+		two = substring(line_, 1, 2);
 
 		
 if(test.mode)
@@ -387,7 +395,7 @@ gggassign("RES", RES);
 			rval = line;  # grab everything (whitespace);
 			
 			# more = "pval";  # pval that grows ... 
-			val = ini.walkTheLine(rval, COMMENTS, fin, 
+			val = ini.walkTheLine(rval, continue=fin, 
 									smart.num = smart.num,
 									test.mode = test.mode);
 			
@@ -430,6 +438,8 @@ if(verbose)
 
 		# SKIP LINES ...
 		if(first %in% COMMENTS) { next; }
+		if(two == COMMENT_CPP) { next; }
+			# we trimmed it ... and first is empty ... 
 		if((CURRENT_KEY == EMPTY) && (first == EMPTY)) { next; }
 
 
@@ -460,9 +470,31 @@ if(verbose)
 
 		if(CURRENT_KEY == "")	
 			{ 
+.__multiline.COMMENT = function() {} 
+			# line.no %++%.;   line = lines[ line.no ];
+		
+		
+			tmp = ini.walkTheLine(line, continue=cmin,
+									smart.num = smart.num,
+									test.mode=test.mode);		
+			
+			cmin = property.get("more", tmp);
+			# if we have data in cmin ... ccount 
+			# go to next, and we should keep looping right here 
+			if(!is.null(cmin)) { next; }
+			
+			# we have an empty line ... 
+			# a comment that walkTheLine caught, but this
+			# parser did not ...
+			if(tmp == EMPTY) { next; }
+			
+			
+			
 			# "%~=%" = is.equal;  ;; this "=" is a problem 
 			ne = str.count("=", line);
 			# in this logic space, we should not have ne == 0 ... 
+			# with multiline, maybe ... 
+			if(ne == 0) { next; }
 			if(ne > 1)
 				{
 		# # line = '"%~=%" = is.equal;  ;; this "=" is a problem ';	
@@ -470,11 +502,28 @@ if(verbose)
 		# # line = 'PRIME_CHOICE\t\t\t= "The greatest power members of the {humanVerse} possess is the ability to act as a ==free== agent.",';
 				
 				# line = '"%=%" = 5,'
-				# generally, we don't allow = unless special functions 
+				# line = '"%=%" = 5,'
+				# generally, we don't allow = unless special 
+				functions 
+				
+				# could have a str.trim issue 
+				x = str.between('"%', line, '%"');
+				if(!is.na(x))
+					{
+					rkey = paste0('"%', x, '%"');				
+					} else {
+							pos = str.pos("=", line);
+							idx = pos[1];
+							rkey = str.before("=", line, idx); 
+							}
+				
 				
 				pos = str.pos("=", line);
-				# first position GREATER THAN 5 ... 
-				idx = v.which( pos > 5 , TRUE)[1];
+				if(str.starts('"%', line))
+					{					
+					# first position GREATER THAN 5 ... 
+					idx = v.which( pos > 5 , TRUE)[1];
+					} else { idx = pos[1]; }
 				
 				rkey = str.before("=", line, idx);  
 				#rkey = str.before("=", line, 1);  # 99% of the time ...
@@ -496,6 +545,8 @@ if(verbose)
 						rkey = str.trim(info[1]);
 						rval = str.trim(info[2]);
 						}
+						
+						
 			
 			hasMemory = hasRcode = FALSE;
 
@@ -518,7 +569,7 @@ if(verbose)
 		 
 			# GO FIRST 
 			# in case we want to use in key?
-			val = ini.walkTheLine(rval, COMMENTS, 
+			val = ini.walkTheLine(rval, continue=fin,
 									smart.num = smart.num,
 									test.mode=test.mode);  
 			
@@ -761,8 +812,19 @@ dput(key);
 	
 
 ini.walkTheLine = function(){}
-ini.walkTheLine = function(str, COMMENTS=c("#"), continue=NULL, smart.num = TRUE, test.mode=test.mode)
+ini.walkTheLine = function(str, continue=NULL, 
+					smart.num = TRUE, test.mode=TRUE)
 	{
+.__declare.COMMENTS = function() {}
+	EMPTY			= "";
+	COMMA 			= ","; 
+		
+	COMMENT			= "#";
+	COMMENT_INI		= ";";
+	COMMENT_CPP		= "//";
+	COMMENT_MULTI	= c("/*", "*/");
+	COMMENTS		= c(COMMENT,COMMENT_INI,COMMA);
+	
 if(test.mode)
 	{
 dput(smart.num);
@@ -774,6 +836,9 @@ dput(smart.num);
 	
 	# I am not dealing with = signs ... just simple parser 
 	# NO GLOBALS HERE, used for .... ini.parse(inistr)
+
+
+.__declare.OTHER = function() {}
 	SINGLE_QUOTE 	= "'";  # make these constants?
 	DOUBLE_QUOTE 	= '"';
 	
@@ -784,15 +849,39 @@ dput(smart.num);
 	 
 	IN_STRING 		= FALSE;
 	STRING_TYPE 	= NULL;
+	
+	
 
+.__continue = function() {}
 	nval			= "";
 	#oval 			= "";   # this is carryover part ...
+	
+	ccount = 0;  # how many /* are there ... when we get back to zero we STOP ...
+	cval = "";  # GTG copy of something before a multiline comment ... 
+	COMMENT_TYPE	= ""; # for now, only /* */ but maybe <!--
+	
+
 	if(!is.null(continue)) 
 		{
-		IN_STRING 	= continue[["IN_STRING"]];
-		STRING_TYPE = continue[["STRING_TYPE"]];
-		nval 		= paste0(continue[["nval"]], "\n");
-		#oval 		= nval;
+# dput(continue); stop("monte");
+		if(!is.null(continue[["IN_STRING"]]))
+			{
+			IN_STRING 	= continue[["IN_STRING"]];
+			STRING_TYPE = continue[["STRING_TYPE"]];
+			nval 		= paste0(continue[["nval"]], "\n");
+			#oval 		= nval;
+			}
+		if(!is.null(continue[["ccount"]]))
+			{
+			COMMENT_TYPE	= continue[["COMMENT_TYPE"]];
+	
+			ccount 		= continue[["ccount"]];
+			nval 		= continue[["nval"]];
+			cval 		= continue[["cval"]]
+			}
+			
+			
+		# how did you get here?
 		}
 
 if(test.mode)
@@ -808,10 +897,52 @@ if(test.mode)
 	cchar = "";
 	pchar = "";
 	i = 1;
+	
+	
+.__while = function() {}
 	while(i <= ns)
 		{
+############################### one WHILE ##################
 		pchar = cchar;
 		cchar = strV[i];
+		two = paste0(pchar, cchar);
+		
+		
+.__multiline.FRONT = function() {}
+		# jump to front of the line 
+		if(COMMENT_TYPE != "" && (two == COMMENT_MULTI[1]) )
+			{
+			# allow nested 
+			ccount %++%. ;
+			i %++%. ;
+			next;
+			}			
+		
+		if(COMMENT_TYPE != "" && (two != COMMENT_MULTI[2]) )
+			{
+			# we don't need to update the "nval"
+			i %++%. ;
+			next;
+			}
+		
+
+
+		
+		if(COMMENT_TYPE != "" && (two == COMMENT_MULTI[2]))
+			{
+			ccount %--%. ;
+			if(ccount == 0)
+				{
+				COMMENT_TYPE = "";	
+				nval = cval; # could continue inline
+				cval = "";	
+				} 
+			i %++%. ;
+			next;
+			}
+			
+		
+.__STRING = function() {}		
 		if(cchar %in% STRINGS)
 			{
 			if(IN_STRING)
@@ -842,25 +973,56 @@ if(test.mode)
 			
 			## just starting the STRING 
 			IN_STRING 	= TRUE;
-			# any previous elements before string start are discarded 
+			# any previous elements before string start are discarded			
 			nval = "";
 			STRING_TYPE = DOUBLE_QUOTE;
-			if(cchar == SINGLE_QUOTE) 	{ STRING_TYPE = SINGLE_QUOTE; }
-			if(cchar == BACKTICK) 		{ STRING_TYPE = BACKTICK; }
+			if(cchar == SINGLE_QUOTE) 	
+				{ STRING_TYPE = SINGLE_QUOTE; }
+			if(cchar == BACKTICK) 		
+				{ STRING_TYPE = BACKTICK; }
 			i %++%. ;
 			next;
 			}
-		
+
+.__COMMENTS = function() {}
+				
 		if((cchar %in% COMMENTS) && !IN_STRING)
 			{
 			break;
 			}
+			
+.__COMMENT_CPP = function() {}
+		if((two == COMMENT_CPP) && !IN_STRING)
+			{
+			break;
+			}
+			
+.__multiline.START = function() {}
+		if( (two == COMMENT_MULTI[1]) && !IN_STRING )
+			{
+			# we are starting to read a MULTILINE comment 
+			# any previous elements before  maybe be GTG 
+			# don't discard ... copy 
+			nval = paste0(nval, cchar);			
+			nval = nval %-.% two;
+			
+			cval = nval;  
+			# we may have more code to follow ... 
+			if(cval != EMPTY) { cval = paste0(cval,";"); }
+			nval = "";
+			COMMENT_TYPE = "/**/";
+			ccount = 1;
+			i %++%. ;
+			next;
+			}
+		
 		# ... my parser won't care ...
 		# possible to have a missing CLOSING_QUOTE 
 		
 		nval = paste0(nval, cchar);
 		i %++%. ;
 		next;		
+############################### one WHILE ##################
 		}
 
 	# nval = str.trim(nval);
@@ -890,9 +1052,18 @@ if(test.mode)
 					"STRING_TYPE" = STRING_TYPE);
 		nval = property.set("more", nval, more);
 		}
+		
+	if(ccount > 0)
+		{
+		more = list("nval" = nval, COMMENT_TYPE = COMMENT_TYPE,
+					"cval" = cval, "ccount" = ccount);
+		nval = property.set("more", nval, more);
+		}
+		
+		
 if(test.mode)
 	{
-#.cat("FOOT nval: ", nval);
+.cat("FOOT nval: ", nval);
 	}
 	
 	nval;
