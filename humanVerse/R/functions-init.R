@@ -446,6 +446,9 @@ return(NULL);
 	############# BASE_64 #############
 	B64			= "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 	B64v		= str.explode("", B64); 
+	
+	B64LIST 	= list.create(B64v, 0:64);
+	
 	############# BASE_XX (0:32) #############
 	BXX			= "0123456789ABCDEFGHIJKLMNOPQRSTUV";
 	BXXv		= str.explode("", BXX);

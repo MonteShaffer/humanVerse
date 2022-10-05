@@ -116,9 +116,9 @@ js.b64 = function(input, method="encode")
 			### javascript works with NaN
 			### R throws errors with NA ...
 				NA2 = is.na(chr2);
-			chr2 = v.TO(chr2, NA, 0);
+			if(NA2) { chr2 = 0; }
 				NA3 = is.na(chr3);
-			chr3 = v.TO(chr3, NA, 0);
+			if(NA2) { chr3 = 0; }
 					
 			enc1 = chr1 %>>% 2;
 			enc2 = ((chr1 %&% 3) %<<% 4) %|% (chr2 %>>% 4);
@@ -151,24 +151,18 @@ js.b64 = function(input, method="encode")
 		
 		iv		= str.explode("", input);
 		
+		  # zero - indexed ...
+		# keyed index ... DUH!
+		
 		while (i < n)
 			{
 			## four bstrings at a time
-			enc1 = v.return(v.which(B64v, iv[ i %++%. ])-1); # zero-indexed
-			enc2 = v.return(v.which(B64v, iv[ i %++%. ])-1);
-			enc3 = v.return(v.which(B64v, iv[ i %++%. ])-1);
-			enc4 = v.return(v.which(B64v, iv[ i %++%. ])-1);
 			
-			# why not NULL? 
+			enc1 = B64LIST[[ iv[ i %++%. ] ]];
+			enc2 = B64LIST[[ iv[ i %++%. ] ]];
+			enc3 = B64LIST[[ iv[ i %++%. ] ]];
+			enc4 = B64LIST[[ iv[ i %++%. ] ]];
 			
-				NULL_2 = is.null(enc2);
-			enc2 = v.TO(enc2, NULL, 0);
-				NULL_3 = is.null(enc3);
-			enc3 = v.TO(enc3, NULL, 0);
-				NULL_4 = is.null(enc4);
-			enc4 = v.TO(enc4, NULL, 0);
- 
-
 			chr1 = (enc1 %<<% 2) %|% (enc2 %>>% 4);	
 			chr2 = ((enc2 %&% 15) %<<% 4) %|% (enc3 %>>% 2);
 			chr3 = ((enc3 %&% 3) %<<% 6) %|% enc4;
