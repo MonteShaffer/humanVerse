@@ -112,11 +112,11 @@ ini.parseFiles = function(inifilesORDERmatters,
 	cat.dput( ofiles, log);
 
 	# insources = paste0(spd, ofiles);
-	insources = ofiles;
+	insources = ofiles; 
 	
 	oexts 	= check.ext(ofiles, dotless=FALSE);
 	#ostem = (outs %.-% d) %-.% exts;
-#.cat( "MONTE ... ",  opaths ,"\n\n", oexts );
+.cat( "MONTE ... ",  ofiles ,"\n\n", oexts );
 	opaths = ofiles %-.% oexts; 
 	
 	opos = check.list(str.pos("/", opaths));
@@ -387,7 +387,9 @@ gggassign("RES", RES);
 			rval = line;  # grab everything (whitespace);
 			
 			# more = "pval";  # pval that grows ... 
-			val = ini.walkTheLine(rval, COMMENTS, fin, smart.num = smart.num);			
+			val = ini.walkTheLine(rval, COMMENTS, fin, 
+									smart.num = smart.num,
+									test.mode = test.mode);
 			
 			
 			fin = property.get("more", val); # are we finished?
@@ -444,7 +446,8 @@ if(verbose)
 		if(first == "[")  # not equal to anything ...  
 			{
 			info 			= ini.cleanKey(line, "", kidx,
-										KEY_ARRAY, envir, MEMORY);
+										KEY_ARRAY, envir, MEMORY,
+										test.mode=test.mode);
 			cparent 		= info;
 			pkey 			= "";  # these are not parents ... 
 			pval 			= "";
@@ -513,11 +516,15 @@ if(verbose)
 				rval = str.trim(str.starts("R", rval, trim=TRUE));
 				}
 		 
-	
-			val = ini.walkTheLine(rval, COMMENTS, smart.num = smart.num);  # in case we want to use in key?
+			# GO FIRST 
+			# in case we want to use in key?
+			val = ini.walkTheLine(rval, COMMENTS, 
+									smart.num = smart.num,
+									test.mode=test.mode);  
 			
 			key = ini.cleanKey(rkey, val, kidx,
-								KEY_ARRAY, envir, MEMORY);
+								KEY_ARRAY, envir, MEMORY,
+								test.mode=test.mode);
 								
 			
 .__normal.GTG = function() {} 				
@@ -648,6 +655,10 @@ tkey = paste0(cparent, " ::: ", key, " .........       \t ", val);
  
 ini.unwrapSpecial = function(str)
 	{
+	# might be a non-string ... 
+	# or a string of length > 1
+	# SKIP checks for being WRAPPED .... 
+	if(!is.character(str) || length(str) > 1) { return (str); }
 	if(str.isWrapped("%", str))
 		{ 
 		# SPECIAL ... for transport "|" PIPE breaks ...		
@@ -661,10 +672,10 @@ ini.unwrapSpecial = function(str)
 ini.wrapSpecial = function(str)
 	{
 # dput(str); 	
-	
+	 
 	# if(str.isWrapped("%", str)) 
 	# ^ is my memory device .... 
-	if(str.contains("%", str) || str.contains("`", str) || str.contains("\\", str) || str.contains("+", str) || str.contains("|", str) ) 
+	if(str.contains("%", str) || str.contains("`", str) || str.contains("\\", str) || str.contains("|", str) ) 
 		{ 
 		# SPECIAL ... for transport "|" PIPE breaks ...		
 		# ke = str.unwrap("%", str);
@@ -674,7 +685,7 @@ ini.wrapSpecial = function(str)
 	str;  
 	}
   
-ini.cleanKey = function(key, val="", kidx=1, KEY_ARRAY = "", envir=envir, MEMORY)
+ini.cleanKey = function(key, val="", kidx=1, KEY_ARRAY = "", envir=envir, MEMORY, test.mode=FALSE)
 	{
 	# in case they put doubles (R vs php)
 	key = str.replace("[[","[", key);  
@@ -693,8 +704,11 @@ ini.cleanKey = function(key, val="", kidx=1, KEY_ARRAY = "", envir=envir, MEMORY
 		# multiple?
 		tmp = str.between("[^", key, "]"); 
 		rtmp = paste0("[^", tmp, "]"); 
-		
+	
+if(test.mode)
+	{	
 dput(MEMORY);
+	}
 		if(!is.null(MEMORY[[tmp]]))
 			{
 			nkva = paste0("[", MEMORY[[tmp]], "]"); 
@@ -734,9 +748,10 @@ dput(MEMORY);
 		return( paste0(res, collapse="|") );
 		}
 	
-
+if(test.mode)
+	{
 dput(key);
-	
+	}
 	
 	# normal key 
 	key;
@@ -746,10 +761,13 @@ dput(key);
 	
 
 ini.walkTheLine = function(){}
-ini.walkTheLine = function(str, COMMENTS=c("#"), continue=NULL, smart.num = TRUE)
+ini.walkTheLine = function(str, COMMENTS=c("#"), continue=NULL, smart.num = TRUE, test.mode=test.mode)
+	{
+if(test.mode)
 	{
 dput(smart.num);
-
+	}
+	
 	# MULTILINE comments ... pass flag, just looking for END 
 	# allow for two-character comment "//" DOUBLE_SLASH 
 	# IN_MULTILINE_COMMENT ... TYPE = "/*"  "*/"
@@ -776,10 +794,13 @@ dput(smart.num);
 		nval 		= paste0(continue[["nval"]], "\n");
 		#oval 		= nval;
 		}
-	
+
+if(test.mode)
+	{	
 .cat("HEAD nval: ", nval);
 .cat("\t\t str: ", str);
- 
+	}
+	
 	str = str.trim(str);
 	strV = str.explode("", str);
 	ns = length(strV);
@@ -854,6 +875,13 @@ dput(smart.num);
 	nbool = check.boolean(nval_);
 	if(allTRUE(nbool)) { nval = as.logical(nval_); }
 	
+	# is this multivariate ... on NULL, not possible ...
+	# if they wanted the string "NULL", they lost it ... 
+	# just a single KEY=>VAL pair, not inside a LIST ...
+	## creates HAVOC downstrem in the parser ... 
+	######### if( v.test(nval_, "NULL") ) { nval = NULL; }
+	
+	
 	# if we have a multiline, and didn't close the STRING ... 
 	if(IN_STRING)
 		{
@@ -862,7 +890,11 @@ dput(smart.num);
 					"STRING_TYPE" = STRING_TYPE);
 		nval = property.set("more", nval, more);
 		}
-.cat("FOOT nval: ", nval);
+if(test.mode)
+	{
+#.cat("FOOT nval: ", nval);
+	}
+	
 	nval;
 	}
 

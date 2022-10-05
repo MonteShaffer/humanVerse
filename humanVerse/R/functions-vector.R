@@ -733,8 +733,8 @@ cat("\n b: ", b, " \t r: ", r,
 # res as idx mostly
 v.return = function(res)
 	{
-	if(is.null(res)) { return(NULL); }
-	if(length(res) == 0) { return(NULL); }
+	if(is.null(res)) 		{ return(NULL); }
+	if(length(res) == 0) 	{ return(NULL); }
 	res;	
 	}
 

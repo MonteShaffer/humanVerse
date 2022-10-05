@@ -597,7 +597,13 @@ str.translate = function(str, to="latin-ascii")
 
 str.subtract = function(a, b, from="left")
 	{	
-	if(b == EMPTY) { return (a); }
+	n = length(a);
+	if(length(b) != n) { b = rep(b, out.length = n); }
+	res = character(n);
+	a_ = a; b_ = b;
+	
+# dput.one(a);
+# dput.one(b);
 # .cat( "a = ", a, "\n", "b = ", b, "\n\t", from );
 ##########################################################
 ##### I can't wrap this into a function check.string #####
@@ -612,41 +618,53 @@ str.subtract = function(a, b, from="left")
 						"left"
 						);
 	
-	
 	if(FROM == "left")
 		{
-		# a = "monte says hello my friend"; b = "monte eats apples with his friend";
-		# contiguous elements that are the same from the left ...
-		avec = str.explode("", a);
-			alen = length(avec);
-		bvec = str.explode("", b);
-		
-		# idx = set.match(avec, bvec);
-		# left = left.contiguous(idx, alen);
-		
-		logic = suppressWarnings((avec) == (bvec));
-		idx   = v.which(logic, TRUE);
-		left  = left.contiguous(idx, alen);
-				
-				
-		mtrim = 0; 
-		if(!is.null(left)) { mtrim = v.last(left); }
-		return( substring(a, 1+mtrim, alen) );
-		} else { 
-				avec = str.explode("", a);
-					alen = length(avec);
-				bvec = str.explode("", b);
-				# reverse the array
-				# idx = set.match(rev(avec), rev(bvec));
-				# left = left.contiguous(idx, alen);
-				
-				logic = suppressWarnings(rev(avec) == rev(bvec));
-				idx   = v.which(logic, TRUE);
-				left = left.contiguous(idx, alen);
-				
-				mtrim = 0; 
-				if(!is.null(left)) { mtrim = v.last(left); }
-				return( substring(a, 1, alen-mtrim) );
+		for(i in 1:n)
+			{
+			a = a_[i];
+			b = b_[i];
+			if(b == "") { res[i] = a; next; }
+			# contiguous elements that are the same from the left ...
+			avec = str.explode("", a);
+				alen = length(avec);
+			bvec = str.explode("", b);
+			
+			# idx = set.match(avec, bvec);
+			# left = left.contiguous(idx, alen);
+			
+			logic = suppressWarnings((avec) == (bvec));
+			idx   = v.which(logic, TRUE);
+			left  = left.contiguous(idx, alen);
+					
+					
+			mtrim = 0; 
+			if(!is.null(left)) { mtrim = v.last(left); }
+			res[i] = substring(a, 1+mtrim, alen) ;
+			}
+		return(res);
+		} else {  
+				for(i in 1:n)
+					{
+					a = a_[i];
+					b = b_[i];
+					if(b == "") { res[i] = a; next; }
+					avec = str.explode("", a);
+						alen = length(avec);
+					bvec = str.explode("", b);
+					# reverse the array
+					# idx = set.match(rev(avec), rev(bvec));
+					# left = left.contiguous(idx, alen);
+					
+					logic = suppressWarnings(rev(avec) == rev(bvec));
+					idx   = v.which(logic, TRUE);
+					left = left.contiguous(idx, alen);
+					
+					mtrim = 0; 
+					if(!is.null(left)) { mtrim = v.last(left); }
+					res[i] = substring(a, 1, alen-mtrim) ;
+					}
+				return(res);
 				}
 	}
 	

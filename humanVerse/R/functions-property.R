@@ -241,6 +241,13 @@ property.getALL = function(obj=NULL)
 	res = attributes(obj);
 	return (res);
 	}
+	
+	
+property.clearALL = function(obj=NULL)
+	{
+	attributes(obj) = NULL; 
+	return (obj);
+	}
 
 
 #' @rdname property.getAll

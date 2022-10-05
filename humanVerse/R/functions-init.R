@@ -204,8 +204,10 @@ number.process = function(NUMBER=list())
 		fnn = length(fnu);
 		for(j in 1:fnn)
 			{
-			fkey = fnu[j];
+			fkey = ini.unwrapSpecial(fnu[j]);
 			fval = as.character(nnu[[j]]); # strip attribute ...
+			fval = ini.unwrapSpecial(fval);
+			
 			nval = as.numeric(fval);
 			ckey = paste0(fkey, "c");
 			# store the original (as.numeric) ... 
@@ -220,63 +222,61 @@ number.process = function(NUMBER=list())
 
 
 
-number.init = function(use.cache=TRUE, recursive=FALSE)
+system.init = function(use.cache=TRUE, recursive=FALSE)
 	{
-	n.folder = "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/number/";
-	n.rds = paste0(n.folder, "number.rds");
-	n.files = list.files(n.folder, full.names = TRUE, pattern = "\\.ini$");
+	s.folder = "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/";
+	s.rds = paste0(s.folder, "system.rds");
+	s.files = list.files(s.folder, full.names = TRUE, pattern = "\\.ini$");
 	
 	
 	use.cache = FALSE;
 #############
 # PARENT   
 #############
-	if(!file.exists_(n.rds) || !use.cache)
+	if(!file.exists_(s.rds) || !use.cache) 
 		{ 
-		NUMBER = ini.parseFiles(n.files, master = n.rds, use.cache = use.cache, smart.num  = FALSE);
+		SYSTEM = ini.parseFiles(s.files, master = s.rds, use.cache = use.cache);
 		} else {
-				NUMBER = readRDS(n.rds);
+				SYSTEM = readRDS(s.rds);
 				} 
 
 	## for now ... 
-	number.process(NUMBER);
-	invisible(NUMBER);
+	system.process(SYSTEM);
+	invisible(SYSTEM);
 	}
 
 
-number.process = function() {} 
-number.process = function(NUMBER=list())
+system.process = function() {} 
+system.process = function(SYSTEM=list())
 	{
-	nu = NUMBER;
-	na = names(nu); nn = length(na);
+	# list-marge ... I think I just want to load all of the INI
+	# in a cascade ... how to know "user-name" => mshaffer ?
+	
+	init.assign("SYSTEM__", SYSTEM);  # as-is 
+	
+	su = SYSTEM;
+	na = names(su); nn = length(na);
 	for(i in 1:nn)
 		{
-		nna = na[i];
-		nnu = nu[[i]];
+		sna = na[i];
+		snu = su[[i]];	
 		
-		# make it available to them as a list ... 
-		nnag =  paste0("NUMBER__", nna);  #
-				init.assign(nnag, nnu);
+		fsu = names(snu);
+		fsn = length(fsu);
+		# error on i=6; j=23;
+		for(j in 1:fsn)
+			{	
+			fkey = ini.unwrapSpecial(fsu[j]);
+			fval = property.clearALL(ini.unwrapSpecial(snu[[j]])); 
 			
-		if(!str.starts("*", nna))
-			{
-			next;
-			}
+			if(str.begins("B64D__", fkey))
+				{
+				fkey = str.begins("B64D__", fkey, trim=TRUE);
+				fval = base64.decode(str.trim(fval));
+				}
 			
-		
-		fnu = names(nnu);
-		fnn = length(fnu);
-		for(j in 1:fnn)
-			{
-			fkey = fnu[j];
-			fval = as.character(nnu[[j]]); # strip attribute ...
-			nval = as.numeric(fval);
-			ckey = paste0(fkey, "c");
-			# store the original (as.numeric) ... 
-			# make a copy (as.character) 
-			# PI and PIc 
-			init.assign(ckey, fval);
-			init.assign(fkey, nval);
+			
+			init.assign(fkey, fval);
 			}
 		}
 	}
@@ -442,7 +442,26 @@ return(NULL);
 	{
 	# basic constants that can't pass through well into R from a 'parsed' INI file ... the  'Я' BACKSLASH issue 
 	
+	## ... PLUS ... STRINGS used for PARSER manipulation ...
+	############# BASE_64 #############
+	B64			= "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+	B64v		= str.explode("", B64); 
+	############# BASE_XX (0:32) #############
+	BXX			= "0123456789ABCDEFGHIJKLMNOPQRSTUV";
+	BXXv		= str.explode("", BXX);
+	
+	Bits64		= int2base(0:63, base=2);
+	SI_PREFIX 	= num.SIunits("regular");
+	
 	BASIC = list(
+				B64 		= B64,
+				B64v 		= B64v,
+				BXX 		= BXX,
+				BXXv 		= BXXv,
+				Bits64 		= Bits64,
+				SI_PREFIX 	= SI_PREFIX,
+	
+	
 				BACKSLASH 			= "\\",
 				DOUBLE_BACKSLASH 	= "\\\\",
 				SINGLE_QUOTE 		= "'",
@@ -464,7 +483,7 @@ return(NULL);
 		{
 		bkey = bnames[i];
 		bval = BASIC[[bkey]];
-		
+		 
 		## namespace assign ...
 		
 		gggassign(bkey,bval);		

@@ -42,6 +42,9 @@
 
 base64.decode = function(b64str)
 	{
+	if(exists("cpp_base64_dec")) 
+		{ return( cpp_base64_dec(b64str) ); }
+		
 	n = length(b64str);
 	res = character(n);
 	for(i in 1:n)
@@ -51,8 +54,13 @@ base64.decode = function(b64str)
 	res;
 	}
 	
+	 
+# doesn't like the BACKTICK ` ... 
 base64.encode = function(str)
 	{   
+	if(exists("cpp_base64_enc")) 
+		{ return( cpp_base64_enc(str) ); }
+		
 	n = length(str);
 	res = character(n);
 	for(i in 1:n) 
@@ -145,10 +153,20 @@ js.b64 = function(input, method="encode")
 		
 		while (i < n)
 			{
-			enc1 = v.which(B64v, iv[ i %++%. ])-1; # zero-indexed
-			enc2 = v.which(B64v, iv[ i %++%. ])-1;
-			enc3 = v.which(B64v, iv[ i %++%. ])-1;
-			enc4 = v.which(B64v, iv[ i %++%. ])-1;
+			## four bstrings at a time
+			enc1 = v.return(v.which(B64v, iv[ i %++%. ])-1); # zero-indexed
+			enc2 = v.return(v.which(B64v, iv[ i %++%. ])-1);
+			enc3 = v.return(v.which(B64v, iv[ i %++%. ])-1);
+			enc4 = v.return(v.which(B64v, iv[ i %++%. ])-1);
+			
+			# why not NULL? 
+			
+				NULL_2 = is.null(enc2);
+			enc2 = v.TO(enc2, NULL, 0);
+				NULL_3 = is.null(enc3);
+			enc3 = v.TO(enc3, NULL, 0);
+				NULL_4 = is.null(enc4);
+			enc4 = v.TO(enc4, NULL, 0);
  
 
 			chr1 = (enc1 %<<% 2) %|% (enc2 %>>% 4);	
@@ -166,7 +184,7 @@ js.b64 = function(input, method="encode")
 				output = paste0(output, String.fromCharCode(chr3));
 				}
 			}
-		return(output);
+		return(output); 
 		}
 
 	### main 

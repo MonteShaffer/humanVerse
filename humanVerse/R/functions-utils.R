@@ -1080,7 +1080,7 @@ dput.one = function(x, ...)
 	{
 	str = capture.output(dput(x, ...));
 	cat("\n\n", str, "\n\n", sep = "");	
-	minvisible(str, print=FALSE);
+	# minvisible(str, print=FALSE);
 	}
 	 
 

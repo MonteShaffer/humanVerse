@@ -88,10 +88,26 @@ cat.dput = function(obj, file, one.line=FALSE, sep="\n", append=TRUE)
   # unused argument (append = TRUE)
 
 
-.cat = function(..., sep="\n\n")
+.cat = function(..., sep="\n\n", indent=0)
 	{
-	cat(sep);	cat(...);	cat(sep);	
+	strs = prep.dots(...);		
+	if(indent > 0)
+		{
+		pads = str.rep(" ", indent);
+		n = length(strs);
+		res = character(n);
+		for(i in 1:n)
+			{
+			lines = str.explode("\n", strs[i]);
+			lines = paste0(pads, lines);
+			res[i] = str.implode("\n", lines);
+			}
+		strs = res;
+		}
+	cat(sep);	cat(strs);	cat(sep);	
 	}
+
+
 
 cat.color = function(str, use.color.if.available=TRUE)
 	{
