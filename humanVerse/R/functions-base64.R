@@ -42,6 +42,8 @@
 
 base64.decode = function(b64str)
 	{
+	b64str 	= gsub("[^a-zA-Z0-9/+=]", "", b64str);	
+		
 	if(exists("cpp_base64_dec")) 
 		{ return( cpp_base64_dec(b64str) ); }
 		
