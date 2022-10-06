@@ -1207,3 +1207,339 @@ C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/system.r
 
 
 
+#............   START -INI- LOG ENTRY   ............###{humanVerse}#####
+2022-10-05\./06:01:38 GMT+0000
+2022-10-05
+1664949697.702729.2f4ef
+--FUNCTION_INFO--
+list(envir = "<environment>", call = "system.init()", fn.info = list(
+    fn = "ini.parseFiles", dot.keys = NULL, dot.vals = NULL, 
+    params = list(inifilesORDERmatters = "s.files", master = "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/system.rds", 
+        use.cache = FALSE, smart.num = NA_character_), map = list(
+        inifilesORDERmatters = "s.files", master = "master", 
+        use.cache = "use.cache"), formals = list(inifilesORDERmatters = "--EMPTY--", 
+        master = "cache/ini/master.rds", use.cache = TRUE, smart.num = TRUE, 
+        ... = "--EMPTY--")))
+--FILES--
+c("C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/10-constants.ini", 
+"C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/20-humanVerse.ini", 
+"C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/30-ascii.ini", 
+"C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/33-ascii.ini"
+)
+LOOP [i] :1
+		now.start : 1664949698.71232
+		stem : 10-constants
+		source : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/10-constants.ini
+		out : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/10-constants.rds
+		out.copy : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/-backups-/2022-10-05/1664949697.702729.2f4ef_10-constants.rds
+		checksum : 7f8f5408b02daf1dd6ab567f68afb04e
+		checksum.file : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/-backups-/10-constants_7f8f5408b02daf1dd6ab567f68afb04e.info
+		checksum.exists : FALSE
+
+
+			now.end : 1664949703.8321
+			parse.time [secs] : 5.11978101730347
+
+LOOP [i] :2
+		now.start : 1664949703.87826
+		stem : 20-humanVerse
+		source : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/20-humanVerse.ini
+		out : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/20-humanVerse.rds
+		out.copy : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/-backups-/2022-10-05/1664949697.702729.2f4ef_20-humanVerse.rds
+		checksum : bc63b05e1532a409e349fc1f71d589a4
+		checksum.file : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/-backups-/20-humanVerse_bc63b05e1532a409e349fc1f71d589a4.info
+		checksum.exists : FALSE
+
+
+			now.end : 1664949724.04929
+			parse.time [secs] : 20.1710269451141
+
+LOOP [i] :3
+		now.start : 1664949724.0807
+		stem : 30-asci
+		source : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/30-ascii.ini
+		out : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/30-asci.rds
+		out.copy : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/-backups-/2022-10-05/1664949697.702729.2f4ef_30-asci.rds
+		checksum : b5fbc1eace30893656315c8a7eae534a
+		checksum.file : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/-backups-/30-asci_b5fbc1eace30893656315c8a7eae534a.info
+		checksum.exists : FALSE
+
+
+			now.end : 1664949726.96333
+			parse.time [secs] : 2.8826310634613
+
+LOOP [i] :4
+		now.start : 1664949727.06298
+		stem : 33-asci
+		source : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/33-ascii.ini
+		out : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/33-asci.rds
+		out.copy : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/-backups-/2022-10-05/1664949697.702729.2f4ef_33-asci.rds
+		checksum : 10c45cd9e506b034174226045a000dc1
+		checksum.file : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/-backups-/33-asci_10c45cd9e506b034174226045a000dc1.info
+		checksum.exists : FALSE
+
+
+			now.end : 1664949809.33069
+			parse.time [secs] : 82.2677140235901
+
+C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/-backups-/2022-10-05/1664949697.702729.2f4ef_system.rds
+C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/system.rds
+
+
+
+####{R}###..................   END -INI- LOG ENTRY   ..................#
+
+
+
+#............   START -INI- LOG ENTRY   ............###{humanVerse}#####
+2022-10-05\./06:07:47 GMT+0000
+2022-10-05
+1664950067.515220.4288c
+--FUNCTION_INFO--
+list(envir = "<environment>", call = "system.init()", fn.info = list(
+    fn = "ini.parseFiles", dot.keys = NULL, dot.vals = NULL, 
+    params = list(inifilesORDERmatters = "s.files", master = "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/system.rds", 
+        use.cache = FALSE, smart.num = NA_character_), map = list(
+        inifilesORDERmatters = "s.files", master = "master", 
+        use.cache = "use.cache"), formals = list(inifilesORDERmatters = "--EMPTY--", 
+        master = "cache/ini/master.rds", use.cache = TRUE, smart.num = TRUE, 
+        ... = "--EMPTY--")))
+--FILES--
+c("C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/10-constants.ini", 
+"C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/20-humanVerse.ini", 
+"C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/30-ascii.ini", 
+"C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/33-ascii.ini"
+)
+LOOP [i] :1
+		now.start : 1664950067.22895
+		stem : 10-constants
+		source : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/10-constants.ini
+		out : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/10-constants.rds
+		out.copy : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/-backups-/2022-10-05/1664950067.515220.4288c_10-constants.rds
+		checksum : 54691215dda2cb74b9659502091ddafe
+		checksum.file : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/-backups-/10-constants_54691215dda2cb74b9659502091ddafe.info
+		checksum.exists : FALSE
+
+
+			now.end : 1664950070.06837
+			parse.time [secs] : 2.83941912651062
+
+LOOP [i] :2
+		now.start : 1664950070.1065
+		stem : 20-humanVerse
+		source : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/20-humanVerse.ini
+		out : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/20-humanVerse.rds
+		out.copy : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/-backups-/2022-10-05/1664950067.515220.4288c_20-humanVerse.rds
+		checksum : d43c65c3bace9bf8ac7ca2d1cbcd1357
+		checksum.file : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/-backups-/20-humanVerse_d43c65c3bace9bf8ac7ca2d1cbcd1357.info
+		checksum.exists : FALSE
+
+
+			now.end : 1664950079.07429
+			parse.time [secs] : 8.96778917312622
+
+LOOP [i] :3
+		now.start : 1664950079.10294
+		stem : 30-asci
+		source : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/30-ascii.ini
+		out : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/30-asci.rds
+		out.copy : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/-backups-/2022-10-05/1664950067.515220.4288c_30-asci.rds
+		checksum : 9c5dac1f4bd977e5562ecff842ec8686
+		checksum.file : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/-backups-/30-asci_9c5dac1f4bd977e5562ecff842ec8686.info
+		checksum.exists : FALSE
+
+
+			now.end : 1664950080.44772
+			parse.time [secs] : 1.34477496147156
+
+LOOP [i] :4
+		now.start : 1664950080.53216
+		stem : 33-asci
+		source : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/33-ascii.ini
+		out : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/33-asci.rds
+		out.copy : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/-backups-/2022-10-05/1664950067.515220.4288c_33-asci.rds
+		checksum : 5af890d82baf35302f23ec493cbe4cd4
+		checksum.file : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/-backups-/33-asci_5af890d82baf35302f23ec493cbe4cd4.info
+		checksum.exists : FALSE
+
+
+			now.end : 1664950121.29397
+			parse.time [secs] : 40.7618050575256
+
+C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/-backups-/2022-10-05/1664950067.515220.4288c_system.rds
+C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/system.rds
+
+
+
+####{R}###..................   END -INI- LOG ENTRY   ..................#
+
+
+
+#............   START -INI- LOG ENTRY   ............###{humanVerse}#####
+2022-10-05\./06:09:52 GMT+0000
+2022-10-05
+1664950192.497100.85d2a
+--FUNCTION_INFO--
+list(envir = "<environment>", call = "system.init()", fn.info = list(
+    fn = "ini.parseFiles", dot.keys = NULL, dot.vals = NULL, 
+    params = list(inifilesORDERmatters = "s.files", master = "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/system.rds", 
+        use.cache = FALSE, smart.num = NA_character_), map = list(
+        inifilesORDERmatters = "s.files", master = "master", 
+        use.cache = "use.cache"), formals = list(inifilesORDERmatters = "--EMPTY--", 
+        master = "cache/ini/master.rds", use.cache = TRUE, smart.num = TRUE, 
+        ... = "--EMPTY--")))
+--FILES--
+c("C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/10-constants.ini", 
+"C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/20-humanVerse.ini", 
+"C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/30-ascii.ini", 
+"C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/33-ascii.ini"
+)
+LOOP [i] :1
+		now.start : 1664950192.20977
+		stem : 10-constants
+		source : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/10-constants.ini
+		out : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/10-constants.rds
+		out.copy : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/-backups-/2022-10-05/1664950192.497100.85d2a_10-constants.rds
+		checksum : 54691215dda2cb74b9659502091ddafe
+		checksum.file : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/-backups-/10-constants_54691215dda2cb74b9659502091ddafe.info
+		checksum.exists : TRUE
+
+
+			now.end : 1664950192.22548
+			parse.time [secs] : 0.0157108306884766
+
+LOOP [i] :2
+		now.start : 1664950192.26754
+		stem : 20-humanVerse
+		source : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/20-humanVerse.ini
+		out : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/20-humanVerse.rds
+		out.copy : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/-backups-/2022-10-05/1664950192.497100.85d2a_20-humanVerse.rds
+		checksum : d43c65c3bace9bf8ac7ca2d1cbcd1357
+		checksum.file : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/-backups-/20-humanVerse_d43c65c3bace9bf8ac7ca2d1cbcd1357.info
+		checksum.exists : TRUE
+
+
+			now.end : 1664950192.2819
+			parse.time [secs] : 0.014354944229126
+
+LOOP [i] :3
+		now.start : 1664950192.31329
+		stem : 30-asci
+		source : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/30-ascii.ini
+		out : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/30-asci.rds
+		out.copy : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/-backups-/2022-10-05/1664950192.497100.85d2a_30-asci.rds
+		checksum : 9c5dac1f4bd977e5562ecff842ec8686
+		checksum.file : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/-backups-/30-asci_9c5dac1f4bd977e5562ecff842ec8686.info
+		checksum.exists : TRUE
+
+
+			now.end : 1664950192.32843
+			parse.time [secs] : 0.0151400566101074
+
+LOOP [i] :4
+		now.start : 1664950192.43589
+		stem : 33-asci
+		source : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/33-ascii.ini
+		out : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/33-asci.rds
+		out.copy : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/-backups-/2022-10-05/1664950192.497100.85d2a_33-asci.rds
+		checksum : e71cf868b2ba63fbb2f2931105c05970
+		checksum.file : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/-backups-/33-asci_e71cf868b2ba63fbb2f2931105c05970.info
+		checksum.exists : FALSE
+
+
+			now.end : 1664950235.57515
+			parse.time [secs] : 43.1392650604248
+
+C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/-backups-/2022-10-05/1664950192.497100.85d2a_system.rds
+C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/system.rds
+
+
+
+####{R}###..................   END -INI- LOG ENTRY   ..................#
+
+
+
+#............   START -INI- LOG ENTRY   ............###{humanVerse}#####
+2022-10-05\./06:11:35 GMT+0000
+2022-10-05
+1664950295.332047.5ca61
+--FUNCTION_INFO--
+list(envir = "<environment>", call = "system.init()", fn.info = list(
+    fn = "ini.parseFiles", dot.keys = NULL, dot.vals = NULL, 
+    params = list(inifilesORDERmatters = "s.files", master = "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/system.rds", 
+        use.cache = FALSE, smart.num = NA_character_), map = list(
+        inifilesORDERmatters = "s.files", master = "master", 
+        use.cache = "use.cache"), formals = list(inifilesORDERmatters = "--EMPTY--", 
+        master = "cache/ini/master.rds", use.cache = TRUE, smart.num = TRUE, 
+        ... = "--EMPTY--")))
+--FILES--
+c("C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/10-constants.ini", 
+"C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/20-humanVerse.ini", 
+"C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/30-ascii.ini", 
+"C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/33-ascii.ini"
+)
+LOOP [i] :1
+		now.start : 1664950295.47839
+		stem : 10-constants
+		source : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/10-constants.ini
+		out : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/10-constants.rds
+		out.copy : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/-backups-/2022-10-05/1664950295.332047.5ca61_10-constants.rds
+		checksum : 54691215dda2cb74b9659502091ddafe
+		checksum.file : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/-backups-/10-constants_54691215dda2cb74b9659502091ddafe.info
+		checksum.exists : TRUE
+
+
+			now.end : 1664950295.49244
+			parse.time [secs] : 0.0140509605407715
+
+LOOP [i] :2
+		now.start : 1664950295.53107
+		stem : 20-humanVerse
+		source : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/20-humanVerse.ini
+		out : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/20-humanVerse.rds
+		out.copy : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/-backups-/2022-10-05/1664950295.332047.5ca61_20-humanVerse.rds
+		checksum : d43c65c3bace9bf8ac7ca2d1cbcd1357
+		checksum.file : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/-backups-/20-humanVerse_d43c65c3bace9bf8ac7ca2d1cbcd1357.info
+		checksum.exists : TRUE
+
+
+			now.end : 1664950295.54518
+			parse.time [secs] : 0.0141019821166992
+
+LOOP [i] :3
+		now.start : 1664950295.57385
+		stem : 30-asci
+		source : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/30-ascii.ini
+		out : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/30-asci.rds
+		out.copy : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/-backups-/2022-10-05/1664950295.332047.5ca61_30-asci.rds
+		checksum : 9c5dac1f4bd977e5562ecff842ec8686
+		checksum.file : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/-backups-/30-asci_9c5dac1f4bd977e5562ecff842ec8686.info
+		checksum.exists : TRUE
+
+
+			now.end : 1664950295.58939
+			parse.time [secs] : 0.0155448913574219
+
+LOOP [i] :4
+		now.start : 1664950295.67193
+		stem : 33-asci
+		source : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/33-ascii.ini
+		out : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/33-asci.rds
+		out.copy : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/-backups-/2022-10-05/1664950295.332047.5ca61_33-asci.rds
+		checksum : e71cf868b2ba63fbb2f2931105c05970
+		checksum.file : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/-backups-/33-asci_e71cf868b2ba63fbb2f2931105c05970.info
+		checksum.exists : TRUE
+
+
+			now.end : 1664950295.68654
+			parse.time [secs] : 0.0146110057830811
+
+C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/-backups-/2022-10-05/1664950295.332047.5ca61_system.rds
+C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/system.rds
+
+
+
+####{R}###..................   END -INI- LOG ENTRY   ..................#
+
+
+

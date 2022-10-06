@@ -299,7 +299,7 @@ MatrixXd matrix_multiplyN(Map<MatrixXd> A, int n=2, int type = 1, double tol_fac
 
 
 /* 
-
+ 
 
 */
 

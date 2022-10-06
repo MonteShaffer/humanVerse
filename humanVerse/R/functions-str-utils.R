@@ -525,7 +525,7 @@ str.removeWhiteSpace = function( str, replace=" ", n = 2,
 								...
 								)  
   {
-  METHOD = functions.cleanupKey(method, 1);
+  METHOD = prep.arg(method, n=1); 
 	if(pre.trim) { str = str.trim(str, ...); }
 	# REQUIRES string?
 	if(METHOD == "s" && is.library_("stringi"))

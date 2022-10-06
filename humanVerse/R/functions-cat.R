@@ -68,6 +68,28 @@ cat.init = function()
 	}
  
  
+
+log.cmd = function(what = "ping", id, res, open=FALSE)
+	{
+	f = "C:/_R_/-humanVerse-/SYSTEM/log/cmd/";
+	p = paste0(f, what, "/");
+	p = check.dir(p);
+	
+	if(open) { openSesame(p); }
+	
+	# /cmd/ping/id.log 
+	o = paste0(p, id, ".log");
+	o = check.file(o); # touch it ... 
+	cat.log( o, what );
+	cat.log( o, "");
+	cat.log( o, id );
+	cat.log( o, ""); 
+	
+	cat.dput(res, o);
+	cat.log( o, ""); # end with \n 
+	invisible(o);
+	} 
+   
 cat.log = function(file, str, sep="\n", append=TRUE)
 	{
 	# ... logic is lost ... 
@@ -88,9 +110,10 @@ cat.dput = function(obj, file, one.line=FALSE, sep="\n", append=TRUE)
   # unused argument (append = TRUE)
 
 
-.cat = function(..., sep="\n\n", indent=0)
+.cat = function(..., sep="\n\n", psep = "", indent=0)
 	{
-	strs = prep.dots(...);		
+	strs = prep.dots(...);
+	strs = paste0(strs, sep=psep); # unaltered normally?
 	if(indent > 0)
 		{
 		pads = str.rep(" ", indent);

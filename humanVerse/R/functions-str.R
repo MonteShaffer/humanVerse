@@ -41,14 +41,19 @@ str.between = function() {}
 # str.between = function(str, keys=c("__B64_", "_B64__"))
 str.between = function(L = "__B64_", str=str, R = "_B64__")
 	{  
-	info = str.explode(L, str);
-	if(R == "") 
+	if(L != "")
 		{
-		# we are at the END of the string ...
-		return( list.getElements(info, 2) );
+		info = str.explode(L, str);
+		if(R == "") 
+			{
+			# we are at the END of the string ...
+			return( list.getElements(info, 2) );
+			}
+		info2 = str.explode(R, list.getElements(info, 2) );
+		return( list.getElements(info2, 1) );
 		}
-	info2 = str.explode(R, list.getElements(info, 2) );
-	list.getElements(info2, 1);
+	info = str.explode(R, str);
+	list.getElements(info, 1);		
 	}
 
 
@@ -724,33 +729,51 @@ str.ends = function(search="</i>", str=c("<i>hello friend</i>", "<i>how are you 
 	
 	
 	
-str.before = function(search, str, occurence=1)
+str.before = function(search, str, posIDX=1)
 	{
-	n = length(str);
-	if(length(occurence) != n) 
-		{ occurrence = rep(occurence, out.length = n); }
+	n = length(str); 
+	if(length(posIDX) != n) 
+		{ posIDX = rep(posIDX, out.length = n); }
 	 
 	selen = str.len(search);
 	#slen = str.len(str);
 	
 	pos = check.list(str.pos(search, str));
-	idx = list.getElements(pos, occurence);
+		
+		PIDX = prep.arg(posIDX, n=2);	# allow non-numeric
+		logicL = v.test(PIDX, "la");	# last 
+		logicF = v.test(PIDX, "fi");	# first 
+		
+	posIDX[logicF] = 1;
+	posIDX[logicL] = list.getLengths(pos[logicL]);	
+		posIDX = as.integer(posIDX);
+		
+	idx = list.getElements(pos, posIDX);
 	
 	# substring(str, idx+selen, slen);
 	substring(str, 1, idx-selen);
 	}
 	
-str.after = function(search, str, occurence=1)
+str.after = function(search, str, posIDX=1)
 	{	  
 	n = length(str);
-	if(length(occurence) != n) 
-		{ occurrence = rep(occurence, out.length = n); }
+	if(length(posIDX) != n) 
+		{ posIDX = rep(posIDX, out.length = n); }
 	
 	selen = str.len(search);
 	slen = str.len(str);
 	
 	pos  = check.list(str.pos(search, str));
-	sidx = list.getElements(pos, occurence);
+	
+		PIDX = prep.arg(posIDX, n=2);	# allow non-numeric
+		logicL = v.test(PIDX, "la");	# last 
+		logicF = v.test(PIDX, "fi");	# first 
+		
+	posIDX[logicF] = 1;  
+	posIDX[logicL] = list.getLengths(pos[logicL]);
+		posIDX = as.integer(posIDX);
+	
+	sidx = list.getElements(pos, posIDX);
 	
 	substring(str, sidx+selen, slen);
 	}
@@ -768,6 +791,11 @@ str.after = function(search, str, occurence=1)
 # with str.explode(search, str) ... PHP is SCHIZO like R.
 str.pos = function(search, str, n=Inf, skip=0)
 	{
+	# what if I have lots of searches, one str 
+	# currently lots of strings, one search 
+	## ns = length(search);
+	## if(ns > 1) { }
+	
 	slen = str.len(str);	
 # dput(str);	
 	len.search = str.len(search);

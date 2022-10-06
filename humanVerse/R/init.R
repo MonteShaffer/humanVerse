@@ -4,6 +4,9 @@
 # onload
 init = function() 
 	{
+	SESSION = .uniqid();  # "1665030597.434142.8b803"
+	SESSION %GLOBAL%. ;
+	
 	memory.init();
 	
 	# load .humanVerse from CONFIG and use its values, otherwise 

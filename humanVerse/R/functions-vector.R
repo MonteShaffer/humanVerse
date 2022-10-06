@@ -171,7 +171,8 @@ v.TO = function(vec, what="NA", to="", invert=FALSE)
 	{
 	idx = v.which(vec, what, invert=invert);
 	if(is.null(idx)) { return(vec); }
-	vec[idx] = to;
+	if(is.null(to)) { vec = vec[-c(idx)]; } 
+					else { vec[idx] = to; }
 	vec;	
 	}
 	

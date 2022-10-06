@@ -4,7 +4,7 @@
 
 // TODO build base64.h file ... and other .h files .... 
 // setwd("C:/_git_/github/MonteShaffer/humanVerse/HVcpp/src/");
-// Rcpp::sourceCpp("base64.cpp", verbose=TRUE);
+// Rcpp::sourceCpp("base64.cpp", verbose=TRUE); 
 
 using namespace Rcpp;
 

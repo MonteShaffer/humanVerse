@@ -165,9 +165,11 @@ prep.dots = function(...,
 		{
 		o = list(...);
 		dots = unlist(o);
-		if(length(dots) == 0 && !is.null(default)) { dots = default; }
-		return( dots ); 
+		if(length(dots) == 0 && !is.null(default)) 
+			{ dots = default; }
+		return( dots );  
 	 	}
+
  
 	
 	

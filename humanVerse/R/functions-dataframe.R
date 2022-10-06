@@ -214,12 +214,56 @@ df.empty = function(df)
 	df[FALSE, ];	
 	}
 
-
-
-df.row = function(..., use.names=FALSE, character.only = FALSE)
+row.dots = function(mc, ...)
 	{
+	keys = names(mc);
+	if(is.null(keys)) 
+		{
+		tmp = deparse(mc);
+		aft = str.after("(", tmp, "first");  # after first (
+		bef = str.before(")", aft, "last");	 # before last )
+		keys = str.trim(str.explode(COMMA,  bef));
+		}
+		
+	vals = list(...);
+	# vals = property.set("keys", vals, keys);
+	names(vals) = keys;
+	vals;
+	}
+
+# df.row(IP, bytes, time, TTL);
+ 
+df.row = function(..., use.names=FALSE)
+	{
+	mc = as.list(match.call(expand.dots = FALSE)$...);
+		dots = row.dots(mc, ...);
+########### dput(dots);		
+	if(is.list(dots))
+		{
+		# already has names 
+		df = dataframe(dots);
+		# needs something to MATCH for rbind 
+		if(!use.names) 
+			{ vn = paste0("V", 1:ncol(df)); colnames(df) = vn;} 
+		return(df);  
+		}
+		
+
+dput(dots);
+	stop("monte");
+	
+	if(use.names)
+		{  
+		if(is.null(names)) { names = paste0("V", 1:ncol(df)); }
+		colnames(df) = names;
+		} else {
+				# needs something to MATCH for rbind 
+				names = paste0("V", 1:ncol(df)); 
+				colnames(df) = names;
+				}
+		 
 	# dots = prep.dots(..., collapse = !, has.objects = FALSE);
-	dots = prep.dots(..., collapse=character.only, has.objects=character.only, default="stringi");
+	# dots = prep.dots(..., collapse=character.only, has.objects=character.only, default="stringi");
 
 	# dots = prep.dotsRow(...);
 	# prep.dots ... EASY ... lazy loading of numbers ... 

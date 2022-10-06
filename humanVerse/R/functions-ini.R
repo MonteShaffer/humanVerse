@@ -289,7 +289,8 @@ ini.parse = function(inistr, fname="-file unknown-",
 	COMMENT_MULTI	= c("/*", "*/");
 	COMMENTS		= c(COMMENT,COMMENT_INI,COMMA);
 	
-	COMMENT_KEY		= "";  # for multiline ... 
+	cmin			= NULL;  # this is multiline comments 
+	
 	
 	
 	MEMORY_STORE 	= "^=";
@@ -302,14 +303,13 @@ ini.parse = function(inistr, fname="-file unknown-",
 	#MEMORY 			= list();
 	#RES 			= list();
 	fin 			= NULL;
-	cmin			= NULL;  # this is multiline comments 
 	line.no 		= 0;
 	CURRENT_KEY	= ""; # if NOT empty, we are continuing on multiline 
 	pkey 			= "";		
 	pval 			= ""; 
 	cparent 		= "";
 	
-	KEY_ARRAY = "";
+	KEY_ARRAY = ""; 
 	kidx = 1;
 	midx = 0;  # index of multiline when started ...
 	 
@@ -473,21 +473,29 @@ if(verbose)
 .__multiline.COMMENT = function() {} 
 			# line.no %++%.;   line = lines[ line.no ];
 		
+		### TWICE as FAST on the SLOW one... asciii 
+		### TAKES about 40 seconds ... 
+		### need to grab ASCII art from WEB within 
+		### maybe not add anymore ... 
 		
-			tmp = ini.walkTheLine(line, continue=cmin,
-									smart.num = smart.num,
-									test.mode=test.mode);		
-			
-			cmin = property.get("more", tmp);
-			# if we have data in cmin ... ccount 
-			# go to next, and we should keep looping right here 
-			if(!is.null(cmin)) { next; }
-			
-			# we have an empty line ... 
-			# a comment that walkTheLine caught, but this
-			# parser did not ...
-			if(tmp == EMPTY) { next; }
-			
+			if(!is.null(cmin) 
+					|| str.contains(COMMENT_MULTI[1], line) )
+				{
+				tmp = ini.walkTheLine(line, continue=cmin,
+										smart.num = smart.num,
+										test.mode=test.mode);		
+				
+				cmin = property.get("more", tmp);
+				# if we have data in cmin ... ccount 
+				# go to next, and we should keep looping right here 
+				if(!is.null(cmin)) { next; }
+				
+				# we have an empty line ... 
+				# a comment that walkTheLine caught, but this
+				# parser did not ...
+				if(tmp == EMPTY) { next; }
+				}
+				
 			
 			
 			# "%~=%" = is.equal;  ;; this "=" is a problem 
@@ -500,38 +508,19 @@ if(verbose)
 		# # line = '"%~=%" = is.equal;  ;; this "=" is a problem ';	
 				
 		# # line = 'PRIME_CHOICE\t\t\t= "The greatest power members of the {humanVerse} possess is the ability to act as a ==free== agent.",';
+		## line = 'x = 3;  /* this is why */  y = 4;'	
+		## I append a ";" SEMICOLON where /*COMMENT*/ was ..
+		## can't think of  a real USE case ... 
+		## line = 'x = 3  /* this is why */  (y = 4);'	
 				
-				# line = '"%=%" = 5,'
-				# line = '"%=%" = 5,'
-				# generally, we don't allow = unless special 
-				functions 
-				
-				# could have a str.trim issue 
 				x = str.between('"%', line, '%"');
 				if(!is.na(x))
 					{
 					rkey = paste0('"%', x, '%"');				
 					} else {
-							pos = str.pos("=", line);
-							idx = pos[1];
-							rkey = str.before("=", line, idx); 
+							rkey = str.before("=", line, 1); 
 							}
-				
-				
-				pos = str.pos("=", line);
-				if(str.starts('"%', line))
-					{					
-					# first position GREATER THAN 5 ... 
-					idx = v.which( pos > 5 , TRUE)[1];
-					} else { idx = pos[1]; }
-				
-				rkey = str.before("=", line, idx);  
-				#rkey = str.before("=", line, 1);  # 99% of the time ...
-				
-				# minimum length to even have an equal ...
-				# pos > 5 ... ignore = before the 5th index ... 
-				
-				
+							
 	
 .__equal.sign.issue = function() {} 		
 				
