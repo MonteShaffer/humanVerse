@@ -42,6 +42,12 @@ windows.get = function(key = "users")
 	
 	x = WINDOZE;
 	
+	idxFromName = function(y, ikey="MACAddress")
+		{
+		n = names(y[[1]]);
+		i = v.which(n, ikey);
+		i;
+		}
 	if(KEY == "user")
 		{ 
 		y = list.getElements(x$data$useraccount$data, 10);
@@ -49,8 +55,24 @@ windows.get = function(key = "users")
 		}
 	if(KEY == "mac")
 		{ 
-		y = list.getElements(x$data$nic$data, 15);
-		return( unlist(y) );
+		y = x$data$nic$data;
+		# k = c(15, 20, 27, 28);
+		k = c("MACAddress", "NetConnectionID", 
+						"ProductName", "ServiceName");
+						
+		n = length(k);
+		z = NULL;
+		for(i in 1:n)
+			{
+			idx = idxFromName(y, k[i]);
+			row = unlist( list.getElements(y, idx) );
+			z 	= cbind(z, row);
+			}
+		z = as.dataframe( z );
+		colnames(z) = k;
+		rownames(z) = 1:length(y);
+		
+		return( z );
 		}
 	if(KEY %in% c("os","oper") )
 		{
@@ -199,7 +221,7 @@ if(KEY %in% c("phys", "phy", "dis", "disc", "disk", "driv", "dri"))
 ## https://stackoverflow.com/questions/31510432/running-a-powershell-script-from-r-using-system2-rather-than-system
 ## POWERSHELL ... 
 
-### 10/5/2022 1:50 PM ... 30 dips in the GANGA ... 
+### 10/5/2022 1:50 PM ... 30 dips in the GANGA ... 5/9 = 0.555...
 
 ## https://www.improvescripting.com/how-to-get-disk-size-and-disk-free-space-using-powershell/
 
@@ -895,3 +917,42 @@ ping.parse = function(res)
 
 # (x = system("ping -n 5 google.com", intern = TRUE, show.output.on.console=TRUE))
 # system2("ping", paste0("-c1 ","google.com")
+
+
+
+
+
+
+
+# WHY won't 7zip do this? ... 
+# > ?untar
+# > x = path.fromClipboard()
+# > x
+# [1] "C:/_git_/-R-/"
+# > setwd(x)
+# > untar("RCurl_1.98-1.8.tar.gz")
+
+
+
+# https://daniel.haxx.se/blog/2021/09/27/common-mistakes-when-using-libcurl/
+# # // Keep the URL as a C++ string object
+# std::string str("https://example.com/");
+
+# // Pass it to curl as a C string!
+# curl_easy_setopt(curl, CURLOPT_URL, str.c_str());
+
+
+# how many b64 
+# RCurl ...
+# .Call(R_base64_encode, txt, asRaw)
+# where is the internal function?
+
+# htmlTreeParse?
+# where are all these functions???
+# S? functions 
+# https://www.rfc-editor.org/rfc/rfc9110.html#name-status-codes
+# you could LINK to this page with anchor ... # https://www.rfc-editor.org/rfc/rfc9110.html#name-205-reset-content
+#  
+# KAGGLE ... urban dictionary 
+# https://www.kaggle.com/datasets/therohk/urban-dictionary-words-dataset
+# https://www.kaggle.com/datasets/rizimore/brainyquote-topics
