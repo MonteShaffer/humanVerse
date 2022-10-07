@@ -1,25 +1,64 @@
 
-color.default = function(distinct = TRUE)
+color.default = function(distinct = TRUE, type="RGB", scale.RGB = TRUE)
 	{
-	mkey 	= .MD5( as.character(distinct) );
+	TYPE 	= prep.arg(type, n=3, keep="-", case="upper");
+	mkey 	= .MD5( paste0(as.character(distinct),
+						TYPE, as.character(scale.RGB )) );
+						
 	df		= memory.get(mkey, "-COLORS-");
 	if(!is.null(df)) { return(df); } 
 	
 	colors	= sort(as.character( colors(distinct = distinct) ));
-	n 		= length(colors);
+	n 		= length(colors);	
 	RGB 	= color.col2rgb(colors);
+	XXX = NULL;
+	if(TYPE != "RGB")
+		{
+		XXX = list();
+		# may have multiple, I want cmyk, hsl 
+		types = str.explode("-", TYPE);
+		nt = length(types);
+		for(i in 1:nt)
+			{
+			XXX[[i]] = color.convert(RGB, from=RGB, to=types[i]);
+			}
+		}
+		
 	HEX 	= as.character( color.rgb2col(RGB) );
 	# HEX = color.convert(RGB, from="RGB", to="HEX");
 	
-	df = dataframe( cbind( colors, HEX ) );
-	df = cbind(df,	as.integer(RGB[1,]), 
-					as.integer(RGB[2,]), 
-					as.integer(RGB[3,]) );
-							
-	rownames(df) = 1:n;
-	colnames(df) = c("color", "hex", "red", "green", "blue");
+	if(scale.RGB) { RGB = RGB / 255; } 
 	
-	memory.get(mkey, "-COLORS-", df);
+	rtype = typeof(RGB);
+	
+	df = dataframe( cbind( colors, HEX ) );
+	df = cbind(df,	as.type(RGB[1,], type=rtype), 
+					as.type(RGB[2,], type=rtype), 
+					as.type(RGB[3,], type=rtype) );
+
+	xnames = NULL;
+	if(!is.null(XXX))
+		{
+		xnames = NULL;
+		for(i in 1:nt)
+			{
+			rxnames = rownames(XXX[[i]]);
+			xnames = c(xnames, rxnames);
+			nj = length(rxnames);
+			njt = typeof(XXX[[i]][1,]);
+			for(j in 1:nj)
+				{
+				df = cbind(df, as.type(XXX[[i]][j,], type=njt));
+				}
+			}
+		}
+				
+	rownames(df) = 1:n;
+	colnames(df) = c("color", "hex", 
+						"red", "green", "blue", xnames);
+	
+	df = property.set("md5", df, mkey);
+	memory.set(mkey, "-COLORS-", df);
 	df;
 	}
 	
@@ -32,10 +71,12 @@ color.baseHEX = function(cnames = c("mediumvioletred", "deeppink", "deeppink2", 
 	 
 color.nearest = function() {}  
 # C0FFEE
-color.nearest = function(aHEX="#c8008c", B = color.default(), n=5)
+color.nearest = function(aHEX="#c8008c", B = color.default(type="CMYK-HSL"), n=5)
 	{
+	akey = toupper( str.replace("#","", aHEX) );
+	bkey = property.get("md5", B);
 	# keep a memory ...  "89b284a63613278c9da2506f6ce43324"
-	mkey = .MD5( paste0( c(n, aHEX, B$hex), collapse="") );
+	mkey = .MD5( paste0( c(n, akey, B$hex, bkey), collapse="") );
 	res = memory.get(mkey, "-COLOR-NEAREST-");
 	if(!is.null(res)) 
 		{ 
@@ -47,7 +88,7 @@ color.nearest = function(aHEX="#c8008c", B = color.default(), n=5)
 	
 	# first see if it is the set ...
 	r = s = NULL;
-	idx = v.which(B$hex, aHEX);
+	idx = v.which(B$hex, toupper(aHEX));
 	if(!is.null(idx)) 
 		{ 
 		r = B$color[ idx ]; 
@@ -56,15 +97,36 @@ color.nearest = function(aHEX="#c8008c", B = color.default(), n=5)
 	r = v.fill(r, to.length=n, with=NA);
 	s = v.fill(s, to.length=n, with=NA);	
 	
+	
+	nb = df.getColumnTypes(B);
+	logic = (nb %in% c("integer", "double"));
+	nms = colnames(B);
+	
+	b = as.matrix( B[, logic] );
+		rownames(b) = B$color;
+		colnames(b) = nms[logic];
+	
 	# singleton RGB 
 	a = as.matrix( t(.hex2rgb(aHEX)) );	
-		colnames(a) = c("red", "green", "blue");
-		
-	b = as.matrix( cbind(B$red, B$green, B$blue) ) ;
-		rownames(b) = B$color;
-		colnames(b) = c("red", "green", "blue");
+		anames = c("red", "green", "blue");
+	a = a/255;
 	
-	cs = cosine.similarity(a/255,b/255);
+	NMS = paste0(nms[logic], collapse="");
+	if(str.contains("cmyk", NMS))
+		{		
+		cmyk = as.matrix( t(hex2cmyk(aHEX)) );
+		a = cbind(a, cmyk);
+		anames = c(anames, "c","m","y","k");		
+		}
+	if(str.contains("hsl", NMS))
+		{		
+		hsl = as.matrix( t(hex2hsl(aHEX)) );
+		a = cbind(a, hsl);
+		anames = c(anames, "h","s", "l");
+		}		
+	colnames(a) = anames;	
+		
+	cs = cosine.similarity(a,b);
 	xs = .sort(math.cleanup(cs), "DESC");
 	# ("black as 0,0,0") for cosine.similarity ... TROUBLE 
 	# maybe add a "fudge.factor" 
@@ -82,7 +144,7 @@ color.nearest = function(aHEX="#c8008c", B = color.default(), n=5)
 	## I need a vec/matrix like cs ... 
 	## or generic distance that figures it out ...
 	## euclidean.norm?
-	di = matrix.dist( rbind(a/255,b/255) , method="euclidean");  
+	di = matrix.dist( rbind(a,b) , method="euclidean");  
 	do = di[,1]; # row or column 
 	me = do[1]; not = do[-c(1)];
 		xd = .sort(math.cleanup(not), "ASC");
@@ -106,13 +168,13 @@ not %GLOBAL% .;
 
 	# struggles with YELLOW ... RG = Y 
 	# or colors() is biased against yellow ? 
-	
+	# add cmyk and hsl ... 10 dimensions of color ... 
 	
 	# do a weighting, to get a final score
 	logic = (cs == 1);
 	logic = v.TO(logic, NA, FALSE);
 	
-	fsc 		= not;
+	fsc 		= not * 100;
 	fsc[!logic] = (1-cs[!logic]) * not[!logic] * 100 * 100; 
 		fd = .sort(math.cleanup(fsc), "ASC");
 	rfi = names(fd);
@@ -131,7 +193,7 @@ not %GLOBAL% .;
 	
 	df = dataframe( cbind(h, r) );
 	df = cbind( df, s, 
-					hcs, rcs, round(scs, 5), 
+					hcs, rcs, round(scs, 3), 
 					hdi, rdi, round(sdi, 3),
 					hfi, rfi, round(sfi, 5)
 					);

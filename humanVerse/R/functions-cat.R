@@ -224,7 +224,11 @@ strip.Htags = function(...)
 	# LOTUS (1-2-3) ... lime (00ff00) ... 009B00 (not so darK0, light blue (00A8A8) ... blue (0000A8) ... gray (373737) ... 
 	# lotus = list("Black" = "#050505", "Green" = "#009B00", "BrightGreen" = "#00ff00", "Blue" = "#0000A8", "BrightBlue" = "#00A8A8", "Gray" = "#373737");
 	# WP 51 dos ... blue (0000AF) ... (00A8AF) ... American Fark
-	# WP 5 ... yello FBFB53 ... purplbe? A100B4 ... pink (?) teal (00A8AF) 
+	# WP 5 ... yello FBFB53 ... purplbe? A100B4 ... pink (?) teal (00A8AF)  
+	## yellow not doing well... coffee ... C0FF3E
+	## C0FFEE ... 10 DIMS >>> 3 RGB DIMS (HSL and CMYK) 
+	## more scale, more features ... 
+
 	# https://archive.org/download/msdos_shareware_fb_VMSYS30/msdos_shareware_fb_VMSYS30.gif
 	# vmsys, green = 55ff55, darkgreen = 02aa03, yellow = ffff55, lightblue = 55ff55, teal = 00aaaa, red = ff5555, gray = aaaaaa, 
 ## https://colorswall.com/palette/171
