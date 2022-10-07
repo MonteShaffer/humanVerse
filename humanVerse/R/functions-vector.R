@@ -137,7 +137,7 @@ v.smartType = function(vec)
 	logic = is.equal(vec, ivec);  # some TOLERANCE 	
 	if(.allTRUE(logic)) { return( as.integer(vec) ); }
 	
-	vec;	
+	vec;	 
 	}
 
 # this is univariate

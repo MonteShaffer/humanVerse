@@ -248,7 +248,7 @@ system.init = function(use.cache=TRUE, recursive=FALSE)
 
 
 ### SYSTEM = ini.parseFiles(s.files, master = s.rds, use.cache = use.cache, verbose=FALSE, test.skip=3);
-
+ 
 	## for now ... 
 	system.process(SYSTEM);
 	invisible(SYSTEM);
@@ -541,6 +541,7 @@ return(NULL);
 				# alias.init()
 				SLASH				= "/",
 				DEFAULT_TIMEZONE	= "UTC",
+				DEFAULT_TOLERANCE	= sqrt(.Machine$double.eps),
 				
 				VSEP 				= "\\./",
 				HUMANVERSE_SEP		= "\\./"

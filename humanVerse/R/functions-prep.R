@@ -78,19 +78,12 @@ dput(not);
 	
 	
 	
-if(debug)
-	{
-.cat("pkeys: ", pkeys, "\t pvals: ", pvals);
-	}
-	
 	f = as.list(formals(fn));
 	keys = names(f);
 	form = list();		# formals, nicely
 	params = list();	# parameters with values
 	map = list();		# map from paramName to symbol user inputed 
-	fkeys = NULL;		# above may be out of order ... 
 	n = length(keys);
-	pskip = 0;
 	Types = character(n);
 	for(i in 1:n)
 		{		
@@ -109,56 +102,91 @@ if(debug)
 	}
 
 
-	
-	withV = v.which(pvals, NA, invert=TRUE);
-
 	# loop over "formals" keys ... expand dots 
 	dot.data = list();
-	for(i in 1:n)
-		{		
-		Type 	= Types[i];
-		key 	= keys[i];
-		pidx 	= i + pskip;
-		pkey 	= fkeys = pkeys[pidx]; 
-		if(is.na(fkeys)) { fkeys = NULL; }
+	nj = 0;
+	
+	
+	# what if they "split the dots" ... 
+	# we need to do an ordering ... 
+	
+# Type == "" ===> means FIXED order or dots ... can't move ...
+
+dotsIDX = v.which(keys, "...");  # maybe NULL 
+.cat("dots"); 
+dput(dotsIDX);
+typeIDX = v.which(Types, ""); # maybe NULL;	
+.cat("types"); 
+dput(typeIDX);
+	
+	idx = set.match(keys, pkeys);
+.cat("matched"); 
+dput(idx);
+	idx = set.match(pkeys, keys);
+.cat("reverse matched"); 
+dput(idx);
+	
+.__while.loop = function() {}
+	while(length(keys) >= 1)
+		{	
+		nj %++%. ;
+		if(nj >= 4*n) { stop("looped monte"); }
+	
+if(debug) 
+	{
+.cat("keys: ", keys, "\t Types: ", Types);
+.cat("pkeys: ", pkeys, "\t pvals: ", pvals);
+	}
+	if(length(pkeys) == 0) { break; } # out of pkeys ... 
+
+		Type 	= Types[1];
+		key 	= keys[1];
+		pkey 	= pkeys[1];
+		pval 	= pvals[1];
+
+		
+# maybe "out of order", but I think THIS takes care of any order ... 		
 		if(key != "...")
 			{
-			pval = pvals[pidx]; 
 			  
+.__not.dots = function() {}
 if(debug) 
 	{ 
-.cat(" ===> ???", "\t key: ", key, "\t pkey: ", pkey, "\t pval: ", pval, "\t form[[key]]:", form[[key]]);	
+.cat(" ===> ???", "\t key: ", key, "\t pkey: ", pkey, "\t pval: ", pval, "\t is.null(pkey)", is.null(pkey), "\t form[[key]]:", form[[key]]);	
 	}
 	  
 			
 			logic = (key == pkey);
 			idx = v.which(not, pkey);	
 			# use.cache = use.cache 
-			hasValue = FALSE;
+			hasValue = FALSE; test = NULL;
 			if(!hasValue && logic && !is.null(idx))
 				{
 				test = eval(parse(text=not[idx]), envir=pf);
-				
+.__not.CASE.1 = function() {}				
 if(debug)
 	{
 .cat(" ===> 1", "\t key: ", key, "\t pkey: ", pkey, "\t pval: ", pval, "\t form[[key]]:", form[[key]]);
 .cat(test);
 	}
-				params[[ key ]] = test;
+				# map will collect 'test'
+				params[[ key ]] = pval;
 				hasValue = TRUE;
 				}
-				
+				 
 			if(!hasValue && logic && !is.na(pval))
 				{
 				test = eval(parse(text=pval));
 				if(Type != "") { test = as.type(test, type=Type);}
-
+.__not.CASE.2 = function() {}	
 if(debug)
 	{
 .cat(" ===> 2", "\t key: ", key, "\t pkey: ", pkey, "\t pval: ", pval, "\t form[[key]]:", form[[key]]);
 .cat(test); 
 	}
-				if(!.anyNA(test)) { params[[ key ]] = test; }
+				# map will collect 'test'
+				# if(!.anyNA(test)) { params[[ key ]] = pval; }
+				params[[ key ]] = pval;
 				hasValue = TRUE;
 				}
 				
@@ -166,87 +194,107 @@ if(debug)
 				{
 				test = eval(parse(text=pkey));
 				if(Type != "") { test = as.type(test, type=Type);}
+.__not.CASE.3 = function() {}	
 if(debug)
 	{ 
 .cat(" ===> 3", "\t key: ", key, "\t pkey: ", pkey, "\t pval: ", pval, "\t form[[key]]:", form[[key]]);
 .cat(test);
 	}
-				if(!.anyNA(test)) { params[[ key ]] = test; }
+				# map will collect 'test'
+				#if(!.anyNA(test)) { params[[ key ]] = test; }
+				params[[ key ]] = pkey;
 				hasValue = TRUE;
 				}
 		
 
 
 				# it is one of the ... dots 
-				if(!hasValue) { pskip %--%. ; next; }
-				
+				if(!hasValue) 
+					{ 
+					keys 	= keys[-c(1)];
+					Types 	= Types[-c(1)]; # v.pop?
+					
+					keys = c(keys, key); 
+					Types = c(Types, Type);
+					
+					pkeys 	= pkeys[-c(1)];
+					pvals 	= pvals[-c(1)];
+					
+					pkeys = c(pkey, pkeys);
+					pvals = c(pval, pvals);
+										
+					next; 
+					}
+		
+			map[[key]] = test;
+			
+			keys 	= keys[-c(1)];
+			Types 	= Types[-c(1)]; # v.pop?
+			pkeys 	= pkeys[-c(1)];
+			pvals 	= pvals[-c(1)];
 			}
 		
 		if(key == "...")
 			{
-			# if pkey is a regular key, not dots, get out of here!
-			if(pkey %in% keys) { next; }
-			
+.__dots = function() {}	
+			## can I do "GROUNDHOGS DAY" here ... 
+			if(pkey %in% keys)
+				{
+if(debug)
+	{ 
+.cat(" BREAKOUT +++++ ", "\t\t pkey : ", pkey, " \t keys :", keys ); 
+ 	}
+				keys 	= keys[-c(1)];
+				Types 	= Types[-c(1)]; # v.pop?
+				pkeys 	= pkeys[-c(1)];
+				pvals 	= pvals[-c(1)];
+				
+				pkeys = c(pkey, pkeys);
+				pvals = c(pval, pvals);	
+				next;
+				}
+				
 			pval = v.smartType(pval);
 			
 if(debug)
 	{ 
-.cat(" ---> ???", "\t\t ", key, " \t pidx :", pidx, " \t pkey :", pkey, " \t pval :", pval, " \t typeof(pval) :", typeof(pval) ); 
+.cat(" ---> ???", "\t\t ", key, " \t pkey :", pkey, " \t pval :", pval, " \t typeof(pval) :", typeof(pval) ); 
  	}  
 			
-			hasValue = FALSE;
-			if(!hasValue && !is.na(pval))
-				{				
-				# we don't know its type? so just character ...
-				dot.data[[pkey]] = pval; 
+				hasValue = FALSE;
+				if(!hasValue && !is.na(pval))
+					{ 		
+					dot.data[[pkey]] = pval;
+.__dots.CASE.1 = function() {}						
 .cat(" ---> 1   ", dot.data);	
-				hasValue = TRUE;
-				}
-			
-			if(!is.na(pkey))  # na if nothing inside 
-				{
-				if(nkey != pkey) 
-					{ 
-					fkeys = pkey; 
-					dot.vals = c(dot.vals, eval(pkey));
-					} else { stop("bad keys"); }
-				np = length(pkeys); # maximum search 
-				j = pidx;
-				while(j <= np)
-					{
-					pskip %++%.
-					j = pidx = i + pskip;
-					pkey = pkeys[pidx];
-					if(!is.null(withV) && withV[1] == pidx) { pskip %--%. ; break; }
-					if(is.na(pkey)) { pskip %--%. ; break; }  # out pf pkeys ... 
-					if(nkey != pkey) 
-						{ 
- 
-
-if(debug)
-	{ 
-.cat("key: ", key, " \t pidx :", pidx, " \t pkey :", pkey, " \t pval :", pval, " \t nkey :", nkey, " \t pskip :", pskip); 	
-	}
-
-						fkeys = c(fkeys, pkey); 
-						dot.vals = c(dot.vals, eval(pkey));
-						} else { pskip %--%. ; break; } 
+					hasValue = TRUE;
 					}
-				}
+			
+				if(!hasValue)
+					{
+.cat(" ---> 2  ???   ");			
+					}
+					 
+			# GROUNDHOGS DAY 
+			# keys 	= keys[-c(1)];
+			# Types 	= Types[-c(1)]; # v.pop?
+			pkeys 	= pkeys[-c(1)];
+			pvals 	= pvals[-c(1)];
+			
+			map[[key]] = dot.data;
 			}
 			
-		map[[key]] = fkeys; 
+			
 		}
 
- 
-	fkeys = NULL;
-	if(!is.null(map[["..."]])) { fkeys = map[["..."]]; }
-	# trimws collapses list, strsplit DOESN'T collapse list 
-	
+	# regular mapping works fine, let's just do dots here 
+	# map[["..."]] = dot.data; 
+		
+   
+	 
 	res = list(
 				"fn" 		= fn, 
-				"dot.keys"  = fkeys,
-				"dot.vals"  = dot.vals,
+				"dot.data"  = dot.data,
 				"params" 	= params, 
 				"map" 		= map, 
 				"formals" 	= form

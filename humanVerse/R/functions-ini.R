@@ -995,7 +995,7 @@ if(test.mode)
 ############################### one WHILE ##################
 		}
 
-.__smart.type = function() {}
+.__smart.type = function() {} 
 	# nval = str.trim(nval);
 	nval_ = str.trim(nval);
 	if(smart.num) 

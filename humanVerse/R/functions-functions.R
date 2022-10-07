@@ -1018,7 +1018,7 @@ function.arguments <- function() {
     if("..." %in% args_names) { 
     dots <- eval(quote(list(...)), envir = pf)
     }  else {
-    dots = list() 
+    dots = list()  
     }
     args_names <- sapply(setdiff(args_names, "..."), as.name)
     if(length(args_names)) {
