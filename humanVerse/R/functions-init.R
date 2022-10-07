@@ -10,6 +10,7 @@ init.assign = function(key, val, WHERE=.GlobalEnv)
 
 alias.init = function(use.cache=TRUE, recursive=FALSE)
 	{
+	if( !is.defined(B64LIST) ) { ._____init.settings(); }
 	# recursive is  /config/alias/* , /config/user-alias.ini , /config/{mshaffer}-alias.ini 
 	
 	# to begin we need the values for users, so FALSE on first pass ... it will cache ...
@@ -158,6 +159,8 @@ alias.set = function(to="ceil", from="base::ceiling", WHERE=.GlobalEnv)
 
 number.init = function(use.cache=TRUE, recursive=FALSE)
 	{
+	if( !is.defined(B64LIST) ) { ._____init.settings(); }
+	
 	n.folder = "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/number/";
 	n.rds = paste0(n.folder, "number.rds");
 	n.files = list.files(n.folder, full.names = TRUE, pattern = "\\.ini$");
@@ -224,6 +227,8 @@ number.process = function(NUMBER=list())
 
 system.init = function(use.cache=TRUE, recursive=FALSE)
 	{
+	if( !is.defined(B64LIST) ) { ._____init.settings(); }
+	
 	s.folder = "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/system/";
 	s.rds = paste0(s.folder, "system.rds");
 	s.files = list.files(s.folder, full.names = TRUE, pattern = "\\.ini$");
@@ -287,6 +292,8 @@ system.process = function(SYSTEM=list())
 ._____init.settings = function(use.cache=TRUE, force.reload=FALSE)
 	{
 	._____init.systemCONSTANTS();
+	
+	._____init.systemALIASES(); 
 	
 	# load system.INI and add to namespace 
 ##############
@@ -437,7 +444,33 @@ return(NULL);
 	
 	}
 
+._____init.systemALIASES = function()
+	{
+	# alias.set = function(to="ceil", from="base::ceiling", WHERE=.GlobalEnv)
+	
+	# so alias.init() will work on its own, 
+	
+	alias.set(to='"%THIS%"',		from = ".THIS.");
+	alias.set(to='"%GLOBAL%"', 		from = ".GLOBAL.");
+	
+	# readTextFile
+	alias.set(to='"%+=%"', 			from = ".PLUS_EQUAL.");
+	alias.set(to='"%++%"', 			from = ".PLUS_PLUS.");
+	
+	alias.set(to='suppressWarning', from = "suppressWarnings");
+	
+	# js.b64 
+	alias.set(to='ord', from = "utf8ToInt");
+	alias.set(to='chr', from = "intToUtf8");
+	
+	alias.set(to='"%>>%"', 	from = ".SHIFT_R.");
+	alias.set(to='"%<<%"', 	from = ".SHIFT_L.");
+	alias.set(to='"%&%"', 	from = ".AND.");
+	alias.set(to='"%|%"', 	from = ".OR.");
 
+	
+	}
+	
 ._____init.systemCONSTANTS = function()
 	{
 	# basic constants that can't pass through well into R from a 'parsed' INI file ... the  'Я' BACKSLASH issue 
@@ -459,6 +492,8 @@ return(NULL);
 	BASIC = list(
 				B64 		= B64,
 				B64v 		= B64v,
+				B64LIST 	= B64LIST,
+	
 				BXX 		= BXX,
 				BXXv 		= BXXv,
 				Bits64 		= Bits64,

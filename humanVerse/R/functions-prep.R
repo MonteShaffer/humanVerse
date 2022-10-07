@@ -150,7 +150,7 @@ if(fn == "CDF") { cat("\n\n key: ", key, " \t pidx :", pidx, " \t pkey :", pkey,
 	}
   
   
-
+ 
 prep.dots = function(..., 
 						collapse 	= TRUE, 
 						default 	= NULL, 
@@ -159,12 +159,22 @@ prep.dots = function(...,
 						by="column"
 					)
 	{
+debug = FALSE;
 	dots = NULL;
 	
 	if(is.null(dots) && collapse) 
 		{
-		o = list(...);
-		dots = unlist(o);
+		# parenth ( is a function operator ... 
+		r = suppressError( (...), 
+									show.notice=debug, 
+									msg="debug prep.dots "
+							);
+		if(is.error(r)) { r = list(...); }
+dput.one(r);
+		# if it has a structure ... return it ... 
+		# dots = unlist(o);
+#dput.one(dots);
+		dots = r; 
 		if(length(dots) == 0 && !is.null(default)) 
 			{ dots = default; }
 		return( dots );  

@@ -42,31 +42,64 @@ windows.get = function(key = "users")
 	
 	x = WINDOZE;
 	
-	idxFromName = function(y, ikey="MACAddress")
+	if(KEY %in% c("id", "iden", "info", "in", "syst", "sys"))
 		{
-		n = names(y[[1]]);
-		i = v.which(n, ikey);
-		i;
+		sn = x$data$bios$data[[1]]$SerialNumber;
+		ci = x$data$cpu$data[[1]]$ProcessorId;		
+		cn = x$data$cpu$data[[1]]$Name;
+		z = c(sn, ci, cn);
+
+		return( z );
 		}
+		
+		
 	if(KEY == "user")
 		{ 
-		y = list.getElements(x$data$useraccount$data, 10);
-		return( unlist(y) );
-		}
-	if(KEY == "mac")
-		{ 
-		y = x$data$nic$data;
-		# k = c(15, 20, 27, 28);
-		k = c("MACAddress", "NetConnectionID", 
-						"ProductName", "ServiceName");
+		y = x$data$useraccount$data;
+		na = names(y[[1]]);
+		
+		# for(j in 1:length(na)) { .cat(j, " :: ", na[j]); print( unlist( list.getElements(y, j) ) ); }
+			
+		k = c("Name", "Disabled", "LocalAccount", "SID");
 						
 		n = length(k);
 		z = NULL;
 		for(i in 1:n)
 			{
-			idx = idxFromName(y, k[i]);
-			row = unlist( list.getElements(y, idx) );
-			z 	= cbind(z, row);
+			idx = v.which(na, k[i]);
+			col = unlist( list.getElements(y, idx) );
+			if(k[i] == "SID")
+				{
+				# truncated / obfuscated ... a bit 
+				col = paste0("... -", 
+						list.getLastElements( 
+							str.explode("-", col) ) );
+				}
+			z 	= cbind(z, col);
+			}
+		z = as.dataframe( z );
+		colnames(z) = k;
+		rownames(z) = 1:length(y);
+		
+		return( z );
+		
+		}
+	if(KEY == "mac")
+		{ 
+		y = x$data$nic$data;
+		na = names(y[[1]]);
+
+		# k = c(15, 20, 27, 28);
+		k = c("MACAddress", "ServiceName", "Name", 		
+									"NetConnectionID");
+						
+		n = length(k);
+		z = NULL;
+		for(i in 1:n)
+			{
+			idx = v.which(na, k[i]);
+			col = unlist( list.getElements(y, idx) );
+			z 	= cbind(z, col);
 			}
 		z = as.dataframe( z );
 		colnames(z) = k;
@@ -77,13 +110,13 @@ windows.get = function(key = "users")
 	if(KEY %in% c("os","oper") )
 		{
 		y = x$data$os$data;
+		na = names(y[[i]]);
 		n = length(y);
 		z = NULL;
 		for(i in 1:n)
 			{
 			z = cbind(z, as.character(y[[i]]));
-			}
-		na = names(y[[i]]);
+			}		
 		z = as.dataframe( cbind(na, z) );
 		colnames(z) = c("Key", paste0("OS.", 0:(n-1)))
 		rownames(z) = 1:length(na);
@@ -92,13 +125,13 @@ windows.get = function(key = "users")
 	if(KEY == "bios")
 		{
 		y = x$data$bios$data;
+		na = names(y[[1]]);
 		n = length(y);
 		z = NULL;
 		for(i in 1:n)
 			{
 			z = cbind(z, as.character(y[[i]]));
-			}
-		na = names(y[[i]]);
+			}		
 		z = as.dataframe( cbind(na, z) );
 		colnames(z) = c("Key", paste0("BIOS.", 0:(n-1)))
 		rownames(z) = 1:length(na);
@@ -107,13 +140,13 @@ windows.get = function(key = "users")
 	if(KEY == "cpu")
 		{
 		y = x$data$cpu$data;
+		na = names(y[[i]]);
 		n = length(y);
 		z = NULL;
 		for(i in 1:n)
 			{
 			z = cbind(z, as.character(y[[i]]));
-			}
-		na = names(y[[i]]);
+			}		
 		z = as.dataframe( cbind(na, z) );
 		colnames(z) = c("Key", paste0("CPU.", 0:(n-1)))
 		rownames(z) = 1:length(na);
@@ -122,13 +155,13 @@ windows.get = function(key = "users")
 	if(KEY == "mem" || KEY == "memo")
 		{
 		y = x$data$memorychip$data;
+		na = names(y[[i]]);
 		n = length(y);
 		z = NULL;
 		for(i in 1:n)
 			{
 			z = cbind(z, as.character(y[[i]]));
-			}
-		na = names(y[[i]]);
+			}		
 		z = as.dataframe( cbind(na, z) );
 		colnames(z) = c("Key", paste0("RAM.", 0:(n-1)))
 		rownames(z) = 1:length(na);
@@ -137,13 +170,13 @@ windows.get = function(key = "users")
 	if(KEY %in% c("nic", "net", "netw"))
 		{
 		y = x$data$nic$data;
+		na = names(y[[i]]);
 		n = length(y);
 		z = NULL;
 		for(i in 1:n)
 			{
 			z = cbind(z, as.character(y[[i]]));
-			}
-		na = names(y[[i]]);
+			}		
 		z = as.dataframe( cbind(na, z) );
 		colnames(z) = c("Key", paste0("NIC.", 0:(n-1)))
 		rownames(z) = 1:length(na);
@@ -153,13 +186,13 @@ windows.get = function(key = "users")
 		{
 		# partitions 
 		y = x$data$logicaldisk$data;
+		na = names(y[[i]]);
 		n = length(y);
 		z = NULL;
 		for(i in 1:n)
 			{
 			z = cbind(z, as.character(y[[i]]));
 			}
-		na = names(y[[i]]);
 		z = as.dataframe( cbind(na, z) );
 		colnames(z) = c("Key", paste0("PARTITION.", 0:(n-1)))
 		rownames(z) = 1:length(na);
@@ -170,13 +203,13 @@ if(KEY %in% c("phys", "phy", "dis", "disc", "disk", "driv", "dri"))
 		{
 		# drives 
 		y = x$data$diskdrive$data;
+		na = names(y[[i]]);
 		n = length(y);
 		z = NULL;
 		for(i in 1:n)
 			{
 			z = cbind(z, as.character(y[[i]]));
 			}
-		na = names(y[[i]]);
 		z = as.dataframe( cbind(na, z) );
 		colnames(z) = c("Key", paste0("DISK.", 0:(n-1)))
 		rownames(z) = 1:length(na);
@@ -291,8 +324,63 @@ if(KEY %in% c("phys", "phy", "dis", "disc", "disk", "driv", "dri"))
  # QUICK:  functions-ping.R  with idx:  63 
 # NULL
 
-which.system = function(use.cache = FALSE)
+suggest.username = function(choices=NULL, option=5)
 	{
+	option = as.integer(option);
+	if(is.null(choices)) { choices = windows.get("users")$Name; }
+	
+	choices = str.removeWhiteSpace(choices);  # all but one 
+		## debian like, no dots ... 
+		option2 = gsub(REGEX_ALPHA_NUMERIC_NOT, "", choices);
+		option1 = tolower(option2);
+		
+		info = str.explode(" ", choices);
+		first = gsub(REGEX_ALPHA_NUMERIC_NOT, "", 
+						list.getElements(info, 1) );
+		last =  gsub(REGEX_ALPHA_NUMERIC_NOT, "",
+						list.getLastElements(info) );
+		n = length(first);
+		option4 = option6 = option8 = option0 = character(n);
+		for(i in 1:n)
+			{
+			F = first[i]; 
+			L = last[i]; 
+			option4[i] = paste0(F, charAt(L, 1)); 	# MonteS 
+				if(F == L) { option4[i] = F; }
+			option6[i] = paste0(charAt(F, 1), L); 	# MShaffer
+				if(F == L) { option6[i] = L; }
+			option8[i] = F;							# Monte 
+			option0[i] = L;							# Shaffer 
+			}
+		option3 = tolower(option4);
+		option5 = tolower(option6);
+		option7 = tolower(option8);
+		option9 = tolower(option0);
+		
+		
+	options = list(option1, option2, 
+						option3, option4, 
+							option5, option6,
+								option7, option8,
+									option9, option0);
+	
+	x = choices; # cleansed
+	# y = option5; # preffered ... preferred 
+	if(option == 0) { option = 10; }
+	y = options[[option]];
+	names(y) = x;
+	y = property.set("options", y, options);
+	y;
+	}
+
+
+which.computer = function(use.cache = FALSE)
+	{
+	if(is.windows())
+		{
+		info = windows.get("id");
+		}
+	
 	## debian ...
 	# USER                    mshaffer
 	# R_SESSION_TMPDIR        /tmp/RtmpvyPJNj

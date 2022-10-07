@@ -128,7 +128,7 @@ js.b64 = function(input, method="encode")
 				NA2 = is.na(chr2);
 			if(NA2) { chr2 = 0; }
 				NA3 = is.na(chr3);
-			if(NA2) { chr3 = 0; }
+			if(NA3) { chr3 = 0; }
 					
 			enc1 = chr1 %>>% 2;
 			enc2 = ((chr1 %&% 3) %<<% 4) %|% (chr2 %>>% 4);

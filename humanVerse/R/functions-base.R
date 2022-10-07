@@ -52,12 +52,14 @@ base.convert = function(..., from=10, to=7)
 	# update to allow base64 
 	if(base == 64) { MAP = B64v; }
 	
-	# xstri = toupper(xstri); # bad news on B64 
-	xv = str.explode("",xstri);
+		# bad news on B64 
+	if(base != 64)
+		{ xstri = toupper(xstri); }
+	xv = str.explode("", xstri);
 	idx = set.match(xv, MAP) - 1;
 	n = length(xv);
 	p = base^((n-1):0);
-	
+	 
 	sum( idx * p ); 	
 	}
 	 

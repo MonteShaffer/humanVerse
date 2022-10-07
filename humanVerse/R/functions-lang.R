@@ -65,7 +65,7 @@ check.ansi = function(str)
 	has.ansi = FALSE;
 	if(!has.ansi)
 		{
-		str = strip.tags(str);
+		str = strip.Htags(str);
 		}
 	str;	
 	}
@@ -88,7 +88,7 @@ count.ansi = function(str)
 	uc = str.count("</u>", str);
 	b  = str.count("<b>", str);
 	bc = str.count("</b>", str);
-	l  = str.count("<bb>", str);
+	l  = str.count("<bb>", str); 
 	lc = str.count("</bb>", str);
 	f  = str.count("<fg", str);
 	fc = str.count("</fg>, str");
@@ -104,12 +104,28 @@ count.ansi = function(str)
 # ansi tags:  <i></i>  <u></u> <b></b> <bb></bb> 
 #             <fg #abcdef></fg>  <bg "red"></bg>
 #             <color fg="F33" bg="wsu:crimson"></color>
+# ansi16-windows:black ... easier to just say 0c0c0c ?
+# if hex ... hex => nearest neighbor 
+# <br>ight will just BUMP the current color + 85 on RGB[1,3]
+# I need to know what <br> is inside for current color ...
+# MAYBE ix-ney br ... Next arguments are 5;n or 2;r;g;b
+## <blink>  <so> strikethourhg
+# https://www.w3schools.com/tags/tag_strike.asp
+## <del>  <ins>   ... delete/ins ... <s> means EDIT: no longer correct ...
+## <code> ... or <sample>
+## <var>  ... formula 
+## <strong> ... <b> with meaning 
+## https://www.w3schools.in/html/blink-tag
+# if ":", look in library ...
+# if(not ":"), look in base ... 
+# if comma "," ... 0,1,2 ... determine range => 0/255 
+# if comman of length 4, assume c,m,y,k ... 
 # good practice, separate "\n\t" as BLANK
 # also good practice, separate "<i>", "CONTENT", "</i>"
 # parser will recognize as TAGS and *NOT* show them to translator
 # %s (variable) %w (whitespace) %t (tags) ... 
 # if an element is TAGGED, I don't send to translator 
-# "Welcome to the ", "<i>human<fg green>V</fg>erse!"
+# "Welcome to the ", "<i>human<fg green>V</fg>erse!</i>"
 # DESIGN RULES ... translator and color console in one swoop.
 # also allows for color once we move up to the WEB API ...
 # can also allow HELP to use color ...

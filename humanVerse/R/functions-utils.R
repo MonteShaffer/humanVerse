@@ -1051,10 +1051,15 @@ strip.tags = function(...)
 	{
 	str = prep.dots(...);
 	return(gsub("<.*?>", "", str));
+	} 
+	
+.sort = function(x, direction="DESCENDING", na.last=TRUE, ...)
+	{
+	D = prep.arg(direction, n=1, case="upper");
+# dput(D);
+	decreasing = TRUE; if(D == "A") { decreasing = FALSE; }
+	sort(x, decreasing=decreasing, na.last=na.last, ...);	
 	}
-	
-	
-
 
 
 touch = function(f)

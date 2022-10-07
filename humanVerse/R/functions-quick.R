@@ -182,7 +182,8 @@ dput(fns);
 			} else { stop("bad idx"); }
 		}
 	
-	init.settings();
+	._____init.settings();   
+	# init.settings();
 	} 
 
 cpp = "C:/_git_/github/MonteShaffer/humanVerse/HVcpp/src/";

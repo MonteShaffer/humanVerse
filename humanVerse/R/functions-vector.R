@@ -738,11 +738,15 @@ v.return = function(res)
 	if(length(res) == 0) 	{ return(NULL); }
 	res;	
 	}
-
+ 
+  
+	
+	
 v.first = function(vec, skip = 0)
 	{
 	vec[1 + skip];
 	}
+	
 v.last = function(vec, skip = 0)
 	{
 	n = length(vec);

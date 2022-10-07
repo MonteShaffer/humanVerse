@@ -1,10 +1,166 @@
 
+color.default = function(distinct = TRUE)
+	{
+	mkey 	= .MD5( as.character(distinct) );
+	df		= memory.get(mkey, "-COLORS-");
+	if(!is.null(df)) { return(df); } 
+	
+	colors	= sort(as.character( colors(distinct = distinct) ));
+	n 		= length(colors);
+	RGB 	= color.col2rgb(colors);
+	HEX 	= as.character( color.rgb2col(RGB) );
+	# HEX = color.convert(RGB, from="RGB", to="HEX");
+	
+	df = dataframe( cbind( colors, HEX ) );
+	df = cbind(df,	as.integer(RGB[1,]), 
+					as.integer(RGB[2,]), 
+					as.integer(RGB[3,]) );
+							
+	rownames(df) = 1:n;
+	colnames(df) = c("color", "hex", "red", "green", "blue");
+	
+	memory.get(mkey, "-COLORS-", df);
+	df;
+	}
+	
+color.baseHEX = function() {}	
+color.baseHEX = function(cnames = c("mediumvioletred", "deeppink", "deeppink2", "deeppink3", NA), B = color.default())
+	{
+	idx = set.match(cnames, B$color);
+	B$hex[idx];
+	}
+	 
+color.nearest = function() {}  
+# C0FFEE
+color.nearest = function(aHEX="#c8008c", B = color.default(), n=5)
+	{
+	# keep a memory ...  "89b284a63613278c9da2506f6ce43324"
+	mkey = .MD5( paste0( c(n, aHEX, B$hex), collapse="") );
+	res = memory.get(mkey, "-COLOR-NEAREST-");
+	if(!is.null(res)) 
+		{ 
+		.cat("Input was: ", aHEX);
+		res = property.set("input.was", res, aHEX);
+		return(res); 
+		}
+	
+	
+	# first see if it is the set ...
+	r = s = NULL;
+	idx = v.which(B$hex, aHEX);
+	if(!is.null(idx)) 
+		{ 
+		r = B$color[ idx ]; 
+		s = rep(1, length(idx));
+		}
+	r = v.fill(r, to.length=n, with=NA);
+	s = v.fill(s, to.length=n, with=NA);	
+	
+	# singleton RGB 
+	a = as.matrix( t(.hex2rgb(aHEX)) );	
+		colnames(a) = c("red", "green", "blue");
+		
+	b = as.matrix( cbind(B$red, B$green, B$blue) ) ;
+		rownames(b) = B$color;
+		colnames(b) = c("red", "green", "blue");
+	
+	cs = cosine.similarity(a/255,b/255);
+	xs = .sort(math.cleanup(cs), "DESC");
+	# ("black as 0,0,0") for cosine.similarity ... TROUBLE 
+	# maybe add a "fudge.factor" 
+	# "black" is unique, will get picked up on "exact" and "dist"
+	# "white" will match all GREAY, ... angle on the wheel ...
+	rcs = names(xs);
+	scs = as.numeric(xs);
+	# shouldn't need this... we will truncate at END 
+	rcs = v.fill(rcs, to.length=n, with=NA);
+	scs = v.fill(scs, to.length=n, with=NA);
+		
+		
+	
+	# expensive doing all pairwsie ... 
+	## I need a vec/matrix like cs ... 
+	## or generic distance that figures it out ...
+	## euclidean.norm?
+	di = matrix.dist( rbind(a/255,b/255) , method="euclidean");  
+	do = di[,1]; # row or column 
+	me = do[1]; not = do[-c(1)];
+		xd = .sort(math.cleanup(not), "ASC");
+	
+	rdi = names(xd);
+	sdi = as.numeric(xd);
+	
+	# shouldn't need this... we will truncate at END 
+	rdi = v.fill(rdi, to.length=n, with=NA);
+	sdi = v.fill(sdi, to.length=n, with=NA);
+	
+	cs = math.cleanup(cs);
+	not = math.cleanup(not);
+# .cat("MONTE");
+# dput.one(cs);  
+cs %GLOBAL% .; 
+# .cat("ALEX");
+# dput(not);		
+not %GLOBAL% .; 
+
+
+	# struggles with YELLOW ... RG = Y 
+	# or colors() is biased against yellow ? 
+	
+	
+	# do a weighting, to get a final score
+	logic = (cs == 1);
+	logic = v.TO(logic, NA, FALSE);
+	
+	fsc 		= not;
+	fsc[!logic] = (1-cs[!logic]) * not[!logic] * 100 * 100; 
+		fd = .sort(math.cleanup(fsc), "ASC");
+	rfi = names(fd);
+	sfi = as.numeric(fd);
+	## still not helping on "GRAYS" ... 
+	
+	
+	# not 'on' as RESERVED??
+	on = length(r);  # if it is larger than n, so be it ...
+	
+	r = r[1:on]; s = s[1:on]; h = color.baseHEX(r, B);
+	rcs = rcs[1:on]; scs = scs[1:on]; hcs = color.baseHEX(rcs, B);
+	rdi = rdi[1:on]; sdi = sdi[1:on]; hdi = color.baseHEX(rdi, B);
+	rfi = rfi[1:on]; sfi = sfi[1:on]; hfi = color.baseHEX(rfi, B);
+	
+	
+	df = dataframe( cbind(h, r) );
+	df = cbind( df, s, 
+					hcs, rcs, round(scs, 5), 
+					hdi, rdi, round(sdi, 3),
+					hfi, rfi, round(sfi, 5)
+					);
+	
+	colnames(df) = c(	"hex", "exact", 	"sim", 
+						"hex", "cosine",  	"sim", 
+						"hex", "euclidean", "dist",
+						"hex", "humanVerse",  "HVscore"
+						);
+			# there is no maroon5 ...
+			# Input was:  #A800A8 ... n = 33 
+			# 
+	res = df;
+	res = property.set("input.was", res, aHEX); 
+	 
+	memory.set(mkey, "-COLOR-NEAREST-", res);
+	
+	.cat("Input was: ", aHEX);
+	res;
+	}
+
+
 color.random = function(n=1, to="HEX", memory.key="-LAST-RANDOM-", seed=NULL)
 	{
 	TO = prep.arg(to, n=3, case="upper");
 	min = 0; max = (2^8)^3 - 1;
 		# seed, seed.set/get ... 
-		
+
+	
 	s = seed.set(seed);
 	r = rand(min, max, n=n)	
 		
@@ -534,9 +690,29 @@ dput(hexstr);
 color.convert = function(..., from="hex", to="cmyk")
 	{
 	x = prep.dots(..., default="#c8008c");
-	# first to RGB everything ... 
-	FROM = prep.arg(from, n=3, case="upper");
-	TO = prep.arg(to, n=3, case="upper");
+	 
+	
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.FROM = check.type(from);
+	if(!ct.FROM || !is.character(from))	
+		{ from = deparse(substitute(from)); } 
+##########################################################
+
+
+
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.TO = check.type(to);
+	if(!ct.TO || !is.character(to))	
+		{ to = deparse(substitute(to)); } 
+##########################################################
+
+	# first to RGB everything ... 	
+	FROM 	= prep.arg(from, n=3, case="upper");
+	TO 		= prep.arg(to,   n=3, case="upper");
 	 
 	RGB = switch(FROM,					  			
 					  "CMY" = .cmyk2rgb(x), 	# CMY

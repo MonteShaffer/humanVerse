@@ -25,8 +25,10 @@ math.cleanup = function(x, tol = DEFAULT_TOLERANCE, part="Re", method="round")
 				
 	# xi = as.integer(x);
 	d = x - xi;
-	dz = is.zero(d, tol=tol, part=part);
-	x[dz] = xi[dz];
+	logic = is.zero(d, tol=tol, part=part);
+	logic = v.TO(logic, NA, FALSE);
+	
+	x[logic] = xi[logic];
 	x;
 	}
 
@@ -252,15 +254,19 @@ gon2rad = function(...) { angle.convert(...,  from="G", to="R"); }
 .angular.similarity = function(a, b, return="similarity", set.properties=FALSE, cs=NULL, ...)
 	{
 	r = prep.arg(return, 1); # [s]imilarity or [d]istance 
+	
 	if(is.null(cs)) { cs = .cosine.similarity( a,b, ... ); }
-	if(is.nan(cs)) { return(NaN); } 
+	if(is.nan(cs)) 	{ return(NaN); } 
+	
 	# any element in either is negative
-	vector.neg = ( sum( is.negative(a,b) ) > 0 ); 
-	if(vector.neg)
+	logicNEG = .anyTRUE( is.negative( c(a,b) ) );
+	
+	
+	if(logicNEG)
 		{
-		ad = 1 * acos(cs) / pi;
+		ad = 1 * suppressWarning(acos(cs)) / pi;
 		} else	{
-				ad = 2 * acos(cs) / pi;
+				ad = 2 * suppressWarning(acos(cs)) / pi;
 				}
 	as = 1 - ad;  # ad = 1 - as; 
 	
@@ -297,7 +303,7 @@ gon2rad = function(...) { angle.convert(...,  from="G", to="R"); }
 	# Using control = "exact" (short for control = c("all", "hexNumeric")) comes closest to making deparse() an inverse of parse() (but we have not yet seen an example where "all", now including "digits17", would not have been as good). However, not all objects are deparse-able even with these options, and a warning will be issued if the function recognizes that it is being asked to do the impossible.
 	# SET DEFAULT to dput(pi, control="all") ... in my INIT() as an exacmple of messing with the base::defaults ...
 	
-	
+	 
 cosine.similarity = function(a, b=NULL, by="col", ...)
 	{	
 	# is.vector assumes there are not attributes attached ... 
@@ -305,6 +311,11 @@ cosine.similarity = function(a, b=NULL, by="col", ...)
 	if(is.dataframe(a)) { a = as.matrix(a); }
 	if(is.dataframe(b)) { b = as.matrix(b); }
 	adim = dim(a); bdim = dim(b);
+	# a one-row matrix, let's vectorize  
+	if(!is.null(adim) && adim[1] == 1) 
+		{ a = as.type(a, type=typeof(a)); adim = dim(a); }
+		
+		 
 	if(is.null(adim) && is.atomic(a) && !is.null(b) && is.null(bdim) && is.atomic(b))
 		{
 #cat("\n MONTE \n");
@@ -349,12 +360,12 @@ cosine.similarity = function(a, b=NULL, by="col", ...)
 	# maybe compare a vector to a matrix 
 	
 	v = NULL;
-	if(is.null(adim) && !is.null(bdim))
+	if(is.null(v) && is.null(adim) && !is.null(bdim))
 		{
 		v = a;
 		m = b;
 		}
-	if(!is.null(adim) && is.null(bdim))
+	if(is.null(v) && !is.null(adim) && is.null(bdim))
 		{
 		v = b;
 		m = a;
@@ -365,6 +376,9 @@ cosine.similarity = function(a, b=NULL, by="col", ...)
 #cat("\n NAT \n");
 		nv = length(v);	
 		mdim = dim(m);
+		## I can make this smarter, don't need by.row or col ...
+		## auto-detect ... unless
+		## nv = 3 and m = 3x3 ... 
 		if(by == "co" && (nv != mdim[1]))
 			{
 			if(nv != mdim[2]) { stop("bad dimensions, can't fix"); }
@@ -375,9 +389,12 @@ cosine.similarity = function(a, b=NULL, by="col", ...)
 			if(nv != mdim[1]) { stop("bad dimensions, can't fix"); }
 			if(nv == mdim[1]) { m = t(m); mdim = dim(m); } # just transpose 
 			}
+			
+			
 		## good dimensions ... everything by column ...
 		m.names = colnames(m);
 		n = ncol(m);
+		if(is.null(m.names)) { m.names = paste0("V",1:n); }
 		res = numeric(n);
 		d = s = res;
 		for(i in 1:n)

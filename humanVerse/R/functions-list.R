@@ -381,11 +381,26 @@ list.getLastElements = function(info)
 	idx = list.getLengths(info);
 	list.getElements(info, idx);
 	}
+	 
+
+list.checkIDX = function(info, posIDX)
+	{
+	PIDX = prep.arg(posIDX, n=2);	# allow non-numeric
+		logicL = v.test(PIDX, "la");	# last 
+		logicF = v.test(PIDX, "fi");	# first 
+		
+	posIDX[logicF] = 1;
+	posIDX[logicL] = list.getLengths(info[logicL]);	
+		posIDX = as.integer(posIDX);
 	
+	posIDX; # was a string, now a number ...
+	}
+
 # https://stackoverflow.com/questions/44176908/
 # get elements at same key
-list.getElements = function(info, n=1)
+list.getElements = function(info, n=1, unused=NULL)
 	{
+	
 	n.info = length(info);
 	if(!is.list(info)) { return(info[n]); }
 	if(n.info == 0) { return(NULL); }
@@ -393,6 +408,8 @@ list.getElements = function(info, n=1)
 	## ... this would be nice ... info[[,2]] or info[[*2]]
 	res = NULL;
 	if(length(n) != n.info) { n = rep(n, length.out=n.info); }
+	n = list.checkIDX(info, n); # strings "last" get IDX'd 
+	
 	for(i in 1:n.info)
 		{
 		res[i] = info[[i]][  n[i]  ];  # will put NA if missing here
@@ -412,6 +429,8 @@ list.setElements = function(info, n=1, vals=NULL)
 	## ... this would be nice ... info[[,2]] or info[[*2]]
 	res = NULL;
 	if(length(n) != n.info) { n = rep(n, length.out=n.info); }
+	n = list.checkIDX(info, n); # strings "last" get IDX'd 
+	
 	if(length(vals) != n.info) { vals = rep(vals, length.out=n.info); }
 	for(i in 1:n.info)
 		{
@@ -420,7 +439,31 @@ list.setElements = function(info, n=1, vals=NULL)
 	info;
 	}
    
+    
+# # > str(rows)
+ # chr [1:17, 1:17] "iterm" "iterm-pastel" "iterm-smoooooth" "iterm-snazzy" "iterm-solarized" "iterm-tango" "dichro" ...
+# > 
+## Bazaar-OOOO) ... rdf[,2:17] = toupper(rdf[,2:17]) .. .hex?
 
+list.dataframe = function(info, cnames=NULL)
+	{
+	# I have parallel lists that are "rows" in a dataframe
+	n.info = length(info); 
+	inames = names(info);
+	rows = NULL;
+	for(i in 1:n.info)
+		{
+		rows = rbind(rows, info[[i]]);
+		}
+	df = dataframe(rows);
+	if(!is.null(inames)) { colnames(df) = inames; }
+	if(!is.null(cnames)) { colnames(df) = cnames; }
+	rownames(df) = 1:n.info;  
+	df;
+	}
+	
+
+# I don't use this ...  
 list.getByIDX = function(info, idx, unused=NULL)
 	{
 	n.info = length(info); 

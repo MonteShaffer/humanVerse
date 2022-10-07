@@ -740,14 +740,8 @@ str.before = function(search, str, posIDX=1)
 	
 	pos = check.list(str.pos(search, str));
 		
-		PIDX = prep.arg(posIDX, n=2);	# allow non-numeric
-		logicL = v.test(PIDX, "la");	# last 
-		logicF = v.test(PIDX, "fi");	# first 
-		
-	posIDX[logicF] = 1;
-	posIDX[logicL] = list.getLengths(pos[logicL]);	
-		posIDX = as.integer(posIDX);
-		
+	posIDX = list.checkIDX(pos, posIDX); 
+	   
 	idx = list.getElements(pos, posIDX);
 	
 	# substring(str, idx+selen, slen);

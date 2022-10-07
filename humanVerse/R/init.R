@@ -1,4 +1,7 @@
-	
+
+# https://stackoverflow.com/questions/986937/how-can-i-get-the-browsers-scrollbar-sizes
+# https://www.thewindowsclub.com/how-to-change-scrollbar-width-in-chrome-and-firefox#:~:text=On%20the%20Options%20page%2C%20you,change%20the%20width%20of%20scrollbars.
+# NOT easy, why is that ... 	
 	
 	
 # onload
