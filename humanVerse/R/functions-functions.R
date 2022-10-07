@@ -1015,10 +1015,10 @@ function.arguments <- function() {
     # grabFunctionParameters #
     pf <- parent.frame()
     args_names <- ls(envir = pf, all.names = TRUE, sorted = FALSE)
-    if("..." %in% args_names) {
+    if("..." %in% args_names) { 
     dots <- eval(quote(list(...)), envir = pf)
     }  else {
-    dots = list()
+    dots = list() 
     }
     args_names <- sapply(setdiff(args_names, "..."), as.name)
     if(length(args_names)) {

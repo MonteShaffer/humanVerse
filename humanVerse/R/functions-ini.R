@@ -27,44 +27,23 @@ path.build = function(partial)
 	
 	}
 
-# inifilesORDERmatters = c("system/10-constants.ini","system/20-humanVerse.ini","system/30-ascii.ini", "system/40-runtime.ini");
 
-# ini.parseFiles(inifilesORDERmatters)
-
-
-# C:\_git_\github\MonteShaffer\humanVerse\humanVerse\inst\R\config
-
-ini.parseUserFiles = function(keys = "", user = "", use.cache = TRUE, smart.num = TRUE)
-	{
-	# this is a two-pass ... 
-	# one for generic 'user'
-	# one for specific user 'mshaffer' ... if (user != "")
-	
-	
-	}
-
-ini.parseSystemFiles = function(keys = "", use.cache = TRUE, smart.num = TRUE)
-	{
-	# keys = c("alias", "system", "number", "runtime")
-	# key == "" ... will scan and do all ... 
-	## this just parses, doesn't run them ... 
-	# scan folders in /inst/R/config/ ... not starting with "-"
-	# the folder is the master.name = "alias" ...
-	# create reserved words ALIAS = ... parsed object 
-	# scan files in 'master' folder, sortby ASC so 10 goes first 
-	
-	
-	
-	}
-
- 
+ini.parseFiles = function() {} 
 ini.parseFiles = function(inifilesORDERmatters, 
 							master = "cache/ini/master.rds", 
-							use.cache = TRUE, smart.num = TRUE, ...)
+							use.cache = TRUE, smart.num = TRUE, ...) # other params to ini.parse 
 	{
+	.%THIS%.	 
+#  dput(THIS);  
+stop("monte");
+  
 	uniqid = .uniqid();	 
 	TIMESTAMP = .timestamp("YYYY-MM-DD");
 	 
+
+
+
+
 	## full paths at this level 
 	
 	mf = master; 
@@ -90,7 +69,8 @@ ini.parseFiles = function(inifilesORDERmatters,
 	
 ######	openSesame(log);
 	
-	.%THIS%.	
+	.%THIS%.	 
+dput(THIS); 
 	cat.log( log, "--FUNCTION_INFO--" );
 	cat.dput(THIS, log);
 	
@@ -198,7 +178,8 @@ opartials = "";
 
 ._____main = function() {}
 			# ostem is wrong ... 80-number.i ... subtraction?
-			RES = ini.parse(instring, fname = fstem, MEMORY = MEMORY, smart.num=smart.num);  
+			
+			RES = ini.parse(instring, fname = fstem, MEMORY = MEMORY, smart.num=smart.num, ...);  
 			
 			# log it, backup, and so on ...
 				check.dir(out.copy);
@@ -472,7 +453,7 @@ if(verbose)
 			{ 
 .__multiline.COMMENT = function() {} 
 			# line.no %++%.;   line = lines[ line.no ];
-		
+		 
 		### TWICE as FAST on the SLOW one... asciii 
 		### TAKES about 40 seconds ... 
 		### need to grab ASCII art from WEB within 

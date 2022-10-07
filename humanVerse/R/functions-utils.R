@@ -323,6 +323,11 @@ gggassign = function(key, val)
 
 
 
+testme = function(use.cache = TRUE, ...)
+	{
+	.%THIS%.;
+dput.one(THIS);
+	}
 
 
 # this = function(...) { print(sys.call(1)); }
@@ -340,7 +345,7 @@ gggassign = function(key, val)
 	key = NULL;
 	if(is.null(key) && !ct.KEY) 
 		{
-		key = parent.frame(DEFAULT_FRAME);		
+		key = parent.frame(DEFAULT_FRAME);		 
 		}
 	if(is.null(key) && is.environment(KEY))
 		{
@@ -366,11 +371,12 @@ gggassign = function(key, val)
 	# parse key/val ... get what we want 
 	# key is envir 
 	# val is call with parameters 
-	# 
-
-	fn = sys.calls()[[sys.nframe()-1]];  # close 
 	# parent.call = sys.call(sys.nframe() - 1L);  # equivalent?
-	finfo = parse.syscall(fn);
+	fn = sys.calls()[[ sys.nframe()-1 ]];   
+
+dput.one( lang2str(fn) ); 
+
+	finfo = parse.syscall(fn, pf=key);
 	# can we get the df = iris ... 
   
 	if(deparse.call)
@@ -392,7 +398,7 @@ gggassign = function(key, val)
 	}
 	
 
-
+"%THIS%" = .THIS.;
 
 
 

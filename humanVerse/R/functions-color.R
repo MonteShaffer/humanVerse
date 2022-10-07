@@ -304,7 +304,7 @@ hexcolor.wheel = function(..., steps=12, base.names=FALSE, alpha=FALSE, skip.che
 		# up to, but not 7, will work ...
 		cat.warning("wheel steps must be evenly divisible into 360, ... updating with a nearby value that meets that criteria.");
 		steps = int.round(steps, by=6, how="integer");
-		}
+		} 
 		
 	one.step = 360 / steps;	
 	degrees = seq(0, 360-one.step, by=one.step);
@@ -312,7 +312,7 @@ hexcolor.wheel = function(..., steps=12, base.names=FALSE, alpha=FALSE, skip.che
 	
 	
 	hsl = hex2hsl(vecHEX);
-
+ 
 	n = length(vecHEX);
 	res = vector("list",n);
 	for(i in 1:n)

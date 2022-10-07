@@ -8,7 +8,7 @@ init.assign = function(key, val, WHERE=.GlobalEnv)
 	
 
 
-alias.init = function(use.cache=TRUE, recursive=FALSE)
+alias.init = function(use.cache = TRUE, recursive=FALSE)
 	{
 	if( !is.defined(B64LIST) ) { ._____init.settings(); }
 	# recursive is  /config/alias/* , /config/user-alias.ini , /config/{mshaffer}-alias.ini 
@@ -33,7 +33,8 @@ alias.init = function(use.cache=TRUE, recursive=FALSE)
 #############
 	if(!file.exists_(a.rds) || !use.cache)
 		{
-		ALIAS = ini.parseFiles(a.files, a.rds, use.cache = use.cache);
+		ALIAS = ini.parseFiles(a.files, a.rds, 
+								use.cache = use.cache);
 		} else {
 				ALIAS = readRDS(a.rds);
 				} 
@@ -245,6 +246,9 @@ system.init = function(use.cache=TRUE, recursive=FALSE)
 				SYSTEM = readRDS(s.rds);
 				} 
 
+
+### SYSTEM = ini.parseFiles(s.files, master = s.rds, use.cache = use.cache, verbose=FALSE, test.skip=3);
+
 	## for now ... 
 	system.process(SYSTEM);
 	invisible(SYSTEM);
@@ -299,6 +303,10 @@ system.process = function(SYSTEM=list())
 ##############
 return(NULL);
 ############## 
+
+	alias.init();
+	number.init();
+	system.init();
 
 # JSON walk ... walk start("[" ... walk until ... "]" ... but you have to transverse each and make certain others are not found ... or use REGEX ... streaming idea is a "walk" .... could use str.between("[", line, "]" ... if result has another "[", keep going with a longer offset or "skip" ... skip as in pos ....  
 
@@ -444,8 +452,10 @@ return(NULL);
 	
 	}
 
-._____init.systemALIASES = function()
+._____init.systemALIASES = function(force = FALSE)
 	{
+	if(!force && is.defined(ord)) { return(invisible(NULL));}
+	
 	# alias.set = function(to="ceil", from="base::ceiling", WHERE=.GlobalEnv)
 	
 	# so alias.init() will work on its own, 
@@ -453,13 +463,17 @@ return(NULL);
 	alias.set(to='"%THIS%"',		from = ".THIS.");
 	alias.set(to='"%GLOBAL%"', 		from = ".GLOBAL.");
 	
-	# readTextFile
+	# readTextFile 
 	alias.set(to='"%+=%"', 			from = ".PLUS_EQUAL.");
 	alias.set(to='"%++%"', 			from = ".PLUS_PLUS.");
+	  
+	# .THIS.
+	alias.set(to='"%-=%"', 			from = ".MINUS_EQUAL.");
+	alias.set(to='"%--%"', 			from = ".MINUS_MINUS.");
 	
 	alias.set(to='suppressWarning', from = "suppressWarnings");
 	
-	# js.b64 
+	# js.b64  
 	alias.set(to='ord', from = "utf8ToInt");
 	alias.set(to='chr', from = "intToUtf8");
 	
@@ -467,12 +481,16 @@ return(NULL);
 	alias.set(to='"%<<%"', 	from = ".SHIFT_L.");
 	alias.set(to='"%&%"', 	from = ".AND.");
 	alias.set(to='"%|%"', 	from = ".OR.");
+	
+	# .b64_hex 
+	alias.set(to='num.round', from = "int.round");
 
 	
 	}
 	
-._____init.systemCONSTANTS = function()
+._____init.systemCONSTANTS = function(force = FALSE)
 	{
+	if(!force && is.defined(B64LIST)) { return(invisible(NULL));}
 	# basic constants that can't pass through well into R from a 'parsed' INI file ... the  'Я' BACKSLASH issue 
 	
 	## ... PLUS ... STRINGS used for PARSER manipulation ...
@@ -485,6 +503,8 @@ return(NULL);
 	############# BASE_XX (0:32) #############
 	BXX			= "0123456789ABCDEFGHIJKLMNOPQRSTUV";
 	BXXv		= str.explode("", BXX);
+		# needed for function `int2base` below	
+		assign("BXXv", BXXv, envir = .GlobalEnv);
 	
 	Bits64		= int2base(0:63, base=2);
 	SI_PREFIX 	= num.SIunits("regular");
@@ -511,6 +531,17 @@ return(NULL);
 				TAB 				= "\t",
 				NEWLINE 			= "\n",
 				EOL 				= "\r\n",
+				
+				EXT					= ".",
+				EMPTY				= "",
+				DIR_LINUX			= "/",
+				DIR_WINDOZE			= "\\",
+				DOUBLE_SLASH		= "//",
+				
+				# alias.init()
+				SLASH				= "/",
+				DEFAULT_TIMEZONE	= "UTC",
+				
 				VSEP 				= "\\./",
 				HUMANVERSE_SEP		= "\\./"
 				);

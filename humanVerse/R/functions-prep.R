@@ -22,34 +22,67 @@ prep.msg = function(...,  type="msg", out="paste0", sep=" ")
 	}
 	 
 
-parse.syscall = function(syscall)
+parse.syscall = function(syscall, pf=NULL)
 	{
-	# none of these functions can have dots (...)  ::: prep.dots(...)
-	# that wasn't the recursion problme ...
-	str 	= lang2str(syscall);
-############ dput(str);  # stop("monte");
-	#info 	= strsplit(str, "(", fixed=TRUE)[[1]];
-	#fn 		= trimws(info[1], which="both");			
+debug = TRUE;
+ 
+	str 	= paste0(lang2str(syscall), collapse=""); 
+	
 	info	= str.explode("(", str);
-	fn		= str.trim(info[1], "BOTH");
+	fn		= str.trim(info[1]);
 
-	# str.before/str.after would work nicely ... 
-	# put everything back but the function call 
+debug = (fn == "ini.parseFiles");
+.cat("debug ", debug, " for fn : ", fn); 
+
+	has.dots = FALSE;
+	if(!is.null(pf))
+		{
+		nms = ls(envir = parent.frame(2L), all.names = TRUE, sorted = FALSE);
+		
+		# nms = ls(envir = pf, all.names = TRUE, sorted = FALSE);
+		not = setdiff(nms, "...");   # not dots 			
+		if("..." %in% nms) { has.dots = TRUE; }
+			# eval(parse(text=not[i]), envir = pf);
+			# eval(quote(list(...)), envir = pf);
+if(debug)
+	{
+	# fno = match.fun(fn); 
+dput(fn);
+	# mc = match.call(fno, call = sys.call(sys.parent(2L)), envir=pf);
+# dput(mc);
+.cat(" ... NAMES ... "); 
+dput(nms);
+dput(has.dots);
+dput(not);
+	} 
+		}
+
 	nstr 	= str.implode("(", info[-c(1)] );
-	#nstr = str.replace(")", "", nstr);
 	nstr 	= str.ends(")", nstr, trim=TRUE);
-	   
-	ninfo = strsplit(nstr, ",", fixed=TRUE);
-	minfo = strsplit(ninfo[[1]], "=", fixed=TRUE);
+
+	# this could be a problem on a nested list with commas ... 
+	ninfo = check.list(str.explode("," , nstr));
+	minfo = str.explode("=", ninfo[[1]]);
 	
-	pkeys = str.replace('"', "", list.getElements(minfo, 1) );
-	pkeys = trimws(pkeys, which="both");
+	pkeys = str.trim( 
+				str.replace('"', "", 
+					list.getElements(minfo, 1) ) );
+
+	# pvals = list.getElements(minfo, 2); # maybe not strings?
 	
-	pvals = list.getElements(minfo, 2);
+	# NA if not a match to the pkeys before ... no value 
+	pvals = str.trim( 
+				str.replace('"', "", 
+					list.getElements(minfo, 2) ) );
+
+	
 	dot.vals = NULL;
 	
 	
-
+if(debug)
+	{
+.cat("pkeys: ", pkeys, "\t pvals: ", pvals);
+	}
 	
 	f = as.list(formals(fn));
 	keys = names(f);
@@ -59,44 +92,103 @@ parse.syscall = function(syscall)
 	fkeys = NULL;		# above may be out of order ... 
 	n = length(keys);
 	pskip = 0;
+	Types = character(n);
 	for(i in 1:n)
 		{		
 		key = keys[i];
-		val = f[[key]];		ct.VAL = check.type(val);
-		if(!ct.VAL) { val = "--EMPTY--"; }
+		val = f[[key]];		
+			ct.VAL = check.type(val);
+		if(!ct.VAL) { val = "--EMPTY--"; Types[i] = "";} 
+				else {Types[i] = property.get("typeof", ct.VAL);}
+			
 		form[[key]] = val;
 		}
 		
+if(debug)
+	{
+.cat("form: ", form, "\n\n\t Types: ", Types);
+	}
+
 
 	
 	withV = v.which(pvals, NA, invert=TRUE);
 
-# if(fn == "v.chain") { print(str(form)); print(withV); }
-	
+	# loop over "formals" keys ... expand dots 
+	dot.data = list();
 	for(i in 1:n)
 		{		
-		key = keys[i];
-		pidx = i + pskip;
-		pkey = fkeys = pkeys[pidx]; 
+		Type 	= Types[i];
+		key 	= keys[i];
+		pidx 	= i + pskip;
+		pkey 	= fkeys = pkeys[pidx]; 
 		if(is.na(fkeys)) { fkeys = NULL; }
 		if(key != "...")
 			{
 			pval = pvals[pidx]; 
+			  
+if(debug) 
+	{ 
+.cat(" ===> ???", "\t key: ", key, "\t pkey: ", pkey, "\t pval: ", pval, "\t form[[key]]:", form[[key]]);	
+	}
+	  
 			
-if(fn == "CDF") { cat("\n\n key: ", key, " \t pidx :", pidx, " \t pkey :", pkey, " \t pval :", pval, "\n\n"); 	}
-	
-			
-			if(!is.na(pval))
+			logic = (key == pkey);
+			idx = v.which(not, pkey);	
+			# use.cache = use.cache 
+			hasValue = FALSE;
+			if(!hasValue && logic && !is.null(idx))
 				{
-				params[[ key ]] = eval(parse(text=pval));
-				} else {
-						params[[ key ]] = eval(pkey);
-						}
+				test = eval(parse(text=not[idx]), envir=pf);
+				
+if(debug)
+	{
+.cat(" ===> 1", "\t key: ", key, "\t pkey: ", pkey, "\t pval: ", pval, "\t form[[key]]:", form[[key]]);
+.cat(test);
+	}
+				params[[ key ]] = test;
+				hasValue = TRUE;
+				}
+				
+			if(!hasValue && logic && !is.na(pval))
+				{
+				test = eval(parse(text=pval));
+				if(Type != "") { test = as.type(test, type=Type);}
+
+if(debug)
+	{
+.cat(" ===> 2", "\t key: ", key, "\t pkey: ", pkey, "\t pval: ", pval, "\t form[[key]]:", form[[key]]);
+.cat(test); 
+	}
+				if(!.anyNA(test)) { params[[ key ]] = test; }
+				hasValue = TRUE;
+				}
+				
+			if(!hasValue && (logic || is.na(pval)) )
+				{
+				test = eval(parse(text=pkey));
+				if(Type != "") { test = as.type(test, type=Type);}
+if(debug)
+	{ 
+.cat(" ===> 3", "\t key: ", key, "\t pkey: ", pkey, "\t pval: ", pval, "\t form[[key]]:", form[[key]]);
+.cat(test);
+	}
+				if(!.anyNA(test)) { params[[ key ]] = test; }
+				hasValue = TRUE;
+				}
+		
+
+
+				# it is one of the ... dots 
+				if(!hasValue) { pskip %--%. ; next; }
+				
 			}
 		if(key == "...")
 			{			
 			nkey = keys[i+1]; 
- if(fn == "CDF") { cat("\n\n key: ", key, " \t pidx :", pidx, " \t pkey :", pkey, " \t pval :", pval, " \t nkey :", nkey, "\n\n"); 	}
+if(debug)
+	{ 
+.cat("key: ", key, " \t pidx :", pidx, " \t pkey :", pkey, " \t pval :", pval, " \t nkey :", nkey);
+ 	}
 				if(is.na(nkey)) { nkey = "kdsfjklsdj093-"; }
 			if(!is.na(pkey))  # na if nothing inside 
 				{
@@ -116,7 +208,12 @@ if(fn == "CDF") { cat("\n\n key: ", key, " \t pidx :", pidx, " \t pkey :", pkey,
 					if(is.na(pkey)) { pskip %--%. ; break; }  # out pf pkeys ... 
 					if(nkey != pkey) 
 						{ 
-if(fn == "CDF") { cat("\n\n key: ", key, " \t pidx :", pidx, " \t pkey :", pkey, " \t pval :", pval, " \t nkey :", nkey, " \t pskip :", pskip, "\n\n"); 	}
+ 
+
+if(debug)
+	{ 
+.cat("key: ", key, " \t pidx :", pidx, " \t pkey :", pkey, " \t pval :", pval, " \t nkey :", nkey, " \t pskip :", pskip); 	
+	}
 
 						fkeys = c(fkeys, pkey); 
 						dot.vals = c(dot.vals, eval(pkey));
@@ -124,17 +221,14 @@ if(fn == "CDF") { cat("\n\n key: ", key, " \t pidx :", pidx, " \t pkey :", pkey,
 					}
 				}
 			}
+			
 		map[[key]] = fkeys; 
 		}
-	
 
-#dput(map);
  
 	fkeys = NULL;
 	if(!is.null(map[["..."]])) { fkeys = map[["..."]]; }
 	# trimws collapses list, strsplit DOESN'T collapse list 
-	# ARGH!?DSM
-	# trimws(strsplit(ninfo, "=", fixed=TRUE), which="both");
 	
 	res = list(
 				"fn" 		= fn, 
@@ -145,7 +239,12 @@ if(fn == "CDF") { cat("\n\n key: ", key, " \t pidx :", pidx, " \t pkey :", pkey,
 				"formals" 	= form
 				);
 
-# if(fn == "CDF") { print(str(res)); }
+
+if(debug)
+	{ 
+print(str(res)); 
+	}
+	
 	res;
 	}
   
@@ -170,7 +269,7 @@ debug = FALSE;
 									msg="debug prep.dots "
 							);
 		if(is.error(r)) { r = list(...); }
-dput.one(r);
+# dput.one(r);
 		# if it has a structure ... return it ... 
 		# dots = unlist(o);
 #dput.one(dots);
@@ -179,19 +278,17 @@ dput.one(r);
 			{ dots = default; }
 		return( dots );  
 	 	}
-
  
-	
+ 
+	  
 	
 	BY = prep.arg(by, n=3);  # don't know if we still need this 
 		
 	## EQUIV:: # # parent.call = sys.call(sys.nframe() - 1L);
-	fn = sys.calls()[[sys.nframe()-1]]; 
-	finfo = parse.syscall(fn);
+	fn 		= sys.calls()[[ sys.nframe()-1 ]];
 
-#dput(fn);	
-#dput(finfo);
-#stop("monte");	
+	finfo 	= parse.syscall(fn, parent.frame(1));
+
 	# what is has.objects?
 	if(is.null(dots) && has.objects) 
 		{
@@ -199,10 +296,6 @@ dput.one(r);
 		dots = finfo$dot.keys; # just strings 
 		} else { o = list(...);	}
 		
-# dput(dots);
-# stop("monte");
-
-
 	if(is.null(dots))
 		{ 
 		dots = o;

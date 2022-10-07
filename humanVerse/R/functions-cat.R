@@ -18,16 +18,16 @@ clear.warning = warning.clear;
 
 
 # https://stackoverflow.com/questions/9596918/r-warning-wrapper-raise-to-parent-function
-cat.warning = function(..., sep=" ")
+cat.warning = function(..., sep=" ", call. = FALSE, immediate. = TRUE)
 	{
 	str = prep.dots(...);
 	res = paste0(str, collapse=sep);
 	res = cat.color(res);
-	
+	 
 	parent.call = sys.call(sys.nframe() - 1L);
 	res = paste("In", deparse(parent.call), ":", res);
 	# res = str.wrap(); 
-	warning( res , call.=FALSE);	
+	warning( res , call.=call., immediate.=immediate.);	
 	}
 
 
@@ -90,10 +90,10 @@ log.cmd = function(what = "ping", id, res, open=FALSE)
 	invisible(o);
 	} 
    
-cat.log = function(file, str, sep="\n", append=TRUE)
+cat.log = function(file, ..., sep="\n", append=TRUE)
 	{
 	# ... logic is lost ... 
-	cat(str, file=file, sep=sep, append=append);		
+	cat(..., file=file, sep=sep, append=append);		
 	}
 	  
   
@@ -111,7 +111,7 @@ cat.dput = function(obj, file, one.line=FALSE, sep="\n", append=TRUE)
 
  
 .cat = function(..., sep="\n\n", psep = "", indent=0, color=TRUE)
-	{
+	{ 
 	strs = prep.dots(...);
 	strs = paste0(strs, sep=psep); # unaltered normally?
 	if(indent > 0)
@@ -227,7 +227,8 @@ strip.Htags = function(...)
 	# WP 5 ... yello FBFB53 ... purplbe? A100B4 ... pink (?) teal (00A8AF)  
 	## yellow not doing well... coffee ... C0FF3E
 	## C0FFEE ... 10 DIMS >>> 3 RGB DIMS (HSL and CMYK) 
-	## more scale, more features ... 
+	## more scale, more features ... DIMS !== DIMMS (RAM)
+	
 
 	# https://archive.org/download/msdos_shareware_fb_VMSYS30/msdos_shareware_fb_VMSYS30.gif
 	# vmsys, green = 55ff55, darkgreen = 02aa03, yellow = ffff55, lightblue = 55ff55, teal = 00aaaa, red = ff5555, gray = aaaaaa, 

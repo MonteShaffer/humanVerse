@@ -7,8 +7,11 @@
 # onload
 init = function() 
 	{
-	SESSION = .uniqid();  # "1665030597.434142.8b803"
-	SESSION %GLOBAL%. ;
+	SESSION_HV = .uniqid();  # "1665150822.487980.8254b"
+	SESSION_HV %GLOBAL%. ;
+	
+	SESSION_R = .session();	 # "WKDevo" ==> "58a0debe8" ... debbie dallas?
+	SESSION_R %GLOBAL%. ;
 	
 	memory.init();
 	
