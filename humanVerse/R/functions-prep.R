@@ -109,23 +109,29 @@ if(debug)
 	
 	# what if they "split the dots" ... 
 	# we need to do an ordering ... 
-	
-# Type == "" ===> means FIXED order or dots ... can't move ...
-
+# move DOTS to the END ... KEEP them there ... 
 dotsIDX = v.which(keys, "...");  # maybe NULL 
-.cat("dots"); 
-dput(dotsIDX);
-typeIDX = v.which(Types, ""); # maybe NULL;	
-.cat("types"); 
-dput(typeIDX);
+
+nkeys = keys; 
+if(!is.null(dotsIDX)) 
+	{ nkeys = c(keys[-c(dotsIDX)], keys[dotsIDX]); }
 	
-	idx = set.match(keys, pkeys);
-.cat("matched"); 
-dput(idx);
-	idx = set.match(pkeys, keys);
-.cat("reverse matched"); 
-dput(idx);
 	
+idx = set.match(nkeys, keys);
+
+dput(keys);
+dput(nkeys);
+dput(idx);
+dput(Types);
+
+# update all of the lists to the same index ...
+Types = Types[idx];
+pkeys = pkeys[idx];
+pvals = pvals[idx];
+keys = nkeys;
+
+dput(Types);
+
 .__while.loop = function() {}
 	while(length(keys) >= 1)
 		{	
@@ -138,12 +144,102 @@ if(debug)
 .cat("pkeys: ", pkeys, "\t pvals: ", pvals);
 	}
 	if(length(pkeys) == 0) { break; } # out of pkeys ... 
-
+  
 		Type 	= Types[1];
 		key 	= keys[1];
 		pkey 	= pkeys[1];
 		pval 	= pvals[1];
 
+
+		if(Type == "" && key != "...")
+			{
+			test 			= eval(parse(text=pkey));
+			params[[ key ]] = pkey;
+			map[[key]] 		= test;
+	
+.__CASE_Type = function() {}
+
+if(debug) 
+	{ 
+.cat(" ===> TYPE", "\t key: ", key, "\t pkey: ", pkey, "\t pval: ", pval, "\t form[[key]]:", form[[key]], "\n\n\t\t\t test", test);	
+	}
+	
+			Types 	= v.empty(Types, 1);
+			keys 	= v.empty(keys,  1);
+			pkeys 	= v.empty(pkeys, 1);
+			pvals 	= v.empty(pvals, 1);
+			
+			next;
+			}
+			
+		if(key != "...")
+			{
+			# we have to map key to pkeys/pvals ... if found 
+			pidx = v.which(pkeys, key);
+			if(is.null(pidx))
+				{
+.__CASE_notFOUND = function() {}
+
+if(debug) 
+	{ 
+.cat(" ===> NOT FOUND", "\t key: ", key, "\t pkeys: ", pkeys);	
+	}
+
+				# key not found, let's skip and move on ...
+				# keys/Types are from formals, not pkeys (actual)
+				Types 	= v.empty(Types, 1);
+				keys 	= v.empty(keys,  1); 
+				
+				next;
+				}
+
+			
+			pkey = pkeys[pidx];
+			pval = pvals[pidx];
+			
+			test = eval(parse(text=pval));
+			test = as.type(test, type=Type); 
+			
+			params[[ key ]] = pval;
+			map[[key]] 		= test;
+
+.__CASE_FOUND = function() {}
+
+if(debug) 
+	{ 
+.cat(" ===> FOUND", "\t key: ", key, "\t pidx: ", pidx, "\t pkey: ", pkey, "\t pval: ", pval, "\t form[[key]]:", form[[key]], "\n\n\t\t\t test", test);	
+	}
+
+				
+			Types 	= v.empty(Types, 1);
+			keys 	= v.empty(keys,  1);
+			pkeys 	= v.empty(pkeys, pidx);
+			pvals 	= v.empty(pvals, pidx);
+				
+			next;
+			}			
+
+		# just dots left ...
+		#stop("monte"); 
+.__CASE_DOTS = function() {}
+		
+			pval = v.smartType(pval);			
+			dot.data[[pkey]] = pval;
+		
+
+if(debug) 
+	{ 
+.cat(" ===> DOTS", "\t key: ", key, "\t pkey: ", pkey, "\t pval: ", pval, "\n\n\t\t\t dots.data", dots.data);	
+	}		
+			
+			pkeys 	= v.empty(pkeys, 1);
+			pvals 	= v.empty(pvals, 1);
+				
+			next;
+			
+			
+			
+			
 		
 # maybe "out of order", but I think THIS takes care of any order ... 		
 		if(key != "...")
