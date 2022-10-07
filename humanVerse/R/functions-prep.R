@@ -76,7 +76,6 @@ dput(not);
 					list.getElements(minfo, 2) ) );
 
 	
-	dot.vals = NULL;
 	
 	
 if(debug)
@@ -182,14 +181,28 @@ if(debug)
 				if(!hasValue) { pskip %--%. ; next; }
 				
 			}
+		
 		if(key == "...")
-			{			
-			nkey = keys[i+1]; 
+			{
+			# if pkey is a regular key, not dots, get out of here!
+			if(pkey %in% keys) { next; }
+			
+			pval = v.smartType(pval);
+			
 if(debug)
 	{ 
-.cat("key: ", key, " \t pidx :", pidx, " \t pkey :", pkey, " \t pval :", pval, " \t nkey :", nkey);
- 	}
-				if(is.na(nkey)) { nkey = "kdsfjklsdj093-"; }
+.cat(" ---> ???", "\t\t ", key, " \t pidx :", pidx, " \t pkey :", pkey, " \t pval :", pval, " \t typeof(pval) :", typeof(pval) ); 
+ 	}  
+			
+			hasValue = FALSE;
+			if(!hasValue && !is.na(pval))
+				{				
+				# we don't know its type? so just character ...
+				dot.data[[pkey]] = pval; 
+.cat(" ---> 1   ", dot.data);	
+				hasValue = TRUE;
+				}
+			
 			if(!is.na(pkey))  # na if nothing inside 
 				{
 				if(nkey != pkey) 

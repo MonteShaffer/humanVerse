@@ -35,7 +35,7 @@ ini.parseFiles = function(inifilesORDERmatters,
 	{
 	.%THIS%.	 
 #  dput(THIS);  
-stop("monte");
+stop("monte"); 
   
 	uniqid = .uniqid();	 
 	TIMESTAMP = .timestamp("YYYY-MM-DD");
@@ -995,6 +995,7 @@ if(test.mode)
 ############################### one WHILE ##################
 		}
 
+.__smart.type = function() {}
 	# nval = str.trim(nval);
 	nval_ = str.trim(nval);
 	if(smart.num) 

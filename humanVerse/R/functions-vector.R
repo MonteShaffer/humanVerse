@@ -121,6 +121,24 @@ v.shortTypes = function(types, force.odd=TRUE)
 	}
 	
 
+v.smartType = function(vec)
+	{
+	nbool = check.boolean(vec);
+	if(.allTRUE(nbool)) { return( as.logical(vec) ); }
+	
+	
+	nnum = check.number(vec);
+	if(!.allTRUE(nnum)) { return(vec); } # can't be SMART
+	
+	# I can't distinguish integer from numeric easily 
+	vec  = as.numeric(vec);
+	ivec = as.integer(vec);
+		
+	logic = is.equal(vec, ivec);  # some TOLERANCE 	
+	if(.allTRUE(logic)) { return( as.integer(vec) ); }
+	
+	vec;	
+	}
 
 # this is univariate
 v.type = function(vec)
