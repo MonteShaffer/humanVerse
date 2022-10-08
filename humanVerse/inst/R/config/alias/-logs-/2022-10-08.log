@@ -1,0 +1,102 @@
+#............   START -INI- LOG ENTRY   ............###{humanVerse}#####
+2022-10-08\./13:56:28 GMT+0000
+1665237389
+2022-10-08
+1665237388.637470.4efd1
+--FUNCTION_INFO--
+list(envir = "<environment>", call = "ini.parseFiles(a.files, a.rds, use.cache = use.cache)", 
+    fn.info = list(fn = "alias.init", dot.data = list(), params = list(), 
+        map = list(... = list()), formals = list(use.cache = TRUE, 
+            recursive = FALSE)))
+--FILES--
+character(0)
+#............   START -INI- LOG ENTRY   ............###{humanVerse}#####
+2022-10-08\./14:00:27 GMT+0000
+1665237628
+2022-10-08
+1665237627.895651.77efb
+--FUNCTION_INFO--
+list(envir = "<environment>", call = "alias.init()", fn.info = list(
+    fn = "ini.parseFiles", dot.data = list(a.rds = NA_character_), 
+    params = list(inifilesORDERmatters = "a.files", use.cache = "use.cache"), 
+    map = list(inifilesORDERmatters = character(0), use.cache = FALSE, 
+        ... = list(a.rds = NA_character_)), formals = list(inifilesORDERmatters = "--EMPTY--", 
+        master = "cache/ini/master.rds", use.cache = TRUE, smart.num = TRUE, 
+        ... = "--EMPTY--")))
+--FILES--
+character(0)
+#............   START -INI- LOG ENTRY   ............###{humanVerse}#####
+2022-10-08\./14:04:12 GMT+0000
+1665237853
+2022-10-08
+1665237852.643599.66523
+--FUNCTION_INFO--
+list(envir = "<environment>", call = "alias.init()", fn.info = list(
+    fn = "ini.parseFiles", dot.data = list(a.rds = NA_character_), 
+    params = list(inifilesORDERmatters = "a.files", use.cache = "use.cache"), 
+    map = list(inifilesORDERmatters = character(0), use.cache = FALSE, 
+        ... = list(a.rds = NA_character_)), formals = list(inifilesORDERmatters = "--EMPTY--", 
+        master = "cache/ini/master.rds", use.cache = TRUE, smart.num = TRUE, 
+        ... = "--EMPTY--")))
+--FILES--
+character(0)
+#............   START -INI- LOG ENTRY   ............###{humanVerse}#####
+2022-10-08\./14:06:00 GMT+0000
+1665237960
+2022-10-08
+1665237960.257864.2d5c7
+--FUNCTION_INFO--
+list(envir = "<environment>", call = "alias.init()", fn.info = list(
+    fn = "ini.parseFiles", dot.data = list(a.rds = NA_character_), 
+    params = list(inifilesORDERmatters = "a.files", use.cache = "use.cache"), 
+    map = list(inifilesORDERmatters = character(0), use.cache = FALSE, 
+        ... = list(a.rds = NA_character_)), formals = list(inifilesORDERmatters = "--EMPTY--", 
+        master = "cache/ini/master.rds", use.cache = TRUE, smart.num = TRUE, 
+        ... = "--EMPTY--")))
+--FILES--
+character(0)
+#............   START -INI- LOG ENTRY   ............###{humanVerse}#####
+2022-10-08\./14:06:31 GMT+0000
+1665237991
+2022-10-08
+1665237991.112194.15cb2
+--FUNCTION_INFO--
+list(envir = "<environment>", call = "alias.init()", fn.info = list(
+    fn = "ini.parseFiles", dot.data = list(a.rds = NA_character_), 
+    params = list(inifilesORDERmatters = "a.files", use.cache = "use.cache"), 
+    map = list(inifilesORDERmatters = character(0), use.cache = FALSE, 
+        ... = list(a.rds = NA_character_)), formals = list(inifilesORDERmatters = "--EMPTY--", 
+        master = "cache/ini/master.rds", use.cache = TRUE, smart.num = TRUE, 
+        ... = "--EMPTY--")))
+--FILES--
+character(0)
+#............   START -INI- LOG ENTRY   ............###{humanVerse}#####
+2022-10-08\./14:08:33 GMT+0000
+1665238113
+2022-10-08
+1665238113.413639.69c6f
+--FUNCTION_INFO--
+list(envir = "<environment>", call = "alias.init()", fn.info = list(
+    fn = "ini.parseFiles", dot.data = list(a.rds = NA_character_), 
+    params = list(inifilesORDERmatters = "a.files", use.cache = "use.cache"), 
+    map = list(inifilesORDERmatters = character(0), use.cache = FALSE, 
+        ... = list(a.rds = NA_character_)), formals = list(inifilesORDERmatters = "--EMPTY--", 
+        master = "cache/ini/master.rds", use.cache = TRUE, smart.num = TRUE, 
+        ... = "--EMPTY--")))
+--FILES--
+character(0)
+#............   START -INI- LOG ENTRY   ............###{humanVerse}#####
+2022-10-08\./17:48:07 GMT+0000
+1665251287
+2022-10-08
+1665251287.260550.471d0
+--FUNCTION_INFO--
+list(envir = "<environment>", call = "ini.parseFiles(a.files, a.rds, use.cache = use.cache)", 
+    fn.info = list(fn = "ini.parseFiles", dot.data = list(a.rds = NA_character_), 
+        params = list(inifilesORDERmatters = "a.files", use.cache = "use.cache"), 
+        map = list(inifilesORDERmatters = character(0), use.cache = FALSE, 
+            ... = list(a.rds = NA_character_)), formals = list(
+            inifilesORDERmatters = "--EMPTY--", master = "cache/ini/master.rds", 
+            use.cache = TRUE, smart.num = TRUE, ... = "--EMPTY--")))
+--FILES--
+character(0)

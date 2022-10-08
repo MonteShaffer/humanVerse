@@ -35,7 +35,6 @@ o.serialize = function(obj, jsonify=FALSE)
 # x = as.raw(1:10); y = raw.toString(x, collapse=NULL);
 # z = raw.fromString(y, splitN=FALSE); identical(x,z);
 
-	}
  
 .serialize = function(obj)
 	{

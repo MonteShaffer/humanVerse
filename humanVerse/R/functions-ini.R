@@ -34,7 +34,10 @@ ini.parseFiles = function(inifilesORDERmatters,
 							use.cache = TRUE, smart.num = TRUE, ...) # other params to ini.parse 
 	{
 	.%THIS%.	 
+	
+	THIS %GLOBAL%.;
   
+	NS = .now();
 	uniqid = .uniqid();	 
 	TIMESTAMP = .timestamp("YYYY-MM-DD");
 
@@ -58,8 +61,11 @@ ini.parseFiles = function(inifilesORDERmatters,
 
 	cat.log( log, str.commentOneLine("START -INI- LOG ENTRY") );
 	cat.log( log, .timestamp("humanVerse", tz="GMT") );	
+	cat.log( log, NS );
 	cat.log( log, TIMESTAMP );
 	cat.log( log, uniqid );
+	
+	
 	
 ######	openSesame(log);
 #  dput(THIS); 
@@ -214,6 +220,14 @@ opartials = "";
 	cat.log ( log, mfcopy);
 	cat.log ( log, mf);
 	cat.log ( log, "\n\n");
+	
+		NE = .now();
+		NT = NE - NS;
+		msg = paste0("\n\t\t\t TOTAL TIME ::: ", "now.end : ", NE , "\n\t\t\t", "parse.time [secs] : ", NT , "\n");
+		
+		.cat(msg);
+		cat.log( log, msg );
+		
 	
 	cat.log( log, str.commentOneLine("END -INI- LOG ENTRY", brand="{R}", brand.dir="left") );
 	cat.log ( log, "\n\n");

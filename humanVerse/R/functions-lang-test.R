@@ -683,8 +683,8 @@ cat("\n ################# BACK to MAIN ############# \n");
 # print(ex);
 
 lines = readLines("parse/parse-lang-simple.txt");
-		lines = str_replace("\\n", "\n", lines);  
-		lines = str_replace("\\t", "\t", lines);
+		lines = str.replace("\\n", "\n", lines);  
+		lines = str.replace("\\t", "\t", lines);
 print(lines);
 
 # fp = fopen("parse/parse-lang.txt");

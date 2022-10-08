@@ -22,7 +22,7 @@ prep.msg = function(...,  type="msg", out="paste0", sep=" ")
 	}
 	 
 
-parse.syscall = function(syscall, pf=NULL)
+parse.syscall = function(syscall, pf=parent.frame(2))
 	{
 debug = TRUE;
  
@@ -30,8 +30,8 @@ debug = TRUE;
 	
 	info	= str.explode("(", str);
 	fn		= str.trim(info[1]);
-
-debug = (fn == "ini.parseFiles");
+ 
+debug = (fn == "v.chain");
 .cat("debug ", debug, " for fn : ", fn); 
 
 	has.dots = FALSE;
@@ -48,6 +48,7 @@ if(debug)
 	{
 	# fno = match.fun(fn); 
 dput(fn);
+dput(str);
 	# mc = match.call(fno, call = sys.call(sys.parent(2L)), envir=pf);
 # dput(mc);
 .cat(" ... NAMES ... "); 
@@ -76,6 +77,14 @@ dput(not);
 					list.getElements(minfo, 2) ) );
 
 	
+if(debug)
+	{
+.cat(nstr);
+.cat(ninfo);
+.cat(minfo);
+.cat(pkeys);
+.cat(pvals); 
+	}	
 	
 	
 	f = as.list(formals(fn));
@@ -121,6 +130,7 @@ idx = set.match(nkeys, keys);
 
 if(debug)
 	{
+.cat("OLD");
 dput(keys);
 dput(nkeys);
 dput(idx);
@@ -129,19 +139,18 @@ dput(Types);
 	
 # update all of the lists to the same index ...
 Types = Types[idx];
-pkeys = pkeys[idx];
-pvals = pvals[idx];
 keys = nkeys;
 
 if(debug)
 	{
+.cat("NEW");
 dput(Types);
 dput(keys);
 dput(pkeys);
 dput(pvals);
 	}
 	
-	
+	 
 .__while.loop = function() {}
 	while(length(keys) >= 1)
 		{	
@@ -154,16 +163,20 @@ if(debug)
 .cat("pkeys: ", pkeys, "\t pvals: ", pvals);
 	}
 	if(length(pkeys) == 0) { break; } # out of pkeys ... 
-  
+   
 		Type 	= Types[1];
 		key 	= keys[1];
 		pkey 	= pkeys[1];
-		pval 	= pvals[1];
-
+		pval 	= pvals[1]; 
+		
+		if(!is.character(pkey)) 
+			{ pkey =  deparse(substitute(pkey)); }
+		
 
 		if(Type == "" && key != "...")
 			{
-			test 			= eval(parse(text=pkey));
+			# test = get(pkey, envir=pf);
+			test 			= eval(parse(text=pkey), envir=pf);
 			params[[ key ]] = pkey;
 			map[[key]] 		= test;
 	
@@ -191,7 +204,7 @@ if(debug)
 .__CASE_notFOUND = function() {}
 
 if(debug) 
-	{ 
+	{  
 .cat(" ===> NOT FOUND", "\t key: ", key, "\t pkeys: ", pkeys);	
 	}
 
@@ -207,14 +220,14 @@ if(debug)
 			pkey = pkeys[pidx];
 			pval = pvals[pidx];
 			
-			test = eval(parse(text=pval));
+			test = eval(parse(text=pval), envir=pf);
 			test = as.type(test, type=Type); 
 			
 			params[[ key ]] = pval;
 			map[[key]] 		= test;
 
 .__CASE_FOUND = function() {}
-
+ 
 if(debug) 
 	{ 
 .cat(" ===> FOUND", "\t key: ", key, "\t pidx: ", pidx, "\t pkey: ", pkey, "\t pval: ", pval, "\t form[[key]]:", form[[key]], "\n\n\t\t\t test", test);	
@@ -236,10 +249,11 @@ if(debug)
 			pval = v.smartType(pval);			
 			dot.data[[pkey]] = pval;
 		
-
+ 
 if(debug) 
 	{ 
 .cat(" ===> DOTS", "\t key: ", key, "\t pkey: ", pkey, "\t pval: ", pval, "\n\n\t\t\t dot.data", dot.data);	
+print(dot.data);
 	}		
 			
 			pkeys 	= v.empty(pkeys, 1);
@@ -276,41 +290,73 @@ print(str(res));
 prep.dots = function(..., 
 						collapse 	= TRUE, 
 						default 	= NULL, 
-						append.info = TRUE, 
+						append.info = TRUE,
+						more = FALSE,
 						has.objects = FALSE,
 						by="column"
 					)
 	{
 debug = FALSE;
-	dots = NULL;
 	
-	if(is.null(dots) && collapse) 
-		{
-		# parenth ( is a function operator ... 
-		r = suppressError( (...), 
+	r = suppressError( (...), 
 									show.notice=debug, 
 									msg="debug prep.dots "
 							);
-		if(is.error(r)) { r = list(...); }
-# dput.one(r);
-		# if it has a structure ... return it ... 
-		# dots = unlist(o);
-# dput.one(dots);
-		dots = unlist(r); 
+	if(is.error(r)) 
+		{ r = list(...); }
+		
+	dots = unlist(r); 
+	
+	if(collapse) 
+		{
 		if(length(dots) == 0 && !is.null(default)) 
 			{ dots = default; }
+		
+		if(more)
+			{
+			# dput(dots); dput(names(dots));
+			#
+			# if(!is.character(pkey)) 
+			# { pkey =  deparse(substitute(pkey)); }
+			
+			# stop("monte"); 
+			# search in pkg or in global ...   TODO   
+			new = list(); n = length(dots);
+			for(i in 1:n)
+				{ 
+				ptype = suppressError( typeof(dots[[i]]), 
+								show.notice = debug,
+								msg = "debugging typeof prep.dots MORE");
+				if(is.error(ptype) || !is.character( dots[[i]] )) 
+					{ pkey = deparse(substitute( substitute(dots[[i]]) )); } else { pkey = dots[[i]]; }
+				new[[i]] = pkey;
+				}
+			dots = new;
+			} 
+			
 		return( dots );  
 	 	}
- 
- 
-	  
+	
+	
+	
 	
 	BY = prep.arg(by, n=3);  # don't know if we still need this 
+
+# dput(dots); 
 		
 	## EQUIV:: # # parent.call = sys.call(sys.nframe() - 1L);
 	fn 		= sys.calls()[[ sys.nframe()-1 ]];
-
 	finfo 	= parse.syscall(fn, parent.frame(1));
+
+dput(finfo);
+ 
+ 
+	if(append.info) 
+		{ 
+		# dots = property.set("fn.info", dots, finfo);
+		# return(dots);
+		return(finfo); 
+		}
 
 	# what is has.objects?
 	if(is.null(dots) && has.objects) 

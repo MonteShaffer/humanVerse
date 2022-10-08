@@ -1,4 +1,5 @@
 
+
 color.default = function(distinct = TRUE, type="RGB", scale.RGB = TRUE)
 	{
 	TYPE 	= prep.arg(type, n=3, keep="-", case="upper");
@@ -12,15 +13,15 @@ color.default = function(distinct = TRUE, type="RGB", scale.RGB = TRUE)
 	n 		= length(colors);	
 	RGB 	= color.col2rgb(colors);
 	XXX = NULL;
-	if(TYPE != "RGB")
+	TYPES = v.remove( str.explode("-", TYPE), "RGB" );
+	if(INN(TYPES))
 		{
 		XXX = list();
 		# may have multiple, I want cmyk, hsl 
-		types = str.explode("-", TYPE);
-		nt = length(types);
+		nt = length(TYPES);
 		for(i in 1:nt)
 			{
-			XXX[[i]] = color.convert(RGB, from=RGB, to=types[i]);
+			XXX[[i]] = color.convert(RGB, from=RGB, to=TYPES[i]);
 			}
 		}
 		
@@ -37,7 +38,7 @@ color.default = function(distinct = TRUE, type="RGB", scale.RGB = TRUE)
 					as.type(RGB[3,], type=rtype) );
 
 	xnames = NULL;
-	if(!is.null(XXX))
+	if(INN(XXX))
 		{
 		xnames = NULL;
 		for(i in 1:nt)
@@ -71,8 +72,11 @@ color.baseHEX = function(cnames = c("mediumvioletred", "deeppink", "deeppink2", 
 	 
 color.nearest = function() {}  
 # C0FFEE
-color.nearest = function(aHEX="#c8008c", B = color.default(type="CMYK-HSL"), n=5)
+color.nearest = function(aHEX="#c8008c", B = color.default(type="CMYK-HSL"), n=5, return="best")
 	{
+	# return == "best" ... or "everything""
+	RETURN = prep.arg(return, n=1);
+	
 	akey = toupper( str.replace("#","", aHEX) );
 	bkey = property.get("md5", B);
 	# keep a memory ...  "89b284a63613278c9da2506f6ce43324"
@@ -81,7 +85,11 @@ color.nearest = function(aHEX="#c8008c", B = color.default(type="CMYK-HSL"), n=5
 	if(!is.null(res)) 
 		{ 
 		.cat("Input was: ", aHEX);
-		res = property.set("input.was", res, aHEX);
+		if(RETURN == "b")
+			{
+			best = property.get("best", res); 
+			return(best);			
+			}		
 		return(res); 
 		}
 	
@@ -198,20 +206,32 @@ not %GLOBAL% .;
 					hfi, rfi, round(sfi, 5)
 					);
 	
-	colnames(df) = c(	"hex", "exact", 	"sim", 
-						"hex", "cosine",  	"sim", 
-						"hex", "euclidean", "dist",
-						"hex", "humanVerse",  "HVscore"
+	colnames(df) = c(	"hex.m", "match", 	"sim", 
+						"hex.c", "cosine",  	"sim", 
+						"hex.e", "euclidean", "dist",
+						"hex.h", "humanVerse",  "HVscore"
 						);
 			# there is no maroon5 ...
 			# Input was:  #A800A8 ... n = 33 
 			# 
+	h.best = unique(c(v.TO(df$hex.m, NA, NULL), df$hex.h));
+	n.best = unique(c(v.TO(df$match, NA, NULL), df$humanVerse));
+	
+	# lower = R.colors ... R and HTML (140)  
+	best = n.best[1:on];
+	names(best) = h.best[1:on];
+	
 	res = df;
 	res = property.set("input.was", res, aHEX); 
+	res = property.set("best", res, best); 
 	 
 	memory.set(mkey, "-COLOR-NEAREST-", res);
 	
 	.cat("Input was: ", aHEX);
+	if(RETURN == "b")
+		{ 
+		return(best);			
+		}
 	res;
 	}
 

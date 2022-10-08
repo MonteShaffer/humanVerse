@@ -167,12 +167,11 @@ check.type = function(...)
 	{
 debug = FALSE;
 	checktype = suppressError( typeof(...), 
-								show.notice=debug,
-								msg="debugging typeof check.type REGULAR" 
-							);
+								show.notice = debug,
+								msg = "debugging typeof check.type QUICK");
 	res = TRUE;
 	if(is.error(checktype)) { res = FALSE; }
-	res = property.set("typeof", res, checktype);
+		attributes(res)[[ "typeof" ]] = checktype;
 	res; 
 	}
 

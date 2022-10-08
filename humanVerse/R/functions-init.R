@@ -258,6 +258,7 @@ system.init = function(use.cache=TRUE, recursive=FALSE)
 system.process = function() {} 
 system.process = function(SYSTEM=list())
 	{
+	# maybe a TIMER here ... regular ... 
 	# list-marge ... I think I just want to load all of the INI
 	# in a cascade ... how to know "user-name" => mshaffer ?
 	
@@ -532,6 +533,7 @@ return(NULL);
 				NEWLINE 			= "\n",
 				EOL 				= "\r\n",
 				
+				COMMA				= ",", 
 				EXT					= ".",
 				EMPTY				= "",
 				DIR_LINUX			= "/",

@@ -2,26 +2,18 @@
 
 
 
-check.type = function(...)
+check.type_ = function(...)
 	{
-debug = FALSE;
-	checktype = suppressError( typeof(...), 
-								show.notice = debug,
-								msg = "debugging typeof check.type QUICK");
+	checktype = suppressError_( typeof(...) );
 	res = TRUE;
-	if(is.error(checktype)) { res = FALSE; }
-		attributes(res)[[ "typeof" ]] = checktype;
+	if(is.error_(checktype)) { res = FALSE; }
+	attributes(res)[[ "typeof" ]] = checktype;
 	res; 
 	}
-	
 
 
-
-
-
-is.error = function(e, where="suppressError")
+is.error_ = function(e, where="suppressError")
 	{
-	### see list.fromError(e) for ideas to improve this function
 	condition 	= attributes(e)$condition;
 	if(is.null(condition)) { return(FALSE); }
 	
@@ -32,78 +24,47 @@ is.error = function(e, where="suppressError")
 	return(FALSE);
 	}
 
-
-
-
-
-
-
-
-
-
-
-suppressError = function(expression, show.notice = TRUE, msg = "")
+suppressError_ = function(expression)
 	{
-	if(show.notice && msg == "")
-		{
-		# example when I want to control the exact display with \n and \t ... not just str.wrap ... 
-			
-		msg = wrap.lang("\n\n", "tldr;", "\n\n\n\t", "R-DEV believes this is poor programming practice to allow you to", "\n\t\t", "`suppressError()` so they have not included it in base R.", "\n\t\t", "It is probably true, but 'git-r-done' first, and then", "\n\t\t", "figure out the minutia such as why this function is", "\n\t\t", "throwing an error.  That is why I have past such a ", "\n\t\t",  "VERBOSE message to you, dear reader.", "\n\n\t", "By altering this function [set msg to something else, not empty ''],", "\n\t\t",  "you can reduce the length of this message.", "\n\n\t", "Or you can set the flag show.notice=FALSE to prevent it from printing.", "\n\t\t", "THIS my friends is how choice architecture works!  Cheers and Aloha!", "\n\n\n");
-		}				
-	if(show.notice)
-		{
-		cat.warning(msg, call. = FALSE, immediate. = TRUE);
-		}
 	try( expression , silent = TRUE);
 	}
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-include.dir = function() {}
-include.dir = function(path = getwd(), verbose = TRUE, pattern = "[.][RrSsQq]$")
+include.dir_ = function() {}
+include.dir_ = function(path = getwd(), verbose = TRUE, pattern = "[.][RrSsQq]$")
 	{
 debug = FALSE;
 	op = options(); on.exit(options(op)); 
 	
+	path = normalizePath(path);
 	myfiles = list.files(path, pattern = pattern);
-	n = length(myfiles);
+	n 		= length(myfiles);
 
 if(verbose) 
 	{ 
-.cat("ATTEMPTING TO INCLUDE ", n, " files ... "); 
+.cat_("ATTEMPTING TO INCLUDE ", n, " files ... "); 
 	}
 	
 	j = NULL;
 	myerrors 	= character(n);
-	myfullpaths = character(n);
+	efiles 		= character(n);
+	myfullpaths = file.path(path, myfiles);
 	for(i in 1:n)
 		{
 if(verbose) 
 	{ 
-.cat(myfiles[i],": "); 
+.cat_(myfiles[i],": "); 
 	}
-		myfullpaths[i] = file.path(path, myfiles[i]);
-		w = suppressError( source( myfullpaths[i] ), 
-								show.notice=debug, 
-								msg="debugging include.dir" );
+		
+		w = suppressError_( source( myfullpaths[i] ));
 					
-		if( is.error(w) ) 
+		if( is.error_(w) ) 
 			{ 
+			efiles[i] = myfiles[i];
 			w = as.character(w); j = c(j, i); myerrors[i] = w;
 if(verbose)
 	{
-.cat(w);
+.cat_(w);
 	}
 			}
 		
@@ -112,15 +73,18 @@ if(verbose)
 		}
 		
 	nj = length(j);
-	df = data.frame( cbind(myfiles, myerrors, myfullpaths) );
+	df = data.frame( cbind(myfiles, efiles, 
+						myerrors, myfullpaths) );
 	
 if(verbose) 
 	{ 
-.cat("Reporting ", nj, " errors on ", n, " includes ... ");
+.cat_("Reporting ", nj, " errors on ", n, " includes ... ");
 	}
 	
 	invisible(df);
 	}
+
+
 
 
 quick = function(one, res=NULL, verbose=FALSE)
@@ -128,48 +92,52 @@ quick = function(one, res=NULL, verbose=FALSE)
 ##########################################################
 ##### I can't wrap this into a function check.string #####
 ##########################################################	
-	ct.ONE = check.type(one);
+	ct.ONE = check.type_(one);
 	if(!ct.ONE || !is.character(one))	
-		{ one = deparse(substitute(one)); } 
+		{ one = deparse(substitute(one)); }
 ##########################################################
+# if I have declared str = "hello" ... creates a problem ... 
+#dput(one); stop("monte");
 
 	## shortcut .... quick(dir) like quick.dir()
-	if(one == "dir") { return( quick.dir() ); }
-	if(one == "quick") { one = "aaa-quick"; }
+	if(one == "dir") 	{ return( quick.dir() ); }
+	if(one == "quick") 	{ one = "aaa-quick"; }
 
 	if(is.null(res)) { res = alex; }  # GLOBAL [at the moment]
 	
 	sfile 	= paste0("functions-",one,".R");
-	idx 	= v.which(res$myfiles, sfile);
+	idx		= which(res$myfiles == sfile);
 	
-.cat("QUICK: ", sfile, " with idx: ", idx, "\n");
-	if(is.null(idx)) { stop("bad idx"); }
 	
-	o = source(res$myfullpaths[idx], verbose=verbose);
+.cat_("QUICK: ", sfile, " with idx: ", idx );
+	if(length(idx) == 0) { stop("bad idx"); }
+	
+	o = source(res$myfullpaths[ idx[1] ], verbose=verbose);
 	
 	._____init.settings();
 	} 
+
+
 
 
 quick.dir = function(f="C:/_git_/github/MonteShaffer/humanVerse/humanVerse/R/") 
 	{ 
 	setwd(f);
 
-	alex 	= include.dir(f);  	
+	alex 	= include.dir_(f);  	
 	fn 		= ls(all.names = TRUE, pos=1);	
 				attributes(alex)[[ "fn" ]] = fn;
 	
 	assign("alex", alex, envir = .GlobalEnv);
 
 	print( alex$myerrors[ alex$myerrors != ""]);
+	print( alex$efiles[ alex$efiles != ""]);
 
 	quick(quick);  
 	}
 
-.cat = function(..., sep="\n\n")
+.cat_ = function(..., sep="\n\n")
 	{
 	cat(sep);	cat(...);	cat(sep);
 	}
-	
-# aaa comes first, so NEWER versions of functions *MAY* follow.
 

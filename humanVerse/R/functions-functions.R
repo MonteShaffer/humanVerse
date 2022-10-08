@@ -197,9 +197,219 @@ debug = FALSE;
 	}
 
 
+# environmentName( environment(check.type) )
+
+env.toString = function(envir)
+	{  
+	environmentName(envir);
+	}
+env.fromString = function(eSTR)
+	{
+	# magicCode goes here.
+	# environmentName( as.environment("package:base") )
+
+	}
+
+pkg.version = function(pkg = "base")
+	{
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.PKG = check.type(pkg);
+	if(!ct.PKG || !is.character(pkg))	
+		{ pkg = deparse(substitute(pkg)); } 
+##########################################################
+	packageVersion(pkg);
+	}
+  
+# packageDescription("stringi")
+# C:/Users/Monte J. Shaffer/AppData/Local/R/win-library/4.2/stringi/Meta/package.rds
+# horrible parser ...
+# "C:/Users/Monte J. Shaffer/AppData/Local/R/win-library/4.2/stringi/DESCRIPTION"
+
+
+# C:\_R_\_R-LIBS_\humanVerse-Analytics\stringi\1.7.8
+## 
+##  --RLIBS--
+##		-libPath  DIRK's cleansed form 
+##		-source-CRAN 
+##		-source-github 
+##		-humanVerse-Analytics 
+##			- caching of pkg objects (dcf)
+##			- pkg.index ... pkg.TRIE ... 
+##			- pkg.FEATURES ... pkg.RANK
+## pkg/version ... or pkg/YYYY-MM-DD/
+
+##  --DATA--
+##	--SANDBOX--
+##  --WORKSPACE--
+##			projects/
+##			functions/
+##			notebooks/
+##			RHQ/functions 
+##			RHQ/documentation
+## 			RHQ/config 
+##			RHQ/language 
+##	--SECRET--
+##  --humanVerse-- 
+##		CONFIG
+##			ini 
+##				## see inst\RHq\config
+##		SYSTEM
+##			search/  ... autocomplete TRIE/DB/Sphinx
+##			memory/
+##			downloads/  # if I don't move it elsewhere
+##					# SANDBOX ?  github-source ...
+##			cache 
+##				number 
+##					pi/ ... use data.load or readFromPipe
+##					primes/
+##					oeis/
+##				color ... store n=25 on color.nearest ... 
+##					libs/
+##					nearest/
+##						#remove # ... tolower abcdef.rds 
+##				win 
+##				macOS
+##				debian 
+##				ini 
+##					## inst\RHq\config
+##					-history-
+##  
+##			log 
+## 				cmd 
+##				ini 
+##				memory
+
+### rhq.parse ... include(RHQ) ... source( rhq.parse(RHQ) ) ...
+### 
+
+### run.once ... suggest username, name, computer name (laptop)
+### ... ask for permission (5th element) ... 
+### menu ... use snail for progress?
+### ## non-empty MAC addresses ... store as "recovery keys"
+### ## scanning drives, largest attached ... 
+###  y = windows.get("mac")
+### v.TO( unique(y$MACAddress), "", NULL)
+### MediaType Index Interface type 
+### y = windows.get("disk")
+### SCSI is SSD ... 
+### y=windows.get("os") ... Full Name  ... RegisteredUser
+### idx = v.which(y$Key, "RegisteredUser");
+###  y$OS.0[idx]
+
+### InterfaceType
+
+### generic get ... from("os", keys = c("RegisteredUser"))
+### return dataframe? with just those rows?
+### collapse = TRUE ... unique = TRUE ... remove.empty = TRUE 
+
+
+pkg.index = function(pkg = "base")
+	{
+##########################################################
+##### I can't wrap this into a function check.string #####
+##########################################################	
+	ct.PKG = check.type(pkg);
+	if(!ct.PKG || !is.character(pkg))	
+		{ pkg = deparse(substitute(pkg)); } 
+##########################################################
+	
+	# from GLOBAL ...  
+	# choices = ls(envir = envir);
+	
+	res = memory.get(pkg, "-FUNCTION_INDEX-");
+	if(!is.null(res)) { return(res); }
+	
+	pp = paste0("package:", pkg);
+	
+	pkg.ns = suppressError( getNamespace(pkg), 
+							show.notice=debug, 
+							msg="debug fn.index NS "); 
+	if(is.error(pkg.ns)) { stop("pkg not found, can't index"); }
+	all  = ls( pkg.ns, all.names = TRUE ); 
+	
+	# needs to be attached ... 
+	loaded = (pkg %in% (.packages()));
+	if(!loaded) { library(pkg, character.only = TRUE); }
+	
+	public 	= ls( pp, all.names = TRUE );
+	private = set.diff(all, public);
+	
+	n = length(all);
+	
+	ppFN = ppFB = ppFM = ppFE = NULL;
+	prFN = prFM = NULL;
+	puFN = puFM = NULL;
+	
+	# stats ... 133 
+	pre = paste0(pkg, "::", collapse="");
+	for(i in 1:n)
+		{
+		one 	= all[i];
+		pre_ 	= pre; if(one %in% private) { pre_ %.=% ":"; }
+		key 	= paste0(pre_,"`",one,"`", collapse="");
+		txt 	=  paste0("deparse(",key,")", collapse="");
+		fn.str 	= suppressError( eval(parse(text=txt)),
+								show.notice=debug, 
+								msg="debug pkg.index");
+		if(is.error(fn.str)) { next; }
+		fn.str 	= paste0(fn.str, collapse="\n"); # multilined?
+		fn.md5 	= .MD5(fn.str);
+
+		ppFN = c(ppFN, one);
+		ppFE = c(ppFE, key);
+		ppFB = c(ppFB, fn.str);
+		ppFM = c(ppFM, fn.md5);
+		if(pre == pre_)
+			{
+			puFN = c(puFN, one);
+			puFM = c(puFM, fn.md5);		
+			} else {
+					prFN = c(prFN, one);
+					prFM = c(prFM, fn.md5);	
+					}		
+		}		
+	
+	
+	res = list(	"all" = 
+					list("by-name" = ppFN, "by-key" = ppFE, "by-md5" = ppFM, "by-content" = ppFB),
+				"public" = 
+					list("by-name" = puFN, "by-md5" = puFM),
+				"private" = 
+					list("by-name" = prFN, "by-md5" = prFM)
+				);
+
+	# if library wasn't loaded originally, let's detach it 
+	if(!loaded) { detach(pp, unload=TRUE); }
+	
+	memory.set(pkg, "-FN_INDEX-", res);
+	invisible(res);
+	}
 
 
 
+## index functions by name / etc ... so this lookup is fast ...
+fn.name = function(fn.obj) 
+	{
+debug = FALSE;
+	fbody 	= paste0(lang2str(body(fn.obj)), collapse="\n");
+	
+	envir 	= environment(fn.obj);
+	choices = ls(envir = envir);
+	n 		= length(choices);
+	for(i in 1:n)
+		{
+		choice = choices[i];
+		cbody = suppressError( lang2str(body(choice)),
+								show.notice=debug, 
+								msg="debug fn.name");
+		if(is.error(cbody)) { next; }
+		cbody = paste0(cbody, collapse="\n");
+		if(cbody == fbody) { return(choice); }
+		}		
+	return(NULL);	
+	}
 
 
 # uses match.fun ... can't separate "by base"
@@ -510,7 +720,7 @@ fn.fromString = function(fstr, ..., envir = parent.frame() )
 	form_ls			= rep(list(bquote()), length(dots));
 	names(form_ls)	= as.character(dots);
 
-	f = function(tol = DEFAULT_TOLERANCE) {} 
+	f = function(tol = (DEFAULT_TOLERANCE)) {} 
 		formals(f)		= form_ls;
 		body(f)			= str2lang(fstr);
 		environment(f)	= envir;

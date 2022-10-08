@@ -1,7 +1,7 @@
 
 
 
-fn.distance = function(method="euclidean")  
+fn.distance = function(method="euclidean")   
 	{
 ##########################################################
 ##### I can't wrap this into a function check.string #####

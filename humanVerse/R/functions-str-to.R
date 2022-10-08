@@ -677,7 +677,7 @@ str.toObjectName = function(obj.str)
 #------------------------------------------------#
 str.fromObjectName = function(objname) 
 	{ 
-	res = deparse(substitute(objname));
+	res = deparse(substitute(objname)); 
 	res = str.replace('"', "", res);
 	return(res);
 	}

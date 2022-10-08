@@ -10,7 +10,7 @@
 # [1] "cc097981c"  ... 9876 ... 9857 ... cc0800080cc
 # .hex_b64("cc0800080cc");  # "DMCAAIDM" ... DMCA ... MDIA 
 
-.session = function()
+.session = function() 
 	{
 	# get current SESSION, unique id ...
 	# appears that tempdir() is new with each SESSION 
@@ -110,7 +110,7 @@ windows.get = function(key = "users")
 	if(KEY %in% c("os","oper") )
 		{
 		y = x$data$os$data;
-		na = names(y[[i]]);
+		na = names(y[[1]]);
 		n = length(y);
 		z = NULL;
 		for(i in 1:n)
@@ -140,7 +140,7 @@ windows.get = function(key = "users")
 	if(KEY == "cpu")
 		{
 		y = x$data$cpu$data;
-		na = names(y[[i]]);
+		na = names(y[[1]]);
 		n = length(y);
 		z = NULL;
 		for(i in 1:n)
@@ -155,7 +155,7 @@ windows.get = function(key = "users")
 	if(KEY == "mem" || KEY == "memo")
 		{
 		y = x$data$memorychip$data;
-		na = names(y[[i]]);
+		na = names(y[[1]]);
 		n = length(y);
 		z = NULL;
 		for(i in 1:n)
@@ -170,7 +170,7 @@ windows.get = function(key = "users")
 	if(KEY %in% c("nic", "net", "netw"))
 		{
 		y = x$data$nic$data;
-		na = names(y[[i]]);
+		na = names(y[[1]]);
 		n = length(y);
 		z = NULL;
 		for(i in 1:n)
@@ -186,7 +186,7 @@ windows.get = function(key = "users")
 		{
 		# partitions 
 		y = x$data$logicaldisk$data;
-		na = names(y[[i]]);
+		na = names(y[[1]]);
 		n = length(y);
 		z = NULL;
 		for(i in 1:n)
@@ -203,7 +203,7 @@ if(KEY %in% c("phys", "phy", "dis", "disc", "disk", "driv", "dri"))
 		{
 		# drives 
 		y = x$data$diskdrive$data;
-		na = names(y[[i]]);
+		na = names(y[[1]]);
 		n = length(y);
 		z = NULL;
 		for(i in 1:n)
@@ -489,6 +489,7 @@ windows.info = function(use.cache = TRUE, intern = TRUE, ...)
 	RES$data = list();
 	for(todo in todos)
 		{
+		# wmic diskdrive get Caption, MediaType, Index, InterfaceType
 		args = common.args();
 		cmd = paste0("wmic ",todo," list /format:csv");	
 		if(todo == "os")

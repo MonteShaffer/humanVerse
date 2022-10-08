@@ -90,14 +90,14 @@ set.remove = function(elements, set, ...)
 	if(length(x) == 0) { return(set); }
 	set[-c(x)];
 	}
-
+ 
 # set.remove is set.substract(a, b) 
 # below let's you get the indexes ...	
 
 
 # subtract vec from parent ...
 # should truncate be about a set or a length ...  
-v.truncate = function(vec, parent, by="value", invert=FALSE)  
+vddDFSSD.truncate = function(vec, parent, by="value", invert=FALSE)  
 	{
 	BY = prep.arg(by, n=1);
 	# shorten parent by removing vec 

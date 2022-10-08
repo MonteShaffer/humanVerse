@@ -1,5 +1,17 @@
 
 
+  
+color.library = function()
+	{
+	# C:\_git_\github\MonteShaffer\humanVerse.data\-colors-
+	# libname, subname, hexes, colnames ...
+	# append RGB and nearest distinct R-color color.nearest(1)
+	# caching of color nearest ... 
+	
+	
+	}
+
+
 
 color.import = function(listname="wsu", 
 						keys = c("crimson", "gray"),

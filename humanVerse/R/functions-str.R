@@ -56,6 +56,40 @@ str.between = function(L = "__B64_", str=str, R = "_B64__")
 	list.getElements(info, 1);		
 	}
 
+str.slice = function(L = '<section id="', str, R = '</section>', keep = TRUE )
+	{
+	str = str[1];
+		slen = strlen(L);
+		rlen = strlen(R);
+	Lpos = str.pos(L, str);
+	Rpos = str.pos(R, str);  
+	n = length(Lpos);
+	m = length(Rpos);
+		if(m > n)
+			{
+			# update Rpos, nearest AFTER Lpos 
+			Npos = integer(n);
+			for(i in 1:n)
+				{
+				idx =  which(Rpos > (slen + Lpos[i]) );
+				Npos[i] = Rpos[ idx[1] ];
+				}
+			Rpos = Npos;
+			}
+	res = character(n);
+	for(i in 1:n)
+		{ 
+		### Rpos may be longer, find nearest > Lpos 
+		s = Lpos[i];		if(!keep) { s %+=% slen; }
+		e = Rpos[i]-1;		if( keep) { e %+=% rlen; }
+		
+		res[i] = substring(str, s, e);
+		}
+	res;
+	} 
+	
+	
+
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #'
@@ -791,10 +825,11 @@ str.pos = function(search, str, n=Inf, skip=0)
 	## if(ns > 1) { }
 	
 	slen = str.len(str);	
-# dput(str);	
+
 	len.search = str.len(search);
 	info = check.list(str.explode(search, str));
 	ni = length(info);
+	if(ni == 0) { return(NULL); }
 	res = vector("list", ni);
 	for(i in 1:ni)
 		{

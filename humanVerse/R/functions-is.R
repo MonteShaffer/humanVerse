@@ -122,19 +122,24 @@ is.windows = function()
 
 
 
-
-# mytype = suppressError(
-# may be different for tryCatch(
+INN = function(x) { !is.null(x); }
+ 
 is.error = function(e, where="suppressError")
 	{
-	condition = attributes(e)$condition;
+	### see list.fromError(e) for ideas to improve this function
+	condition 	= attributes(e)$condition;
 	if(is.null(condition)) { return(FALSE); }
-	# see list.fromError(e) for other ideas to improve this function
-	extra = attributes(condition)$class;
-	if("error" %in% extra) { return(TRUE); }
-	# is this necessary
+	
+	extra 		= attributes(condition)$class;
+	if("error" %in% extra) { return(TRUE);  }
+	
+	### is this necessary
 	return(FALSE);
 	}
+
+
+
+
 
 
 

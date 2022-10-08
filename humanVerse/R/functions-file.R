@@ -22,7 +22,7 @@ file.init = function()
 	# prompt for at least a root 
 	
 	if(!is.null(ROOT))
-		{
+		{ 
 	LIST = list("SYSTEM" = paste0(ROOT, "humanVerse/SYSTEM/"),
 				"CONFIG" = paste0(ROOT, "humanVerse/CONFIG/"),
 				"SECRET" = paste0(ROOT, "humanVerse/SECRET/"),

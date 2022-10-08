@@ -26,12 +26,52 @@ if(verbose)
 # # memory.smartRestore();
 
 
-system.clear = function(purge.ls=TRUE, all.names=TRUE, purge.gc=TRUE, detach.packages=TRUE)
+system.reset = function(keep.humanVerse=TRUE)
 	{
-	# does this unregister loaded libraries?
-	if(purge.ls) { rm(list=ls(all.names=all.names)); }
-	if(purge.gc) { gc(); }
-	if(detach.packages) { }
+	gc();
+	gcinfo(TRUE);
+	
+	BASE_PKGS = c("stats", "graphics", "grDevices", 
+					"utils", "datasets", "methods", "base");
+	
+	HV_PKGS = c("humanVerse", "HVcpp");
+	if(keep.humanVerse) { BASE_PKGS = c(BASE_PKGS, HV_PKGS); }
+	
+		{ 
+		# .packages 
+		# .rmpkg 
+		s = search();
+		ss = str.contains("package:", s);
+		ns = s[ss];
+		nss = str.explode("package:", ns);
+		# we aren't going to have any of these functions ... AFTER ... 
+		nsss = str.trim(list.getElements(nss,2));
+		PKGS = nsss;
+		d = v.return(set.diff(PKGS, BASE_PKGS));
+		if(!is.null(d))
+			{
+			n = length(d);
+			for(i in 1:n)
+				{
+				detach(d[i], character.only = TRUE, unload = TRUE);
+				}
+			}
+		}
+	
+	
+	# remove ".humanVerse"? 
+		toRM = ls(all.names=TRUE, envir = .GlobalEnv);
+		if(keep.humanVerse)
+			{
+			# save RDS to disk ... rm, then restore .humanVerse 
+			}
+		HV = .humanVerse;  # save to disk RDS ...  
+	rm(list = toRM, envir = .GlobalEnv);
+		.humanVerse = HV;	
+		
+	gcinfo(verbose = FALSE);
+	gc(TRUE);
+	gc(reset = TRUE);
 	}
 
 

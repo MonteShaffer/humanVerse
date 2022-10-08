@@ -7,25 +7,24 @@ v.append = function(vec, val)
 	c(vec, val);
 	} 
  
+# "#abcdef" "#C0FFEE" ===> "#B666EE"
+
 # v.chain(x, hex2dec, mean, dec2hex, hex.prepend, character.only=FALSE)
+# v.chain(x, list(hex2dec, mean, "dec2hex", hex.prepend), character.only=TRUE); # this doesn't work ...  
+# v.chain(x, list("hex2dec", "mean", "dec2hex", "hex.prepend"), character.only=TRUE);  # this works 
 v.chain = function(vec, ..., character.only = FALSE)
 	{ 
-	fns = minvisible( prep.dots(..., 
-						collapse=character.only, 
-						has.objects=!character.only
-						),
-					display=none);
-	if(!character.only) { fns = as.character(dots); }
+	dots = prep.dots(..., collapse=character.only, more=character.only );   
+# dput(dots); stop("jfdls");	
+	if(!character.only) { fns = names(dots$dot.data); }
+	if( character.only) { fns = unlist(dots); }
 
-	# this gives me sys.call and envir ... and now the fn.name with params 
-	# .%THIS%. ;  minvisible(THIS, display=none); 
-	# fn = match.call()[[1]];  
-	
-	# make this a generic message
-	# # # if(THIS$fn.info$missing > 0) { print(str(THIS)); stop("looks like you have a [1] missing param in functon"); }
-	# # # pkeys = THIS$fn.info$pkeys;
-	# # # np = length(pkeys);
-	# # # if(np < 2) { stop("looks like there is nothing to do"); }
+
+	# I have the FNS and the names ... I could bypass docall...
+# dput(dots); stop("jflksdaj"); 
+#
+# dput(fns);
+#	FNS = dots;
 
 	nf = length(fns);
 	if(nf < 1) { stop("missing params, nothing to do..."); }
@@ -33,10 +32,11 @@ v.chain = function(vec, ..., character.only = FALSE)
 	for(i in 1:nf)
 		{
 		vec = do.call(fns[i], list(vec));
+		# vec = FNS[i](vec);
 		}
 	vec;
-	}
-
+	} 
+ 
 
 
  
