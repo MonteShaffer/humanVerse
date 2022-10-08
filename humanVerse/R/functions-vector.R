@@ -865,6 +865,12 @@ v.invert = function(vec, idx, invert=TRUE)
 	v.return(IDX[-c(idx)]);
 	}
 
+v.empty = function(vec, idx, invert=FALSE)
+	{
+	if(invert) { IDX = 1:length(vec); idx = IDX[-c(idx)]; }
+	v.return(vec[ -c(idx) ]);	
+	}
+	
 v.remove = function(vec, what="", invert=FALSE)
 	{
 	idx = v.which(vec, what=what, invert=invert);

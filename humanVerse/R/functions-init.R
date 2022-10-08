@@ -537,11 +537,14 @@ return(NULL);
 				DIR_LINUX			= "/",
 				DIR_WINDOZE			= "\\",
 				DOUBLE_SLASH		= "//",
-				
+				  
 				# alias.init()
 				SLASH				= "/",
 				DEFAULT_TIMEZONE	= "UTC",
 				DEFAULT_TOLERANCE	= sqrt(.Machine$double.eps),
+				BUFFER				= 1024,
+				SEEK_START 			= "start",
+				INTEGER_MAXIMUM		= 2147483647,  # 2^31 - 1
 				
 				VSEP 				= "\\./",
 				HUMANVERSE_SEP		= "\\./"

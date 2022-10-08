@@ -34,15 +34,9 @@ ini.parseFiles = function(inifilesORDERmatters,
 							use.cache = TRUE, smart.num = TRUE, ...) # other params to ini.parse 
 	{
 	.%THIS%.	 
-#  dput(THIS);  
-stop("monte"); 
   
 	uniqid = .uniqid();	 
 	TIMESTAMP = .timestamp("YYYY-MM-DD");
-	 
-
-
-
 
 	## full paths at this level 
 	
@@ -68,9 +62,8 @@ stop("monte");
 	cat.log( log, uniqid );
 	
 ######	openSesame(log);
-	
-	.%THIS%.	 
-dput(THIS); 
+#  dput(THIS); 
+
 	cat.log( log, "--FUNCTION_INFO--" );
 	cat.dput(THIS, log);
 	

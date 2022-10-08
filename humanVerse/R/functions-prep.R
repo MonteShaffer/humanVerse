@@ -119,24 +119,34 @@ if(!is.null(dotsIDX))
 	
 idx = set.match(nkeys, keys);
 
+if(debug)
+	{
 dput(keys);
 dput(nkeys);
 dput(idx);
 dput(Types);
-
+	}
+	
 # update all of the lists to the same index ...
 Types = Types[idx];
 pkeys = pkeys[idx];
 pvals = pvals[idx];
 keys = nkeys;
 
+if(debug)
+	{
 dput(Types);
-
+dput(keys);
+dput(pkeys);
+dput(pvals);
+	}
+	
+	
 .__while.loop = function() {}
 	while(length(keys) >= 1)
 		{	
 		nj %++%. ;
-		if(nj >= 4*n) { stop("looped monte"); }
+		if(nj >= 4*n) { stop("looped ALDERSON monte"); }
 	
 if(debug) 
 	{
@@ -229,162 +239,18 @@ if(debug)
 
 if(debug) 
 	{ 
-.cat(" ===> DOTS", "\t key: ", key, "\t pkey: ", pkey, "\t pval: ", pval, "\n\n\t\t\t dots.data", dots.data);	
+.cat(" ===> DOTS", "\t key: ", key, "\t pkey: ", pkey, "\t pval: ", pval, "\n\n\t\t\t dot.data", dot.data);	
 	}		
 			
 			pkeys 	= v.empty(pkeys, 1);
 			pvals 	= v.empty(pvals, 1);
 				
 			next;
-			
-			
-			
-			
-		
-# maybe "out of order", but I think THIS takes care of any order ... 		
-		if(key != "...")
-			{
-			  
-.__not.dots = function() {}
-if(debug) 
-	{ 
-.cat(" ===> ???", "\t key: ", key, "\t pkey: ", pkey, "\t pval: ", pval, "\t is.null(pkey)", is.null(pkey), "\t form[[key]]:", form[[key]]);	
-	}
-	  
-			
-			logic = (key == pkey);
-			idx = v.which(not, pkey);	
-			# use.cache = use.cache 
-			hasValue = FALSE; test = NULL;
-			if(!hasValue && logic && !is.null(idx))
-				{
-				test = eval(parse(text=not[idx]), envir=pf);
-.__not.CASE.1 = function() {}				
-if(debug)
-	{
-.cat(" ===> 1", "\t key: ", key, "\t pkey: ", pkey, "\t pval: ", pval, "\t form[[key]]:", form[[key]]);
-.cat(test);
-	}
-				# map will collect 'test'
-				params[[ key ]] = pval;
-				hasValue = TRUE;
-				}
-				 
-			if(!hasValue && logic && !is.na(pval))
-				{
-				test = eval(parse(text=pval));
-				if(Type != "") { test = as.type(test, type=Type);}
-.__not.CASE.2 = function() {}	
-if(debug)
-	{
-.cat(" ===> 2", "\t key: ", key, "\t pkey: ", pkey, "\t pval: ", pval, "\t form[[key]]:", form[[key]]);
-.cat(test); 
-	}
-				# map will collect 'test'
-				# if(!.anyNA(test)) { params[[ key ]] = pval; }
-				params[[ key ]] = pval;
-				hasValue = TRUE;
-				}
-				
-			if(!hasValue && (logic || is.na(pval)) )
-				{
-				test = eval(parse(text=pkey));
-				if(Type != "") { test = as.type(test, type=Type);}
-.__not.CASE.3 = function() {}	
-if(debug)
-	{ 
-.cat(" ===> 3", "\t key: ", key, "\t pkey: ", pkey, "\t pval: ", pval, "\t form[[key]]:", form[[key]]);
-.cat(test);
-	}
-				# map will collect 'test'
-				#if(!.anyNA(test)) { params[[ key ]] = test; }
-				params[[ key ]] = pkey;
-				hasValue = TRUE;
-				}
-		
-
-
-				# it is one of the ... dots 
-				if(!hasValue) 
-					{ 
-					keys 	= keys[-c(1)];
-					Types 	= Types[-c(1)]; # v.pop?
-					
-					keys = c(keys, key); 
-					Types = c(Types, Type);
-					
-					pkeys 	= pkeys[-c(1)];
-					pvals 	= pvals[-c(1)];
-					
-					pkeys = c(pkey, pkeys);
-					pvals = c(pval, pvals);
-										
-					next; 
-					}
-		
-			map[[key]] = test;
-			
-			keys 	= keys[-c(1)];
-			Types 	= Types[-c(1)]; # v.pop?
-			pkeys 	= pkeys[-c(1)];
-			pvals 	= pvals[-c(1)];
-			}
-		
-		if(key == "...")
-			{
-.__dots = function() {}	
-			## can I do "GROUNDHOGS DAY" here ... 
-			if(pkey %in% keys)
-				{
-if(debug)
-	{ 
-.cat(" BREAKOUT +++++ ", "\t\t pkey : ", pkey, " \t keys :", keys ); 
- 	}
-				keys 	= keys[-c(1)];
-				Types 	= Types[-c(1)]; # v.pop?
-				pkeys 	= pkeys[-c(1)];
-				pvals 	= pvals[-c(1)];
-				
-				pkeys = c(pkey, pkeys);
-				pvals = c(pval, pvals);	
-				next;
-				}
-				
-			pval = v.smartType(pval);
-			
-if(debug)
-	{ 
-.cat(" ---> ???", "\t\t ", key, " \t pkey :", pkey, " \t pval :", pval, " \t typeof(pval) :", typeof(pval) ); 
- 	}  
-			
-				hasValue = FALSE;
-				if(!hasValue && !is.na(pval))
-					{ 		
-					dot.data[[pkey]] = pval;
-.__dots.CASE.1 = function() {}						
-.cat(" ---> 1   ", dot.data);	
-					hasValue = TRUE;
-					}
-			
-				if(!hasValue)
-					{
-.cat(" ---> 2  ???   ");			
-					}
-					 
-			# GROUNDHOGS DAY 
-			# keys 	= keys[-c(1)];
-			# Types 	= Types[-c(1)]; # v.pop?
-			pkeys 	= pkeys[-c(1)];
-			pvals 	= pvals[-c(1)];
-			
-			map[[key]] = dot.data;
-			}
-			
-			
+	
+	
 		}
 
-	# regular mapping works fine, let's just do dots here 
-	# map[["..."]] = dot.data; 
+	map[["..."]] = dot.data; 
 		
    
 	 
@@ -402,11 +268,11 @@ if(debug)
 print(str(res)); 
 	}
 	
-	res;
+	res; 
 	}
-  
-  
- 
+
+
+
 prep.dots = function(..., 
 						collapse 	= TRUE, 
 						default 	= NULL, 
@@ -429,8 +295,8 @@ debug = FALSE;
 # dput.one(r);
 		# if it has a structure ... return it ... 
 		# dots = unlist(o);
-#dput.one(dots);
-		dots = r; 
+# dput.one(dots);
+		dots = unlist(r); 
 		if(length(dots) == 0 && !is.null(default)) 
 			{ dots = default; }
 		return( dots );  

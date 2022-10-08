@@ -211,3 +211,81 @@ list(envir = "<environment>", call = "ini.parseFiles(a.files, a.rds, use.cache =
             smart.num = TRUE, ... = "--EMPTY--")))
 --FILES--
 "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/alias/88-alias.ini"
+#............   START -INI- LOG ENTRY   ............###{humanVerse}#####
+2022-10-07\./23:45:13 GMT+0000
+2022-10-07
+1665186313.759608.27c2c
+--FUNCTION_INFO--
+list(envir = "<environment>", call = "alias.init()", fn.info = list(
+    fn = "ini.parseFiles", dot.data = structure(list(NA_character_, 
+        NA_character_), names = c("a.rds", NA)), params = list(
+        inifilesORDERmatters = "a.files", use.cache = "use.cache"), 
+    map = list(inifilesORDERmatters = "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/alias/88-alias.ini", 
+        use.cache = FALSE, ... = structure(list(NA_character_, 
+            NA_character_), names = c("a.rds", NA))), formals = list(
+        inifilesORDERmatters = "--EMPTY--", master = "cache/ini/master.rds", 
+        use.cache = TRUE, smart.num = TRUE, ... = "--EMPTY--")))
+--FILES--
+"C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/alias/88-alias.ini"
+LOOP [i] :1
+		now.start : 1665186313.89411
+		stem : 88-alias
+		source : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/alias/88-alias.ini
+		out : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/alias/88-alias.rds
+		out.copy : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/alias/-backups-/2022-10-07/1665186313.759608.27c2c_88-alias.rds
+		checksum : 2d06eac715bf07f5e5186ab7d7a59e7f
+		checksum.file : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/alias/-backups-/88-alias_2d06eac715bf07f5e5186ab7d7a59e7f.info
+		checksum.exists : FALSE
+
+
+			now.end : 1665186317.46642
+			parse.time [secs] : 3.57231283187866
+
+C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/alias/-backups-/2022-10-07/1665186313.759608.27c2c_alias.rds
+C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/alias/alias.rds
+
+
+
+####{R}###..................   END -INI- LOG ENTRY   ..................#
+
+
+
+#............   START -INI- LOG ENTRY   ............###{humanVerse}#####
+2022-10-07\./23:58:55 GMT+0000
+2022-10-07
+1665187135.186517.458ce
+--FUNCTION_INFO--
+list(envir = "<environment>", call = "alias.init()", fn.info = list(
+    fn = "ini.parseFiles", dot.data = structure(list(NA_character_, 
+        NA_character_), names = c("a.rds", NA)), params = list(
+        inifilesORDERmatters = "a.files", use.cache = "use.cache"), 
+    map = list(inifilesORDERmatters = "C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/alias/88-alias.ini", 
+        use.cache = FALSE, ... = structure(list(NA_character_, 
+            NA_character_), names = c("a.rds", NA))), formals = list(
+        inifilesORDERmatters = "--EMPTY--", master = "cache/ini/master.rds", 
+        use.cache = TRUE, smart.num = TRUE, ... = "--EMPTY--")))
+--FILES--
+"C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/alias/88-alias.ini"
+LOOP [i] :1
+		now.start : 1665187135.31802
+		stem : 88-alias
+		source : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/alias/88-alias.ini
+		out : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/alias/88-alias.rds
+		out.copy : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/alias/-backups-/2022-10-07/1665187135.186517.458ce_88-alias.rds
+		checksum : 2d06eac715bf07f5e5186ab7d7a59e7f
+		checksum.file : C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/alias/-backups-/88-alias_2d06eac715bf07f5e5186ab7d7a59e7f.info
+		checksum.exists : TRUE
+
+
+			now.end : 1665187135.3335
+			parse.time [secs] : 0.0154790878295898
+
+C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/alias/-backups-/2022-10-07/1665187135.186517.458ce_alias.rds
+C:/_git_/github/MonteShaffer/humanVerse/humanVerse/inst/R/config/alias/alias.rds
+
+
+
+####{R}###..................   END -INI- LOG ENTRY   ..................#
+
+
+
