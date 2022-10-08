@@ -11,7 +11,7 @@ color.default = function(distinct = TRUE, type="RGB", scale.RGB = TRUE)
 	
 	colors	= sort(as.character( colors(distinct = distinct) ));
 	n 		= length(colors);	
-	RGB 	= color.col2rgb(colors);
+	RGB 	= color.col2rgb(colors); 
 	XXX = NULL;
 	TYPES = v.remove( str.explode("-", TYPE), "RGB" );
 	if(INN(TYPES))
@@ -24,7 +24,7 @@ color.default = function(distinct = TRUE, type="RGB", scale.RGB = TRUE)
 			XXX[[i]] = color.convert(RGB, from=RGB, to=TYPES[i]);
 			}
 		}
-		
+		 
 	HEX 	= as.character( color.rgb2col(RGB) );
 	# HEX = color.convert(RGB, from="RGB", to="HEX");
 	
@@ -60,9 +60,9 @@ color.default = function(distinct = TRUE, type="RGB", scale.RGB = TRUE)
 	
 	df = property.set("md5", df, mkey);
 	memory.set(mkey, "-COLORS-", df);
-	df;
+	df; 
 	}
-	
+	 
 color.baseHEX = function() {}	
 color.baseHEX = function(cnames = c("mediumvioletred", "deeppink", "deeppink2", "deeppink3", NA), B = color.default())
 	{
@@ -74,9 +74,10 @@ color.nearest = function() {}
 # C0FFEE
 color.nearest = function(aHEX="#c8008c", B = color.default(type="CMYK-HSL"), n=5, return="best")
 	{
+	n = as.integer(n); 
 	# return == "best" ... or "everything""
 	RETURN = prep.arg(return, n=1);
-	
+.cat("Dimension of B: ", dim(B) );
 	akey = toupper( str.replace("#","", aHEX) );
 	bkey = property.get("md5", B);
 	# keep a memory ...  "89b284a63613278c9da2506f6ce43324"
@@ -133,9 +134,12 @@ color.nearest = function(aHEX="#c8008c", B = color.default(type="CMYK-HSL"), n=5
 		anames = c(anames, "h","s", "l");
 		}		
 	colnames(a) = anames;	
-		
+	
+a %GLOBAL%.
+b %GLOBAL%. 
+ 	
 	cs = cosine.similarity(a,b);
-	xs = .sort(math.cleanup(cs), "DESC");
+	xs = .sort(cs, "DESC");
 	# ("black as 0,0,0") for cosine.similarity ... TROUBLE 
 	# maybe add a "fudge.factor" 
 	# "black" is unique, will get picked up on "exact" and "dist"
@@ -154,8 +158,8 @@ color.nearest = function(aHEX="#c8008c", B = color.default(type="CMYK-HSL"), n=5
 	## euclidean.norm?
 	di = matrix.dist( rbind(a,b) , method="euclidean");  
 	do = di[,1]; # row or column 
-	me = do[1]; not = do[-c(1)];
-		xd = .sort(math.cleanup(not), "ASC");
+	me = do[1]; dis = do[-c(1)];
+		xd = .sort(dis, "ASC");
 	
 	rdi = names(xd);
 	sdi = as.numeric(xd);
@@ -164,14 +168,14 @@ color.nearest = function(aHEX="#c8008c", B = color.default(type="CMYK-HSL"), n=5
 	rdi = v.fill(rdi, to.length=n, with=NA);
 	sdi = v.fill(sdi, to.length=n, with=NA);
 	
-	cs = math.cleanup(cs);
-	not = math.cleanup(not);
+	# cs = math.cleanup(cs);
+	# dis = math.cleanup(dis);
 # .cat("MONTE");
 # dput.one(cs);  
 cs %GLOBAL% .; 
 # .cat("ALEX");
-# dput(not);		
-not %GLOBAL% .; 
+# dput(dis);		
+dis %GLOBAL% .; 
 
 
 	# struggles with YELLOW ... RG = Y 
@@ -179,12 +183,37 @@ not %GLOBAL% .;
 	# add cmyk and hsl ... 10 dimensions of color ... 
 	
 	# do a weighting, to get a final score
+	# we shouldn't have any NA's any more with BLACK (cmyk)
 	logic = (cs == 1);
 	logic = v.TO(logic, NA, FALSE);
 	
-	fsc 		= not * 100;
-	fsc[!logic] = (1-cs[!logic]) * not[!logic] * 100 * 100; 
-		fd = .sort(math.cleanup(fsc), "ASC");
+	logic = (cs == 1);
+	logic = v.TO(logic, NA, FALSE);
+	
+	fsc 		= dis * 100 * 100;
+	fsc[!logic] = (1-cs[!logic]) * dis[!logic] * 100 * 100 * 100; 
+	
+	
+	CF = 25;  			# cos.sim weights more 
+	WF = 1/5; 			# overall scale 
+	
+	# lol, CFalls, WhiteFish
+	
+	#fsc 		= dis;
+	#fsc[!logic] = (1-cs[!logic]) + dis[!logic] + (100*100*100*CF * (1-cs[!logic]) * dis[!logic]); 
+	
+	# fsc = CF * (1-cs) + dis + (100*100*100*CF * (1-cs) * dis); 
+		
+	# fsc = CF*cs + (1-dis) + (100*100*100*CF * (1-cs) * dis );
+	# fsc = CF*cs + (1-dis);
+	# fsc = (1-cs) + CF*dis;
+	# fsc = CF * cs + 1/(dis+DEFAULT_TOLERANCE);
+	
+	# make absolute, so comparable across lookups 
+	# fsc = 1 - fsc * WF + 1/WF;
+	# fsc = v.TO(fsc, is.negative(fsc), 0);
+	
+		fd = .sort(fsc, "ASC");
 	rfi = names(fd);
 	sfi = as.numeric(fd);
 	## still not helping on "GRAYS" ... 
@@ -201,9 +230,9 @@ not %GLOBAL% .;
 	
 	df = dataframe( cbind(h, r) );
 	df = cbind( df, s, 
-					hcs, rcs, round(scs, 3), 
-					hdi, rdi, round(sdi, 3),
-					hfi, rfi, round(sfi, 5)
+					hcs, rcs, scs, # round(scs, 3), 
+					hdi, rdi, sdi, # round(sdi, 3),
+					hfi, rfi, sfi  # round(sfi, 5)
 					);
 	
 	colnames(df) = c(	"hex.m", "match", 	"sim", 

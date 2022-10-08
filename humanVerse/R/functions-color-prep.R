@@ -61,10 +61,12 @@ color.buildPalette = function(HEX, cnames = "",
 	HEX = color.hex( HEX );
 	n   = length(HEX);
 	np  = str.pad(1:n, strlen(max(n)), "0", "LEFT");
-	if(cnames == "") { cnames = paste0(library,".",np); }
+	if((length(cnames) == 1) && cnames == "") 
+			{ cnames = paste0(library,".",np); }
 	
 	# type = "CMYK-HSL" # we build RGB no matter what ...
 	
+	# "034dbc91d326b9387aedee0c70908455"
 	TYPE 	= prep.arg(type, n=3, keep="-", case="upper");
 	mkey 	= .MD5( paste0(library, 
 						paste0(HEX, cnames, collapse=""),
@@ -92,7 +94,7 @@ color.buildPalette = function(HEX, cnames = "",
 	
 	rtype = typeof(RGB);
 	
-	df = dataframe( cbind( colors, HEX ) );
+	df = dataframe( cbind( cnames, HEX ) );
 	df = cbind(df,	as.type(RGB[1,], type=rtype), 
 					as.type(RGB[2,], type=rtype), 
 					as.type(RGB[3,], type=rtype) );
@@ -126,6 +128,7 @@ color.buildPalette = function(HEX, cnames = "",
 	
 	
 
+color.buildMap = function() {}
 color.buildMap = function(df=color.css(), order=c(1,2,3), 
 									library="css", parent="")
 	{
@@ -137,10 +140,10 @@ color.buildMap = function(df=color.css(), order=c(1,2,3),
 	# "699cdc05c57e9ffa4f67220dbe1d8a75" 
 	mkey 	= .MD5( paste0(library, parent, paste0(order, collapse=""), paste0(df,collapse="") ) );
 						
-	df		= memory.get(mkey, "-COLORS-");
-	if(!is.null(df)) { return(df); } 
-	
-	
+	res		= memory.get(mkey, "-COLORS-");
+	if(!is.null(res)) { return(res); } 
+		
+
 	n = nrow(df);
 	np = str.pad(1:n, strlen(max(n)), "0", "LEFT");
 	
@@ -158,7 +161,7 @@ color.buildMap = function(df=color.css(), order=c(1,2,3),
 	for(i in 1:n)
 		{
 		hex = HEX[i];
-		R = as.character( color.nearest(hex, n=1) );
+		R = as.character( color.nearest(hex, n=1) )[1];
 .cat("\t i: ", i, " \t\t hex: ", hex, " \t\t R: ", R);
 flush.console(); 
 		RNN[i] = R;
@@ -166,9 +169,36 @@ flush.console();
 	
 	# nearest from CSS palette (currently THIS)
 	CNN = character(n);
+	# currenlty THIS ... 
+		css = color.css(); 
+	B = color.buildPalette(css$color.hex, css$color.name, 
+									"css", type="CMYK-HSL");
+	for(i in 1:n)
+		{
+		hex = HEX[i];
+		CS = as.character( color.nearest(hex, n=1, B=B) )[1];
+.cat("\t i: ", i, " \t\t hex: ", hex, " \t\t CS: ", CS);
+flush.console(); 
+		CNN[i] = CS;
+		}
 	
+	## GTG .. glory2
 	
+	## idx | parent | library | color.class | r | g | b | color.hex | color.name | R.nearest | CSS.nearest
 	
+	df = NULL;
+	for(i in 1:n) 
+		{ 
+		row = df.row( np[i], parent, library, class[i], RGB[1,i],RGB[2,i], RGB[3,i], HEX[i], cnames[i], RNN[i], CNN[i] );
+		df = rbind(df, row);
+		}
+	colnames(df) = c("idx", "parent", "library", "color.class", "r", "g", "b", "color.hex", "color.name", "R.nearest", "CSS.nearest");
 	
+	df = property.set("md5", df, mkey);
+	if(parent != "") { df = property.set("parent", df, parent); }
+	df = property.set("library", df, library);
+	
+	memory.set(mkey, "-COLORS-", df);
+	df;	
 	}
 

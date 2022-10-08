@@ -774,10 +774,11 @@ str.before = function(search, str, posIDX=1)
 	
 	pos = check.list(str.pos(search, str));
 		
+	# return elements ... or just IDX?
 	posIDX = list.checkIDX(pos, posIDX); 
 	   
 	idx = list.getElements(pos, posIDX);
-	
+	  
 	# substring(str, idx+selen, slen);
 	substring(str, 1, idx-selen);
 	}
@@ -829,7 +830,7 @@ str.pos = function(search, str, n=Inf, skip=0)
 	len.search = str.len(search);
 	info = check.list(str.explode(search, str));
 	ni = length(info);
-	if(ni == 0) { return(NULL); }
+	if(ni == 0) { return( -1 ); }
 	res = vector("list", ni);
 	for(i in 1:ni)
 		{
@@ -852,7 +853,7 @@ str.pos = function(search, str, n=Inf, skip=0)
 			{
 			pos = v.fill(pos, n, NA);
 			}		
-		pos = v.return(pos);
+		pos = v.TO(v.return(pos), NULL, -1);
 		res[[i]] = pos;
 		}
 	list.return(res);

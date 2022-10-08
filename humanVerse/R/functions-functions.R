@@ -240,6 +240,9 @@ pkg.version = function(pkg = "base")
 ##			- pkg.FEATURES ... pkg.RANK
 ## pkg/version ... or pkg/YYYY-MM-DD/
 
+
+## We need to setup your workspace, I would recommend
+#### ROOT = C:/_R_/
 ##  --DATA--
 ##	--SANDBOX--
 ##  --WORKSPACE--
@@ -304,7 +307,7 @@ pkg.version = function(pkg = "base")
 ### return dataframe? with just those rows?
 ### collapse = TRUE ... unique = TRUE ... remove.empty = TRUE 
 
-
+ 
 pkg.index = function(pkg = "base")
 	{
 ##########################################################

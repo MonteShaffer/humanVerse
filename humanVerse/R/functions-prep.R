@@ -173,7 +173,7 @@ if(debug)
 			{ pkey =  deparse(substitute(pkey)); }
 		
 
-		if(Type == "" && key != "...")
+		if(Type == "" && key != "...") 
 			{
 			# test = get(pkey, envir=pf);
 			test 			= eval(parse(text=pkey), envir=pf);

@@ -381,16 +381,24 @@ list.getLastElements = function(info)
 	idx = list.getLengths(info);
 	list.getElements(info, idx);
 	}
-	 
+	  
 
 list.checkIDX = function(info, posIDX)
 	{
+	n = length(info);
 	PIDX = prep.arg(posIDX, n=2);	# allow non-numeric
-		logicL = v.test(PIDX, "la");	# last 
 		logicF = v.test(PIDX, "fi");	# first 
+		logicL = v.test(PIDX, "la");	# last 
 		
-	posIDX[logicF] = 1;
-	posIDX[logicL] = list.getLengths(info[logicL]);	
+	
+	nf = length(v.which(logicF, TRUE)); 
+	
+	posIDX[logicF] = v.return(rep(1, nf));
+	posIDX[logicL] = v.return(list.getLengths(info[logicL]));
+	
+	########### return IDX not elements ... 
+	# posIDX[logicF] = list.getElements(info[logicF], 1);
+	# posIDX[logicL] = list.getLastElements(info[logicL]);	
 		posIDX = as.integer(posIDX);
 	
 	posIDX; # was a string, now a number ...

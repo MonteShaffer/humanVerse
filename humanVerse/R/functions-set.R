@@ -90,7 +90,7 @@ set.remove = function(elements, set, ...)
 	if(length(x) == 0) { return(set); }
 	set[-c(x)];
 	}
- 
+  
 # set.remove is set.substract(a, b) 
 # below let's you get the indexes ...	
 

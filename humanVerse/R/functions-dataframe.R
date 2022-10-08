@@ -216,16 +216,20 @@ df.empty = function(df)
 
 row.dots = function(mc, ...)
 	{
+	vals = list(...);
 	keys = names(mc);
 	if(is.null(keys)) 
-		{
-		tmp = deparse(mc);
+		{  
+		# multiline irony
+		tmp = paste0( deparse(mc), collapse="\n"); 
 		aft = str.after("(", tmp, "first");  # after first (
 		bef = str.before(")", aft, "last");	 # before last )
-		keys = str.trim(str.explode(COMMA,  bef));
+		# https://stackoverflow.com/questions/38747776/split-string-by-comma-if-not-within-square-brackets-or-parentheses
+		# keys = str.trim(str.explode(COMMA,  bef));
+		keys = strsplit(bef,",(?![^([]*[])])", perl=TRUE)[[1]];
+		keys = str.trim(keys);
 		}
-		
-	vals = list(...);
+  
 	# vals = property.set("keys", vals, keys);
 	names(vals) = keys;
 	vals;

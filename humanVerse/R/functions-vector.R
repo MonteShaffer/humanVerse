@@ -865,6 +865,7 @@ v.invert = function(vec, idx, invert=TRUE)
 	v.return(IDX[-c(idx)]);
 	}
 
+
 v.empty = function(vec, idx, invert=FALSE)
 	{
 	if(invert) { IDX = 1:length(vec); idx = IDX[-c(idx)]; }
@@ -1038,7 +1039,13 @@ v.fill = function(vec, to.length=5, with=NA)
 	c(vec, add);	
 	}
 
-
+v.truncate = function(vec, to.length = 5, skip = 0)
+	{
+	n = length(vec);
+	s = 1 + skip;
+	e = s + to.length - 1;
+	vec[s:e];
+	}
 
 
 v.nearest = function(vec, what, howmany=1, invert=FALSE)
