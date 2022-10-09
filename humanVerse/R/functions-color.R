@@ -251,7 +251,15 @@ hexcolor.display = function() {} # HTML or graphics
 
 hexcolor.wheelPlot = function() 
 	{
-	
+	# angle offset like colors.mshaffer.com 
+	# x=	L/100 * cx * Math.cos(deg2rad(H+angleOffset)) - w/2 + cx	; 
+	# y=	L/100 * cy * Math.sin(deg2rad(H+angleOffset)) - h/2 + cy	;
+	# cx, cy is center of circle? or radius x, y ?
+	# w, h is range of viewing area ... 
+	# calculatePosition(_color,Lab[0],hsv[0],height,width,center);
+	# LAB ... 
+
+
 	# - complement ... 180 degrees from original
     # - split-complement ... 150/210 degrees from original
     # - analagous  ... +30/-30 degrees from original

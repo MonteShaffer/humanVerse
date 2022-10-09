@@ -647,7 +647,55 @@ dput(hexstr);
 
 
 
+	# http://c.mshaffer.com/js/colorpicker/functions.colors.js
+	# LOOKS like he has changed the formulas to matrix form, using ORIGINAL for now...
+#	http://www.brucelindbloom.com/index.html?Eqn_RGB_to_XYZ.html
+#  D65 is the default,
 
+.rgb2lab = function(matrixRGB)
+	{
+	# we want it on the [0,1] scale
+	if(max(matrixRGB) > 1) { matrixRGB = matrixRGB/255; }
+		
+	matrixLAB = convertColor( t(matrixRGB), 
+					from = "sRGB", to = "Lab", scale.in = 1);
+	
+	rownames(matrixLAB) = colnames(matrixRGB);
+	matrixLAB;
+	}
+	
+.lab2rgb = function(matrixLAB)
+	{
+	XXX = convertColor(matrixLAB, 
+					from = "Lab", to = "sRGB", scale.out = 255);
+	# maybe a function m.as(matrix, "integer") ... 
+	colnames(XXX) = c("red", "green", "blue");
+	matrixRGB = m.as( round(t(XXX)), type="integer");
+	matrixRGB;
+	}
+	
+	
+m.as = function(m, type = "integer")
+	{
+	n = ncol(m);
+	a = dimnames(m);  # property.getALL(m);
+	x = as.type(m, "integer");
+	y = matrix(x, ncol=n, byrow=FALSE, dimnames=a);
+	y;
+	}
+	
+df.as = function(m, type="integer")
+	{
+	# matrix has only one type, 
+	# but could be used on a dataframe
+	n = ncol(m);
+	if(length(type) < n) { type = rep(type, length.out=n); }
+	for(i in 1:n)
+		{
+		m[,i] = as.type(m[,i], type[i]);
+		}
+	m;
+	}
 
 
 
@@ -917,14 +965,16 @@ color.convert = function(..., from="hex", to="cmyk")
 					  "CMY" = .cmyk2rgb(x), 	# CMY
 					  "HSL" = .hsl2rgb(x), 		# HSL
 					  "HSV" = .hsv2rgb(x),		# HSV
-					  "HEX"	= .hex2rgb(x),		# HEX					  
+					  "HEX"	= .hex2rgb(x),		# HEX	
+					  "LAB"	= .lab2rgb(x),		# HEX	
 				x	# DEFAULT # RGB
 				);
 	OUT = switch(TO,					  			
 					  "CMY" = .rgb2cmyk(RGB), 	# CMY
 					  "HSL" = .rgb2hsl(RGB), 	# HSL
 					  "HSV" = .rgb2hsv(RGB),	# HSV
-					  "HEX"	= .rgb2hex(RGB),	# HEX					  
+					  "HEX"	= .rgb2hex(RGB),	# HEX
+					  "LAB"	= .rgb2lab(RGB),	# HEX 
 				RGB	# DEFAULT # RGB
 				);
 	OUT;
@@ -932,7 +982,7 @@ color.convert = function(..., from="hex", to="cmyk")
 
 
 
-# choices = c("rgb", "hsl", "hsv", "hex", "cmyk");
+# choices = c("rgb", "hsl", "hsv", "hex", "lab", "cmyk");
 ####if they don't exist ... COMBOS ... PRIVATE/PUBLIC [.]
 # n = length(choices);
 # for(i in 1:n)
@@ -966,14 +1016,17 @@ color.convert = function(..., from="hex", to="cmyk")
 
 # color.convert = function(..., from="hex", to="cmyk")
 
-
-
+############################################################
+############################### HELPER FUNCTIONS ###########
+############################################################
 
 rgb2hsl = function(...) { color.convert(..., from="RGB", to="HSL"); } 
 
 rgb2hsv = function(...) { color.convert(..., from="RGB", to="HSV"); } 
 
 rgb2hex = function(...) { color.convert(..., from="RGB", to="HEX"); } 
+
+rgb2lab = function(...) { color.convert(..., from="RGB", to="LAB"); } 
 
 rgb2cmyk = function(...) { color.convert(..., from="RGB", to="CMYK"); } 
 
@@ -983,6 +1036,8 @@ hsl2hsv = function(...) { color.convert(..., from="HSL", to="HSV"); }
 
 hsl2hex = function(...) { color.convert(..., from="HSL", to="HEX"); } 
 
+hsl2lab = function(...) { color.convert(..., from="HSL", to="LAB"); } 
+
 hsl2cmyk = function(...) { color.convert(..., from="HSL", to="CMYK"); } 
 
 hsv2rgb = function(...) { color.convert(..., from="HSV", to="RGB"); } 
@@ -990,6 +1045,8 @@ hsv2rgb = function(...) { color.convert(..., from="HSV", to="RGB"); }
 hsv2hsl = function(...) { color.convert(..., from="HSV", to="HSL"); } 
 
 hsv2hex = function(...) { color.convert(..., from="HSV", to="HEX"); } 
+
+hsv2lab = function(...) { color.convert(..., from="HSV", to="LAB"); } 
 
 hsv2cmyk = function(...) { color.convert(..., from="HSV", to="CMYK"); } 
 
@@ -999,7 +1056,19 @@ hex2hsl = function(...) { color.convert(..., from="HEX", to="HSL"); }
 
 hex2hsv = function(...) { color.convert(..., from="HEX", to="HSV"); } 
 
+hex2lab = function(...) { color.convert(..., from="HEX", to="LAB"); } 
+
 hex2cmyk = function(...) { color.convert(..., from="HEX", to="CMYK"); } 
+
+lab2rgb = function(...) { color.convert(..., from="LAB", to="RGB"); } 
+
+lab2hsl = function(...) { color.convert(..., from="LAB", to="HSL"); } 
+
+lab2hsv = function(...) { color.convert(..., from="LAB", to="HSV"); } 
+
+lab2hex = function(...) { color.convert(..., from="LAB", to="HEX"); } 
+
+lab2cmyk = function(...) { color.convert(..., from="LAB", to="CMYK"); } 
 
 cmyk2rgb = function(...) { color.convert(..., from="CMYK", to="RGB"); } 
 
@@ -1009,20 +1078,7 @@ cmyk2hsv = function(...) { color.convert(..., from="CMYK", to="HSV"); }
 
 cmyk2hex = function(...) { color.convert(..., from="CMYK", to="HEX"); } 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+cmyk2lab = function(...) { color.convert(..., from="CMYK", to="LAB"); } 
 
 
 

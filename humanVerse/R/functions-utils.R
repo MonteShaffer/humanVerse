@@ -996,18 +996,18 @@ magicFunction = function(KEY, to="character")
 
 # showMethods("coerce")
 # could I pass ... dots
-as.type = function(vals, types="character", ...) 
+as.type = function(vals, type="character", ...) 
 	{
 	n = length(vals);
-	nt = length(types); if( (n != nt) && (nt != 1) ) { stop("lenghts must match or types must be of length 1;"); }
+	nt = length(type); if( (n != nt) && (nt != 1) ) { stop("lenghts must match or types must be of length 1;"); }
 	
 	# NULL => null
-		w = which(is.null(types));
+		w = which(is.null(type));  
 	# "POSIXct.POSIXlt" ... upper case 
 	if(length(w) > 0)
 		{
 		# NULL is lower is.null
-		types[w] = str.tolower(types[w]);
+		type[w] = str.tolower(type[w]);
 		}
 
 	# as.complex, as.double, as.null, as.single, as.integer 
@@ -1015,14 +1015,14 @@ as.type = function(vals, types="character", ...)
 	if(nt == 1)
 		{
 		# one type on a vector
-		cmd = paste0("vals = as.",types,"(vals);"); # could I eval with ... (dots)
+		cmd = paste0("vals = as.",type,"(vals);"); # could I eval with ... (dots)
 		} else {
 				str = character(n);
 				for(i in 1:n)
 					{
 					# pairwise
 					str[i] = paste0("vals[" , i , "] = as.",
-										types[i],"(vals[" , i , "]);");
+										type[i],"(vals[" , i , "]);");
 					}
 				# we could create a vector or one long string, parse(text is multivariate
 				cmd = paste0(str, collapse=" ");
