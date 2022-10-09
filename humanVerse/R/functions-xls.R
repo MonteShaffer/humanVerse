@@ -449,7 +449,7 @@ xls.POISSON.INV = function(prob, mean)
 #  "blank", "solid", "dashed", "dotted", "dotdash", "longdash", or "twodash",
 ### this is like mtext/rect/text/points ... add-on to existing plot 
 ggg.circle = function() {}
-ggg.circle = function(cx = 0, cy = 0, rx = 1, ry=rx, # radius can be multivariate
+ggg.circle = function(cx = 0, cy = 0, rx = 1, ry=rx, # radius can be multivariate 
 					ds = 0, de = 360, # DEGREES to start/end
 					close.arc = TRUE,
 					dxi = 55, # RESOLUTION (smoothness of poly-circle)

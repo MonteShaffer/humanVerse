@@ -248,16 +248,169 @@ hexcolor.table = function() {}
 hexcolor.display = function() {} # HTML or graphics 
 
 
+# color.plot( color.rand(555) )
+# now we know why color.nearest performs poorly around BLACK ...
+# the 'BLACK' hole ... 
+# color.plot( color.col2hex(colors()) );
+# color.plot( color.css()$color.hex );
+# 
+WP48 = c(
+"ff8888", "ffff88", "88ff88", "00ff88", "88ffff", "0088ff", "ff88cc", "ff88ff", "ff0000", "ffff00", "88ff00", "00ff44", "00ffff", "0088cc", "8888cc", "ff00ff", "884444", "ff8844", "00ff00", "008888", "004488", "8888ff", "880044", "ff0088", "880000", "ff8800", "008800", "008844", "0000ff", "0000aa", "880088", "8800ff", "440000", "884400", "004400", "004444", "000088", "000044", "440044", "440088", "000000", "888800", "888844", "888888", "448888", "cccccc", "440044", "ffffff"
+);
+
+# color.plot( WP48 );
+
+color.plot = function() {}
+# hexcolors ... our color functions have hex as INPUTS
+# color-utils manipulate so we can get that way ...
+color.plot = function(..., angleOffset = 150, size=5, thick=5)
+	{
+	hex = prep.dots(..., default = c("#C0FFEE", "#abcdef", "#c8008c") );
+	
+# c(`#C0FFEE` = 313.809523809524, `#ABCDEF` = 360, `#C8008C` = 468
+
+	hex = color.hex(hex); 
+	cex = size;
+	lwd = thick;
+
+		# given H, L ... could I find HEX ? 
+	HSL = hex2hsl(hex);  H = HSL[1,];
+	LAB = hex2lab(hex);  L = LAB[1,];
+	
+		radius = rx = ry = 100;
+		xrange = c(-rx,rx); ydomain = c(-ry,ry);
+		# angleOffset = 150;
+	
+	
+	
+	
+	par(pty="s");   # plot(SQUARE);
+	plot(0,0, pch="", 
+			xlim = xrange, ylim = ydomain, 
+			axes=FALSE, xaxt='n', yaxt='n', ann=FALSE);
+			
+			
+		x = L/100 * rx * cos(deg2rad(H+angleOffset));  
+		y =	L/100 * ry * sin(deg2rad(H+angleOffset));
+		# white 
+		wx = 1 * rx * cos(deg2rad(0+angleOffset));  
+		wy = 1 * ry * sin(deg2rad(0+angleOffset));
+		# black 
+		bx = 0; 
+		by = 0;
+	
+	ggg.circle(0,0, rx, border.color="gray", border.thick = 0.5, border.style = "dashed", fill.color=NA, fill.lines=NULL);
+		
+		
+	points(wx,wy, col="black", bg="white", pch=24, lwd=lwd, cex=cex);
+	points(wx,wy, col="black", bg="white", pch=25, lwd=lwd, cex=cex);
+	points(wx,wy, col="white", pch=22, lwd=lwd, cex=cex);
+	points(wx,wy, col="white", pch=23, lwd=lwd, cex=cex);
+	
+	points(bx,by, col="black", pch=22, lwd=lwd, cex=cex);
+	points(bx,by, col="black", pch=23, lwd=lwd, cex=cex);
+	
+	
+	# maybe set transparency
+	points(x,y, col=hex, pch=22, lwd=lwd, cex=cex);
+	points(x,y, col=hex, pch=23, lwd=lwd, cex=cex);
+	
+	
+	
+	}
+
+
+
+
+
+
+
 
 hexcolor.wheelPlot = function() 
 	{
+	angleOffset = 0;
+	# var angleOffset = -30;  // rotation from 360 vertical is red
+	## easyrgb.com 
+	## YELLOW is UP 
 	# angle offset like colors.mshaffer.com 
-	# x=	L/100 * cx * Math.cos(deg2rad(H+angleOffset)) - w/2 + cx	; 
-	# y=	L/100 * cy * Math.sin(deg2rad(H+angleOffset)) - h/2 + cy	;
+	# x=	L/100 * rx * Math.cos(deg2rad(H+angleOffset)) - w/2 + rx	;  
+	# y=	L/100 * ry * Math.sin(deg2rad(H+angleOffset)) - h/2 + ry	;
 	# cx, cy is center of circle? or radius x, y ?
 	# w, h is range of viewing area ... 
 	# calculatePosition(_color,Lab[0],hsv[0],height,width,center);
 	# LAB ... 
+	# offset so purple is UP ... already IS ... 
+	# maybe shift -30 ... so it is LEFT SIDE, STRONG SIDE 
+	# H = 300
+	# L = 81
+	# white/black are on zero-angle from CENTER outward 
+	# what is negative white?
+	# H = 0, L = 100 ... whhite ... shouldn't that be UP 
+	# H = 0, L = 0 ... black ... 
+	# H = 180, L=100 ... what is that ?
+	
+	HH = c("00", "FF");
+	hex = NULL;
+	for(i in 1:2)
+		{
+		for(j in 1:2)
+			{
+			for(k in 1:2)
+				{
+				hex = c(hex, paste0("#",HH[i], HH[j], HH[k]));
+				}
+			}
+		}
+		
+	HSL = hex2hsl(hex);  H = HSL[1,];
+	LAB = hex2lab(hex);  L = LAB[1,];
+	
+	# par(reset); # restore state
+	
+		
+		# allows for elliptical distortion 
+		radius = rx = ry = 100;
+		xrange = c(-rx,rx); ydomain = c(-ry,ry);
+		angleOffset = 150;
+	
+	
+	
+	
+	par(pty="s");   # plot(SQUARE);
+	plot(0,0, pch="", 
+			xlim = xrange, ylim = ydomain, 
+			axes=FALSE, xaxt='n', yaxt='n', ann=FALSE);
+			
+			
+		x = L/100 * rx * cos(deg2rad(H+angleOffset));  
+		y =	L/100 * ry * sin(deg2rad(H+angleOffset));
+		# white 
+		wx = 1 * rx * cos(deg2rad(0+angleOffset));  
+		wy = 1 * ry * sin(deg2rad(0+angleOffset));
+		# black 
+		bx = 0; 
+		by = 0;
+	
+	ggg.circle(0,0, rx, border.color="gray", border.thick = 0.5, border.style = "dashed", fill.color=NA, fill.lines=NULL);
+		
+		
+	points(wx,wy, col="black", bg="white", pch=24,   cex=cex);
+	points(wx,wy, col="black", bg="white", pch=25,   cex=cex);
+	points(wx,wy, col="white", pch=22,   cex=cex);
+	points(wx,wy, col="white", pch=23,   cex=cex);
+	
+	points(bx,by, col="black", pch=22,   cex=cex);
+	points(bx,by, col="black", pch=23,   cex=cex);
+	
+	
+	# maybe set transparency
+	points(x,y, col=hex, pch=22,   cex=cex);
+	points(x,y, col=hex, pch=23,   cex=cex);
+	
+	
+	# colors = c("#FF00FF", "#FF0000", 
+	# yellow:  h = 50, L = 90
+	#
 
 
 	# - complement ... 180 degrees from original

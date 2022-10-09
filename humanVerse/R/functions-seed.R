@@ -104,7 +104,7 @@ cat("\n key: ", key, " \t\t seed.value : ", seed.value, " \n");
 		
 		seed.value = property.set("seed.args", seed.value, seed.args_);
 		# timezone?
-		seed.value = property.set("when", seed.value, Sys.time());
+		seed.value = property.set("when", seed.value, .timestamp("full"));
 		memory.set(key, "-SEED-", seed.value);
 		}
 

@@ -1,4 +1,33 @@
 
+	
+m.as = function(m, type = "integer")
+	{
+	n = ncol(m);
+	a = dimnames(m);  # property.getALL(m);
+	# ap = property.getALL();
+	x = as.type(m, "integer");
+	y = matrix(x, ncol=n, byrow=FALSE, dimnames=a);
+	# y = property.set(ap, y);
+	y;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # would be nice if I could wrap EIGEN around several functions ... 

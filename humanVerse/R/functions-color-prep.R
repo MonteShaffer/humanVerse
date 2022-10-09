@@ -1,12 +1,13 @@
 
 
-color.css = function(fname = "C:/_R_/cnames.html")
+color.css = function(fname = "C:/_R_/css.html")
 	{
 	res = memory.get("css-colors", "-COLORS-");
 	if(INN(res)) { return(res); }
 	furl = "https://htmlcolorcodes.com/color-names/index.html";
 	if(!file.exists_(fname))
 		{ curl::curl_download(furl, fname); }
+		# need to wrap this, so I can remove curl:: if I choose ... # also get data-provenance, header, timestamp ... 
 		# download.file on THIS fails miserably ... 
 	str = readTextFile(fname);
 	
