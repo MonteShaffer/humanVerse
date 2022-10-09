@@ -72,18 +72,24 @@ color.baseHEX = function(cnames = c("mediumvioletred", "deeppink", "deeppink2", 
 	 
 color.nearest = function() {}  
 # C0FFEE
-color.nearest = function(aHEX="#c8008c", B = color.default(type="CMYK-HSL"), n=5, return="best", based.on="humanVerse")
+color.nearest = function(aHEX="#c8008c", B = color.default(type="CMYK-HSL"), n=5, return="best", based.on="Cosine Similarity")
 	{
 	n = as.integer(n); 
 	# return == "best" ... or "everything""
 	# based.on is just reviewing the CACHE in a different way ...
 	# I don't want to do the logic at top and bottom, so ADD to CACHE ... 
+	BON = prep.arg(based.on, n=1);
+		CRITERIA = "humanVerse";
+	if(BON %in% c("e", "d")) { CRITERIA = "Euclidean Distance"; }
+	if(BON %in% c("c", "s")) { CRITERIA = "Cosine Similarity"; }
+
+
 	RETURN = prep.arg(return, n=1);
 .cat("Dimension of B: ", dim(B) );
 	akey = toupper( str.replace("#","", aHEX) );
 	bkey = property.get("md5", B);
 	# keep a memory ...  "89b284a63613278c9da2506f6ce43324"
-	mkey = .MD5( paste0( c(n, akey, B$hex, bkey), collapse="") );
+	mkey = .MD5( paste0( c(n, akey, B$hex, bkey, CRITERIA), collapse="") );
 	res = memory.get(mkey, "-COLOR-NEAREST-");
 	if(!is.null(res)) 
 		{ 
@@ -275,11 +281,7 @@ dis %GLOBAL% .;
 
 
 	
-	BON = prep.arg(based.on, n=1);
-		CRITERIA = "humanVerse";
-	if(BON %in% c("e", "d")) { CRITERIA = "Euclidean Distance"; }
-	if(BON %in% c("c", "s")) { CRITERIA = "Cosine Similarity"; }
-
+	
 if(CRITERIA == "humanVerse")
 	{
 	h.best = unique(c(v.TO(df$hex.m, NA, NULL), df$hex.h));
@@ -290,7 +292,8 @@ if(CRITERIA == "humanVerse")
 	# lower = R.colors ... R and HTML (140)  
 	best = n.best[1:on];
 	best = property.set("score", best, hV[1:on]);
-		alpha = 0.01/2;
+		alpha = 0.01/2; 
+		alpha = 0.01/5/2;  # changes based on colorspace?
 	best = property.set("good.match", best, (hV[1:on] < alpha) );
 	
 	best = property.set("color.hex", best, h.best[1:on]);
@@ -305,7 +308,7 @@ if(CRITERIA == "Euclidean Distance")
 	# lower = R.colors ... R and HTML (140)  
 	best = n.best[1:on];
 	best = property.set("score", best, hV[1:on]);
-		alpha = 0.10/3;
+		alpha = (3/5)^2;
 	best = property.set("good.match", best, (hV[1:on] < alpha) );
 	
 	best = property.set("color.hex", best, h.best[1:on]);
@@ -322,6 +325,7 @@ if(CRITERIA == "Cosine Similarity")
 	best = n.best[1:on];
 	best = property.set("score", best, hV[1:on]);
 		alpha = 1-(5/3 / 1000 / 1000);
+		alpha = 1-(1 / 1000 / 1000);
 	best = property.set("good.match", best, (hV[1:on] > alpha) );
 	 
 	best = property.set("color.hex", best, h.best[1:on]);
