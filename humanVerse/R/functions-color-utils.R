@@ -684,18 +684,6 @@ m.as = function(m, type = "integer")
 	y;
 	}
 	
-df.as = function(m, type="integer")
-	{
-	# matrix has only one type, 
-	# but could be used on a dataframe
-	n = ncol(m);
-	if(length(type) < n) { type = rep(type, length.out=n); }
-	for(i in 1:n)
-		{
-		m[,i] = as.type(m[,i], type[i]);
-		}
-	m;
-	}
 
 
 
