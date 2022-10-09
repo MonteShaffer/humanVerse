@@ -188,11 +188,19 @@ dis %GLOBAL% .;
 	logic = v.TO(logic, NA, FALSE);
 	
 	logic = (cs == 1);
-	logic = v.TO(logic, NA, FALSE);
+	logic = v.TO(logic, NA, FALSE);  
 	
-	fsc 		= dis * 100 * 100;
-	fsc[!logic] = (1-cs[!logic]) * dis[!logic] * 100 * 100 * 100; 
+	fsc 		= dis/360 * 100*100;
+	fsc[!logic] = (1-cs[!logic]) * dis[!logic]/360 * 100*100*100; 
+	 
+	fsc = fsc / (2^(8*3)) / 22;
 	
+	# max dis is 360?
+	
+	# black, reverse  
+	# lightpink1 351858781, lightpink3 351500101
+	# white 2236068
+
 	
 	CF = 25;  			# cos.sim weights more 
 	WF = 1/5; 			# overall scale 
@@ -213,7 +221,7 @@ dis %GLOBAL% .;
 	# fsc = 1 - fsc * WF + 1/WF;
 	# fsc = v.TO(fsc, is.negative(fsc), 0);
 	
-		fd = .sort(fsc, "ASC");
+		fd = .sort(fsc, "DESC");
 	rfi = names(fd);
 	sfi = as.numeric(fd);
 	## still not helping on "GRAYS" ... 

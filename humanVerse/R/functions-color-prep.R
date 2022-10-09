@@ -158,7 +158,7 @@ color.buildMap = function(df=color.css(), order=c(1,2,3),
 	
 	# nearest from R palette (distinct)
 	RNN = character(n);
-	for(i in 1:n)
+	for(i in 1:n) 
 		{
 		hex = HEX[i];
 		R = as.character( color.nearest(hex, n=1) )[1];
@@ -188,7 +188,7 @@ flush.console();
 	
 	df = NULL;
 	for(i in 1:n) 
-		{ 
+		{  
 		row = df.row( np[i], parent, library, class[i], RGB[1,i],RGB[2,i], RGB[3,i], HEX[i], cnames[i], RNN[i], CNN[i] );
 		df = rbind(df, row);
 		}
