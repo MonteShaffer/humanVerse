@@ -254,6 +254,9 @@ strip.Htags = function(...)
 # c(0, 51, 102, 153, 204, 255);
 # 00, 33, 66, 99, CC, FF ... websafe ... 
 # A8 = 168 
+##### where id R-list come from ... seems to be generally ANTI-WORDPERFECT ... part of the Micro$oft scheme?
+##### do an analysis looking at min(score) of nearest neighbor of different palettes to identify proximity to ANCHOR palette ...  CLOSEST colors are 0.03 or 0.05 ... very FAR ... for the closest ... 
+## #0057b7	#ffd700 UKRAINE ... dodgerblue3 0.0068619388 (10 x closer ) ... gold (perfect match) ... BLUE / YELLOW (alex tub nicholasville) ... #1874CD ... those don't look like the colors ... 
 # 0, 68, 136, 204, 272=>255 
 # 00 44   88   cc   ff  ... 48?   4*4*4*4 = 256 ... 3x3x3 = 27 
 # 4x4x3 ? 

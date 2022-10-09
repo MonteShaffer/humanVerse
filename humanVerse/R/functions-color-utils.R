@@ -72,10 +72,12 @@ color.baseHEX = function(cnames = c("mediumvioletred", "deeppink", "deeppink2", 
 	 
 color.nearest = function() {}  
 # C0FFEE
-color.nearest = function(aHEX="#c8008c", B = color.default(type="CMYK-HSL"), n=5, return="best")
+color.nearest = function(aHEX="#c8008c", B = color.default(type="CMYK-HSL"), n=5, return="best", based.on="humanVerse")
 	{
 	n = as.integer(n); 
 	# return == "best" ... or "everything""
+	# based.on is just reviewing the CACHE in a different way ...
+	# I don't want to do the logic at top and bottom, so ADD to CACHE ... 
 	RETURN = prep.arg(return, n=1);
 .cat("Dimension of B: ", dim(B) );
 	akey = toupper( str.replace("#","", aHEX) );
@@ -262,7 +264,7 @@ dis %GLOBAL% .;
 					hfi, rfi, sfi  # round(sfi, 5)
 					);
 	
-	colnames(df) = c(	"hex.m", "match", 	"sim", 
+	colnames(df) = c(	"hex.m", "match", 	"is", 
 						"hex.c", "cosine",  	"sim", 
 						"hex.e", "euclidean", "dist",
 						"hex.h", "humanVerse",  "HVscore"
@@ -270,18 +272,65 @@ dis %GLOBAL% .;
 			# there is no maroon5 ...
 			# Input was:  #A800A8 ... n = 33 
 			# 
+
+
+	
+	BON = prep.arg(based.on, n=1);
+		CRITERIA = "humanVerse";
+	if(BON %in% c("e", "d")) { CRITERIA = "Euclidean Distance"; }
+	if(BON %in% c("c", "s")) { CRITERIA = "Cosine Similarity"; }
+
+if(CRITERIA == "humanVerse")
+	{
 	h.best = unique(c(v.TO(df$hex.m, NA, NULL), df$hex.h));
+
 	n.best = unique(c(v.TO(df$match, NA, NULL), df$humanVerse));
 	hV 	   = df$HVscore;
 	
 	# lower = R.colors ... R and HTML (140)  
 	best = n.best[1:on];
-	names(best) = h.best[1:on];
-	best = property.set("HVscore", best, hV[1:on]);
+	best = property.set("score", best, hV[1:on]);
+		alpha = 0.01/2;
+	best = property.set("good.match", best, (hV[1:on] < alpha) );
+	
+	best = property.set("color.hex", best, h.best[1:on]);
+	}
+if(CRITERIA == "Euclidean Distance")
+	{
+	h.best = unique(c(v.TO(df$hex.m, NA, NULL), df$hex.e));
+
+	n.best = unique(c(v.TO(df$match, NA, NULL), df$euclidean));
+	hV 	   = df$dist;
+	
+	# lower = R.colors ... R and HTML (140)  
+	best = n.best[1:on];
+	best = property.set("score", best, hV[1:on]);
+		alpha = 0.10/3;
+	best = property.set("good.match", best, (hV[1:on] < alpha) );
+	
+	best = property.set("color.hex", best, h.best[1:on]);
+	}	
+
+if(CRITERIA == "Cosine Similarity")
+	{
+	h.best = unique(c(v.TO(df$hex.m, NA, NULL), df$hex.c));
+
+	n.best = unique(c(v.TO(df$match, NA, NULL), df$cosine));
+	hV 	   = df$sim;
+	
+	# lower = R.colors ... R and HTML (140)  
+	best = n.best[1:on];
+	best = property.set("score", best, hV[1:on]);
+		alpha = 1-(5/3 / 1000 / 1000);
+	best = property.set("good.match", best, (hV[1:on] > alpha) );
+	 
+	best = property.set("color.hex", best, h.best[1:on]);
+	}		
 	
 	res = df;
 	res = property.set("input.was", res, aHEX); 
 	res = property.set("best", res, best); 
+	res = property.set("based.on", res, CRITERIA); 
 	
 	
 	
