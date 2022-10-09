@@ -74,6 +74,10 @@ color.nearest = function() {}
 # C0FFEE
 color.nearest = function(aHEX="#c8008c", B = color.default(type="CMYK-HSL"), n=5, return="best", based.on="Cosine Similarity")
 	{
+	## matching to BLACK is BAD ...  vector of 0 0000 1 
+	## 010101 fails miserably, but 050505 works ... 
+	## xx = color.nearest("#050505", n=505, return="evelkjf"); head(xx); tail(xx); str(xx);
+	## nature of the mathematics ... 
 	n = as.integer(n); 
 	# return == "best" ... or "everything""
 	# based.on is just reviewing the CACHE in a different way ...
