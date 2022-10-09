@@ -190,10 +190,29 @@ dis %GLOBAL% .;
 	logic = (cs == 1);
 	logic = v.TO(logic, NA, FALSE);  
 	
-	fsc 		= dis/360 * 100*100;
-	fsc[!logic] = (1-cs[!logic]) * dis[!logic]/360 * 100*100*100; 
+	fsc 		= dis * 100*100;
+	fsc[!logic] = (1-cs[!logic]) * dis[!logic] * 100*100*100; 
 	 
-	fsc = fsc / (2^(8*3)) / 22;
+	# fsc = 100* fsc / (2^(8*3)) / 22;
+	
+	fsc = fsc / (2^(8*3)) / 22;  # max is about 0.95
+	
+	fsc = 296239876 * fsc / 122215;
+	
+	fsc = 10^8 * fsc / 592;
+	fsc = 1.0013428 * pi * fsc * 2 / 100265080;
+	fsc = 7592 * fsc / 23456.789 / 108;
+	fsc = 10^9 * fsc / 1.03231973;  # #91FF25
+	fsc = fsc / 1.091322;
+	
+	fsc = fsc / 3.2575884 / 1.000001550; 
+	fsc = fsc / 100.0013652422;
+	fsc = 5*fsc;
+	
+	
+	
+	
+	
 	
 	# max dis is 360?
 	
@@ -221,7 +240,7 @@ dis %GLOBAL% .;
 	# fsc = 1 - fsc * WF + 1/WF;
 	# fsc = v.TO(fsc, is.negative(fsc), 0);
 	
-		fd = .sort(fsc, "DESC");
+		fd = .sort(fsc, "ASC");
 	rfi = names(fd);
 	sfi = as.numeric(fd);
 	## still not helping on "GRAYS" ... 
@@ -253,15 +272,19 @@ dis %GLOBAL% .;
 			# 
 	h.best = unique(c(v.TO(df$hex.m, NA, NULL), df$hex.h));
 	n.best = unique(c(v.TO(df$match, NA, NULL), df$humanVerse));
+	hV 	   = df$HVscore;
 	
 	# lower = R.colors ... R and HTML (140)  
 	best = n.best[1:on];
 	names(best) = h.best[1:on];
+	best = property.set("HVscore", best, hV[1:on]);
 	
 	res = df;
 	res = property.set("input.was", res, aHEX); 
 	res = property.set("best", res, best); 
-	 
+	
+	
+	
 	memory.set(mkey, "-COLOR-NEAREST-", res);
 	
 	.cat("Input was: ", aHEX);
