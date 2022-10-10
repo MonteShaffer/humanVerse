@@ -248,30 +248,265 @@ hexcolor.table = function() {}
 hexcolor.display = function() {} # HTML or graphics 
 
 
+# maybe do LAB by SIMULATION ... 
+# only 16,000,00 colors ...
+# build TREE of what I want ... r,theta ...
+# 5, 95 by 
+# length(seq(5, 95, 10)); 10 elements ... 
+# Lv = seq(5, 95, 10);
+# Hv = seq(0, 350, 10);
+# shouldn't GRAY and WHITE SHOW UP?
+
+# color.plot(good, size=1/5, thick=1/5)
+# color.plot(good, size=3, thick=3, xlim=c(-0.25,0.25), ylim=c(-0.25,0.25))
+# color.plot(good, size=5, thick=5, z = 0.15)
+# color.plot(good, size=5, thick=5, z = 0.05)
+
+color.walk = function(skip = 0, chunk=1000)
+	{
+	
+	min = 0; max = (2^8)^3 - 1;
+	min = 0 + skip;
+	# last chunk may have garbage ... (2^8)^3 - 1 == 
+	
+	good = NULL; i = min; 
+	
+	
+	f = "walk.the.dog"; 	
+	cat.log(f, "hello", append=FALSE);
+	
+	args = common.args();
+	cat.pipe(args, f);
+
+	
+	# data = cbind(n, HEX, H, L);
+	# lines = paste0(data, collapse="|");
+	# > cat.log(f, lines)
+	# cat.pipe(data, f, psep="|");
+	
+
+	
+	while(i <= max)
+		{
+		n = i:(i+chunk-1);
+		HEX = color.hex( dec2hex( n ) , three.to.six=FALSE);
+		HSL = hex2hsl(HEX);  H = HSL[1,];
+		LAB = hex2lab(HEX);  L = LAB[1,];
+		
+		data = cbind(n, HEX, H, L);
+		cat.pipe(data, f, psep="|");
+	
+
+.cat("i: ", i, " (", ceiling( i/1000 ), "):", HEX[1],  "\t ... ", round(100*i/max, 3), "%" ); flush.console();
+color.plot(HEX); dev.flush();
+
+		i %+=% chunk;
+		}
+	
+	
+	args = common.stop(args);
+	cat.pipe(args, f);
+	}
+
+
+color.walk.good = function(skip = 0)
+	{
+	# inefficient use of R-vector 
+	min = 0; max = (2^8)^3 - 1;
+	min = 0 + skip;
+	Lv = seq(5, 95, 10);
+	Hv = seq(0, 350, 10);
+	
+	
+	# w = Lv (100) ... b = Lv (0) ... NOT FOUND 
+	# (w) gets us to 370 colors ... 3+7 ... w is 0?  !0 = w 
+	# just get them all ...
+	good = NULL; i = min; 
+	
+	# maybe part of 3-to-6?
+	
+	j = ceiling( i/1000 );
+	TOLERANCE_H = 0.025;
+	TOLERANCE_L = 0.100;  # we need one "blue" at every step ...
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	# while(length(good) < 360)
+	while(i <= max)
+		{
+		# h = int2hex(
+		HEX = color.hex( dec2hex( i ) , three.to.six=FALSE);
+		HSL = hex2hsl(HEX);  H = HSL[1,];
+		LAB = hex2lab(HEX);  L = LAB[1,];
+		
+		# some tolerance
+		Hc = is.equal(H, Hv, TOLERANCE_H);
+		Lc = is.equal(L, Lv, TOLERANCE_L);  
+		
+		if(.anyTRUE(Hc) && .anyTRUE(Lc))
+			{
+			good = c(good, HEX);			
+			}
+	
+if(i %% 1000 == 1)
+	{
+.cat("i: ", i, " (", j, "):", HEX,  
+		"\t good: ", length(good), "\t ... ", 
+						round(100*i/max, 3), "%" );
+flush.console();
+if(j %% 10 == 0)
+	{
+	color.plot(good, size=1, thick=1);
+	}
+if(j %% 1000 == 0)
+	{
+	f = paste0("good-",j,".rds");
+	writeRDS(good, f);
+	}
+	
+	j %++%.;
+	}
+		i %++%.;
+		}
+	
+	
+	
+	
+	
+	
+	
+	hex2lab(good);
+	color.plot(good);
+	
+	
+	
+	hex2hsl(good);
+	
+	
+	
+	
+	
+dput(good);
+	
+	
+	
+	
+	
+	
+	hex2lab(good)
+	
+	
+	hex2hsl(good)
+	
+	
+	
+	}
+	
+	
 
 color.xela = function()
 	{
-	outer = 36; 	o = 10;
-	inner =  8;		i = 1;
-	
 	w = "#ffffff"; b = "#000000";
 	
 	N = as.character(0:9);
 	xela = paste0("!", v.empty(N, 1) );
-	C = LETTERS;
+	C = c(N, LETTERS);
 	
 	# get outer most colors ...
 	any = "#c8008c";  ahex = color.wheel(any, steps=360);
 	# Lab is 60 ... 4 steps out, 6 steps in ... 
 	# interest aspects of this color ... is it the letter V?
 	
-	any.w = color.gradient(c(any, w), n = 5+1)[1:5];
-	any.b = color.gradient(c(any, b), n = 5+2)[2:6];
-	any.g = c(rev(any.b), any.w);  # length = 10 ... 
-	any.g = property.set("seed", any.g, ahex[i]);
+	# every 5th element 
+	fifth.element = function(vec, skip = 0, n=5)
+		{
+		vec[seq((1+skip), length(vec), 5)];
+		}
+		
+	# b <- a[seq(1, length(a), 6)]
+	aw = color.gradient(c(any, w), n = 30);
+	ab = color.gradient(c(any, b), n = 30);
+	
+color.plot(c(aw,rev(ab)), size=1, thick=1, angleOffset=120+12);
+	
+	
+	# length = 10 ... # probably need to do better with LAB 
+	ag = c(rev(fifth.element(ab)[2:5]), fifth.element(aw));  
+	ag = property.set("seed", ag, ahex[i]);
+	# color.plot(ag, size=1, thick=1, angleOffset=120+12)
+	
+	# baw = color.gradient(c(b, any, w), n=50+1);
+	# ag2 = fifth.element(baw);
+	# color.plot(ag2, size=1, thick=1, angleOffset=120+12)
+	
+	
+	wg = color.gradient("#ffffff", "000000", n = 12)[1:10];
+	color.plot(wg, size=1, thick=1, angleOffset=0);
+	
+	wc = color.wheel("#ffffff");
 	
 	
 	
+	 
+	# loop through from angle = 318 ... 
+	# 360 - 318 = 42 (hitchhikers) FU[N]
+	
+	res = list(); j = 1;
+	for(i in 1:360)
+		{
+		one = ahex[i];
+		angle = as.integer(names(one));
+		# every tenth one ... dekkans 
+		# if(i %% 10 == 1)
+		if(angle %% 10 == 0)
+			{
+			# we lose the seed, but get aligned with white 
+			
+			bow = color.gradient(c(b, one, w), n=50+1);
+			og = fifth.element(bow);
+			
+			if(angle == 0) { og = wg; } # white ...
+			
+			# ow = color.gradient(c(one, w), n = 30);
+			# ob = color.gradient(c(one, b), n = 30);
+			## length = 10 ... 
+			## probably need to do better with LAB 
+			## this is showing the HSL vs LAB distortion 
+			# og = c(rev(fifth.element(ob)[2:5]), 
+								# fifth.element(ow));	
+			res[[j]] = og;
+			j %++%.;
+			}
+		}
+		
+	# color.plot(res, size=1, thick=1, angleOffset=120+12);
+	color.plot(res, size=1, thick=1, angleOffset=90);
+	# currently, we lose a brown ... vector by replacement 
+	# [[9]]
+ # [1] "#000000" "#281A00" "#503500" "#784F00" "#A06A00" "#C88500" "#D39D32" "#DEB566"
+ # [9] "#E9CE99" "#F4E6CC" "#FFFFFF"
+
+
+	
+	# what about the WHITE VECTOR ?
+		## replace a "puke-green" ... 
+	
+	
+	## inner on black ... up is 8 ... 318 degrees is 8 
+	## get one from "any.g" black, do loop of 8 
+	c8 = any.g[1]; 
+	c8 = "#220022";  
+	c8 = "#200010";  # space odyssey
+	c8hex = color.wheel(c8, steps=8);
+
 	
 	
 	}
@@ -317,9 +552,16 @@ WP48 = c(
 color.plot = function() {}
 # hexcolors ... our color functions have hex as INPUTS
 # color-utils manipulate so we can get that way ...
-color.plot = function(..., angleOffset = 150, size=5, thick=5, rx=1, ry=rx, chunks = 100)
+# angleOffset = 150 ==> a
+
+color.plot = function(..., a = -60, size=1, thick=1, rx=1, ry=rx, xlim=NULL, ylim=NULL, z = 1, fh=FALSE, fv=TRUE, chunks = 100)
 	{
 	hex = prep.dots(..., default = c("#C0FFEE", "#abcdef", "#c8008c") );
+	
+	angleOffset = a;
+	# flip vertical or horizontal ... 
+	fx = 1; if(fh) { fx = -1; }
+	fy = 1; if(fv) { fy = -1; }
 	
 # c(`#C0FFEE` = 313.809523809524, `#ABCDEF` = 360, `#C8008C` = 468
 	
@@ -345,6 +587,10 @@ color.plot = function(..., angleOffset = 150, size=5, thick=5, rx=1, ry=rx, chun
 	# ry = 10;
 	rmax = max(rx, ry);
 	xrange = c(-rmax,rmax); ydomain = c(-rmax,rmax);
+	if(!is.null(xlim)) { xrange = xlim; }
+	if(!is.null(ylim)) { ydomain = ylim; }
+	xrange = z * xrange;
+	ydomain = z * ydomain;
 	# angleOffset = 150;
 	
 	par(pty="s");   # plot(SQUARE);
@@ -355,8 +601,8 @@ color.plot = function(..., angleOffset = 150, size=5, thick=5, rx=1, ry=rx, chun
 	ggg.circle(0,0, rx, ry, border.color="gray", border.thick = 0.5, border.style = "dashed", fill.color=NA, fill.lines=NULL);
 
 	# white 
-	wx = 1 * rx * cos(deg2rad(0+angleOffset));  
-	wy = 1 * ry * sin(deg2rad(0+angleOffset));
+	wx = fx * 1 * rx * cos(deg2rad(300+angleOffset));  
+	wy = fy * 1 * ry * sin(deg2rad(300+angleOffset));
 	# black 
 	bx = 0; 
 	by = 0;
@@ -385,8 +631,8 @@ color.plot = function(..., angleOffset = 150, size=5, thick=5, rx=1, ry=rx, chun
 		HSL = hex2hsl(hex);  H = HSL[1,];
 		LAB = hex2lab(hex);  L = LAB[1,];
 		
-		x = L/100 * rx * cos(deg2rad(H+angleOffset));  
-		y =	L/100 * ry * sin(deg2rad(H+angleOffset));
+		x = fx * L/100 * rx * cos(deg2rad(H+angleOffset));  
+		y =	fy * L/100 * ry * sin(deg2rad(H+angleOffset));
 		
 		# maybe set transparency
 		points(x,y, col=hex, pch=22, lwd=lwd, cex=cex);
@@ -438,6 +684,9 @@ if(FALSE)
 
 
 
+
+
+plot.color = color.plot;
 
 
 

@@ -199,7 +199,7 @@ writeToPipe = function(df=iris, filename=tmp.file("iris.txt"), header = TRUE, qu
 									row.names = FALSE, ...)
 	{
 	filename = check.file(filename);
-cat("\n\n", filename, "\n\n");  openSesame(filename); 
+# cat("\n\n", filename, "\n\n");  openSesame(filename); 
 	df.name = substitute(df);
 	quote_ = quote;
 	if(quote == "") { quote = FALSE; } else { quote = TRUE; }

@@ -1,4 +1,18 @@
 
+
+nth.power = function(n) { exp(exp(n)); }
+
+# gets big fast 
+# nth.power(0:5);
+# does *NOT* 'go bad'
+# nth.power(-1*10^(0:15));
+
+
+ 
+
+
+
+
 # row.echelon for INTERNAL rank calcualtion 
 # have some sort of demo option ...
 

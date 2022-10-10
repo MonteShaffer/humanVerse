@@ -169,6 +169,8 @@ int.convert = function(..., from="binary", to="octal", to.length=NULL)
 	# first to decimal (integer) 
 	FROM 	= prep.arg(from, n=1, case="upper");
 	TO 		= prep.arg(to, n=1, case="upper");
+	
+	# default is "integer" or "decimal" (bad label)
 	 
 	xINT = switch(FROM,					  			
 					  "B" 	= base2int(x, base=2), 	# BINARY
@@ -186,47 +188,115 @@ int.convert = function(..., from="binary", to="octal", to.length=NULL)
 	xOUT;
 	}	
 
+
+
+
+### make dec2hex ... also int2hex ... 
+
 # these have to be defined INTEGERS (2^31 - 1)
-dec2hex = function(...) { int.convert(..., from="dec", to="hex"); } 
-
-dec2bin = function(...) { int.convert(..., from="dec", to="bin"); } 
-
-dec2oct = function(...) { int.convert(..., from="dec", to="oct"); } 
-
-hex2dec = function(...) { int.convert(..., from="hex", to="dec"); } 
-
-hex2bin = function(...) { int.convert(..., from="hex", to="bin"); } 
-
-hex2oct = function(...) { int.convert(..., from="hex", to="oct"); } 
-
-bin2dec = function(...) { int.convert(..., from="bin", to="dec"); } 
-
-bin2hex = function(...) { int.convert(..., from="bin", to="hex"); } 
-
-bin2oct = function(...) { int.convert(..., from="bin", to="oct"); } 
-
-oct2dec = function(...) { int.convert(..., from="oct", to="dec"); } 
-
-oct2hex = function(...) { int.convert(..., from="oct", to="hex"); } 
-
-oct2bin = function(...) { int.convert(..., from="oct", to="bin"); } 
 
 
+############################################################
+############################### HELPER FUNCTIONS ###########
+############################################################
 
 
+int.buildHelperFunctions = function()
+	{	
+	choices = c("int", "dec", "hex", "bin", "oct");
+	n = length(choices);
+	for(i in 1:n)
+		{
+		for(j in 1:n)
+			{
+			f = tolower(choices[i]); F = toupper(f);
+			s = tolower(choices[j]); S = toupper(s);
+			if((f == "dec" && s == "int") || (f == "int" && s == "dec")) { next; } 
+			if(f != s)
+				{
+				row = '{f}2{s} = function(...) { int.convert(..., from="{f}", to="{s}"); }';
+				
+				row = str.replace(c("{f}", "{s}", "{F}", "{S}"), c(f,s,F,S), row);	
+				
+				.cat(row);	 
+				}
+			
+			}
+		}
+	}
+	
+	
+############## OUTPUT HERE (COPY/PASTE CURRENTLY) ###########
 
 
-
-
-
-
-
-
-
-
-
+int2hex = function(...) { int.convert(..., from="int", to="hex"); }
 
 
 
+int2bin = function(...) { int.convert(..., from="int", to="bin"); }
+
+
+
+int2oct = function(...) { int.convert(..., from="int", to="oct"); }
+
+
+
+dec2hex = function(...) { int.convert(..., from="dec", to="hex"); }
+
+
+
+dec2bin = function(...) { int.convert(..., from="dec", to="bin"); }
+
+
+
+dec2oct = function(...) { int.convert(..., from="dec", to="oct"); }
+
+
+
+hex2int = function(...) { int.convert(..., from="hex", to="int"); }
+
+
+
+hex2dec = function(...) { int.convert(..., from="hex", to="dec"); }
+
+
+
+hex2bin = function(...) { int.convert(..., from="hex", to="bin"); }
+
+
+
+hex2oct = function(...) { int.convert(..., from="hex", to="oct"); }
+
+
+
+bin2int = function(...) { int.convert(..., from="bin", to="int"); }
+
+
+
+bin2dec = function(...) { int.convert(..., from="bin", to="dec"); }
+
+
+
+bin2hex = function(...) { int.convert(..., from="bin", to="hex"); }
+
+
+
+bin2oct = function(...) { int.convert(..., from="bin", to="oct"); }
+
+
+
+oct2int = function(...) { int.convert(..., from="oct", to="int"); }
+
+
+
+oct2dec = function(...) { int.convert(..., from="oct", to="dec"); }
+
+
+
+oct2hex = function(...) { int.convert(..., from="oct", to="hex"); }
+
+
+
+oct2bin = function(...) { int.convert(..., from="oct", to="bin"); }
 
 

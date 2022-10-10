@@ -115,6 +115,29 @@ v.rgb = function(r,g,b)
 	}
 
 
+v.HV = function(vS = c("!0", "A9", "Z9", "S9", "J9", "00", "33", "66", "99") )
+	{
+	# angle offset ? 3:16PM
+	
+	}
+	
+	
+v.xela = function(H, L)
+	{
+	# H is angle in degrees , from 'Hsl'
+	# L is intensity (magnitude of vector), from 'Lab'
+	
+	# convert .rgb2xela() ... .xela2rgb() ... 
+	# add to color converter ... 
+	
+	matrixHV = 0;
+	
+	}
+
+
+
+
+
 
 
 	
@@ -204,7 +227,7 @@ hex.prepend = function(..., prepend="#")
 	}
   
 color.hex = function() {}
-color.hex = function(..., alpha=FALSE, three.to.six=TRUE,
+color.hex = function(..., alpha=FALSE, three.to.six=FALSE,
 									prepend="#", case="upper" )
 	{
 	hexstr = prep.dots(..., default="cob");

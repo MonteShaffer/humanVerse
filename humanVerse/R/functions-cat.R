@@ -89,7 +89,15 @@ log.cmd = function(what = "ping", id, res, open=FALSE)
 	cat.log( o, ""); # end with \n 
 	invisible(o);
 	} 
-   
+  
+
+cat.pipe = function(obj, fname, psep="|", append=TRUE)
+	{
+	utils::write.table(obj, file=fname, sep=psep, append=append,
+						quote=FALSE, col.names=FALSE, row.names=FALSE);	
+	}
+	
+	
 cat.log = function(file, ..., sep="\n", append=TRUE)
 	{
 	# ... logic is lost ... 

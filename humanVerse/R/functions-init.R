@@ -548,6 +548,9 @@ return(NULL);
 				SEEK_START 			= "start",
 				INTEGER_MAXIMUM		= 2147483647,  # 2^31 - 1
 				
+				PIPE				= "|",
+				COMMENT_CHAR		= "#",
+									
 				VSEP 				= "\\./",
 				HUMANVERSE_SEP		= "\\./"
 				);
