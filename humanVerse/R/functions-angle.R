@@ -66,7 +66,7 @@ math.cleanup = function(x, tol = DEFAULT_TOLERANCE, part="Re", method="round")
 angle.convert = function(..., from="degrees", to="radians")
 	{
 	x = prep.dots(...);
-dput(x);
+# dput(x);
 	# convert everthing to "degrees" on first pass
 	FROM = prep.arg(from, n=1, case="upper");
 	TO = prep.arg(to, n=1, case="upper");

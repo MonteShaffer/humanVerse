@@ -14,7 +14,7 @@ color.random = function(n=1, to="HEX", seed=NULL)
 	if(TO == "HEX")
 		{
 		res = HEX;
-		} else {
+		} else { 
 				res = color.convert(HEX, from="hex", to=to);
 				}
 	# strips properties from seed ... 
@@ -177,8 +177,8 @@ rgb2col = color.rgb2col; 	# also works as an inverse for the base
 
 
 
-hexcolor.return = function() {}
-hexcolor.return = function(hexstr="#Dc8aa8cD", case="upper", alpha.case="lower")
+color.return = function() {}
+color.return = function(hexstr="#Dc8aa8cD", case="upper", alpha.case="lower")
 	{
 	# this is an INTERNAL, well formatted #FFFFFFaa or #FFFFFF
 	# make it more palpable to read ... FFFFFFaa

@@ -222,7 +222,7 @@ v.color = function(..., names.search="base", alpha=TRUE)
 # FUN="stats.mean"
 
 	
-hexcolor.gradient = function(..., n=5, force.length=FALSE, alpha=FALSE, skip.checks=FALSE)
+color.gradient = function(..., n=5, force.length=FALSE, alpha=FALSE, skip.checks=FALSE)
 	{
 	vecHEX = prep.dots(...);
 	# with skip.checks, a parent/child may have not included alpha ...
@@ -239,7 +239,7 @@ hexcolor.gradient = function(..., n=5, force.length=FALSE, alpha=FALSE, skip.che
 	# the OUTPUT is univariate ... if colvec where a LIST .... then I could make it multivariate ... 
 	nc = length(vecHEX);
 	if(force.length && nc > n) { n = nc; }	
-	hexcolor.return(grDevices::colorRampPalette(vecHEX, alpha=alpha)(n));
+	color.return(grDevices::colorRampPalette(vecHEX, alpha=alpha)(n));
 	}
 	
 
@@ -248,13 +248,50 @@ hexcolor.table = function() {}
 hexcolor.display = function() {} # HTML or graphics 
 
 
+
+color.xela = function()
+	{
+	outer = 36; 	o = 10;
+	inner =  8;		i = 1;
+	
+	w = "#ffffff"; b = "#000000";
+	
+	N = as.character(0:9);
+	xela = paste0("!", v.empty(N, 1) );
+	C = LETTERS;
+	
+	# get outer most colors ...
+	any = "#c8008c";  ahex = color.wheel(any, steps=360);
+	# Lab is 60 ... 4 steps out, 6 steps in ... 
+	# interest aspects of this color ... is it the letter V?
+	
+	any.w = color.gradient(c(any, w), n = 5+1)[1:5];
+	any.b = color.gradient(c(any, b), n = 5+2)[2:6];
+	any.g = c(rev(any.b), any.w);  # length = 10 ... 
+	any.g = property.set("seed", any.g, ahex[i]);
+	
+	
+	
+	
+	
+	}
+	
+	
+	
 ## TODO :: make a function for a spiral ... 
 ## color.spiral(555)
 ## color.uniform(555) ... see mathematica sunflower 
 ## color.sunflower(555) 
+## color.xela(369); # homage to Nikolai
+## 36 dekkans ... egypt ? names 
+## 0-Z = 36 ... 0-9 levels ... !1-!9 ... no !0 ==> !5
+## with colorwheel and graident, I already have this logic ...
+## xela:Z9 = white ... !5 = black ...
+
+
 
 ## color.prand(555) ... dev.flush ... one at a time ... 
-## progress bar ... 
+## progress bar ... just chunk color.plot 
 
 
 # ggg.circle(0, 0, 100, fill.color='purple', fill.lines=NULL)
@@ -280,43 +317,96 @@ WP48 = c(
 color.plot = function() {}
 # hexcolors ... our color functions have hex as INPUTS
 # color-utils manipulate so we can get that way ...
-color.plot = function(..., angleOffset = 150, size=5, thick=5, rx=1, ry=rx)
+color.plot = function(..., angleOffset = 150, size=5, thick=5, rx=1, ry=rx, chunks = 100)
 	{
 	hex = prep.dots(..., default = c("#C0FFEE", "#abcdef", "#c8008c") );
 	
 # c(`#C0FFEE` = 313.809523809524, `#ABCDEF` = 360, `#C8008C` = 468
+	
+	# text progress bar 
+	# textProgressBar
+	# txtProgressBar
+	# update this function to erase the past 
+	# e.g., pchar = paste0(u.getSymbol("U+22EF"),"=", u.getSymbol("U+22EF"), collapse="");
+	cchar = u.getSymbol(c("U+22EF","U+1F40C","U+22EF"), collapse=TRUE);
+	cchar = u.getSymbol("U+1F40C");
+	# total.width = 120 ... /3 
+	
+	pb = txtProgressBar(0, 100, 0, cchar, width=22, style=3);
 
+	
+	
 	hex = color.hex(hex); 
+		setTxtProgressBar(pb, 5);
 	cex = size;
 	lwd = thick;
 
-		# given H, L ... could I find HEX ? 
-	HSL = hex2hsl(hex);  H = HSL[1,];
-	LAB = hex2lab(hex);  L = LAB[1,];
-	
-		# radius = rx = ry = 1;
-		# ry = 10;
-		rmax = max(rx, ry);
-		xrange = c(-rmax,rmax); ydomain = c(-rmax,rmax);
-		# angleOffset = 150;
-	
-	
-	
+	# radius = rx = ry = 1;
+	# ry = 10;
+	rmax = max(rx, ry);
+	xrange = c(-rmax,rmax); ydomain = c(-rmax,rmax);
+	# angleOffset = 150;
 	
 	par(pty="s");   # plot(SQUARE);
 	plot(0,0, pch="", 
 			xlim = xrange, ylim = ydomain, 
 			axes=FALSE, xaxt='n', yaxt='n', ann=FALSE);
-			
-			
+	
+	ggg.circle(0,0, rx, ry, border.color="gray", border.thick = 0.5, border.style = "dashed", fill.color=NA, fill.lines=NULL);
+
+	# white 
+	wx = 1 * rx * cos(deg2rad(0+angleOffset));  
+	wy = 1 * ry * sin(deg2rad(0+angleOffset));
+	# black 
+	bx = 0; 
+	by = 0;
+	
+	points(wx,wy, col="black", bg="white", pch=24, lwd=lwd, cex=cex);
+	points(wx,wy, col="black", bg="white", pch=25, lwd=lwd, cex=cex);
+	points(wx,wy, col="white", pch=22, lwd=lwd, cex=cex);
+	points(wx,wy, col="white", pch=23, lwd=lwd, cex=cex);
+	
+	points(bx,by, col="black", pch=22, lwd=lwd, cex=cex);
+	points(bx,by, col="black", pch=23, lwd=lwd, cex=cex);
+	
+		setTxtProgressBar(pb, 10);
+		dev.flush(); flush.console();
+	
+	HEX = hex;   # all of them, to be chunked ...
+	n = length(HEX);   times = ceiling(n / chunks);
+	pbi = floor( 90 / times ); pidx = 1;
+
+	for(i in 1:times)
+		{
+		hex = HEX[1:chunks];
+		hex = v.TO(hex, NA, NULL);
+		
+			# given H, L ... could I find HEX ? 
+		HSL = hex2hsl(hex);  H = HSL[1,];
+		LAB = hex2lab(hex);  L = LAB[1,];
+		
 		x = L/100 * rx * cos(deg2rad(H+angleOffset));  
 		y =	L/100 * ry * sin(deg2rad(H+angleOffset));
-		# white 
-		wx = 1 * rx * cos(deg2rad(0+angleOffset));  
-		wy = 1 * ry * sin(deg2rad(0+angleOffset));
-		# black 
-		bx = 0; 
-		by = 0;
+		
+		# maybe set transparency
+		points(x,y, col=hex, pch=22, lwd=lwd, cex=cex);
+		points(x,y, col=hex, pch=23, lwd=lwd, cex=cex);
+		
+		
+		# doesn't work as expected ... 
+		setTxtProgressBar(pb, pidx*pbi);  pidx %++%.;
+		dev.flush(); flush.console();
+		
+		HEX = v.empty(HEX, 1:chunks);
+		}
+	
+	
+	
+	setTxtProgressBar(pb, 100);
+	close(pb);  # maybe put at beginning ... on.exit 	
+			
+		
+		
 	
 	
 if(FALSE)
@@ -333,24 +423,13 @@ if(FALSE)
 	ggg.circle(0,0, rx*0.2, border.color="gray", border.thick = 0.5, border.style = "dashed", fill.color="#cccccc33", fill.lines=NULL);
 	}
 	
-	ggg.circle(0,0, rx, ry, border.color="gray", border.thick = 0.5, border.style = "dashed", fill.color=NA, fill.lines=NULL);
-
+	
 
 
 		
 		
-	points(wx,wy, col="black", bg="white", pch=24, lwd=lwd, cex=cex);
-	points(wx,wy, col="black", bg="white", pch=25, lwd=lwd, cex=cex);
-	points(wx,wy, col="white", pch=22, lwd=lwd, cex=cex);
-	points(wx,wy, col="white", pch=23, lwd=lwd, cex=cex);
-	
-	points(bx,by, col="black", pch=22, lwd=lwd, cex=cex);
-	points(bx,by, col="black", pch=23, lwd=lwd, cex=cex);
 	
 	
-	# maybe set transparency
-	points(x,y, col=hex, pch=22, lwd=lwd, cex=cex);
-	points(x,y, col=hex, pch=23, lwd=lwd, cex=cex);
 	
 	
 	
@@ -498,7 +577,7 @@ hexcolor.wheelPlot = function()
 	}
 
 
-hexcolor.wheel = function(..., steps=12, base.names=FALSE, alpha=FALSE, skip.checks=FALSE) 
+color.wheel = function(..., steps=12, base.names=FALSE, alpha=FALSE, skip.checks=FALSE) 
 	{
 	vecHEX = prep.dots(...);
 	if(!skip.checks)
@@ -545,7 +624,6 @@ hexcolor.wheel = function(..., steps=12, base.names=FALSE, alpha=FALSE, skip.che
 		res[[i]] = property.set("angles", res[[i]], h2);
 		}
 	# modulus operator turns values from INT to NUM ... WOW 
-	minvisible(res, print=FALSE);
 	list.return(res);
 	}
   
@@ -610,12 +688,12 @@ hexcolor.setOpacity = function(..., opacity=50, reset=TRUE, skip.checks=FALSE)
 	
 	hexstr = substring(vecHEX, 1, 6+1);
 	
-	hexcolor.return(paste0(hexstr,newalphas));	
+	color.return(paste0(hexstr,newalphas));	
 	}
 	
 	
-hexcolor.chromatics = function() {}
-hexcolor.chromatics = function(..., n=12, light="#FFFFFF", dark="#000000", alpha=FALSE, natural.alpha=TRUE, skip.checks=FALSE) 
+color.chromatics = function() {}
+color.chromatics = function(..., n=12, light="#FFFFFF", dark="#000000", alpha=FALSE, natural.alpha=TRUE, skip.checks=FALSE) 
 	{
 	vecHEX = prep.dots(...);
 	if(!skip.checks)
@@ -640,9 +718,9 @@ hexcolor.chromatics = function(..., n=12, light="#FFFFFF", dark="#000000", alpha
 		vdark = hexcolor.setOpacity(vdark, opacity=0);
 		}
 		 
-	vlight = hexcolor.return(vlight);
-	vecHEX = hexcolor.return(vecHEX);
-	vdark = hexcolor.return(vdark);
+	vlight = color.return(vlight);
+	vecHEX = color.return(vecHEX);
+	vdark = color.return(vdark);
 	
 	n2 = ceiling(n/2);  # 11 will do 13 ... original doesn't count ...
 	vlen = length(vecHEX);
@@ -664,6 +742,9 @@ cat("\n length of chromatic: ", length(res[[i]]), " \n");
 		}
 	list.return(res);
 	}
+
+
+
 
 
 # vecHEX = c("#FAFBFC", "#F3D1A8","#A0A3A9"); vecHEX; hexcolor.round(vecHEX);	
@@ -707,7 +788,7 @@ hexcolor.round = function(..., n=9, alpha=FALSE, skip.checks=FALSE)
 		RGB[4,] = mod.round(RGB[4,]);
 		}
 	
-	hexcolor.return(as.character(rgb2hex(RGB)));	
+	color.return(as.character(rgb2hex(RGB)));	
 	}
 
 
@@ -744,7 +825,7 @@ hexcolor.websafe = function(..., skip.checks=FALSE)
 	RGB[2,] = mod.websafe(RGB[2,]);
 	RGB[3,] = mod.websafe(RGB[3,]);
 	
-	hexcolor.return(as.character(rgb2hex(RGB)));	
+	color.return(as.character(rgb2hex(RGB)));	
 	}
 
 
