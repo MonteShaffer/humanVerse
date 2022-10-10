@@ -348,7 +348,7 @@ debug = FALSE;
 	fn 		= sys.calls()[[ sys.nframe()-1 ]];
 	finfo 	= parse.syscall(fn, parent.frame(1));
 
-dput(finfo);
+##############################dput(finfo);
  
  
 	if(append.info) 

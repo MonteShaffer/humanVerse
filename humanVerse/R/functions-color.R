@@ -248,22 +248,39 @@ hexcolor.table = function() {}
 hexcolor.display = function() {} # HTML or graphics 
 
 
-# color.plot( color.rand(555) )
+## TODO :: make a function for a spiral ... 
+## color.spiral(555)
+## color.uniform(555) ... see mathematica sunflower 
+## color.sunflower(555) 
+
+## color.prand(555) ... dev.flush ... one at a time ... 
+## progress bar ... 
+
+
+# ggg.circle(0, 0, 100, fill.color='purple', fill.lines=NULL)
+
+# color.plot( color.rand(555), size=1/5, thick=1/5 )
 # now we know why color.nearest performs poorly around BLACK ...
 # the 'BLACK' hole ... 
 # color.plot( color.col2hex(colors()) );
 # color.plot( color.css()$color.hex );
-# 
+# color.plot( WP48 );
+
 WP48 = c(
 "ff8888", "ffff88", "88ff88", "00ff88", "88ffff", "0088ff", "ff88cc", "ff88ff", "ff0000", "ffff00", "88ff00", "00ff44", "00ffff", "0088cc", "8888cc", "ff00ff", "884444", "ff8844", "00ff00", "008888", "004488", "8888ff", "880044", "ff0088", "880000", "ff8800", "008800", "008844", "0000ff", "0000aa", "880088", "8800ff", "440000", "884400", "004400", "004444", "000088", "000044", "440044", "440088", "000000", "888800", "888844", "888888", "448888", "cccccc", "440044", "ffffff"
 );
-
+ 
 # color.plot( WP48 );
+
+# maybe 
+
+# color.plot( color.rand(555), size=1/5, thick=1/5 )
+
 
 color.plot = function() {}
 # hexcolors ... our color functions have hex as INPUTS
 # color-utils manipulate so we can get that way ...
-color.plot = function(..., angleOffset = 150, size=5, thick=5)
+color.plot = function(..., angleOffset = 150, size=5, thick=5, rx=1, ry=rx)
 	{
 	hex = prep.dots(..., default = c("#C0FFEE", "#abcdef", "#c8008c") );
 	
@@ -277,8 +294,10 @@ color.plot = function(..., angleOffset = 150, size=5, thick=5)
 	HSL = hex2hsl(hex);  H = HSL[1,];
 	LAB = hex2lab(hex);  L = LAB[1,];
 	
-		radius = rx = ry = 100;
-		xrange = c(-rx,rx); ydomain = c(-ry,ry);
+		# radius = rx = ry = 1;
+		# ry = 10;
+		rmax = max(rx, ry);
+		xrange = c(-rmax,rmax); ydomain = c(-rmax,rmax);
 		# angleOffset = 150;
 	
 	
@@ -299,7 +318,25 @@ color.plot = function(..., angleOffset = 150, size=5, thick=5)
 		bx = 0; 
 		by = 0;
 	
-	ggg.circle(0,0, rx, border.color="gray", border.thick = 0.5, border.style = "dashed", fill.color=NA, fill.lines=NULL);
+	
+if(FALSE)
+	{
+	
+	ggg.circle(0,0, rx, border.color="gray", border.thick = 0.5, border.style = "dashed", fill.color="#000000ff", fill.lines=NULL);
+	
+	ggg.circle(0,0, rx*0.8, border.color="gray", border.thick = 0.5, border.style = "dashed", fill.color="#333333cc", fill.lines=NULL);
+	
+	ggg.circle(0,0, rx*0.6, border.color="gray", border.thick = 0.5, border.style = "dashed", fill.color="#66666699", fill.lines=NULL);
+	
+	ggg.circle(0,0, rx*0.4, border.color="gray", border.thick = 0.5, border.style = "dashed", fill.color="#99999966", fill.lines=NULL);
+	
+	ggg.circle(0,0, rx*0.2, border.color="gray", border.thick = 0.5, border.style = "dashed", fill.color="#cccccc33", fill.lines=NULL);
+	}
+	
+	ggg.circle(0,0, rx, ry, border.color="gray", border.thick = 0.5, border.style = "dashed", fill.color=NA, fill.lines=NULL);
+
+
+
 		
 		
 	points(wx,wy, col="black", bg="white", pch=24, lwd=lwd, cex=cex);
