@@ -306,7 +306,26 @@ color.plot(HEX); dev.flush();
 	
 	args = common.stop(args);
 	cat.pipe(args, f);
+	
+# head -n -785 w.dog > tmp.txt && mv tmp.txt w.dog
+# tail -n   +3 w.dog > tmp.txt && mv tmp.txt w.dog
 	}
+
+
+color.findXELA = function(df)
+	{
+	Lv = seq(5, 95, 10);
+	Hv = seq(0, 350, 10);
+	
+	Lb = 2.5;
+	Hb = seq(0, 350, 40);
+	
+	
+#	subset(df, 
+	
+	
+	}
+
 
 
 color.walk.good = function(skip = 0)
@@ -601,8 +620,8 @@ color.plot = function(..., a = -60, size=1, thick=1, rx=1, ry=rx, xlim=NULL, yli
 	ggg.circle(0,0, rx, ry, border.color="gray", border.thick = 0.5, border.style = "dashed", fill.color=NA, fill.lines=NULL);
 
 	# white 
-	wx = fx * 1 * rx * cos(deg2rad(300+angleOffset));  
-	wy = fy * 1 * ry * sin(deg2rad(300+angleOffset));
+	wx = fx * 1 * rx * cos(deg2rad(310+angleOffset));  
+	wy = fy * 1 * ry * sin(deg2rad(310+angleOffset));
 	# black 
 	bx = 0; 
 	by = 0;
@@ -687,7 +706,7 @@ if(FALSE)
 
 
 plot.color = color.plot;
-
+ 
 
 
 

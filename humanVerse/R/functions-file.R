@@ -324,7 +324,7 @@ writeToPipe = function(df=iris, filename=tmp.file("iris.txt"), header = TRUE, qu
 readFromPipe = function() {}
 # filename = "C:/_R_/humanVerse/SANDBOX/data/iris.txt";
 readFromPipe = function(filename=tmp.file("iris.txt"), header = TRUE, 
-									quote=EMPTY, sep=PIPE, 
+					 				quote=EMPTY, sep=PIPE, 
 									append.meta = TRUE, 
 									meta.sep = VSEP,
 									meta.skip = COMMENT_CHAR,
@@ -582,6 +582,12 @@ readTextFile = function(filename, buffer=BUFFER)
 	str;
 	}
 	
+
+# readFromPipe ... from = 1, to = "end" ... 
+# ... if not 1:"end" ... freadlines to TMP file, and then open the data frame ...
+# TAKING longer ... 
+
+
 
 # from back or front ... 
 # skip based on COLUMN-1 CHAR such as "#"  COMMENT_CHAR ...

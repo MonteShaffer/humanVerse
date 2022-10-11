@@ -483,8 +483,9 @@ return(NULL);
 	alias.set(to='"%&%"', 	from = ".AND.");
 	alias.set(to='"%|%"', 	from = ".OR.");
 	
-	# .b64_hex 
+	# .b64_hex  
 	alias.set(to='num.round', from = "int.round");
+	alias.set(to='.MD5', from = "str.toMD5");
 
 	
 	}
@@ -547,7 +548,7 @@ return(NULL);
 				BUFFER				= 1024,
 				SEEK_START 			= "start",
 				INTEGER_MAXIMUM		= 2147483647,  # 2^31 - 1
-				
+				  
 				PIPE				= "|",
 				COMMENT_CHAR		= "#",
 									
