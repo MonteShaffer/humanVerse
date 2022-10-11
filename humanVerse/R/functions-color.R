@@ -364,6 +364,15 @@ TOLERANCE_A = 0.025;
 a = seq(0, 350, 10);  # >=0 < 10 
 n = length(a);
 
+# scaled from [0,100]
+TOLERANCE_M = 1;
+m = seq(5, 95, 10);
+m = c(pi, m);
+
+
+
+# brown ???
+
 xela = list();
 for(i in 1:n)
 	{
@@ -375,18 +384,39 @@ for(i in 1:n)
 	
 	# color.plot( angles$hex.color , size=1/5, thick=1/5, simple=TRUE);
 	
-	
-	
-	
-	
-	
-	
-	
-	
+	{
+	x11 = numeric(11);
+	for(j in 1:11)
+		{
+		# M = 55
+		M = m[j];
+		idx = v.nearestIDX(angles$magnitude, M, 10);
+			clr = angles[idx, ];
+	#		color.plot( clr$hex.color , size=5, thick=5);
+			
+		# F707A7 or C75EA4 ... 6 or 2 on search 
+		# I think F707A7 is best ... least gray ... 
+			rgb = hex2rgb( clr$hex.color );
+			sum2 =  (rgb[1,] - rgb[2,])^2 + (rgb[1,] - rgb[3,])^2 + (rgb[3,] - rgb[2,])^2
+			fidx = v.which(sum2, stats.max(sum2))[1];
+			
+
+
+		# nope ... 
+		# x11[j] = leastGray(idx);
+		x11[j] = idx[fidx];
+		}
+		
+	}
+
+	clrX = angles[x11, ];
+	color.plot( clrX$hex.color[c(7,10)] , size=3, thick=3, simple=TRUE);
 	par(new = TRUE);
 	
-	
+	xela[[ as.character(A) ]] = x11;
 	}
+
+
 	
 # blue ... purplbe ... pink ... red ... yellow ... green ... light green ... cyan ... light blue ... 
 
@@ -829,7 +859,8 @@ color.plot = function(..., a = -60, size=1, thick=1,
 		
 		if(simple)
 			{
-			points(x,y, col=hex, pch=10, lwd=lwd, cex=cex);
+			if(isTRUE(simple)) { simple = 17; }
+			points(x,y, col=hex, pch=simple, lwd=lwd, cex=cex);
 			}
 		
 		# doesn't work as expected ... 
