@@ -1056,16 +1056,19 @@ v.nearest = function(vec, what, howmany=1, invert=FALSE)
 
 
 
-
+ 
 v.nearestIDX = function(vec, what, howmany=1, invert=FALSE)
 	{
 	vec.dev = abs(what-vec); 			# deviation
-	idx.min = stats.whichMin(vec.dev);	# minimum
-	if(is.null(howmany) || is.Inf(howmany) || is.negative(howmany))
+	if(is.null(howmany) || is.infinite(howmany) || is.negative(howmany))
 		{
+		idx.min = stats.whichMin(vec.dev);	# minimum
 		return(idx.min);  # will have a min 
 		}
-	idx.min[1:howmany];  # this will append NA's if too long ...
+	# sort with original idx ...
+	vec.sort = sort(vec.dev)[1:howmany];
+	
+	set.match(vec.sort, vec.dev);  # same as vec
 	}
 	
 

@@ -359,24 +359,28 @@ writeRDS(res,  paste0(d ,"wdog-XXX.rds") );
 
 
 TOLERANCE_A = 0.025;
-TOLERANCE_M = 0.100;
-
-
-m = seq(0.05, 0.95, .10);
-m = c(1/pi/10, m);
 
 
 a = seq(0, 350, 10);  # >=0 < 10 
 n = length(a);
 
+xela = list();
 for(i in 1:n)
 	{
+
 	A = a[i];
 	row = res[[ as.character(A) ]];
 		logic = (is.equal(row$angle, A, TOLERANCE_A));
 	angles = subset(row, logic);
 	
-	color.plot( angles$hex.color , size=1/5, thick=1/5);
+	# color.plot( angles$hex.color , size=1/5, thick=1/5, simple=TRUE);
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	par(new = TRUE);
@@ -384,7 +388,7 @@ for(i in 1:n)
 	
 	}
 	
-blue ... purplbe ... pink ... red ... yellow ... green ... light green ... cyan ... light blue ... 
+# blue ... purplbe ... pink ... red ... yellow ... green ... light green ... cyan ... light blue ... 
 
 # c y m r g b ... + 3 ...   r y g c * b * m * ... 60 degrees ... * 6
 # ... 40 degrees * 9 ...  THE STARS are focus on left-side, strong side ... teals / blues / purples ... 
@@ -401,8 +405,71 @@ blue ... purplbe ... pink ... red ... yellow ... green ... light green ... cyan 
 #                   2   1
 
 
-clist = list("9" = 32:35, "7" = 0:3, "5" = 4:7, "3" = 8:11, "1" = 12:15, "2" = 16:19, "4" = 20:23, "6" = 24:27, "8" = 28:31);
+clist = list("9" = 33:36, "7" = 1:4, "5" = 5:8, "3" = 9:12, "1" = 13:16, "2" = 17:20, "4" = 21:24, "6" = 25:28, "8" = 29:32);
 
+# "9" = pink ... "8" = purple ... "7" = red ... "5" = orange ... "3" = light-green ... "1" = green ... "2" = teal ... "4" = light blue ... "6" = blue ... 
+
+if(FALSE)
+	{
+	
+	A = a[i];
+	row = res[[ as.character(A) ]];
+		logic = (is.equal(row$angle, A, TOLERANCE_A));
+	angles = subset(row, logic);
+	
+	color.plot( angles$hex.color , size=5, thick=5, simple=TRUE);
+	
+	# gray's everywhere? ... remove them ... removeGRAY()
+
+	
+	}
+	
+
+
+
+# scaled from [0,100]
+TOLERANCE_M = 1;
+m = seq(5, 95, 10);
+m = c(pi, m);
+
+
+j = 9;
+
+M = m[j];
+idx = v.nearestIDX(angles$magnitude, M, 10);
+clr = angles[idx, ];
+color.plot( clr$hex.color , size=5, thick=5, simple=TRUE);
+	
+	# is the nearest always the "least gray" ... for angle = 320, 75 ... it works well ...
+	
+	
+x11 = numeric(11);
+for(j in 1:11)
+	{
+	# M = 55
+	M = m[j];
+	idx = v.nearestIDX(angles$magnitude, M, 10);
+		clr = angles[idx, ];
+		color.plot( clr$hex.color , size=5, thick=5);
+		
+	# F707A7 or C75EA4 ... 6 or 2 on search 
+	# I think F707A7 is best ... least gray ... 
+		rgb = hex2rgb( clr$hex.color );
+		sum2 =  (rgb[1,] - rgb[2,])^2 + (rgb[1,] - rgb[3,])^2 + (rgb[3,] - rgb[2,])^2
+		fidx = v.which(sum2, stats.max(sum2));
+		
+
+
+	# nope ... 
+	# x11[j] = leastGray(idx);
+	x11[j] = idx[fidx];
+	}
+
+clr = angles[x11, ];
+color.plot( clr$hex.color , size=5, thick=5);
+	
+	
+	
 	
 	
 	
@@ -670,7 +737,10 @@ color.plot = function() {}
 # color-utils manipulate so we can get that way ...
 # angleOffset = 150 ==> a
 
-color.plot = function(..., a = -60, size=1, thick=1, rx=1, ry=rx, xlim=NULL, ylim=NULL, z = 1, fh=FALSE, fv=TRUE, chunks = 100)
+color.plot = function(..., a = -60, size=1, thick=1, 
+							rx=1, ry=rx, xlim=NULL, ylim=NULL, 
+								z = 1, fh=FALSE, fv=TRUE, 
+									simple = FALSE, chunks = 100)
 	{
 	hex = prep.dots(..., default = c("#C0FFEE", "#abcdef", "#c8008c") );
 	
@@ -751,9 +821,16 @@ color.plot = function(..., a = -60, size=1, thick=1, rx=1, ry=rx, xlim=NULL, yli
 		y =	fy * L/100 * ry * sin(deg2rad(H+angleOffset));
 		
 		# maybe set transparency
-		points(x,y, col=hex, pch=22, lwd=lwd, cex=cex);
-		points(x,y, col=hex, pch=23, lwd=lwd, cex=cex);
+		if(!simple)
+			{
+			points(x,y, col=hex, pch=22, lwd=lwd, cex=cex);
+			points(x,y, col=hex, pch=23, lwd=lwd, cex=cex);
+			}
 		
+		if(simple)
+			{
+			points(x,y, col=hex, pch=10, lwd=lwd, cex=cex);
+			}
 		
 		# doesn't work as expected ... 
 		setTxtProgressBar(pb, pidx*pbi);  pidx %++%.;
