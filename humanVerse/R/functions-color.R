@@ -307,8 +307,105 @@ color.plot(HEX); dev.flush();
 	args = common.stop(args);
 	cat.pipe(args, f);
 	
+
+
+
+
+
+
+	}
+
+
+color.splitXELA = function()
+	{
+
 # head -n -785 w.dog > tmp.txt && mv tmp.txt w.dog
 # tail -n   +3 w.dog > tmp.txt && mv tmp.txt w.dog
+
+
+# f = "C:\\_git_\\github\\MonteShaffer\\--sandbox--NOT-github\\w.dog"
+# dog = readFromPipe(f, header=FALSE, append.meta=FALSE, meta.skip="^");
+# colnames(dog) = c("hex.int", "hex.color", "angle", "magnitude");
+# d = check.dir(f);
+# writeRDS(dog, "wdog.rds");
+
+
+ 
+
+a = seq(0, 350, 10);  # >=0 < 10 
+n = length(a);
+stem = "wdog-{a}.rds";
+res = list();
+for(i in 1:n)
+	{
+	A = a[i];   # for angle 0 ... 355 <--> 5
+	if(A != 0)
+		{
+		lower = A - 5; upper = A + 5;
+		sub = subset(dog, angle >= lower & angle < upper);
+		}
+	if(A == 0)
+		{
+		sub = subset(dog, ( angle >= 0 & angle < 5 ) | ( angle >= 355 & angle < 360 ) );
+		}
+		
+	out = str.replace("{a}", A, paste0(d , stem) );
+	writeRDS(sub, out);
+	res[[ as.character(A) ]] = sub;
+	}
+
+writeRDS(res,  paste0(d ,"wdog-XXX.rds") );
+
+
+
+TOLERANCE_A = 0.025;
+TOLERANCE_M = 0.100;
+
+
+m = seq(0.05, 0.95, .10);
+m = c(1/pi/10, m);
+
+
+a = seq(0, 350, 10);  # >=0 < 10 
+n = length(a);
+
+for(i in 1:n)
+	{
+	A = a[i];
+	row = res[[ as.character(A) ]];
+		logic = (is.equal(row$angle, A, TOLERANCE_A));
+	angles = subset(row, logic);
+	
+	color.plot( angles$hex.color , size=1/5, thick=1/5);
+	
+	
+	par(new = TRUE);
+	
+	
+	}
+	
+blue ... purplbe ... pink ... red ... yellow ... green ... light green ... cyan ... light blue ... 
+
+# c y m r g b ... + 3 ...   r y g c * b * m * ... 60 degrees ... * 6
+# ... 40 degrees * 9 ...  THE STARS are focus on left-side, strong side ... teals / blues / purples ... 
+
+## forks?
+## 36 / 2 = 18 ... 36 / 3 = 6 ... 36 / 4 = 9 
+## 32:35, 0:3, 4:7, 8:11, 12:15, 16:19, 20:23, 24:27, 28:31
+
+
+#                     9
+#                8          7
+#            6                 5
+#                4          3
+#                   2   1
+
+
+clist = list("9" = 32:35, "7" = 0:3, "5" = 4:7, "3" = 8:11, "1" = 12:15, "2" = 16:19, "4" = 20:23, "6" = 24:27, "8" = 28:31);
+
+	
+	
+	
 	}
 
 
@@ -620,8 +717,8 @@ color.plot = function(..., a = -60, size=1, thick=1, rx=1, ry=rx, xlim=NULL, yli
 	ggg.circle(0,0, rx, ry, border.color="gray", border.thick = 0.5, border.style = "dashed", fill.color=NA, fill.lines=NULL);
 
 	# white 
-	wx = fx * 1 * rx * cos(deg2rad(310+angleOffset));  
-	wy = fy * 1 * ry * sin(deg2rad(310+angleOffset));
+	wx = fx * 1 * rx * cos(deg2rad(320+angleOffset));  
+	wy = fy * 1 * ry * sin(deg2rad(320+angleOffset));
 	# black 
 	bx = 0; 
 	by = 0;

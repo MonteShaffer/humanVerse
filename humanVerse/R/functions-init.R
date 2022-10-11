@@ -477,7 +477,7 @@ return(NULL);
 	# js.b64  
 	alias.set(to='ord', from = "utf8ToInt");
 	alias.set(to='chr', from = "intToUtf8");
-	
+	 
 	alias.set(to='"%>>%"', 	from = ".SHIFT_R.");
 	alias.set(to='"%<<%"', 	from = ".SHIFT_L.");
 	alias.set(to='"%&%"', 	from = ".AND.");
@@ -486,6 +486,10 @@ return(NULL);
 	# .b64_hex  
 	alias.set(to='num.round', from = "int.round");
 	alias.set(to='.MD5', from = "str.toMD5");
+	
+	
+	alias.set(to='dataframe', from = "data.frame");
+	alias.set(to='as.dataframe', from = "as.data.frame");
 
 	
 	}
