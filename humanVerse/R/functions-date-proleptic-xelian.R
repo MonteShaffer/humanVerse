@@ -218,15 +218,39 @@ GOD = function(x)
 	x.sorted = sort(x, decreasing=TRUE);
 	x.sum = stats.sum(x);
 	
+	## https://en.wikipedia.org/wiki/9_BC
+	## 壬子年 (Water Rat) ... 2689 or 2629
+	## Year 9 BC was either a common year starting on Wednesday, Thursday or Friday or a leap year starting on Thursday (link will display the full calendar) of the Julian calendar (the sources differ, see leap year error for further information) and a leap year starting on Monday of the Proleptic Julian calendar. 
+	## Bengali calendar	−601
+	## 4 leap days in this first year ... days are lengthening at "concption" of messiah ...
+	
+	# what is spring equinox (9 BC)... 
+	# https://data.giss.nasa.gov/modelE/ar5plots/srvernal.html
+	## Solar Events in Greenwich Mean Time
+	## Tropical Year = 365.2425 (days)
+	## -8  3/20  8:56  6/22  7:57  9/22 18:40  12/20 11:25  11/29 13:54   5/30 22:59
+	## 8:56 + 3 hours (Israel Time +2 or +3 daylight savings?)
+	## solar noon on equinox is 12 noon?
+	## 3/20 9BC at solar noon is time zero ... or sunrise?
+	## 3/21 9BC at solar noon (Giza Pyramid location) ... tz as fabrications ... 
+	
+	## The Julian period is a chronological interval of 7980 years; year 1 of the Julian Period was 4713 BC (−4712).[2] The Julian calendar year 2023 is year 6736 of the current Julian Period. The next Julian Period begins in the year AD 3268. Historians used the period to identify Julian calendar years within which an event occurred when no such year was given in the historical record, or when the year given by previous historians was incorrect.[3]
+
+	## The Julian day number (JDN) is the integer assigned to a whole solar day in the Julian day count starting from noon Universal Time, with Julian day number 0 assigned to the day starting at noon on Monday, January 1, 4713 BC, proleptic Julian calendar (November 24, 4714 BC, in the proleptic Gregorian calendar),[4][5][6] a date at which three multi-year cycles started (which are: Indiction, Solar, and Lunar cycles) and which preceded any dates in recorded history.[a] For example, the Julian day number for the day starting at 12:00 UT (noon) on January 1, 2000, was 2451545.[7]
+	
+	## noon start might be okay. YEAR 0 has no leaps? Or 4?
+	
 	
 	## ANCHOR:  Mar 21, 1972 - "1980" as - 723179
-	## THIS is DAY ORIGIN (YEAR = 0, MONTH = 0, DAY = 0.  Call it ABRASHET PRIME.
-	## YEAR 0 has no leap days; 
+	## THIS is DAY ORIGIN (YEAR = 0, MONTH = 0, DAY = 0.  Call it ABRASHET PRIME. # ... this i correct
+	## YEAR 0 has no leap days;  ... No?
 	## YEARS (not zero) DIVISIBLE by 5 have +1 leap day 
 	##                               25 have +1 leap day (+2 total)
 	##                               500 have +1 leap day (+3 total)
 	##                              5000 have +1 leap day (+4 total)
 	## AVG YEAR is = 365 + 1/5 + 1/25 + 1/500 + 1/5000 = 365.2422
+	## 360 + (5 + 1/5 + 1/25 + 1/500 + 1/5000) ... Egyptian fractions
+	## maybe shorten years into base 60 system ... 33 and 34th year.
 	# 1980 * 365.24219 
 	# 1980 * 365.2422 ... 723179.6 ... 
 	# March 21, 1972 - 723179 ... YEAR 0 (leap +5 year) ... (.6) gets worked in ...
@@ -235,7 +259,7 @@ GOD = function(x)
 	# 1980 / 60 = 33 
 	# 1980 * 365 + as.integer(1980/4) - as.integer(1980/100) + as.integer(1980/400)
 	# 723180
-	#  M21,1972 ... 723179 days ... MXX as DAY 0 (MONTH 1, DAY 1, YEAR 0)
+	#  M21,1972 ... 723179 days ... MXX as DAY 0 (MONTH 0, DAY 0, YEAR 0) # cardoma; as 1st month, day, year ... 
 	# YEAR 0 would have 4 "leap days" ... would that center the error term ...
 	# MXX as EQUINOX M22/M23 on Julian/Gregorian for ~10BC
 	# julian ( as.Date("1972-03-21"), -2440588 ) = 2441398

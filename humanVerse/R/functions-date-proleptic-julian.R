@@ -21,6 +21,8 @@ date.computeProlepticOffsetJulian = function(NUM, dir=-1,
 	if(off == "equ")
 		{
 		NUM = NUM + dir*3649964;  # EQUINOX, MARCH 21, 8BC [-7, 03, 21]
+									# EQUI ... March 21, 9BC (Chinese water rat)
+									# star date 0 in xela ... 
 		return(NUM);
 		}
 	if(off == "jul")
